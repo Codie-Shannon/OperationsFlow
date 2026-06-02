@@ -24,6 +24,32 @@
         </div>
     </section>
 
+    <section class="module-summary-grid">
+        <article class="module-summary-card info-card">
+            <span>Total Documents</span>
+            <strong>@TotalCount</strong>
+            <small>All controlled document records</small>
+        </article>
+
+        <article class="module-summary-card warning-card">
+            <span>Due Soon</span>
+            <strong>@DueSoonCount</strong>
+            <small>Upcoming review dates</small>
+        </article>
+
+        <article class="module-summary-card danger-card">
+            <span>Overdue Reviews</span>
+            <strong>@OverdueReviewCount</strong>
+            <small>Review date has passed</small>
+        </article>
+
+        <article class="module-summary-card success-card">
+            <span>Current</span>
+            <strong>@CurrentCount</strong>
+            <small>Not overdue or due soon</small>
+        </article>
+    </section>
+
     <section class="module-toolbar">
         <input class="search-input"
                placeholder="Search documents..."
@@ -58,15 +84,11 @@
     <section class="table-card">
         @if (documents == null)
         {
-            <div class="empty-state">
-                Loading documents...
-            </div>
+            <div class="empty-state">Loading documents...</div>
         }
         else if (!FilteredDocuments.Any())
         {
-            <div class="empty-state">
-                No documents match the current filters.
-            </div>
+            <div class="empty-state">No documents match the current filters.</div>
         }
         else
         {
@@ -180,8 +202,16 @@
         }
     }
 
+    private int TotalCount => documents?.Count ?? 0;
+
     private int DueSoonCount =>
         documents?.Count(x => x.IsDueSoon) ?? 0;
+
+    private int OverdueReviewCount =>
+        documents?.Count(x => x.IsReviewOverdue) ?? 0;
+
+    private int CurrentCount =>
+        documents?.Count(x => !x.IsReviewOverdue && !x.IsDueSoon) ?? 0;
 
     private List<string> StatusOptions =>
         documents?

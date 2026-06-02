@@ -24,6 +24,32 @@
         </div>
     </section>
 
+    <section class="module-summary-grid">
+        <article class="module-summary-card info-card">
+            <span>Total Work Orders</span>
+            <strong>@TotalCount</strong>
+            <small>All seeded operational work requests</small>
+        </article>
+
+        <article class="module-summary-card warning-card">
+            <span>Open</span>
+            <strong>@OpenCount</strong>
+            <small>Currently active or in progress</small>
+        </article>
+
+        <article class="module-summary-card danger-card">
+            <span>Overdue</span>
+            <strong>@OverdueCount</strong>
+            <small>Past due and not closed</small>
+        </article>
+
+        <article class="module-summary-card success-card">
+            <span>Completed</span>
+            <strong>@CompletedCount</strong>
+            <small>Completed or closed work orders</small>
+        </article>
+    </section>
+
     <section class="module-toolbar">
         <input class="search-input"
                placeholder="Search work orders..."
@@ -50,15 +76,11 @@
     <section class="table-card">
         @if (workOrders == null)
         {
-            <div class="empty-state">
-                Loading work orders...
-            </div>
+            <div class="empty-state">Loading work orders...</div>
         }
         else if (!FilteredWorkOrders.Any())
         {
-            <div class="empty-state">
-                No work orders match the current filters.
-            </div>
+            <div class="empty-state">No work orders match the current filters.</div>
         }
         else
         {
@@ -165,10 +187,20 @@
         }
     }
 
+    private int TotalCount => workOrders?.Count ?? 0;
+
     private int OpenCount =>
         workOrders?.Count(x =>
             !string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase) &&
             !string.Equals(x.Status, "Closed", StringComparison.OrdinalIgnoreCase)) ?? 0;
+
+    private int OverdueCount =>
+        workOrders?.Count(x => x.IsOverdue) ?? 0;
+
+    private int CompletedCount =>
+        workOrders?.Count(x =>
+            string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(x.Status, "Closed", StringComparison.OrdinalIgnoreCase)) ?? 0;
 
     private List<string> StatusOptions =>
         workOrders?

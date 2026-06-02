@@ -25,6 +25,32 @@
         </div>
     </section>
 
+    <section class="module-summary-grid">
+        <article class="module-summary-card info-card">
+            <span>Total Risks</span>
+            <strong>@TotalCount</strong>
+            <small>All risk register items</small>
+        </article>
+
+        <article class="module-summary-card danger-card">
+            <span>High / Critical</span>
+            <strong>@HighCriticalCount</strong>
+            <small>Requires close monitoring</small>
+        </article>
+
+        <article class="module-summary-card warning-card">
+            <span>Review Overdue</span>
+            <strong>@OverdueReviewCount</strong>
+            <small>Risk review date has passed</small>
+        </article>
+
+        <article class="module-summary-card success-card">
+            <span>Controlled</span>
+            <strong>@ControlledCount</strong>
+            <small>Risks currently marked controlled</small>
+        </article>
+    </section>
+
     <section class="module-toolbar">
         <input class="search-input"
                placeholder="Search risks..."
@@ -184,8 +210,16 @@
         }
     }
 
+    private int TotalCount => risks?.Count ?? 0;
+
     private int HighCriticalCount =>
         risks?.Count(x => x.RiskLevel == "High" || x.RiskLevel == "Critical") ?? 0;
+
+    private int OverdueReviewCount =>
+        risks?.Count(x => x.IsReviewOverdue) ?? 0;
+
+    private int ControlledCount =>
+        risks?.Count(x => string.Equals(x.Status, "Controlled", StringComparison.OrdinalIgnoreCase)) ?? 0;
 
     private List<string> StatusOptions =>
         risks?

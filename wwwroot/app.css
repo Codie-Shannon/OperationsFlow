@@ -463,3 +463,75 @@ main {
     color: #94a3b8;
     font-weight: 650;
 }
+
+.module-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.module-summary-card {
+    padding: 20px;
+    border-radius: 20px;
+    background: white;
+    border: 1px solid #e5eaf2;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.055);
+}
+
+    .module-summary-card span {
+        display: block;
+        color: #64748b;
+        font-size: 0.78rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 10px;
+    }
+
+    .module-summary-card strong {
+        display: block;
+        color: #0f172a;
+        font-size: 2.25rem;
+        line-height: 1;
+        font-weight: 950;
+        letter-spacing: -0.05em;
+    }
+
+    .module-summary-card small {
+        display: block;
+        margin-top: 10px;
+        color: #64748b;
+        font-weight: 700;
+    }
+
+    .module-summary-card.danger-card {
+        background: #fff1f2;
+        border-color: #fecdd3;
+    }
+
+    .module-summary-card.warning-card {
+        background: #fffbeb;
+        border-color: #fde68a;
+    }
+
+    .module-summary-card.info-card {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+    }
+
+    .module-summary-card.success-card {
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+    }
+
+@media (max-width: 1000px) {
+    .module-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 620px) {
+    .module-summary-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -24,6 +24,32 @@
         </div>
     </section>
 
+    <section class="module-summary-grid">
+        <article class="module-summary-card info-card">
+            <span>Total Records</span>
+            <strong>@TotalCount</strong>
+            <small>All staff training records</small>
+        </article>
+
+        <article class="module-summary-card danger-card">
+            <span>Expired</span>
+            <strong>@ExpiredCount</strong>
+            <small>Training currently expired</small>
+        </article>
+
+        <article class="module-summary-card warning-card">
+            <span>Expiring Soon</span>
+            <strong>@ExpiringSoonCount</strong>
+            <small>Needs renewal soon</small>
+        </article>
+
+        <article class="module-summary-card success-card">
+            <span>Required Current</span>
+            <strong>@RequiredCurrentCount</strong>
+            <small>Required records still compliant</small>
+        </article>
+    </section>
+
     <section class="module-toolbar">
         <input class="search-input"
                placeholder="Search training records..."
@@ -182,6 +208,17 @@
                 .ToList();
         }
     }
+
+    private int TotalCount => trainingRecords?.Count ?? 0;
+
+    private int ExpiredCount =>
+        trainingRecords?.Count(x => x.IsExpired) ?? 0;
+
+    private int ExpiringSoonCount =>
+        trainingRecords?.Count(x => x.IsExpiringSoon) ?? 0;
+
+    private int RequiredCurrentCount =>
+        trainingRecords?.Count(x => x.IsRequired && !x.IsExpired) ?? 0;
 
     private decimal ComplianceRate
     {

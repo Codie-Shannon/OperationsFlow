@@ -24,6 +24,32 @@
         </div>
     </section>
 
+    <section class="module-summary-grid">
+        <article class="module-summary-card info-card">
+            <span>Total Actions</span>
+            <strong>@TotalCount</strong>
+            <small>All corrective and improvement actions</small>
+        </article>
+
+        <article class="module-summary-card warning-card">
+            <span>Open</span>
+            <strong>@OpenCount</strong>
+            <small>Still active or in progress</small>
+        </article>
+
+        <article class="module-summary-card danger-card">
+            <span>Overdue</span>
+            <strong>@OverdueCount</strong>
+            <small>Past due and not completed</small>
+        </article>
+
+        <article class="module-summary-card success-card">
+            <span>Completed</span>
+            <strong>@CompletedCount</strong>
+            <small>Completed or closed actions</small>
+        </article>
+    </section>
+
     <section class="module-toolbar">
         <input class="search-input"
                placeholder="Search corrective actions..."
@@ -58,15 +84,11 @@
     <section class="table-card">
         @if (correctiveActions == null)
         {
-            <div class="empty-state">
-                Loading corrective actions...
-            </div>
+            <div class="empty-state">Loading corrective actions...</div>
         }
         else if (!FilteredCorrectiveActions.Any())
         {
-            <div class="empty-state">
-                No corrective actions match the current filters.
-            </div>
+            <div class="empty-state">No corrective actions match the current filters.</div>
         }
         else
         {
@@ -195,10 +217,21 @@
         }
     }
 
+    private int TotalCount => correctiveActions?.Count ?? 0;
+
     private int OpenCount =>
         correctiveActions?.Count(x =>
             !string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase) &&
             !string.Equals(x.Status, "Closed", StringComparison.OrdinalIgnoreCase)) ?? 0;
+
+    private int OverdueCount =>
+        correctiveActions?.Count(x => x.IsOverdue) ?? 0;
+
+    private int CompletedCount =>
+        correctiveActions?.Count(x =>
+            string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(x.Status, "Closed", StringComparison.OrdinalIgnoreCase) ||
+            x.CompletedDate.HasValue) ?? 0;
 
     private List<string> StatusOptions =>
         correctiveActions?
