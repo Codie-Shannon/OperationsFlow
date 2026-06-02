@@ -1,0 +1,584 @@
+﻿@page "/reports"
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@inject OperationsFlowDbContext Db
+
+<PageTitle>Reports - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Management Reporting</p>
+            <h1>Reports</h1>
+            <p>
+                Management-level reporting across work orders, corrective actions,
+                risk, document control, and training compliance.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>Open Issues</span>
+            <strong>@OpenIssueCount</strong>
+        </div>
+    </section>
+
+    <section class="module-summary-grid">
+        <article class="module-summary-card info-card">
+            <span>Total Work Orders</span>
+            <strong>@WorkOrdersTotal</strong>
+            <small>@WorkOrdersOpen open work orders</small>
+        </article>
+
+        <article class="module-summary-card warning-card">
+            <span>Open Actions</span>
+            <strong>@CorrectiveActionsOpen</strong>
+            <small>@CorrectiveActionsOverdue overdue actions</small>
+        </article>
+
+        <article class="module-summary-card danger-card">
+            <span>High / Critical Risks</span>
+            <strong>@HighCriticalRisks</strong>
+            <small>@RisksTotal total risk items</small>
+        </article>
+
+        <article class="module-summary-card success-card">
+            <span>Training Compliance</span>
+            <strong>@TrainingComplianceRate.ToString("0.0")%</strong>
+            <small>@ExpiredTraining expired records</small>
+        </article>
+    </section>
+
+    <section class="report-grid">
+
+        <article class="report-card">
+            <div class="report-card-header">
+                <div>
+                    <h2>Work Orders by Status</h2>
+                    <p>Current operational workload grouped by status.</p>
+                </div>
+            </div>
+
+            @if (!WorkOrdersByStatus.Any())
+            {
+                <div class="empty-state">No work order data available.</div>
+            }
+            else
+            {
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in WorkOrdersByStatus)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="@GetStatusClass(row.Label)">
+                                        @row.Label
+                                    </span>
+                                </td>
+                                <td class="report-number">@row.Count</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </article>
+
+        <article class="report-card">
+            <div class="report-card-header">
+                <div>
+                    <h2>Corrective Actions by Priority</h2>
+                    <p>Action workload grouped by priority level.</p>
+                </div>
+            </div>
+
+            @if (!CorrectiveActionsByPriority.Any())
+            {
+                <div class="empty-state">No corrective action data available.</div>
+            }
+            else
+            {
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Priority</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in CorrectiveActionsByPriority)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="@GetPriorityClass(row.Label)">
+                                        @row.Label
+                                    </span>
+                                </td>
+                                <td class="report-number">@row.Count</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </article>
+
+        <article class="report-card">
+            <div class="report-card-header">
+                <div>
+                    <h2>Risks by Level</h2>
+                    <p>Risk register items grouped by calculated risk level.</p>
+                </div>
+            </div>
+
+            @if (!RisksByLevel.Any())
+            {
+                <div class="empty-state">No risk data available.</div>
+            }
+            else
+            {
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Risk Level</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in RisksByLevel)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="@GetRiskLevelClass(row.Label)">
+                                        @row.Label
+                                    </span>
+                                </td>
+                                <td class="report-number">@row.Count</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </article>
+
+        <article class="report-card">
+            <div class="report-card-header">
+                <div>
+                    <h2>Training by Department</h2>
+                    <p>Required training compliance grouped by department.</p>
+                </div>
+            </div>
+
+            @if (!TrainingByDepartment.Any())
+            {
+                <div class="empty-state">No training data available.</div>
+            }
+            else
+            {
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Department</th>
+                            <th>Required</th>
+                            <th>Current</th>
+                            <th>Compliance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in TrainingByDepartment)
+                        {
+                            <tr>
+                                <td class="strong-cell">@row.Department</td>
+                                <td>@row.RequiredCount</td>
+                                <td>@row.CurrentCount</td>
+                                <td>
+                                    <span class="@GetComplianceClass(row.ComplianceRate)">
+                                        @row.ComplianceRate.ToString("0.0")%
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </article>
+
+    </section>
+
+    <section class="report-card">
+        <div class="report-card-header">
+            <div>
+                <h2>Overdue Items by Owner</h2>
+                <p>
+                    Work orders and corrective actions that are currently overdue,
+                    grouped by assigned owner.
+                </p>
+            </div>
+        </div>
+
+        @if (!OverdueItemsByOwner.Any())
+        {
+            <div class="empty-state">No overdue owner data available.</div>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Owner</th>
+                        <th>Overdue Work Orders</th>
+                        <th>Overdue Corrective Actions</th>
+                        <th>Total Overdue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in OverdueItemsByOwner)
+                    {
+                        <tr>
+                            <td class="strong-cell">@row.Owner</td>
+                            <td>@row.OverdueWorkOrders</td>
+                            <td>@row.OverdueCorrectiveActions</td>
+                            <td>
+                                <span class="badge badge-danger">
+                                    @row.TotalOverdue
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+    <section class="report-card">
+        <div class="report-card-header">
+            <div>
+                <h2>Document Review Report</h2>
+                <p>
+                    Controlled documents that are overdue for review or due soon.
+                </p>
+            </div>
+
+            <a class="primary-link-button" href="/documents">
+                View Documents
+            </a>
+        </div>
+
+        @if (!DocumentReviewRows.Any())
+        {
+            <div class="empty-state">No document review items require attention.</div>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Document #</th>
+                        <th>Title</th>
+                        <th>Department</th>
+                        <th>Owner</th>
+                        <th>Next Review</th>
+                        <th>Flag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in DocumentReviewRows)
+                    {
+                        <tr>
+                            <td class="strong-cell">@item.DocumentNumber</td>
+                            <td>@item.Title</td>
+                            <td>@item.Department</td>
+                            <td>@item.Owner</td>
+                            <td>@item.NextReviewDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (item.IsReviewOverdue)
+                                {
+                                    <span class="badge badge-danger">Overdue</span>
+                                }
+                                else if (item.IsDueSoon)
+                                {
+                                    <span class="badge badge-warning">Due Soon</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-muted">Current</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+</div>
+
+@code {
+    private List<WorkOrder> workOrders = new();
+    private List<CorrectiveAction> correctiveActions = new();
+    private List<DocumentRecord> documents = new();
+    private List<RiskItem> risks = new();
+    private List<TrainingRecord> trainingRecords = new();
+
+    private int WorkOrdersTotal => workOrders.Count;
+
+    private int WorkOrdersOpen =>
+        workOrders.Count(x => !IsClosedStatus(x.Status));
+
+    private int CorrectiveActionsOpen =>
+        correctiveActions.Count(x => !IsClosedStatus(x.Status));
+
+    private int CorrectiveActionsOverdue =>
+        correctiveActions.Count(x => x.IsOverdue);
+
+    private int RisksTotal => risks.Count;
+
+    private int HighCriticalRisks =>
+        risks.Count(x => x.RiskLevel == "High" || x.RiskLevel == "Critical");
+
+    private int ExpiredTraining =>
+        trainingRecords.Count(x => x.IsExpired);
+
+    private int OpenIssueCount =>
+        WorkOrdersOpen + CorrectiveActionsOpen + HighCriticalRisks + ExpiredTraining;
+
+    private decimal TrainingComplianceRate
+    {
+        get
+        {
+            var required = trainingRecords.Where(x => x.IsRequired).ToList();
+
+            if (!required.Any())
+            {
+                return 0;
+            }
+
+            var current = required.Count(x => !x.IsExpired);
+
+            return (decimal)current / required.Count * 100;
+        }
+    }
+
+    private List<ReportCountRow> WorkOrdersByStatus =>
+        workOrders
+            .GroupBy(x => string.IsNullOrWhiteSpace(x.Status) ? "Unknown" : x.Status)
+            .Select(x => new ReportCountRow(x.Key, x.Count()))
+            .OrderByDescending(x => x.Count)
+            .ThenBy(x => x.Label)
+            .ToList();
+
+    private List<ReportCountRow> CorrectiveActionsByPriority =>
+        correctiveActions
+            .GroupBy(x => string.IsNullOrWhiteSpace(x.Priority) ? "Unknown" : x.Priority)
+            .Select(x => new ReportCountRow(x.Key, x.Count()))
+            .OrderBy(x => GetPrioritySortOrder(x.Label))
+            .ThenBy(x => x.Label)
+            .ToList();
+
+    private List<ReportCountRow> RisksByLevel =>
+        risks
+            .GroupBy(x => string.IsNullOrWhiteSpace(x.RiskLevel) ? "Unknown" : x.RiskLevel)
+            .Select(x => new ReportCountRow(x.Key, x.Count()))
+            .OrderBy(x => GetRiskSortOrder(x.Label))
+            .ThenBy(x => x.Label)
+            .ToList();
+
+    private List<TrainingDepartmentReportRow> TrainingByDepartment
+    {
+        get
+        {
+            return trainingRecords
+                .Where(x => x.IsRequired)
+                .GroupBy(x => string.IsNullOrWhiteSpace(x.Department) ? "Unknown" : x.Department)
+                .Select(group =>
+                {
+                    var requiredCount = group.Count();
+                    var currentCount = group.Count(x => !x.IsExpired);
+                    var compliance = requiredCount == 0
+                        ? 0
+                        : (decimal)currentCount / requiredCount * 100;
+
+                    return new TrainingDepartmentReportRow(
+                        Department: group.Key,
+                        RequiredCount: requiredCount,
+                        CurrentCount: currentCount,
+                        ComplianceRate: compliance
+                    );
+                })
+                .OrderBy(x => x.ComplianceRate)
+                .ThenBy(x => x.Department)
+                .ToList();
+        }
+    }
+
+    private List<OverdueOwnerReportRow> OverdueItemsByOwner
+    {
+        get
+        {
+            var overdueWorkOrders = workOrders
+                .Where(x => x.IsOverdue)
+                .GroupBy(x => string.IsNullOrWhiteSpace(x.Owner) ? "Unassigned" : x.Owner)
+                .ToDictionary(x => x.Key, x => x.Count());
+
+            var overdueCorrectiveActions = correctiveActions
+                .Where(x => x.IsOverdue)
+                .GroupBy(x => string.IsNullOrWhiteSpace(x.Owner) ? "Unassigned" : x.Owner)
+                .ToDictionary(x => x.Key, x => x.Count());
+
+            var owners = overdueWorkOrders.Keys
+                .Union(overdueCorrectiveActions.Keys)
+                .OrderBy(x => x)
+                .ToList();
+
+            return owners
+                .Select(owner =>
+                {
+                    var workOrderCount = overdueWorkOrders.GetValueOrDefault(owner, 0);
+                    var actionCount = overdueCorrectiveActions.GetValueOrDefault(owner, 0);
+
+                    return new OverdueOwnerReportRow(
+                        Owner: owner,
+                        OverdueWorkOrders: workOrderCount,
+                        OverdueCorrectiveActions: actionCount
+                    );
+                })
+                .OrderByDescending(x => x.TotalOverdue)
+                .ThenBy(x => x.Owner)
+                .ToList();
+        }
+    }
+
+    private List<DocumentRecord> DocumentReviewRows =>
+        documents
+            .Where(x => x.IsReviewOverdue || x.IsDueSoon)
+            .OrderByDescending(x => x.IsReviewOverdue)
+            .ThenBy(x => x.NextReviewDate)
+            .ThenBy(x => x.Title)
+            .ToList();
+
+    protected override async Task OnInitializedAsync()
+    {
+        workOrders = await Db.WorkOrders
+            .AsNoTracking()
+            .ToListAsync();
+
+        correctiveActions = await Db.CorrectiveActions
+            .AsNoTracking()
+            .ToListAsync();
+
+        documents = await Db.DocumentRecords
+            .AsNoTracking()
+            .ToListAsync();
+
+        risks = await Db.RiskItems
+            .AsNoTracking()
+            .ToListAsync();
+
+        trainingRecords = await Db.TrainingRecords
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private static bool IsClosedStatus(string? status)
+    {
+        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static int GetPrioritySortOrder(string? priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "critical" => 1,
+            "high" => 2,
+            "medium" => 3,
+            "low" => 4,
+            _ => 99
+        };
+    }
+
+    private static int GetRiskSortOrder(string? level)
+    {
+        return level?.ToLower() switch
+        {
+            "critical" => 1,
+            "high" => 2,
+            "medium" => 3,
+            "low" => 4,
+            _ => 99
+        };
+    }
+
+    private static string GetStatusClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" => "badge badge-success",
+            "closed" => "badge badge-success",
+            "in progress" => "badge badge-info",
+            "open" => "badge badge-warning",
+            "new" => "badge badge-warning",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private static string GetPriorityClass(string? priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "critical" => "badge badge-danger",
+            "high" => "badge badge-warning",
+            "medium" => "badge badge-info",
+            "low" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private static string GetRiskLevelClass(string? level)
+    {
+        return level?.ToLower() switch
+        {
+            "critical" => "badge badge-danger",
+            "high" => "badge badge-warning",
+            "medium" => "badge badge-info",
+            "low" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private static string GetComplianceClass(decimal complianceRate)
+    {
+        if (complianceRate >= 90)
+        {
+            return "badge badge-success";
+        }
+
+        if (complianceRate >= 70)
+        {
+            return "badge badge-warning";
+        }
+
+        return "badge badge-danger";
+    }
+
+    private record ReportCountRow(string Label, int Count);
+
+    private record TrainingDepartmentReportRow(
+        string Department,
+        int RequiredCount,
+        int CurrentCount,
+        decimal ComplianceRate);
+
+    private record OverdueOwnerReportRow(
+        string Owner,
+        int OverdueWorkOrders,
+        int OverdueCorrectiveActions)
+    {
+        public int TotalOverdue => OverdueWorkOrders + OverdueCorrectiveActions;
+    }
+}
