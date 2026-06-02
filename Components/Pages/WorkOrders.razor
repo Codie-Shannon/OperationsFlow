@@ -138,9 +138,15 @@
                                 }
                             </td>
                             <td>
-                                <a class="table-action-link" href="/work-orders/edit/@item.Id">
-                                    Edit
-                                </a>
+                                <div class="table-action-group">
+                                    <a class="table-action-link" href="/work-orders/@item.Id">
+                                        View
+                                    </a>
+
+                                    <a class="table-action-link" href="/work-orders/edit/@item.Id?returnUrl=/work-orders">
+                                        Edit
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     }

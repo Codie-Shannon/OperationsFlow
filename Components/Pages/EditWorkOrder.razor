@@ -1,4 +1,5 @@
 ﻿@page "/work-orders/edit/{id:int}"
+@using Microsoft.AspNetCore.Components
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
@@ -38,8 +39,8 @@
         </section>
 
         <div class="form-actions">
-            <button type="button" class="secondary-button" @onclick="BackToList">
-                Back to Work Orders
+            <button type="button" class="secondary-button" @onclick="BackToReturnPage">
+                Back
             </button>
         </div>
     }
@@ -49,13 +50,6 @@
         {
             <section class="alert-card danger-alert">
                 @errorMessage
-            </section>
-        }
-
-        @if (!string.IsNullOrWhiteSpace(successMessage))
-        {
-            <section class="alert-card success-alert">
-                @successMessage
             </section>
         }
 
@@ -148,7 +142,7 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="button" class="secondary-button" @onclick="BackToList">
+                    <button type="button" class="secondary-button" @onclick="BackToReturnPage">
                         Cancel
                     </button>
 
@@ -166,10 +160,12 @@
     [Parameter]
     public int Id { get; set; }
 
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
     private WorkOrder? workOrder;
     private bool isLoading = true;
     private string errorMessage = "";
-    private string successMessage = "";
 
     private string DisplayWorkOrderNumber =>
         string.IsNullOrWhiteSpace(workOrder?.WorkOrderNumber)
@@ -236,7 +232,6 @@
     private async Task SaveWorkOrder()
     {
         errorMessage = "";
-        successMessage = "";
 
         if (workOrder == null)
         {
@@ -279,11 +274,25 @@
 
         await Db.SaveChangesAsync();
 
-        Navigation.NavigateTo("/work-orders");
+        BackToReturnPage();
     }
 
-    private void BackToList()
+    private void BackToReturnPage()
     {
-        Navigation.NavigateTo("/work-orders");
+        var fallbackUrl = "/work-orders";
+
+        if (string.IsNullOrWhiteSpace(ReturnUrl))
+        {
+            Navigation.NavigateTo(fallbackUrl);
+            return;
+        }
+
+        if (!ReturnUrl.StartsWith("/"))
+        {
+            Navigation.NavigateTo(fallbackUrl);
+            return;
+        }
+
+        Navigation.NavigateTo(ReturnUrl);
     }
 }
