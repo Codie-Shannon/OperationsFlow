@@ -1,0 +1,727 @@
+﻿@page "/data-quality"
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
+@inject OperationsFlowDbContext Db
+
+<PageTitle>Data Quality - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">System Health</p>
+            <h1>Data Quality Report</h1>
+            <p>
+                Identify missing owners, weak records, overdue items, expired compliance
+                records, and data issues that need review before management reporting.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>Total Issues</span>
+            <strong>@TotalIssueCount</strong>
+        </div>
+    </section>
+
+    <section class="module-summary-grid">
+        <article class="module-summary-card danger-card">
+            <span>Critical Issues</span>
+            <strong>@CriticalIssueCount</strong>
+            <small>High-risk or overdue problems</small>
+        </article>
+
+        <article class="module-summary-card warning-card">
+            <span>Warning Issues</span>
+            <strong>@WarningIssueCount</strong>
+            <small>Records needing review</small>
+        </article>
+
+        <article class="module-summary-card info-card">
+            <span>Data Gaps</span>
+            <strong>@DataGapCount</strong>
+            <small>Missing owner, notes, or controls</small>
+        </article>
+
+        <article class="module-summary-card success-card">
+            <span>Modules Checked</span>
+            <strong>6</strong>
+            <small>Operations and compliance data</small>
+        </article>
+    </section>
+
+    <section class="module-toolbar">
+        <input class="search-input"
+               placeholder="Search issue, module, owner, or reference..."
+               @bind="searchText"
+               @bind:event="oninput" />
+
+        <select class="filter-select" @bind="severityFilter">
+            <option value="">All Severities</option>
+            <option value="Critical">Critical</option>
+            <option value="Warning">Warning</option>
+            <option value="Info">Info</option>
+        </select>
+
+        <select class="filter-select" @bind="moduleFilter">
+            <option value="">All Modules</option>
+            @foreach (var module in ModuleOptions)
+            {
+                <option value="@module">@module</option>
+            }
+        </select>
+    </section>
+
+    <section class="table-card">
+        @if (!FilteredIssues.Any())
+        {
+            <div class="empty-state">No data quality issues match the current filters.</div>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Severity</th>
+                        <th>Module</th>
+                        <th>Reference</th>
+                        <th>Issue</th>
+                        <th>Owner</th>
+                        <th>Recommended Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var issue in FilteredIssues)
+                    {
+                        <tr>
+                            <td>
+                                <span class="@GetSeverityClass(issue.Severity)">
+                                    @issue.Severity
+                                </span>
+                            </td>
+                            <td>@issue.ModuleName</td>
+                            <td class="strong-cell">@issue.Reference</td>
+                            <td>@issue.Issue</td>
+                            <td>@issue.Owner</td>
+                            <td>@issue.RecommendedAction</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+    <section class="data-quality-grid">
+
+        <article class="data-quality-card">
+            <div class="data-quality-card-header">
+                <div>
+                    <h2>Overdue Operational Work</h2>
+                    <p>Open work orders and corrective actions that are past due.</p>
+                </div>
+
+                <span class="settings-count-badge">@OverdueWorkIssues.Count issues</span>
+            </div>
+
+            @if (!OverdueWorkIssues.Any())
+            {
+                <div class="empty-state">No overdue operational work issues.</div>
+            }
+            else
+            {
+                <div class="quality-list">
+                    @foreach (var issue in OverdueWorkIssues.Take(6))
+                    {
+                        <article class="quality-item">
+                            <div>
+                                <strong>@issue.Reference</strong>
+                                <p>@issue.Issue</p>
+                                <small>@issue.ModuleName • @issue.Owner</small>
+                            </div>
+                            <span class="@GetSeverityClass(issue.Severity)">@issue.Severity</span>
+                        </article>
+                    }
+                </div>
+            }
+        </article>
+
+        <article class="data-quality-card">
+            <div class="data-quality-card-header">
+                <div>
+                    <h2>Compliance Problems</h2>
+                    <p>Expired training, overdue document reviews, and high-risk items.</p>
+                </div>
+
+                <span class="settings-count-badge">@ComplianceIssues.Count issues</span>
+            </div>
+
+            @if (!ComplianceIssues.Any())
+            {
+                <div class="empty-state">No compliance data quality issues.</div>
+            }
+            else
+            {
+                <div class="quality-list">
+                    @foreach (var issue in ComplianceIssues.Take(6))
+                    {
+                        <article class="quality-item">
+                            <div>
+                                <strong>@issue.Reference</strong>
+                                <p>@issue.Issue</p>
+                                <small>@issue.ModuleName • @issue.Owner</small>
+                            </div>
+                            <span class="@GetSeverityClass(issue.Severity)">@issue.Severity</span>
+                        </article>
+                    }
+                </div>
+            }
+        </article>
+
+        <article class="data-quality-card">
+            <div class="data-quality-card-header">
+                <div>
+                    <h2>Missing Information</h2>
+                    <p>Records missing owner, notes, controls, or completion details.</p>
+                </div>
+
+                <span class="settings-count-badge">@MissingInformationIssues.Count issues</span>
+            </div>
+
+            @if (!MissingInformationIssues.Any())
+            {
+                <div class="empty-state">No missing information issues.</div>
+            }
+            else
+            {
+                <div class="quality-list">
+                    @foreach (var issue in MissingInformationIssues.Take(6))
+                    {
+                        <article class="quality-item">
+                            <div>
+                                <strong>@issue.Reference</strong>
+                                <p>@issue.Issue</p>
+                                <small>@issue.ModuleName • @issue.Owner</small>
+                            </div>
+                            <span class="@GetSeverityClass(issue.Severity)">@issue.Severity</span>
+                        </article>
+                    }
+                </div>
+            }
+        </article>
+
+        <article class="data-quality-card">
+            <div class="data-quality-card-header">
+                <div>
+                    <h2>Document Intake Issues</h2>
+                    <p>Incoming documents overdue, needing review, or missing processing information.</p>
+                </div>
+
+                <span class="settings-count-badge">@DocumentIntakeIssues.Count issues</span>
+            </div>
+
+            @if (!DocumentIntakeIssues.Any())
+            {
+                <div class="empty-state">No document intake issues.</div>
+            }
+            else
+            {
+                <div class="quality-list">
+                    @foreach (var issue in DocumentIntakeIssues.Take(6))
+                    {
+                        <article class="quality-item">
+                            <div>
+                                <strong>@issue.Reference</strong>
+                                <p>@issue.Issue</p>
+                                <small>@issue.ModuleName • @issue.Owner</small>
+                            </div>
+                            <span class="@GetSeverityClass(issue.Severity)">@issue.Severity</span>
+                        </article>
+                    }
+                </div>
+            }
+        </article>
+
+    </section>
+
+</div>
+
+@code {
+    private List<WorkOrder> workOrders = new();
+    private List<CorrectiveAction> correctiveActions = new();
+    private List<DocumentRecord> documents = new();
+    private List<RiskItem> risks = new();
+    private List<TrainingRecord> trainingRecords = new();
+    private List<DocumentIntakeModel> documentIntakeItems = new();
+
+    private string searchText = "";
+    private string severityFilter = "";
+    private string moduleFilter = "";
+
+    private List<DataQualityIssue> AllIssues
+    {
+        get
+        {
+            var issues = new List<DataQualityIssue>();
+
+            AddWorkOrderIssues(issues);
+            AddCorrectiveActionIssues(issues);
+            AddDocumentIssues(issues);
+            AddRiskIssues(issues);
+            AddTrainingIssues(issues);
+            AddDocumentIntakeIssues(issues);
+
+            return issues
+                .OrderByDescending(x => x.SeveritySort)
+                .ThenBy(x => x.ModuleName)
+                .ThenBy(x => x.Reference)
+                .ToList();
+        }
+    }
+
+    private IEnumerable<DataQualityIssue> FilteredIssues
+    {
+        get
+        {
+            var query = AllIssues.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(x =>
+                    Contains(x.ModuleName, searchText) ||
+                    Contains(x.Reference, searchText) ||
+                    Contains(x.Issue, searchText) ||
+                    Contains(x.Owner, searchText) ||
+                    Contains(x.RecommendedAction, searchText));
+            }
+
+            if (!string.IsNullOrWhiteSpace(severityFilter))
+            {
+                query = query.Where(x => string.Equals(x.Severity, severityFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(moduleFilter))
+            {
+                query = query.Where(x => string.Equals(x.ModuleName, moduleFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return query.ToList();
+        }
+    }
+
+    private List<DataQualityIssue> OverdueWorkIssues =>
+        AllIssues
+            .Where(x =>
+                (x.ModuleName == "Work Orders" || x.ModuleName == "Corrective Actions")
+                && Contains(x.Issue, "overdue"))
+            .ToList();
+
+    private List<DataQualityIssue> ComplianceIssues =>
+        AllIssues
+            .Where(x =>
+                x.ModuleName == "Document Control"
+                || x.ModuleName == "Risk Register"
+                || x.ModuleName == "Training")
+            .ToList();
+
+    private List<DataQualityIssue> MissingInformationIssues =>
+        AllIssues
+            .Where(x =>
+                Contains(x.Issue, "missing")
+                || Contains(x.Issue, "blank")
+                || Contains(x.Issue, "without"))
+            .ToList();
+
+    private List<DataQualityIssue> DocumentIntakeIssues =>
+        AllIssues
+            .Where(x => x.ModuleName == "Document Intake")
+            .ToList();
+
+    private int TotalIssueCount => AllIssues.Count;
+
+    private int CriticalIssueCount =>
+        AllIssues.Count(x => x.Severity == "Critical");
+
+    private int WarningIssueCount =>
+        AllIssues.Count(x => x.Severity == "Warning");
+
+    private int DataGapCount =>
+        MissingInformationIssues.Count;
+
+    private List<string> ModuleOptions =>
+        AllIssues
+            .Select(x => x.ModuleName)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+    protected override async Task OnInitializedAsync()
+    {
+        workOrders = await Db.WorkOrders
+            .AsNoTracking()
+            .ToListAsync();
+
+        correctiveActions = await Db.CorrectiveActions
+            .AsNoTracking()
+            .ToListAsync();
+
+        documents = await Db.DocumentRecords
+            .AsNoTracking()
+            .ToListAsync();
+
+        risks = await Db.RiskItems
+            .AsNoTracking()
+            .ToListAsync();
+
+        trainingRecords = await Db.TrainingRecords
+            .AsNoTracking()
+            .ToListAsync();
+
+        documentIntakeItems = await Db.DocumentIntakeItems
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private void AddWorkOrderIssues(List<DataQualityIssue> issues)
+    {
+        foreach (var item in workOrders)
+        {
+            var reference = item.WorkOrderNumber;
+
+            if (item.IsOverdue)
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Critical",
+                    ModuleName: "Work Orders",
+                    Reference: reference,
+                    Issue: $"Work order is overdue. Due date was {item.DueDate:dd MMM yyyy}.",
+                    Owner: SafeOwner(item.Owner),
+                    RecommendedAction: "Review status, update due date, or close the work order if completed."
+                ));
+            }
+
+            if (string.IsNullOrWhiteSpace(item.Owner))
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Warning",
+                    ModuleName: "Work Orders",
+                    Reference: reference,
+                    Issue: "Work order is missing an owner.",
+                    Owner: "Unassigned",
+                    RecommendedAction: "Assign an owner so the work can be tracked in workload reporting."
+                ));
+            }
+
+            if (string.IsNullOrWhiteSpace(item.Notes))
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Info",
+                    ModuleName: "Work Orders",
+                    Reference: reference,
+                    Issue: "Work order has blank notes.",
+                    Owner: SafeOwner(item.Owner),
+                    RecommendedAction: "Add notes explaining context, progress, or expected next action."
+                ));
+            }
+        }
+    }
+
+    private void AddCorrectiveActionIssues(List<DataQualityIssue> issues)
+    {
+        foreach (var item in correctiveActions)
+        {
+            var reference = $"CA-{item.Id}";
+
+            if (item.IsOverdue)
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Critical",
+                    ModuleName: "Corrective Actions",
+                    Reference: reference,
+                    Issue: $"Corrective action is overdue. Due date was {item.DueDate:dd MMM yyyy}.",
+                    Owner: SafeOwner(item.Owner),
+                    RecommendedAction: "Review action progress, update status, or close if completed."
+                ));
+            }
+
+            if (string.IsNullOrWhiteSpace(item.Owner))
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Warning",
+                    ModuleName: "Corrective Actions",
+                    Reference: reference,
+                    Issue: "Corrective action is missing an owner.",
+                    Owner: "Unassigned",
+                    RecommendedAction: "Assign an owner so accountability is clear."
+                ));
+            }
+
+            if (IsClosedStatus(item.Status) && item.CompletedDate == null)
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Warning",
+                    ModuleName: "Corrective Actions",
+                    Reference: reference,
+                    Issue: "Corrective action is completed/closed without a completed date.",
+                    Owner: SafeOwner(item.Owner),
+                    RecommendedAction: "Set the completed date or reopen the action if it is not complete."
+                ));
+            }
+
+            if (string.IsNullOrWhiteSpace(item.Notes))
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Info",
+                    ModuleName: "Corrective Actions",
+                    Reference: reference,
+                    Issue: "Corrective action has blank notes.",
+                    Owner: SafeOwner(item.Owner),
+                    RecommendedAction: "Add notes explaining the cause, follow-up, or closure detail."
+                ));
+            }
+        }
+    }
+
+    private void AddDocumentIssues(List<DataQualityIssue> issues)
+    {
+        foreach (var item in documents)
+        {
+            var reference = item.DocumentNumber;
+
+            if (item.IsReviewOverdue)
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Critical",
+                    ModuleName: "Document Control",
+                    Reference: reference,
+                    Issue: $"Document review is overdue. Review date was {item.NextReviewDate:dd MMM yyyy}.",
+                    Owner: SafeOwner(item.Owner),
+                    RecommendedAction: "Review the document, update the version/status, or create a corrective action."
+                ));
+            }
+            else if (item.IsDueSoon)
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Warning",
+                    ModuleName: "Document Control",
+                    Reference: reference,
+                    Issue: $"Document review is due soon on {item.NextReviewDate:dd MMM yyyy}.",
+                    Owner: SafeOwner(item.Owner),
+                    RecommendedAction: "Schedule document review before it becomes overdue."
+                ));
+            }
+
+            if (string.IsNullOrWhiteSpace(item.Owner))
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Warning",
+                    ModuleName: "Document Control",
+                    Reference: reference,
+                    Issue: "Document is missing an owner.",
+                    Owner: "Unassigned",
+                    RecommendedAction: "Assign a document owner for review accountability."
+                ));
+            }
+        }
+    }
+
+    private void AddRiskIssues(List<DataQualityIssue> issues)
+    {
+        foreach (var item in risks)
+        {
+            var reference = item.Title;
+
+            if (item.RiskLevel == "Critical" || item.RiskLevel == "High")
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: item.RiskLevel == "Critical" ? "Critical" : "Warning",
+                    ModuleName: "Risk Register",
+                    Reference: reference,
+                    Issue: $"{item.RiskLevel} risk requires monitoring. Risk score is {item.RiskScore}.",
+                    Owner: SafeOwner(item.Owner),
+                    RecommendedAction: "Confirm controls are current and create a corrective action if follow-up is needed."
+                ));
+            }
+
+            if (item.IsReviewOverdue)
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Critical",
+                    ModuleName: "Risk Register",
+                    Reference: reference,
+                    Issue: $"Risk review is overdue. Review date was {item.ReviewDate:dd MMM yyyy}.",
+                    Owner: SafeOwner(item.Owner),
+                    RecommendedAction: "Review the risk score, controls, and status."
+                ));
+            }
+
+            if (string.IsNullOrWhiteSpace(item.Controls))
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Warning",
+                    ModuleName: "Risk Register",
+                    Reference: reference,
+                    Issue: "Risk item is missing controls.",
+                    Owner: SafeOwner(item.Owner),
+                    RecommendedAction: "Add controls so the risk treatment is clear."
+                ));
+            }
+        }
+    }
+
+    private void AddTrainingIssues(List<DataQualityIssue> issues)
+    {
+        foreach (var item in trainingRecords)
+        {
+            var reference = $"{item.StaffName} - {item.TrainingName}";
+
+            if (item.IsExpired)
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Critical",
+                    ModuleName: "Training",
+                    Reference: reference,
+                    Issue: $"Training is expired. Expiry date was {item.ExpiryDate:dd MMM yyyy}.",
+                    Owner: item.StaffName,
+                    RecommendedAction: "Schedule refresher training and update the record once completed."
+                ));
+            }
+            else if (item.IsExpiringSoon)
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Warning",
+                    ModuleName: "Training",
+                    Reference: reference,
+                    Issue: $"Training expires soon on {item.ExpiryDate:dd MMM yyyy}.",
+                    Owner: item.StaffName,
+                    RecommendedAction: "Book renewal before expiry."
+                ));
+            }
+        }
+    }
+
+    private void AddDocumentIntakeIssues(List<DataQualityIssue> issues)
+    {
+        foreach (var item in documentIntakeItems)
+        {
+            var reference = $"DI-{item.Id}";
+
+            if (item.IsOverdue)
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Critical",
+                    ModuleName: "Document Intake",
+                    Reference: reference,
+                    Issue: $"Document intake item is overdue. Due date was {item.DueDate:dd MMM yyyy}.",
+                    Owner: SafeOwner(item.AssignedTo),
+                    RecommendedAction: "Review the intake item, update the status, or complete/reject it."
+                ));
+            }
+
+            if (item.NeedsReview)
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Warning",
+                    ModuleName: "Document Intake",
+                    Reference: reference,
+                    Issue: "Document intake item is waiting for manual review.",
+                    Owner: SafeOwner(item.AssignedTo),
+                    RecommendedAction: "Check the document and move it to Data Checked, Entered, Completed, or Rejected."
+                ));
+            }
+
+            if (string.IsNullOrWhiteSpace(item.AssignedTo))
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Warning",
+                    ModuleName: "Document Intake",
+                    Reference: reference,
+                    Issue: "Document intake item is missing an assigned person.",
+                    Owner: "Unassigned",
+                    RecommendedAction: "Assign the intake item so workload reporting is accurate."
+                ));
+            }
+
+            if (IsCompletedIntakeStatus(item.Status) && item.CompletedDate == null)
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Warning",
+                    ModuleName: "Document Intake",
+                    Reference: reference,
+                    Issue: "Document intake item is completed/rejected without a completed date.",
+                    Owner: SafeOwner(item.AssignedTo),
+                    RecommendedAction: "Set the completed date or reopen the item if not actually completed."
+                ));
+            }
+
+            if (string.IsNullOrWhiteSpace(item.Notes))
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: "Info",
+                    ModuleName: "Document Intake",
+                    Reference: reference,
+                    Issue: "Document intake item has blank notes.",
+                    Owner: SafeOwner(item.AssignedTo),
+                    RecommendedAction: "Add notes explaining source, processing step, or next action."
+                ));
+            }
+        }
+    }
+
+    private static bool IsClosedStatus(string? status)
+    {
+        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(status, "Rejected", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsCompletedIntakeStatus(string? status)
+    {
+        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(status, "Rejected", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string SafeOwner(string? owner)
+    {
+        return string.IsNullOrWhiteSpace(owner) ? "Unassigned" : owner;
+    }
+
+    private static bool Contains(string? source, string search)
+    {
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return false;
+        }
+
+        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetSeverityClass(string? severity)
+    {
+        return severity?.ToLower() switch
+        {
+            "critical" => "badge badge-danger",
+            "warning" => "badge badge-warning",
+            "info" => "badge badge-info",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private record DataQualityIssue(
+        string Severity,
+        string ModuleName,
+        string Reference,
+        string Issue,
+        string Owner,
+        string RecommendedAction)
+    {
+        public int SeveritySort =>
+            Severity switch
+            {
+                "Critical" => 3,
+                "Warning" => 2,
+                "Info" => 1,
+                _ => 0
+            };
+    }
+}
