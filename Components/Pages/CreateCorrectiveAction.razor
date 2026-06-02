@@ -1,4 +1,5 @@
 ﻿@page "/corrective-actions/create"
+@using Microsoft.AspNetCore.Components
 @using OperationsFlow.Data
 @using OperationsFlow.Models
 @using OperationsFlow.Services
@@ -16,7 +17,7 @@
             <h1>Create Corrective Action</h1>
             <p>
                 Add a corrective or improvement action from an incident, audit,
-                inspection, risk review, or management follow-up.
+                inspection, risk review, document review, training issue, or management follow-up.
             </p>
         </div>
 
@@ -25,6 +26,13 @@
             <strong>CA</strong>
         </div>
     </section>
+
+    @if (IsPrefilled)
+    {
+        <section class="alert-card info-alert">
+            This corrective action was pre-filled from another OperationsFlow module. Review the details before saving.
+        </section>
+    }
 
     @if (!string.IsNullOrWhiteSpace(errorMessage))
     {
@@ -141,8 +149,45 @@
 </div>
 
 @code {
+    [SupplyParameterFromQuery]
+    public string? Source { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? Title { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? Site { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? Department { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? Owner { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? Priority { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? ActionType { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? Notes { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
     private CorrectiveAction correctiveAction = new();
     private string errorMessage = "";
+
+    private bool IsPrefilled =>
+        !string.IsNullOrWhiteSpace(Source) ||
+        !string.IsNullOrWhiteSpace(Title) ||
+        !string.IsNullOrWhiteSpace(Site) ||
+        !string.IsNullOrWhiteSpace(Department) ||
+        !string.IsNullOrWhiteSpace(Owner) ||
+        !string.IsNullOrWhiteSpace(Priority) ||
+        !string.IsNullOrWhiteSpace(ActionType) ||
+        !string.IsNullOrWhiteSpace(Notes);
 
     private List<string> SourceOptions = new()
     {
@@ -150,6 +195,8 @@
         "Inspection",
         "Internal Audit",
         "Risk Review",
+        "Document Review",
+        "Training Compliance",
         "Hazard Report",
         "Quality Review",
         "Management Review"
@@ -163,7 +210,8 @@
         "Document Update",
         "Checklist",
         "Training",
-        "System Update"
+        "System Update",
+        "Follow-up"
     };
 
     private List<string> SiteOptions = new()
@@ -206,18 +254,18 @@
     {
         correctiveAction = new CorrectiveAction
         {
-            Title = "",
-            Source = "Incident",
-            Site = "Main Workshop",
-            Department = "Health & Safety",
-            Owner = "",
-            ActionType = "Investigation",
-            Priority = "Medium",
+            Title = UseOrDefault(Title, ""),
+            Source = UseAllowedOrDefault(Source, SourceOptions, "Incident"),
+            Site = UseAllowedOrDefault(Site, SiteOptions, "Main Workshop"),
+            Department = UseAllowedOrDefault(Department, DepartmentOptions, "Health & Safety"),
+            Owner = UseOrDefault(Owner, ""),
+            ActionType = UseAllowedOrDefault(ActionType, ActionTypeOptions, "Investigation"),
+            Priority = UseAllowedOrDefault(Priority, PriorityOptions, "Medium"),
             Status = "Open",
             CreatedDate = DateTime.Today,
             DueDate = DateTime.Today.AddDays(14),
             CompletedDate = null,
-            Notes = ""
+            Notes = UseOrDefault(Notes, "")
         };
     }
 
@@ -255,20 +303,61 @@
         Db.CorrectiveActions.Add(correctiveAction);
         await Db.SaveChangesAsync();
 
+        var createdFromText = IsPrefilled
+            ? " This action was generated from another OperationsFlow module."
+            : "";
+
         await ActivityLogService.LogAsync(
             moduleName: "Corrective Actions",
             recordId: correctiveAction.Id,
             recordReference: $"CA-{correctiveAction.Id}",
             actionType: "Created",
-            description: $"Created corrective action CA-{correctiveAction.Id}: {correctiveAction.Title}."
+            description: $"Created corrective action CA-{correctiveAction.Id}: {correctiveAction.Title}.{createdFromText}"
         );
 
-        Navigation.NavigateTo("/corrective-actions");
+        BackToReturnPage();
     }
 
     private void Cancel()
     {
-        Navigation.NavigateTo("/corrective-actions");
+        BackToReturnPage();
+    }
+
+    private void BackToReturnPage()
+    {
+        var fallbackUrl = "/corrective-actions";
+
+        if (string.IsNullOrWhiteSpace(ReturnUrl))
+        {
+            Navigation.NavigateTo(fallbackUrl);
+            return;
+        }
+
+        if (!ReturnUrl.StartsWith("/"))
+        {
+            Navigation.NavigateTo(fallbackUrl);
+            return;
+        }
+
+        Navigation.NavigateTo(ReturnUrl);
+    }
+
+    private static string UseOrDefault(string? value, string fallback)
+    {
+        return string.IsNullOrWhiteSpace(value) ? fallback : value;
+    }
+
+    private static string UseAllowedOrDefault(string? value, List<string> allowedValues, string fallback)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return fallback;
+        }
+
+        var matchingValue = allowedValues
+            .FirstOrDefault(x => string.Equals(x, value, StringComparison.OrdinalIgnoreCase));
+
+        return matchingValue ?? fallback;
     }
 
     private static bool IsCompletedStatus(string? status)

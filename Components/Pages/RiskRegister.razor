@@ -97,12 +97,13 @@
                 <thead>
                     <tr>
                         <th>Risk</th>
+                        <th>Actions</th>
                         <th>Hazard</th>
                         <th>Site</th>
                         <th>Department</th>
                         <th>Owner</th>
-                        <th>Likelihood</th>
-                        <th>Consequence</th>
+                        <th>Likely</th>
+                        <th>Conseq.</th>
                         <th>Score</th>
                         <th>Level</th>
                         <th>Status</th>
@@ -115,6 +116,14 @@
                     {
                         <tr>
                             <td class="strong-cell">@item.Title</td>
+
+                            <td>
+                                <a class="table-action-link compact-action"
+                                   href="@BuildCorrectiveActionUrlFromRisk(item)">
+                                    Action
+                                </a>
+                            </td>
+
                             <td>@item.Hazard</td>
                             <td>@item.Site</td>
                             <td>@item.Department</td>
@@ -183,7 +192,8 @@
                     Contains(x.Department, searchText) ||
                     Contains(x.Owner, searchText) ||
                     Contains(x.Controls, searchText) ||
-                    Contains(x.Status, searchText));
+                    Contains(x.Status, searchText) ||
+                    Contains(x.RiskLevel, searchText));
             }
 
             if (!string.IsNullOrWhiteSpace(statusFilter))
@@ -242,6 +252,44 @@
         risks = await Db.RiskItems
             .AsNoTracking()
             .ToListAsync();
+    }
+
+    private static string BuildCorrectiveActionUrlFromRisk(RiskItem item)
+    {
+        var priority = item.RiskLevel switch
+        {
+            "Critical" => "Critical",
+            "High" => "High",
+            "Medium" => "Medium",
+            _ => "Low"
+        };
+
+        var title = $"Review risk: {item.Title}";
+
+        var notes =
+            $"Generated from Risk Register.\n\n" +
+            $"Risk: {item.Title}\n" +
+            $"Hazard: {item.Hazard}\n" +
+            $"Site: {item.Site}\n" +
+            $"Department: {item.Department}\n" +
+            $"Owner: {item.Owner}\n" +
+            $"Likelihood: {item.Likelihood}\n" +
+            $"Consequence: {item.Consequence}\n" +
+            $"Risk Level: {item.RiskLevel}\n" +
+            $"Risk Score: {item.RiskScore}\n" +
+            $"Controls: {item.Controls}\n" +
+            $"Review Date: {item.ReviewDate:dd MMM yyyy}";
+
+        return "/corrective-actions/create"
+            + $"?source={Uri.EscapeDataString("Risk Review")}"
+            + $"&title={Uri.EscapeDataString(title)}"
+            + $"&site={Uri.EscapeDataString(item.Site)}"
+            + $"&department={Uri.EscapeDataString(item.Department)}"
+            + $"&owner={Uri.EscapeDataString(item.Owner)}"
+            + $"&priority={Uri.EscapeDataString(priority)}"
+            + $"&actionType={Uri.EscapeDataString("Process Review")}"
+            + $"&notes={Uri.EscapeDataString(notes)}"
+            + $"&returnUrl={Uri.EscapeDataString("/risks")}";
     }
 
     private static bool Contains(string? source, string search)

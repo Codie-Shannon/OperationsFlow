@@ -102,6 +102,7 @@
                         <th>Expiry</th>
                         <th>Required</th>
                         <th>Flag</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -142,6 +143,12 @@
                                 {
                                     <span class="badge badge-success">Current</span>
                                 }
+                            </td>
+                            <td>
+                                <a class="table-action-link"
+                                   href="@BuildCorrectiveActionUrlFromTraining(item)">
+                                    Create Action
+                                </a>
                             </td>
                         </tr>
                     }
@@ -287,5 +294,30 @@
             "in progress" => "badge badge-info",
             _ => "badge badge-muted"
         };
+    }
+
+    private static string BuildCorrectiveActionUrlFromTraining(TrainingRecord item)
+    {
+        var priority = item.IsExpired ? "High" : item.IsExpiringSoon ? "Medium" : "Low";
+        var title = $"Resolve training issue: {item.StaffName} - {item.TrainingName}";
+
+        var notes =
+            $"Generated from Training Compliance.\n\n" +
+            $"Staff: {item.StaffName}\n" +
+            $"Training: {item.TrainingName}\n" +
+            $"Status: {item.Status}\n" +
+            $"Expiry Date: {item.ExpiryDate:dd MMM yyyy}\n" +
+            $"Required: {(item.IsRequired ? "Yes" : "No")}";
+
+        return "/corrective-actions/create"
+            + $"?source={Uri.EscapeDataString("Training Compliance")}"
+            + $"&title={Uri.EscapeDataString(title)}"
+            + $"&site={Uri.EscapeDataString(item.Site)}"
+            + $"&department={Uri.EscapeDataString(item.Department)}"
+            + $"&owner={Uri.EscapeDataString(item.StaffName)}"
+            + $"&priority={Uri.EscapeDataString(priority)}"
+            + $"&actionType={Uri.EscapeDataString("Training")}"
+            + $"&notes={Uri.EscapeDataString(notes)}"
+            + $"&returnUrl={Uri.EscapeDataString("/training")}";
     }
 }

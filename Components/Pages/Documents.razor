@@ -105,6 +105,7 @@
                         <th>Last Reviewed</th>
                         <th>Next Review</th>
                         <th>Flag</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -137,6 +138,12 @@
                                 {
                                     <span class="badge badge-muted">Current</span>
                                 }
+                            </td>
+                            <td>
+                                <a class="table-action-link"
+                                   href="@BuildCorrectiveActionUrlFromDocument(item)">
+                                    Create Action
+                                </a>
                             </td>
                         </tr>
                     }
@@ -267,5 +274,31 @@
             "archived" => "badge badge-muted",
             _ => "badge badge-muted"
         };
+    }
+
+    private static string BuildCorrectiveActionUrlFromDocument(DocumentRecord item)
+    {
+        var priority = item.IsReviewOverdue ? "High" : "Medium";
+        var title = $"Review document: {item.Title}";
+
+        var notes =
+            $"Generated from Document Control.\n\n" +
+            $"Document: {item.Title}\n" +
+            $"Document Number: {item.DocumentNumber}\n" +
+            $"Document Type: {item.DocumentType}\n" +
+            $"Status: {item.Status}\n" +
+            $"Version: {item.Version}\n" +
+            $"Next Review Date: {item.NextReviewDate:dd MMM yyyy}";
+
+        return "/corrective-actions/create"
+            + $"?source={Uri.EscapeDataString("Document Review")}"
+            + $"&title={Uri.EscapeDataString(title)}"
+            + $"&site={Uri.EscapeDataString("Admin Office")}"
+            + $"&department={Uri.EscapeDataString(item.Department)}"
+            + $"&owner={Uri.EscapeDataString(item.Owner)}"
+            + $"&priority={Uri.EscapeDataString(priority)}"
+            + $"&actionType={Uri.EscapeDataString("Document Update")}"
+            + $"&notes={Uri.EscapeDataString(notes)}"
+            + $"&returnUrl={Uri.EscapeDataString("/documents")}";
     }
 }

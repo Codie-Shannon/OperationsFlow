@@ -924,3 +924,26 @@ main {
         gap: 4px;
     }
 }
+
+.info-alert {
+    background: #dbeafe;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+}
+
+.table-card {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.data-table {
+    min-width: 1150px;
+}
+
+.table-action-link {
+    white-space: nowrap;
+}
+
+    .table-action-link.compact-action {
+        min-width: 82px;
+    }
