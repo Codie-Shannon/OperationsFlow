@@ -1,0 +1,410 @@
+﻿@page "/document-intake/edit/{id:int}"
+@using Microsoft.AspNetCore.Components
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Services
+@using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
+@inject OperationsFlowDbContext Db
+@inject ActivityLogService ActivityLogService
+@inject NavigationManager Navigation
+
+<PageTitle>Edit Document Intake - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Admin Workflow</p>
+            <h1>Edit Document Intake</h1>
+            <p>
+                Update document intake status, assigned person, target system,
+                due date, completion state, and processing notes.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>Editing</span>
+            <strong>@DisplayReference</strong>
+        </div>
+    </section>
+
+    @if (isLoading)
+    {
+        <section class="form-card">
+            <div class="empty-state">Loading document intake...</div>
+        </section>
+    }
+    else if (documentIntake == null)
+    {
+        <section class="alert-card danger-alert">
+            Document intake record could not be found.
+        </section>
+
+        <div class="form-actions">
+            <button type="button" class="secondary-button" @onclick="BackToReturnPage">
+                Back
+            </button>
+        </div>
+    }
+    else
+    {
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <section class="alert-card danger-alert">
+                @errorMessage
+            </section>
+        }
+
+        <section class="form-card">
+            <EditForm Model="documentIntake" OnValidSubmit="SaveDocumentIntake">
+                <DataAnnotationsValidator />
+
+                <div class="form-grid">
+
+                    <div class="form-field form-field-full">
+                        <label>Document Name</label>
+                        <InputText class="form-input" @bind-Value="documentIntake.DocumentName" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Received Date</label>
+                        <InputDate class="form-input" @bind-Value="documentIntake.ReceivedDate" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Received From</label>
+                        <InputText class="form-input" @bind-Value="documentIntake.ReceivedFrom" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Source Type</label>
+                        <InputSelect class="form-input" @bind-Value="documentIntake.SourceType">
+                            @foreach (var sourceType in SourceTypeOptions)
+                            {
+                                <option value="@sourceType">@sourceType</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Document Type</label>
+                        <InputSelect class="form-input" @bind-Value="documentIntake.DocumentType">
+                            @foreach (var documentType in DocumentTypeOptions)
+                            {
+                                <option value="@documentType">@documentType</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Assigned To</label>
+                        <InputText class="form-input" @bind-Value="documentIntake.AssignedTo" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Target System</label>
+                        <InputSelect class="form-input" @bind-Value="documentIntake.TargetSystem">
+                            @foreach (var targetSystem in TargetSystemOptions)
+                            {
+                                <option value="@targetSystem">@targetSystem</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Priority</label>
+                        <InputSelect class="form-input" @bind-Value="documentIntake.Priority">
+                            @foreach (var priority in PriorityOptions)
+                            {
+                                <option value="@priority">@priority</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Status</label>
+                        <InputSelect class="form-input" @bind-Value="documentIntake.Status">
+                            @foreach (var status in StatusOptions)
+                            {
+                                <option value="@status">@status</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Due Date</label>
+                        <InputDate class="form-input" @bind-Value="documentIntake.DueDate" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Completed Date</label>
+                        <InputDate class="form-input" @bind-Value="documentIntake.CompletedDate" />
+                    </div>
+
+                    <div class="form-field form-field-full">
+                        <label>Notes</label>
+                        <InputTextArea class="form-input form-textarea" @bind-Value="documentIntake.Notes" />
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="secondary-button" @onclick="BackToReturnPage">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="primary-button">
+                        Save Changes
+                    </button>
+                </div>
+            </EditForm>
+        </section>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
+    private DocumentIntakeModel? documentIntake;
+    private bool isLoading = true;
+    private string errorMessage = "";
+
+    private string originalDocumentName = "";
+    private string originalAssignedTo = "";
+    private string originalTargetSystem = "";
+    private string originalStatus = "";
+    private string originalPriority = "";
+    private DateTime originalDueDate;
+    private DateTime? originalCompletedDate;
+
+    private string DisplayReference => documentIntake == null ? "DI" : $"DI-{documentIntake.Id}";
+
+    private List<string> SourceTypeOptions = new()
+    {
+        "Email",
+        "PDF",
+        "Scanned Document",
+        "Supplier Document",
+        "Customer Request",
+        "Internal Form"
+    };
+
+    private List<string> DocumentTypeOptions = new()
+    {
+        "Supplier Invoice",
+        "Supplier Statement",
+        "Purchase Order",
+        "Quote Request",
+        "Delivery Docket",
+        "Compliance Document",
+        "Incident Evidence",
+        "Specification",
+        "Training Certificate",
+        "Job Paperwork"
+    };
+
+    private List<string> TargetSystemOptions = new()
+    {
+        "SharePoint",
+        "Xero",
+        "Cin7",
+        "WorkflowMax",
+        "Email Folder",
+        "Internal System"
+    };
+
+    private List<string> PriorityOptions = new()
+    {
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+    };
+
+    private List<string> StatusOptions = new()
+    {
+        "Received",
+        "Saved",
+        "Needs Review",
+        "Data Checked",
+        "Entered",
+        "Completed",
+        "Rejected"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        documentIntake = await Db.DocumentIntakeItems
+            .FirstOrDefaultAsync(x => x.Id == Id);
+
+        if (documentIntake != null)
+        {
+            originalDocumentName = documentIntake.DocumentName;
+            originalAssignedTo = documentIntake.AssignedTo;
+            originalTargetSystem = documentIntake.TargetSystem;
+            originalStatus = documentIntake.Status;
+            originalPriority = documentIntake.Priority;
+            originalDueDate = documentIntake.DueDate;
+            originalCompletedDate = documentIntake.CompletedDate;
+        }
+
+        isLoading = false;
+    }
+
+    private async Task SaveDocumentIntake()
+    {
+        errorMessage = "";
+
+        if (documentIntake == null)
+        {
+            errorMessage = "Document intake record could not be saved because it was not loaded.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(documentIntake.DocumentName))
+        {
+            errorMessage = "Please enter a document name.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(documentIntake.ReceivedFrom))
+        {
+            errorMessage = "Please enter who the document was received from.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(documentIntake.AssignedTo))
+        {
+            errorMessage = "Please enter who this document is assigned to.";
+            return;
+        }
+
+        if (documentIntake.DueDate < documentIntake.ReceivedDate)
+        {
+            errorMessage = "Due date cannot be before received date.";
+            return;
+        }
+
+        if (IsCompletedStatus(documentIntake.Status) && documentIntake.CompletedDate == null)
+        {
+            documentIntake.CompletedDate = DateTime.Today;
+        }
+
+        if (!IsCompletedStatus(documentIntake.Status))
+        {
+            documentIntake.CompletedDate = null;
+        }
+
+        var changeDescriptions = BuildChangeDescriptions();
+
+        await Db.SaveChangesAsync();
+
+        if (changeDescriptions.Any())
+        {
+            await ActivityLogService.LogAsync(
+                moduleName: "Document Intake",
+                recordId: documentIntake.Id,
+                recordReference: $"DI-{documentIntake.Id}",
+                actionType: "Updated",
+                description: $"Updated document intake DI-{documentIntake.Id}: {string.Join("; ", changeDescriptions)}."
+            );
+        }
+        else
+        {
+            await ActivityLogService.LogAsync(
+                moduleName: "Document Intake",
+                recordId: documentIntake.Id,
+                recordReference: $"DI-{documentIntake.Id}",
+                actionType: "Reviewed",
+                description: $"Reviewed document intake DI-{documentIntake.Id} with no tracked field changes."
+            );
+        }
+
+        BackToReturnPage();
+    }
+
+    private List<string> BuildChangeDescriptions()
+    {
+        var changes = new List<string>();
+
+        if (documentIntake == null)
+        {
+            return changes;
+        }
+
+        if (!string.Equals(originalDocumentName, documentIntake.DocumentName, StringComparison.Ordinal))
+        {
+            changes.Add($"document name changed from '{originalDocumentName}' to '{documentIntake.DocumentName}'");
+        }
+
+        if (!string.Equals(originalAssignedTo, documentIntake.AssignedTo, StringComparison.Ordinal))
+        {
+            changes.Add($"assigned to changed from '{originalAssignedTo}' to '{documentIntake.AssignedTo}'");
+        }
+
+        if (!string.Equals(originalTargetSystem, documentIntake.TargetSystem, StringComparison.Ordinal))
+        {
+            changes.Add($"target system changed from '{originalTargetSystem}' to '{documentIntake.TargetSystem}'");
+        }
+
+        if (!string.Equals(originalStatus, documentIntake.Status, StringComparison.Ordinal))
+        {
+            changes.Add($"status changed from '{originalStatus}' to '{documentIntake.Status}'");
+        }
+
+        if (!string.Equals(originalPriority, documentIntake.Priority, StringComparison.Ordinal))
+        {
+            changes.Add($"priority changed from '{originalPriority}' to '{documentIntake.Priority}'");
+        }
+
+        if (originalDueDate.Date != documentIntake.DueDate.Date)
+        {
+            changes.Add($"due date changed from {originalDueDate:dd MMM yyyy} to {documentIntake.DueDate:dd MMM yyyy}");
+        }
+
+        if (originalCompletedDate?.Date != documentIntake.CompletedDate?.Date)
+        {
+            var oldDate = originalCompletedDate.HasValue
+                ? originalCompletedDate.Value.ToString("dd MMM yyyy")
+                : "not completed";
+
+            var newDate = documentIntake.CompletedDate.HasValue
+                ? documentIntake.CompletedDate.Value.ToString("dd MMM yyyy")
+                : "not completed";
+
+            changes.Add($"completed date changed from {oldDate} to {newDate}");
+        }
+
+        return changes;
+    }
+
+    private void BackToReturnPage()
+    {
+        var fallbackUrl = "/document-intake";
+
+        if (string.IsNullOrWhiteSpace(ReturnUrl))
+        {
+            Navigation.NavigateTo(fallbackUrl);
+            return;
+        }
+
+        if (!ReturnUrl.StartsWith("/"))
+        {
+            Navigation.NavigateTo(fallbackUrl);
+            return;
+        }
+
+        Navigation.NavigateTo(ReturnUrl);
+    }
+
+    private static bool IsCompletedStatus(string? status)
+    {
+        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(status, "Rejected", StringComparison.OrdinalIgnoreCase);
+    }
+}

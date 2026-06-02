@@ -1,0 +1,275 @@
+﻿@page "/document-intake/create"
+@using OperationsFlow.Data
+@using OperationsFlow.Services
+@using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
+@inject OperationsFlowDbContext Db
+@inject ActivityLogService ActivityLogService
+@inject NavigationManager Navigation
+
+<PageTitle>Create Document Intake - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Admin Workflow</p>
+            <h1>Create Document Intake</h1>
+            <p>
+                Add an incoming document, email, PDF, form, supplier document, or job
+                paperwork item for review, entry, and completion tracking.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>New Record</span>
+            <strong>DI</strong>
+        </div>
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <section class="alert-card danger-alert">
+            @errorMessage
+        </section>
+    }
+
+    <section class="form-card">
+        <EditForm Model="documentIntake" OnValidSubmit="SaveDocumentIntake">
+            <DataAnnotationsValidator />
+
+            <div class="form-grid">
+
+                <div class="form-field form-field-full">
+                    <label>Document Name</label>
+                    <InputText class="form-input" @bind-Value="documentIntake.DocumentName" />
+                </div>
+
+                <div class="form-field">
+                    <label>Received Date</label>
+                    <InputDate class="form-input" @bind-Value="documentIntake.ReceivedDate" />
+                </div>
+
+                <div class="form-field">
+                    <label>Received From</label>
+                    <InputText class="form-input" @bind-Value="documentIntake.ReceivedFrom" />
+                </div>
+
+                <div class="form-field">
+                    <label>Source Type</label>
+                    <InputSelect class="form-input" @bind-Value="documentIntake.SourceType">
+                        @foreach (var sourceType in SourceTypeOptions)
+                        {
+                            <option value="@sourceType">@sourceType</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-field">
+                    <label>Document Type</label>
+                    <InputSelect class="form-input" @bind-Value="documentIntake.DocumentType">
+                        @foreach (var documentType in DocumentTypeOptions)
+                        {
+                            <option value="@documentType">@documentType</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-field">
+                    <label>Assigned To</label>
+                    <InputText class="form-input" @bind-Value="documentIntake.AssignedTo" />
+                </div>
+
+                <div class="form-field">
+                    <label>Target System</label>
+                    <InputSelect class="form-input" @bind-Value="documentIntake.TargetSystem">
+                        @foreach (var targetSystem in TargetSystemOptions)
+                        {
+                            <option value="@targetSystem">@targetSystem</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-field">
+                    <label>Priority</label>
+                    <InputSelect class="form-input" @bind-Value="documentIntake.Priority">
+                        @foreach (var priority in PriorityOptions)
+                        {
+                            <option value="@priority">@priority</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-field">
+                    <label>Status</label>
+                    <InputSelect class="form-input" @bind-Value="documentIntake.Status">
+                        @foreach (var status in StatusOptions)
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-field">
+                    <label>Due Date</label>
+                    <InputDate class="form-input" @bind-Value="documentIntake.DueDate" />
+                </div>
+
+                <div class="form-field form-field-full">
+                    <label>Notes</label>
+                    <InputTextArea class="form-input form-textarea" @bind-Value="documentIntake.Notes" />
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="secondary-button" @onclick="Cancel">
+                    Cancel
+                </button>
+
+                <button type="submit" class="primary-button">
+                    Save Intake Record
+                </button>
+            </div>
+        </EditForm>
+    </section>
+
+</div>
+
+@code {
+    private DocumentIntakeModel documentIntake = new();
+    private string errorMessage = "";
+
+    private List<string> SourceTypeOptions = new()
+    {
+        "Email",
+        "PDF",
+        "Scanned Document",
+        "Supplier Document",
+        "Customer Request",
+        "Internal Form"
+    };
+
+    private List<string> DocumentTypeOptions = new()
+    {
+        "Supplier Invoice",
+        "Supplier Statement",
+        "Purchase Order",
+        "Quote Request",
+        "Delivery Docket",
+        "Compliance Document",
+        "Incident Evidence",
+        "Specification",
+        "Training Certificate",
+        "Job Paperwork"
+    };
+
+    private List<string> TargetSystemOptions = new()
+    {
+        "SharePoint",
+        "Xero",
+        "Cin7",
+        "WorkflowMax",
+        "Email Folder",
+        "Internal System"
+    };
+
+    private List<string> PriorityOptions = new()
+    {
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+    };
+
+    private List<string> StatusOptions = new()
+    {
+        "Received",
+        "Saved",
+        "Needs Review",
+        "Data Checked",
+        "Entered",
+        "Completed",
+        "Rejected"
+    };
+
+    protected override void OnInitialized()
+    {
+        documentIntake = new DocumentIntakeModel
+        {
+            DocumentName = "",
+            ReceivedDate = DateTime.Today,
+            ReceivedFrom = "",
+            SourceType = "Email",
+            DocumentType = "Supplier Invoice",
+            AssignedTo = "",
+            TargetSystem = "SharePoint",
+            Status = "Received",
+            Priority = "Medium",
+            DueDate = DateTime.Today.AddDays(7),
+            CompletedDate = null,
+            Notes = ""
+        };
+    }
+
+    private async Task SaveDocumentIntake()
+    {
+        errorMessage = "";
+
+        if (string.IsNullOrWhiteSpace(documentIntake.DocumentName))
+        {
+            errorMessage = "Please enter a document name.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(documentIntake.ReceivedFrom))
+        {
+            errorMessage = "Please enter who the document was received from.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(documentIntake.AssignedTo))
+        {
+            errorMessage = "Please enter who this document is assigned to.";
+            return;
+        }
+
+        if (documentIntake.DueDate < documentIntake.ReceivedDate)
+        {
+            errorMessage = "Due date cannot be before received date.";
+            return;
+        }
+
+        if (IsCompletedStatus(documentIntake.Status))
+        {
+            documentIntake.CompletedDate = DateTime.Today;
+        }
+        else
+        {
+            documentIntake.CompletedDate = null;
+        }
+
+        Db.DocumentIntakeItems.Add(documentIntake);
+        await Db.SaveChangesAsync();
+
+        await ActivityLogService.LogAsync(
+            moduleName: "Document Intake",
+            recordId: documentIntake.Id,
+            recordReference: $"DI-{documentIntake.Id}",
+            actionType: "Created",
+            description: $"Created document intake DI-{documentIntake.Id}: {documentIntake.DocumentName}."
+        );
+
+        Navigation.NavigateTo("/document-intake");
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/document-intake");
+    }
+
+    private static bool IsCompletedStatus(string? status)
+    {
+        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(status, "Rejected", StringComparison.OrdinalIgnoreCase);
+    }
+}
