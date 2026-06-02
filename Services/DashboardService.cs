@@ -21,6 +21,10 @@ namespace OperationsFlow.Services
             var risks = await _db.RiskItems.ToListAsync();
             var trainingRecords = await _db.TrainingRecords.ToListAsync();
 
+            var documentIntakeItems = await _db.DocumentIntakeItems
+                .AsNoTracking()
+                .ToListAsync();
+
             var openWorkOrders = workOrders
                 .Where(x => !string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase)
                          && !string.Equals(x.Status, "Closed", StringComparison.OrdinalIgnoreCase))
@@ -71,7 +75,14 @@ namespace OperationsFlow.Services
                 TotalTrainingRecords = trainingRecords.Count,
                 ExpiredTrainingRecords = trainingRecords.Count(x => x.IsExpired),
                 TrainingExpiringSoon = trainingRecords.Count(x => x.IsExpiringSoon),
-                TrainingComplianceRate = trainingComplianceRate
+                TrainingComplianceRate = trainingComplianceRate,
+
+                TotalDocumentIntakeItems = documentIntakeItems.Count,
+                OpenDocumentIntakeItems = documentIntakeItems.Count(x => !x.IsCompleted),
+                DocumentIntakeNeedsReview = documentIntakeItems.Count(x => x.NeedsReview),
+                OverdueDocumentIntakeItems = documentIntakeItems.Count(x => x.IsOverdue),
+                DocumentIntakeDueSoon = documentIntakeItems.Count(x => x.IsDueSoon),
+                CompletedDocumentIntakeItems = documentIntakeItems.Count(x => x.IsCompleted)
             };
         }
     }

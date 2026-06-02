@@ -105,4 +105,14 @@ app.MapGet("/exports/activity-log.csv", async (CsvExportService csvExportService
     );
 });
 
+app.MapGet("/exports/document-intake.csv", async (CsvExportService csvExportService) =>
+{
+    var csv = await csvExportService.ExportDocumentIntakeAsync();
+    return Results.File(
+        Encoding.UTF8.GetBytes(csv),
+        "text/csv",
+        "operationsflow-document-intake.csv"
+    );
+});
+
 app.Run();

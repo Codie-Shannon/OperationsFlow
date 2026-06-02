@@ -3,6 +3,7 @@
 @using OperationsFlow.Data
 @using OperationsFlow.Models
 @inject OperationsFlowDbContext Db
+@using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
 
 <PageTitle>Reports - OperationsFlow</PageTitle>
 
@@ -48,6 +49,12 @@
             <strong>@TrainingComplianceRate.ToString("0.0")%</strong>
             <small>@ExpiredTraining expired records</small>
         </article>
+
+        <article class="module-summary-card info-card">
+            <span>Document Intake</span>
+            <strong>@DocumentIntakeOpen</strong>
+            <small>@DocumentIntakeNeedsReview needs review</small>
+        </article>
     </section>
 
     <section class="export-card">
@@ -82,6 +89,10 @@
 
             <a class="secondary-button" href="/exports/activity-log.csv">
                 Activity Log CSV
+            </a>
+
+            <a class="secondary-button" href="/exports/document-intake.csv">
+                Document Intake CSV
             </a>
         </div>
     </section>
@@ -352,6 +363,146 @@
         }
     </section>
 
+    <section class="report-grid">
+
+        <article class="report-card">
+            <div class="report-card-header">
+                <div>
+                    <h2>Document Intake by Status</h2>
+                    <p>Incoming document workflow records grouped by processing status.</p>
+                </div>
+            </div>
+
+            @if (!DocumentIntakeByStatus.Any())
+            {
+                <div class="empty-state">No document intake data available.</div>
+            }
+            else
+            {
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in DocumentIntakeByStatus)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="@GetIntakeStatusClass(row.Label)">
+                                        @row.Label
+                                    </span>
+                                </td>
+                                <td class="report-number">@row.Count</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </article>
+
+        <article class="report-card">
+            <div class="report-card-header">
+                <div>
+                    <h2>Document Intake by Target System</h2>
+                    <p>Tracks where incoming document data needs to be saved or entered.</p>
+                </div>
+            </div>
+
+            @if (!DocumentIntakeByTargetSystem.Any())
+            {
+                <div class="empty-state">No target system data available.</div>
+            }
+            else
+            {
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Target System</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in DocumentIntakeByTargetSystem)
+                        {
+                            <tr>
+                                <td class="strong-cell">@row.Label</td>
+                                <td class="report-number">@row.Count</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </article>
+
+    </section>
+
+    <section class="report-card">
+        <div class="report-card-header">
+            <div>
+                <h2>Document Intake Attention Report</h2>
+                <p>
+                    Incoming documents that are overdue, due soon, or waiting for manual review.
+                </p>
+            </div>
+
+            <a class="primary-link-button" href="/document-intake">
+                View Intake
+            </a>
+        </div>
+
+        @if (!DocumentIntakeAttentionRows.Any())
+        {
+            <div class="empty-state">No document intake items require attention.</div>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Assigned To</th>
+                        <th>Target System</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                        <th>Flag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in DocumentIntakeAttentionRows)
+                    {
+                        <tr>
+                            <td class="strong-cell">@item.DocumentName</td>
+                            <td>@item.AssignedTo</td>
+                            <td>@item.TargetSystem</td>
+                            <td>
+                                <span class="@GetIntakeStatusClass(item.Status)">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>@item.DueDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (item.IsOverdue)
+                                {
+                                    <span class="badge badge-danger">Overdue</span>
+                                }
+                                else if (item.NeedsReview)
+                                {
+                                    <span class="badge badge-warning">Needs Review</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-info">Due Soon</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
 </div>
 
 @code {
@@ -362,6 +513,8 @@
     private List<TrainingRecord> trainingRecords = new();
 
     private int WorkOrdersTotal => workOrders.Count;
+
+    private List<DocumentIntakeModel> documentIntakeItems = new();
 
     private int WorkOrdersOpen =>
         workOrders.Count(x => !IsClosedStatus(x.Status));
@@ -518,6 +671,10 @@
         trainingRecords = await Db.TrainingRecords
             .AsNoTracking()
             .ToListAsync();
+
+        documentIntakeItems = await Db.DocumentIntakeItems
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     private static bool IsClosedStatus(string? status)
@@ -616,5 +773,55 @@
         int OverdueCorrectiveActions)
     {
         public int TotalOverdue => OverdueWorkOrders + OverdueCorrectiveActions;
+    }
+
+    private int DocumentIntakeTotal => documentIntakeItems.Count;
+
+    private int DocumentIntakeOpen =>
+        documentIntakeItems.Count(x => !x.IsCompleted);
+
+    private int DocumentIntakeNeedsReview =>
+        documentIntakeItems.Count(x => x.NeedsReview);
+
+    private int DocumentIntakeOverdue =>
+        documentIntakeItems.Count(x => x.IsOverdue);
+
+    private List<ReportCountRow> DocumentIntakeByStatus =>
+        documentIntakeItems
+            .GroupBy(x => string.IsNullOrWhiteSpace(x.Status) ? "Unknown" : x.Status)
+            .Select(x => new ReportCountRow(x.Key, x.Count()))
+            .OrderByDescending(x => x.Count)
+            .ThenBy(x => x.Label)
+            .ToList();
+
+    private List<ReportCountRow> DocumentIntakeByTargetSystem =>
+        documentIntakeItems
+            .GroupBy(x => string.IsNullOrWhiteSpace(x.TargetSystem) ? "Unknown" : x.TargetSystem)
+            .Select(x => new ReportCountRow(x.Key, x.Count()))
+            .OrderByDescending(x => x.Count)
+            .ThenBy(x => x.Label)
+            .ToList();
+
+    private List<DocumentIntakeModel> DocumentIntakeAttentionRows =>
+        documentIntakeItems
+            .Where(x => x.IsOverdue || x.NeedsReview || x.IsDueSoon)
+            .OrderByDescending(x => x.IsOverdue)
+            .ThenByDescending(x => x.NeedsReview)
+            .ThenBy(x => x.DueDate)
+            .ToList();
+
+    private static string GetIntakeStatusClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" => "badge badge-success",
+            "rejected" => "badge badge-danger",
+            "entered" => "badge badge-info",
+            "data checked" => "badge badge-info",
+            "needs review" => "badge badge-warning",
+            "saved" => "badge badge-muted",
+            "received" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
     }
 }

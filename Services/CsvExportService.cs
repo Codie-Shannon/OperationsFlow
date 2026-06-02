@@ -221,6 +221,48 @@ public class CsvExportService
         return csv.ToString();
     }
 
+    public async Task<string> ExportDocumentIntakeAsync()
+    {
+        var rows = await _db.DocumentIntakeItems
+            .AsNoTracking()
+            .ToListAsync();
+
+        rows = rows
+            .OrderByDescending(x => x.IsOverdue)
+            .ThenByDescending(x => x.NeedsReview)
+            .ThenBy(x => x.DueDate)
+            .ThenBy(x => x.DocumentName)
+            .ToList();
+
+        var csv = new StringBuilder();
+
+        csv.AppendLine("Reference,Document Name,Received Date,Received From,Source Type,Document Type,Assigned To,Target System,Priority,Status,Due Date,Completed Date,Overdue,Needs Review,Due Soon,Notes");
+
+        foreach (var item in rows)
+        {
+            csv.AppendLine(string.Join(",",
+                Escape($"DI-{item.Id}"),
+                Escape(item.DocumentName),
+                Escape(item.ReceivedDate.ToString("yyyy-MM-dd")),
+                Escape(item.ReceivedFrom),
+                Escape(item.SourceType),
+                Escape(item.DocumentType),
+                Escape(item.AssignedTo),
+                Escape(item.TargetSystem),
+                Escape(item.Priority),
+                Escape(item.Status),
+                Escape(item.DueDate.ToString("yyyy-MM-dd")),
+                Escape(item.CompletedDate?.ToString("yyyy-MM-dd") ?? ""),
+                Escape(item.IsOverdue ? "Yes" : "No"),
+                Escape(item.NeedsReview ? "Yes" : "No"),
+                Escape(item.IsDueSoon ? "Yes" : "No"),
+                Escape(item.Notes)
+            ));
+        }
+
+        return csv.ToString();
+    }
+
     private static string Escape(string? value)
     {
         if (string.IsNullOrEmpty(value))

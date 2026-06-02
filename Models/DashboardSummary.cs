@@ -22,4 +22,11 @@ public class DashboardSummary
     public int TrainingExpiringSoon { get; set; }
 
     public decimal TrainingComplianceRate { get; set; }
+
+    public int TotalDocumentIntakeItems { get; set; }
+    public int OpenDocumentIntakeItems { get; set; }
+    public int DocumentIntakeNeedsReview { get; set; }
+    public int OverdueDocumentIntakeItems { get; set; }
+    public int DocumentIntakeDueSoon { get; set; }
+    public int CompletedDocumentIntakeItems { get; set; }
 }

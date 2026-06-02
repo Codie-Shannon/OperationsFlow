@@ -72,6 +72,12 @@ else
                 <div class="kpi-value">@summary.TrainingComplianceRate.ToString("0.0")%</div>
                 <div class="kpi-subtext">@summary.TotalTrainingRecords training records</div>
             </article>
+
+            <article class="kpi-card">
+                <div class="kpi-label">Document Intake</div>
+                <div class="kpi-value">@summary.OpenDocumentIntakeItems</div>
+                <div class="kpi-subtext danger">@summary.OverdueDocumentIntakeItems overdue</div>
+            </article>
         </section>
 
         <section class="summary-grid">
@@ -183,6 +189,33 @@ else
                 </div>
             </article>
         </section>
+
+        <article class="summary-panel">
+            <div class="panel-header">
+                <h2>Document Intake</h2>
+                <a href="/document-intake">View module</a>
+            </div>
+
+            <p>
+                Tracks incoming emails, PDFs, supplier documents, job paperwork, and admin
+                processing through review, entry, and completion.
+            </p>
+
+            <div class="mini-stat-row">
+                <span>Total</span>
+                <strong>@summary.TotalDocumentIntakeItems</strong>
+            </div>
+
+            <div class="mini-stat-row">
+                <span>Needs Review</span>
+                <strong class="warning-text">@summary.DocumentIntakeNeedsReview</strong>
+            </div>
+
+            <div class="mini-stat-row">
+                <span>Overdue</span>
+                <strong class="danger-text">@summary.OverdueDocumentIntakeItems</strong>
+            </div>
+        </article>
 
         <section class="recent-activity-card">
             <div class="recent-activity-header">
