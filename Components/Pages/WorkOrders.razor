@@ -1,0 +1,230 @@
+﻿@page "/work-orders"
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@inject OperationsFlowDbContext Db
+
+<PageTitle>Work Orders - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Operations</p>
+            <h1>Work Orders</h1>
+            <p>
+                Track operational requests by site, department, owner, priority,
+                status, and due date.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>Open Work Orders</span>
+            <strong>@OpenCount</strong>
+        </div>
+    </section>
+
+    <section class="module-toolbar">
+        <input class="search-input"
+               placeholder="Search work orders..."
+               @bind="searchText"
+               @bind:event="oninput" />
+
+        <select class="filter-select" @bind="statusFilter">
+            <option value="">All Statuses</option>
+            @foreach (var status in StatusOptions)
+            {
+                <option value="@status">@status</option>
+            }
+        </select>
+
+        <select class="filter-select" @bind="priorityFilter">
+            <option value="">All Priorities</option>
+            @foreach (var priority in PriorityOptions)
+            {
+                <option value="@priority">@priority</option>
+            }
+        </select>
+    </section>
+
+    <section class="table-card">
+        @if (workOrders == null)
+        {
+            <div class="empty-state">
+                Loading work orders...
+            </div>
+        }
+        else if (!FilteredWorkOrders.Any())
+        {
+            <div class="empty-state">
+                No work orders match the current filters.
+            </div>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>WO #</th>
+                        <th>Title</th>
+                        <th>Site</th>
+                        <th>Department</th>
+                        <th>Owner</th>
+                        <th>Type</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                        <th>Flag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in FilteredWorkOrders)
+                    {
+                        <tr>
+                            <td class="strong-cell">@item.WorkOrderNumber</td>
+                            <td>@item.Title</td>
+                            <td>@item.Site</td>
+                            <td>@item.Department</td>
+                            <td>@item.Owner</td>
+                            <td>@item.Type</td>
+                            <td>
+                                <span class="@GetPriorityClass(item.Priority)">
+                                    @item.Priority
+                                </span>
+                            </td>
+                            <td>
+                                <span class="@GetStatusClass(item.Status)">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>@item.DueDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (item.IsOverdue)
+                                {
+                                    <span class="badge badge-danger">Overdue</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-muted">On Track</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+</div>
+
+@code {
+    private List<WorkOrder>? workOrders;
+    private string searchText = "";
+    private string statusFilter = "";
+    private string priorityFilter = "";
+
+    private IEnumerable<WorkOrder> FilteredWorkOrders
+    {
+        get
+        {
+            if (workOrders == null)
+            {
+                return Enumerable.Empty<WorkOrder>();
+            }
+
+            var query = workOrders.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(x =>
+                    Contains(x.WorkOrderNumber, searchText) ||
+                    Contains(x.Title, searchText) ||
+                    Contains(x.Site, searchText) ||
+                    Contains(x.Department, searchText) ||
+                    Contains(x.Owner, searchText) ||
+                    Contains(x.Type, searchText) ||
+                    Contains(x.Priority, searchText) ||
+                    Contains(x.Status, searchText));
+            }
+
+            if (!string.IsNullOrWhiteSpace(statusFilter))
+            {
+                query = query.Where(x => string.Equals(x.Status, statusFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(priorityFilter))
+            {
+                query = query.Where(x => string.Equals(x.Priority, priorityFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return query
+                .OrderByDescending(x => x.IsOverdue)
+                .ThenBy(x => x.DueDate)
+                .ThenBy(x => x.Priority)
+                .ToList();
+        }
+    }
+
+    private int OpenCount =>
+        workOrders?.Count(x =>
+            !string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(x.Status, "Closed", StringComparison.OrdinalIgnoreCase)) ?? 0;
+
+    private List<string> StatusOptions =>
+        workOrders?
+            .Select(x => x.Status)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    private List<string> PriorityOptions =>
+        workOrders?
+            .Select(x => x.Priority)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        workOrders = await Db.WorkOrders
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private static bool Contains(string? source, string search)
+    {
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return false;
+        }
+
+        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetStatusClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" => "badge badge-success",
+            "closed" => "badge badge-success",
+            "in progress" => "badge badge-info",
+            "open" => "badge badge-warning",
+            "new" => "badge badge-warning",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private static string GetPriorityClass(string? priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "critical" => "badge badge-danger",
+            "high" => "badge badge-warning",
+            "medium" => "badge badge-info",
+            "low" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
+    }
+}

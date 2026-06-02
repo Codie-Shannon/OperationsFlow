@@ -1,0 +1,241 @@
+﻿@page "/documents"
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@inject OperationsFlowDbContext Db
+
+<PageTitle>Documents - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Compliance</p>
+            <h1>Document Control</h1>
+            <p>
+                Track controlled documents, owners, versions, review dates, document status,
+                and upcoming compliance review work.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>Reviews Due Soon</span>
+            <strong>@DueSoonCount</strong>
+        </div>
+    </section>
+
+    <section class="module-toolbar">
+        <input class="search-input"
+               placeholder="Search documents..."
+               @bind="searchText"
+               @bind:event="oninput" />
+
+        <select class="filter-select" @bind="statusFilter">
+            <option value="">All Statuses</option>
+            @foreach (var status in StatusOptions)
+            {
+                <option value="@status">@status</option>
+            }
+        </select>
+
+        <select class="filter-select" @bind="typeFilter">
+            <option value="">All Types</option>
+            @foreach (var type in TypeOptions)
+            {
+                <option value="@type">@type</option>
+            }
+        </select>
+
+        <select class="filter-select" @bind="departmentFilter">
+            <option value="">All Departments</option>
+            @foreach (var department in DepartmentOptions)
+            {
+                <option value="@department">@department</option>
+            }
+        </select>
+    </section>
+
+    <section class="table-card">
+        @if (documents == null)
+        {
+            <div class="empty-state">
+                Loading documents...
+            </div>
+        }
+        else if (!FilteredDocuments.Any())
+        {
+            <div class="empty-state">
+                No documents match the current filters.
+            </div>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Document #</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Owner</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th>Version</th>
+                        <th>Last Reviewed</th>
+                        <th>Next Review</th>
+                        <th>Flag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in FilteredDocuments)
+                    {
+                        <tr>
+                            <td class="strong-cell">@item.DocumentNumber</td>
+                            <td>@item.Title</td>
+                            <td>@item.DocumentType</td>
+                            <td>@item.Owner</td>
+                            <td>@item.Department</td>
+                            <td>
+                                <span class="@GetStatusClass(item.Status)">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>@item.Version</td>
+                            <td>@item.LastReviewedDate.ToString("dd MMM yyyy")</td>
+                            <td>@item.NextReviewDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (item.IsReviewOverdue)
+                                {
+                                    <span class="badge badge-danger">Review Overdue</span>
+                                }
+                                else if (item.IsDueSoon)
+                                {
+                                    <span class="badge badge-warning">Due Soon</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-muted">Current</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+</div>
+
+@code {
+    private List<DocumentRecord>? documents;
+    private string searchText = "";
+    private string statusFilter = "";
+    private string typeFilter = "";
+    private string departmentFilter = "";
+
+    private IEnumerable<DocumentRecord> FilteredDocuments
+    {
+        get
+        {
+            if (documents == null)
+            {
+                return Enumerable.Empty<DocumentRecord>();
+            }
+
+            var query = documents.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(x =>
+                    Contains(x.DocumentNumber, searchText) ||
+                    Contains(x.Title, searchText) ||
+                    Contains(x.DocumentType, searchText) ||
+                    Contains(x.Owner, searchText) ||
+                    Contains(x.Department, searchText) ||
+                    Contains(x.Status, searchText) ||
+                    Contains(x.Version, searchText) ||
+                    Contains(x.Notes, searchText));
+            }
+
+            if (!string.IsNullOrWhiteSpace(statusFilter))
+            {
+                query = query.Where(x => string.Equals(x.Status, statusFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(typeFilter))
+            {
+                query = query.Where(x => string.Equals(x.DocumentType, typeFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(departmentFilter))
+            {
+                query = query.Where(x => string.Equals(x.Department, departmentFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return query
+                .OrderByDescending(x => x.IsReviewOverdue)
+                .ThenByDescending(x => x.IsDueSoon)
+                .ThenBy(x => x.NextReviewDate)
+                .ThenBy(x => x.Title)
+                .ToList();
+        }
+    }
+
+    private int DueSoonCount =>
+        documents?.Count(x => x.IsDueSoon) ?? 0;
+
+    private List<string> StatusOptions =>
+        documents?
+            .Select(x => x.Status)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    private List<string> TypeOptions =>
+        documents?
+            .Select(x => x.DocumentType)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    private List<string> DepartmentOptions =>
+        documents?
+            .Select(x => x.Department)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        documents = await Db.DocumentRecords
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private static bool Contains(string? source, string search)
+    {
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return false;
+        }
+
+        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetStatusClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "approved" => "badge badge-success",
+            "current" => "badge badge-success",
+            "active" => "badge badge-success",
+            "draft" => "badge badge-info",
+            "under review" => "badge badge-warning",
+            "review required" => "badge badge-warning",
+            "archived" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
+    }
+}

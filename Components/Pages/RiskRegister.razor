@@ -1,0 +1,247 @@
+﻿@page "/risks"
+@page "/risk-register"
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@inject OperationsFlowDbContext Db
+
+<PageTitle>Risk Register - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Compliance</p>
+            <h1>Risk Register</h1>
+            <p>
+                Track operational hazards, risk scoring, controls, owners, review dates,
+                and high-priority risk items.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>High / Critical</span>
+            <strong>@HighCriticalCount</strong>
+        </div>
+    </section>
+
+    <section class="module-toolbar">
+        <input class="search-input"
+               placeholder="Search risks..."
+               @bind="searchText"
+               @bind:event="oninput" />
+
+        <select class="filter-select" @bind="statusFilter">
+            <option value="">All Statuses</option>
+            @foreach (var status in StatusOptions)
+            {
+                <option value="@status">@status</option>
+            }
+        </select>
+
+        <select class="filter-select" @bind="levelFilter">
+            <option value="">All Risk Levels</option>
+            <option value="Critical">Critical</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+        </select>
+
+        <select class="filter-select" @bind="departmentFilter">
+            <option value="">All Departments</option>
+            @foreach (var department in DepartmentOptions)
+            {
+                <option value="@department">@department</option>
+            }
+        </select>
+    </section>
+
+    <section class="table-card">
+        @if (risks == null)
+        {
+            <div class="empty-state">Loading risk register...</div>
+        }
+        else if (!FilteredRisks.Any())
+        {
+            <div class="empty-state">No risks match the current filters.</div>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Risk</th>
+                        <th>Hazard</th>
+                        <th>Site</th>
+                        <th>Department</th>
+                        <th>Owner</th>
+                        <th>Likelihood</th>
+                        <th>Consequence</th>
+                        <th>Score</th>
+                        <th>Level</th>
+                        <th>Status</th>
+                        <th>Review Date</th>
+                        <th>Flag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in FilteredRisks)
+                    {
+                        <tr>
+                            <td class="strong-cell">@item.Title</td>
+                            <td>@item.Hazard</td>
+                            <td>@item.Site</td>
+                            <td>@item.Department</td>
+                            <td>@item.Owner</td>
+                            <td>@item.Likelihood</td>
+                            <td>@item.Consequence</td>
+                            <td class="strong-cell">@item.RiskScore</td>
+                            <td>
+                                <span class="@GetRiskLevelClass(item.RiskLevel)">
+                                    @item.RiskLevel
+                                </span>
+                            </td>
+                            <td>
+                                <span class="@GetStatusClass(item.Status)">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>@item.ReviewDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (item.IsReviewOverdue)
+                                {
+                                    <span class="badge badge-danger">Review Overdue</span>
+                                }
+                                else if (item.RiskLevel == "Critical" || item.RiskLevel == "High")
+                                {
+                                    <span class="badge badge-warning">Monitor</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-muted">Controlled</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+</div>
+
+@code {
+    private List<RiskItem>? risks;
+    private string searchText = "";
+    private string statusFilter = "";
+    private string levelFilter = "";
+    private string departmentFilter = "";
+
+    private IEnumerable<RiskItem> FilteredRisks
+    {
+        get
+        {
+            if (risks == null)
+            {
+                return Enumerable.Empty<RiskItem>();
+            }
+
+            var query = risks.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(x =>
+                    Contains(x.Title, searchText) ||
+                    Contains(x.Hazard, searchText) ||
+                    Contains(x.Site, searchText) ||
+                    Contains(x.Department, searchText) ||
+                    Contains(x.Owner, searchText) ||
+                    Contains(x.Controls, searchText) ||
+                    Contains(x.Status, searchText));
+            }
+
+            if (!string.IsNullOrWhiteSpace(statusFilter))
+            {
+                query = query.Where(x => string.Equals(x.Status, statusFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(levelFilter))
+            {
+                query = query.Where(x => string.Equals(x.RiskLevel, levelFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(departmentFilter))
+            {
+                query = query.Where(x => string.Equals(x.Department, departmentFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return query
+                .OrderByDescending(x => x.IsReviewOverdue)
+                .ThenByDescending(x => x.RiskScore)
+                .ThenBy(x => x.ReviewDate)
+                .ThenBy(x => x.Title)
+                .ToList();
+        }
+    }
+
+    private int HighCriticalCount =>
+        risks?.Count(x => x.RiskLevel == "High" || x.RiskLevel == "Critical") ?? 0;
+
+    private List<string> StatusOptions =>
+        risks?
+            .Select(x => x.Status)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    private List<string> DepartmentOptions =>
+        risks?
+            .Select(x => x.Department)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        risks = await Db.RiskItems
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private static bool Contains(string? source, string search)
+    {
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return false;
+        }
+
+        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetRiskLevelClass(string? level)
+    {
+        return level?.ToLower() switch
+        {
+            "critical" => "badge badge-danger",
+            "high" => "badge badge-warning",
+            "medium" => "badge badge-info",
+            "low" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private static string GetStatusClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "active" => "badge badge-warning",
+            "open" => "badge badge-warning",
+            "monitoring" => "badge badge-info",
+            "controlled" => "badge badge-success",
+            "closed" => "badge badge-success",
+            _ => "badge badge-muted"
+        };
+    }
+}

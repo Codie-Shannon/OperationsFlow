@@ -1,0 +1,194 @@
+﻿@page "/"
+@using OperationsFlow.Models
+@using OperationsFlow.Services
+@inject DashboardService DashboardService
+
+<PageTitle>OperationsFlow Dashboard</PageTitle>
+
+@if (summary == null)
+{
+    <div class="page-shell">
+        <div class="loading-card">
+            Loading OperationsFlow dashboard...
+        </div>
+    </div>
+}
+else
+{
+    <div class="page-shell operations-dashboard">
+
+        <section class="dashboard-hero">
+            <div>
+                <p class="eyebrow">Business Operations Prototype</p>
+                <h1>OperationsFlow Dashboard</h1>
+                <p class="hero-text">
+                    Live overview of work orders, corrective actions, document control,
+                    risk register items, and training compliance.
+                </p>
+            </div>
+
+            <div class="hero-status">
+                <span class="status-dot"></span>
+                SQLite demo data live
+            </div>
+        </section>
+
+        <section class="kpi-grid">
+            <article class="kpi-card">
+                <div class="kpi-label">Open Work Orders</div>
+                <div class="kpi-value">@summary.OpenWorkOrders</div>
+                <div class="kpi-subtext danger">@summary.OverdueWorkOrders overdue</div>
+            </article>
+
+            <article class="kpi-card">
+                <div class="kpi-label">Overdue Actions</div>
+                <div class="kpi-value">@summary.OverdueCorrectiveActions</div>
+                <div class="kpi-subtext">@summary.OpenCorrectiveActions open actions</div>
+            </article>
+
+            <article class="kpi-card">
+                <div class="kpi-label">Documents Due Soon</div>
+                <div class="kpi-value">@summary.DocumentsDueSoon</div>
+                <div class="kpi-subtext danger">@summary.OverdueDocumentReviews overdue reviews</div>
+            </article>
+
+            <article class="kpi-card">
+                <div class="kpi-label">High / Critical Risks</div>
+                <div class="kpi-value">@summary.HighOrCriticalRisks</div>
+                <div class="kpi-subtext">@summary.TotalRisks total risks</div>
+            </article>
+
+            <article class="kpi-card">
+                <div class="kpi-label">Expired Training</div>
+                <div class="kpi-value">@summary.ExpiredTrainingRecords</div>
+                <div class="kpi-subtext">@summary.TrainingExpiringSoon expiring soon</div>
+            </article>
+
+            <article class="kpi-card highlight-card">
+                <div class="kpi-label">Training Compliance</div>
+                <div class="kpi-value">@summary.TrainingComplianceRate.ToString("0.0")%</div>
+                <div class="kpi-subtext">@summary.TotalTrainingRecords training records</div>
+            </article>
+        </section>
+
+        <section class="summary-grid">
+            <article class="summary-panel">
+                <div class="panel-header">
+                    <h2>Work Orders</h2>
+                    <a href="/work-orders">View module</a>
+                </div>
+
+                <p>
+                    Tracks operational work requests across sites, departments, owners,
+                    due dates, priorities, and overdue status.
+                </p>
+
+                <div class="mini-stat-row">
+                    <span>Total</span>
+                    <strong>@summary.TotalWorkOrders</strong>
+                </div>
+
+                <div class="mini-stat-row">
+                    <span>Open</span>
+                    <strong>@summary.OpenWorkOrders</strong>
+                </div>
+
+                <div class="mini-stat-row">
+                    <span>Overdue</span>
+                    <strong class="danger-text">@summary.OverdueWorkOrders</strong>
+                </div>
+            </article>
+
+            <article class="summary-panel">
+                <div class="panel-header">
+                    <h2>Corrective Actions</h2>
+                    <a href="/corrective-actions">View module</a>
+                </div>
+
+                <p>
+                    Tracks actions created from incidents, audits, inspections, risks,
+                    and improvement work.
+                </p>
+
+                <div class="mini-stat-row">
+                    <span>Total</span>
+                    <strong>@summary.TotalCorrectiveActions</strong>
+                </div>
+
+                <div class="mini-stat-row">
+                    <span>Open</span>
+                    <strong>@summary.OpenCorrectiveActions</strong>
+                </div>
+
+                <div class="mini-stat-row">
+                    <span>Overdue</span>
+                    <strong class="danger-text">@summary.OverdueCorrectiveActions</strong>
+                </div>
+            </article>
+
+            <article class="summary-panel">
+                <div class="panel-header">
+                    <h2>Document Control</h2>
+                    <a href="/documents">View module</a>
+                </div>
+
+                <p>
+                    Monitors document review dates, document ownership, status,
+                    versioning, and upcoming compliance review work.
+                </p>
+
+                <div class="mini-stat-row">
+                    <span>Total</span>
+                    <strong>@summary.TotalDocuments</strong>
+                </div>
+
+                <div class="mini-stat-row">
+                    <span>Due Soon</span>
+                    <strong>@summary.DocumentsDueSoon</strong>
+                </div>
+
+                <div class="mini-stat-row">
+                    <span>Overdue Reviews</span>
+                    <strong class="danger-text">@summary.OverdueDocumentReviews</strong>
+                </div>
+            </article>
+
+            <article class="summary-panel">
+                <div class="panel-header">
+                    <h2>Risk & Training</h2>
+                    <a href="/risks">View risks</a>
+                </div>
+
+                <p>
+                    Gives managers a quick view of high-priority operational risk and
+                    training compliance issues.
+                </p>
+
+                <div class="mini-stat-row">
+                    <span>Total Risks</span>
+                    <strong>@summary.TotalRisks</strong>
+                </div>
+
+                <div class="mini-stat-row">
+                    <span>High / Critical</span>
+                    <strong class="warning-text">@summary.HighOrCriticalRisks</strong>
+                </div>
+
+                <div class="mini-stat-row">
+                    <span>Expired Training</span>
+                    <strong class="danger-text">@summary.ExpiredTrainingRecords</strong>
+                </div>
+            </article>
+        </section>
+
+    </div>
+}
+
+@code {
+    private DashboardSummary? summary;
+
+    protected override async Task OnInitializedAsync()
+    {
+        summary = await DashboardService.GetDashboardSummaryAsync();
+    }
+}

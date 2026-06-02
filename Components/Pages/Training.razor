@@ -1,0 +1,254 @@
+﻿@page "/training"
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@inject OperationsFlowDbContext Db
+
+<PageTitle>Training - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Compliance</p>
+            <h1>Training Compliance</h1>
+            <p>
+                Track staff training records, required training, expiry dates,
+                expired training, and upcoming renewals.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>Compliance Rate</span>
+            <strong>@ComplianceRate.ToString("0.0")%</strong>
+        </div>
+    </section>
+
+    <section class="module-toolbar">
+        <input class="search-input"
+               placeholder="Search training records..."
+               @bind="searchText"
+               @bind:event="oninput" />
+
+        <select class="filter-select" @bind="statusFilter">
+            <option value="">All Statuses</option>
+            @foreach (var status in StatusOptions)
+            {
+                <option value="@status">@status</option>
+            }
+        </select>
+
+        <select class="filter-select" @bind="departmentFilter">
+            <option value="">All Departments</option>
+            @foreach (var department in DepartmentOptions)
+            {
+                <option value="@department">@department</option>
+            }
+        </select>
+
+        <select class="filter-select" @bind="requirementFilter">
+            <option value="">All Records</option>
+            <option value="Required">Required Only</option>
+            <option value="Optional">Optional Only</option>
+        </select>
+    </section>
+
+    <section class="table-card">
+        @if (trainingRecords == null)
+        {
+            <div class="empty-state">Loading training records...</div>
+        }
+        else if (!FilteredTrainingRecords.Any())
+        {
+            <div class="empty-state">No training records match the current filters.</div>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Staff</th>
+                        <th>Training</th>
+                        <th>Site</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th>Completed</th>
+                        <th>Expiry</th>
+                        <th>Required</th>
+                        <th>Flag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in FilteredTrainingRecords)
+                    {
+                        <tr>
+                            <td class="strong-cell">@item.StaffName</td>
+                            <td>@item.TrainingName</td>
+                            <td>@item.Site</td>
+                            <td>@item.Department</td>
+                            <td>
+                                <span class="@GetStatusClass(item.Status)">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>@item.CompletedDate.ToString("dd MMM yyyy")</td>
+                            <td>@item.ExpiryDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (item.IsRequired)
+                                {
+                                    <span class="badge badge-info">Required</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-muted">Optional</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.IsExpired)
+                                {
+                                    <span class="badge badge-danger">Expired</span>
+                                }
+                                else if (item.IsExpiringSoon)
+                                {
+                                    <span class="badge badge-warning">Expiring Soon</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-success">Current</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+</div>
+
+@code {
+    private List<TrainingRecord>? trainingRecords;
+    private string searchText = "";
+    private string statusFilter = "";
+    private string departmentFilter = "";
+    private string requirementFilter = "";
+
+    private IEnumerable<TrainingRecord> FilteredTrainingRecords
+    {
+        get
+        {
+            if (trainingRecords == null)
+            {
+                return Enumerable.Empty<TrainingRecord>();
+            }
+
+            var query = trainingRecords.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(x =>
+                    Contains(x.StaffName, searchText) ||
+                    Contains(x.TrainingName, searchText) ||
+                    Contains(x.Site, searchText) ||
+                    Contains(x.Department, searchText) ||
+                    Contains(x.Status, searchText) ||
+                    Contains(x.Notes, searchText));
+            }
+
+            if (!string.IsNullOrWhiteSpace(statusFilter))
+            {
+                query = query.Where(x => string.Equals(x.Status, statusFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(departmentFilter))
+            {
+                query = query.Where(x => string.Equals(x.Department, departmentFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (requirementFilter == "Required")
+            {
+                query = query.Where(x => x.IsRequired);
+            }
+            else if (requirementFilter == "Optional")
+            {
+                query = query.Where(x => !x.IsRequired);
+            }
+
+            return query
+                .OrderByDescending(x => x.IsExpired)
+                .ThenByDescending(x => x.IsExpiringSoon)
+                .ThenBy(x => x.ExpiryDate)
+                .ThenBy(x => x.StaffName)
+                .ToList();
+        }
+    }
+
+    private decimal ComplianceRate
+    {
+        get
+        {
+            if (trainingRecords == null)
+            {
+                return 0;
+            }
+
+            var required = trainingRecords.Where(x => x.IsRequired).ToList();
+
+            if (!required.Any())
+            {
+                return 0;
+            }
+
+            var compliant = required.Count(x => !x.IsExpired);
+
+            return (decimal)compliant / required.Count * 100;
+        }
+    }
+
+    private List<string> StatusOptions =>
+        trainingRecords?
+            .Select(x => x.Status)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    private List<string> DepartmentOptions =>
+        trainingRecords?
+            .Select(x => x.Department)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        trainingRecords = await Db.TrainingRecords
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private static bool Contains(string? source, string search)
+    {
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return false;
+        }
+
+        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetStatusClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" => "badge badge-success",
+            "current" => "badge badge-success",
+            "valid" => "badge badge-success",
+            "expired" => "badge badge-danger",
+            "not started" => "badge badge-warning",
+            "in progress" => "badge badge-info",
+            _ => "badge badge-muted"
+        };
+    }
+}

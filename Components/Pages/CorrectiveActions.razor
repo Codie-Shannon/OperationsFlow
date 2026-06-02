@@ -1,0 +1,268 @@
+﻿@page "/corrective-actions"
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@inject OperationsFlowDbContext Db
+
+<PageTitle>Corrective Actions - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Operations</p>
+            <h1>Corrective Actions</h1>
+            <p>
+                Track actions created from incidents, audits, inspections, risk reviews,
+                improvement work, and compliance follow-ups.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>Open Actions</span>
+            <strong>@OpenCount</strong>
+        </div>
+    </section>
+
+    <section class="module-toolbar">
+        <input class="search-input"
+               placeholder="Search corrective actions..."
+               @bind="searchText"
+               @bind:event="oninput" />
+
+        <select class="filter-select" @bind="statusFilter">
+            <option value="">All Statuses</option>
+            @foreach (var status in StatusOptions)
+            {
+                <option value="@status">@status</option>
+            }
+        </select>
+
+        <select class="filter-select" @bind="priorityFilter">
+            <option value="">All Priorities</option>
+            @foreach (var priority in PriorityOptions)
+            {
+                <option value="@priority">@priority</option>
+            }
+        </select>
+
+        <select class="filter-select" @bind="sourceFilter">
+            <option value="">All Sources</option>
+            @foreach (var source in SourceOptions)
+            {
+                <option value="@source">@source</option>
+            }
+        </select>
+    </section>
+
+    <section class="table-card">
+        @if (correctiveActions == null)
+        {
+            <div class="empty-state">
+                Loading corrective actions...
+            </div>
+        }
+        else if (!FilteredCorrectiveActions.Any())
+        {
+            <div class="empty-state">
+                No corrective actions match the current filters.
+            </div>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Source</th>
+                        <th>Site</th>
+                        <th>Department</th>
+                        <th>Owner</th>
+                        <th>Action Type</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                        <th>Completed</th>
+                        <th>Flag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in FilteredCorrectiveActions)
+                    {
+                        <tr>
+                            <td class="strong-cell">@item.Title</td>
+                            <td>@item.Source</td>
+                            <td>@item.Site</td>
+                            <td>@item.Department</td>
+                            <td>@item.Owner</td>
+                            <td>@item.ActionType</td>
+                            <td>
+                                <span class="@GetPriorityClass(item.Priority)">
+                                    @item.Priority
+                                </span>
+                            </td>
+                            <td>
+                                <span class="@GetStatusClass(item.Status)">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>@item.DueDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (item.CompletedDate.HasValue)
+                                {
+                                    @item.CompletedDate.Value.ToString("dd MMM yyyy")
+                                }
+                                else
+                                {
+                                    <span class="muted-text">Not completed</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.IsOverdue)
+                                {
+                                    <span class="badge badge-danger">Overdue</span>
+                                }
+                                else if (item.CompletedDate.HasValue)
+                                {
+                                    <span class="badge badge-success">Completed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-muted">On Track</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+</div>
+
+@code {
+    private List<CorrectiveAction>? correctiveActions;
+    private string searchText = "";
+    private string statusFilter = "";
+    private string priorityFilter = "";
+    private string sourceFilter = "";
+
+    private IEnumerable<CorrectiveAction> FilteredCorrectiveActions
+    {
+        get
+        {
+            if (correctiveActions == null)
+            {
+                return Enumerable.Empty<CorrectiveAction>();
+            }
+
+            var query = correctiveActions.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(x =>
+                    Contains(x.Title, searchText) ||
+                    Contains(x.Source, searchText) ||
+                    Contains(x.Site, searchText) ||
+                    Contains(x.Department, searchText) ||
+                    Contains(x.Owner, searchText) ||
+                    Contains(x.ActionType, searchText) ||
+                    Contains(x.Priority, searchText) ||
+                    Contains(x.Status, searchText) ||
+                    Contains(x.Notes, searchText));
+            }
+
+            if (!string.IsNullOrWhiteSpace(statusFilter))
+            {
+                query = query.Where(x => string.Equals(x.Status, statusFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(priorityFilter))
+            {
+                query = query.Where(x => string.Equals(x.Priority, priorityFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(sourceFilter))
+            {
+                query = query.Where(x => string.Equals(x.Source, sourceFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return query
+                .OrderByDescending(x => x.IsOverdue)
+                .ThenBy(x => x.DueDate)
+                .ThenBy(x => x.Priority)
+                .ToList();
+        }
+    }
+
+    private int OpenCount =>
+        correctiveActions?.Count(x =>
+            !string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(x.Status, "Closed", StringComparison.OrdinalIgnoreCase)) ?? 0;
+
+    private List<string> StatusOptions =>
+        correctiveActions?
+            .Select(x => x.Status)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    private List<string> PriorityOptions =>
+        correctiveActions?
+            .Select(x => x.Priority)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    private List<string> SourceOptions =>
+        correctiveActions?
+            .Select(x => x.Source)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        correctiveActions = await Db.CorrectiveActions
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private static bool Contains(string? source, string search)
+    {
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return false;
+        }
+
+        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetStatusClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" => "badge badge-success",
+            "closed" => "badge badge-success",
+            "in progress" => "badge badge-info",
+            "open" => "badge badge-warning",
+            "new" => "badge badge-warning",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private static string GetPriorityClass(string? priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "critical" => "badge badge-danger",
+            "high" => "badge badge-warning",
+            "medium" => "badge badge-info",
+            "low" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
+    }
+}
