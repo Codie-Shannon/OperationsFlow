@@ -1019,3 +1019,48 @@ main {
         grid-template-columns: 1fr;
     }
 }
+
+.export-card {
+    display: flex;
+    justify-content: space-between;
+    gap: 22px;
+    align-items: flex-start;
+    padding: 24px;
+    border-radius: 22px;
+    background: white;
+    border: 1px solid #e5eaf2;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+}
+
+    .export-card h2 {
+        margin: 0;
+        color: #0f172a;
+        font-size: 1.4rem;
+        letter-spacing: -0.04em;
+    }
+
+    .export-card p {
+        margin: 8px 0 0 0;
+        color: #64748b;
+        line-height: 1.5;
+        font-weight: 650;
+    }
+
+.export-button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 10px;
+    min-width: 420px;
+}
+
+@media (max-width: 900px) {
+    .export-card {
+        flex-direction: column;
+    }
+
+    .export-button-grid {
+        min-width: 100%;
+        width: 100%;
+        grid-template-columns: 1fr;
+    }
+}
