@@ -1,0 +1,366 @@
+﻿@page "/reminders"
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
+@inject OperationsFlowDbContext Db
+
+<PageTitle>Reminder Centre - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Daily Focus</p>
+            <h1>Reminder Centre</h1>
+            <p>
+                A focused view of overdue work, due-soon items, compliance reminders,
+                training expiries, and document intake records needing attention.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>Total Reminders</span>
+            <strong>@TotalReminderCount</strong>
+        </div>
+    </section>
+
+    <section class="module-summary-grid">
+        <article class="module-summary-card danger-card">
+            <span>Overdue Work</span>
+            <strong>@OverdueWorkCount</strong>
+            <small>Work orders and corrective actions</small>
+        </article>
+
+        <article class="module-summary-card warning-card">
+            <span>Document Reviews</span>
+            <strong>@DocumentReminderCount</strong>
+            <small>Overdue or due soon</small>
+        </article>
+
+        <article class="module-summary-card danger-card">
+            <span>Training Issues</span>
+            <strong>@TrainingReminderCount</strong>
+            <small>Expired or expiring soon</small>
+        </article>
+
+        <article class="module-summary-card info-card">
+            <span>Intake Follow-ups</span>
+            <strong>@IntakeReminderCount</strong>
+            <small>Overdue or needs review</small>
+        </article>
+    </section>
+
+    <section class="reminder-grid">
+
+        <article class="reminder-card">
+            <div class="reminder-card-header">
+                <div>
+                    <h2>Overdue Work Orders</h2>
+                    <p>Operational work requests past their due date.</p>
+                </div>
+
+                <a class="table-action-link" href="/work-orders">View</a>
+            </div>
+
+            @if (!OverdueWorkOrders.Any())
+            {
+                <div class="empty-state">No overdue work orders.</div>
+            }
+            else
+            {
+                <div class="reminder-list">
+                    @foreach (var item in OverdueWorkOrders)
+                    {
+                        <article class="reminder-item">
+                            <div>
+                                <strong>@item.WorkOrderNumber</strong>
+                                <p>@item.Title</p>
+                                <small>@item.Owner • @item.Department • Due @item.DueDate.ToString("dd MMM yyyy")</small>
+                            </div>
+
+                            <span class="badge badge-danger">Overdue</span>
+                        </article>
+                    }
+                </div>
+            }
+        </article>
+
+        <article class="reminder-card">
+            <div class="reminder-card-header">
+                <div>
+                    <h2>Overdue Corrective Actions</h2>
+                    <p>Corrective or improvement actions past their due date.</p>
+                </div>
+
+                <a class="table-action-link" href="/corrective-actions">View</a>
+            </div>
+
+            @if (!OverdueCorrectiveActions.Any())
+            {
+                <div class="empty-state">No overdue corrective actions.</div>
+            }
+            else
+            {
+                <div class="reminder-list">
+                    @foreach (var item in OverdueCorrectiveActions)
+                    {
+                        <article class="reminder-item">
+                            <div>
+                                <strong>CA-@item.Id</strong>
+                                <p>@item.Title</p>
+                                <small>@item.Owner • @item.Source • Due @item.DueDate.ToString("dd MMM yyyy")</small>
+                            </div>
+
+                            <span class="badge badge-danger">Overdue</span>
+                        </article>
+                    }
+                </div>
+            }
+        </article>
+
+        <article class="reminder-card">
+            <div class="reminder-card-header">
+                <div>
+                    <h2>Document Reviews</h2>
+                    <p>Controlled documents overdue for review or due soon.</p>
+                </div>
+
+                <a class="table-action-link" href="/documents">View</a>
+            </div>
+
+            @if (!DocumentReviewReminders.Any())
+            {
+                <div class="empty-state">No document review reminders.</div>
+            }
+            else
+            {
+                <div class="reminder-list">
+                    @foreach (var item in DocumentReviewReminders)
+                    {
+                        <article class="reminder-item">
+                            <div>
+                                <strong>@item.DocumentNumber</strong>
+                                <p>@item.Title</p>
+                                <small>@item.Owner • @item.Department • Review @item.NextReviewDate.ToString("dd MMM yyyy")</small>
+                            </div>
+
+                            @if (item.IsReviewOverdue)
+                            {
+                                <span class="badge badge-danger">Overdue</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning">Due Soon</span>
+                            }
+                        </article>
+                    }
+                </div>
+            }
+        </article>
+
+        <article class="reminder-card">
+            <div class="reminder-card-header">
+                <div>
+                    <h2>Training Compliance</h2>
+                    <p>Expired or soon-to-expire training records.</p>
+                </div>
+
+                <a class="table-action-link" href="/training">View</a>
+            </div>
+
+            @if (!TrainingReminders.Any())
+            {
+                <div class="empty-state">No training reminders.</div>
+            }
+            else
+            {
+                <div class="reminder-list">
+                    @foreach (var item in TrainingReminders)
+                    {
+                        <article class="reminder-item">
+                            <div>
+                                <strong>@item.StaffName</strong>
+                                <p>@item.TrainingName</p>
+                                <small>@item.Department • Expires @item.ExpiryDate.ToString("dd MMM yyyy")</small>
+                            </div>
+
+                            @if (item.IsExpired)
+                            {
+                                <span class="badge badge-danger">Expired</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning">Expiring Soon</span>
+                            }
+                        </article>
+                    }
+                </div>
+            }
+        </article>
+
+    </section>
+
+    <section class="reminder-card">
+        <div class="reminder-card-header">
+            <div>
+                <h2>Document Intake Follow-ups</h2>
+                <p>
+                    Incoming documents that are overdue, due soon, or waiting for manual review.
+                </p>
+            </div>
+
+            <a class="table-action-link" href="/document-intake">View</a>
+        </div>
+
+        @if (!IntakeReminders.Any())
+        {
+            <div class="empty-state">No document intake reminders.</div>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Assigned To</th>
+                        <th>Target System</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                        <th>Flag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in IntakeReminders)
+                    {
+                        <tr>
+                            <td class="strong-cell">@item.DocumentName</td>
+                            <td>@item.AssignedTo</td>
+                            <td>@item.TargetSystem</td>
+                            <td>
+                                <span class="@GetIntakeStatusClass(item.Status)">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>@item.DueDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (item.IsOverdue)
+                                {
+                                    <span class="badge badge-danger">Overdue</span>
+                                }
+                                else if (item.NeedsReview)
+                                {
+                                    <span class="badge badge-warning">Needs Review</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-info">Due Soon</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+</div>
+
+@code {
+    private List<WorkOrder> workOrders = new();
+    private List<CorrectiveAction> correctiveActions = new();
+    private List<DocumentRecord> documents = new();
+    private List<TrainingRecord> trainingRecords = new();
+    private List<DocumentIntakeModel> documentIntakeItems = new();
+
+    private List<WorkOrder> OverdueWorkOrders =>
+        workOrders
+            .Where(x => x.IsOverdue)
+            .OrderBy(x => x.DueDate)
+            .ThenBy(x => x.Owner)
+            .ToList();
+
+    private List<CorrectiveAction> OverdueCorrectiveActions =>
+        correctiveActions
+            .Where(x => x.IsOverdue)
+            .OrderBy(x => x.DueDate)
+            .ThenBy(x => x.Owner)
+            .ToList();
+
+    private List<DocumentRecord> DocumentReviewReminders =>
+        documents
+            .Where(x => x.IsReviewOverdue || x.IsDueSoon)
+            .OrderByDescending(x => x.IsReviewOverdue)
+            .ThenBy(x => x.NextReviewDate)
+            .ToList();
+
+    private List<TrainingRecord> TrainingReminders =>
+        trainingRecords
+            .Where(x => x.IsExpired || x.IsExpiringSoon)
+            .OrderByDescending(x => x.IsExpired)
+            .ThenBy(x => x.ExpiryDate)
+            .ThenBy(x => x.StaffName)
+            .ToList();
+
+    private List<DocumentIntakeModel> IntakeReminders =>
+        documentIntakeItems
+            .Where(x => x.IsOverdue || x.NeedsReview || x.IsDueSoon)
+            .OrderByDescending(x => x.IsOverdue)
+            .ThenByDescending(x => x.NeedsReview)
+            .ThenBy(x => x.DueDate)
+            .ThenBy(x => x.DocumentName)
+            .ToList();
+
+    private int OverdueWorkCount =>
+        OverdueWorkOrders.Count + OverdueCorrectiveActions.Count;
+
+    private int DocumentReminderCount =>
+        DocumentReviewReminders.Count;
+
+    private int TrainingReminderCount =>
+        TrainingReminders.Count;
+
+    private int IntakeReminderCount =>
+        IntakeReminders.Count;
+
+    private int TotalReminderCount =>
+        OverdueWorkCount + DocumentReminderCount + TrainingReminderCount + IntakeReminderCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        workOrders = await Db.WorkOrders
+            .AsNoTracking()
+            .ToListAsync();
+
+        correctiveActions = await Db.CorrectiveActions
+            .AsNoTracking()
+            .ToListAsync();
+
+        documents = await Db.DocumentRecords
+            .AsNoTracking()
+            .ToListAsync();
+
+        trainingRecords = await Db.TrainingRecords
+            .AsNoTracking()
+            .ToListAsync();
+
+        documentIntakeItems = await Db.DocumentIntakeItems
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private static string GetIntakeStatusClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" => "badge badge-success",
+            "rejected" => "badge badge-danger",
+            "entered" => "badge badge-info",
+            "data checked" => "badge badge-info",
+            "needs review" => "badge badge-warning",
+            "saved" => "badge badge-muted",
+            "received" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
+    }
+}
