@@ -1,9 +1,9 @@
-﻿@page "/corrective-actions/edit/{id:int}"
+﻿@page "/corrective-actions/edit/{Id:int}"
 @using Microsoft.AspNetCore.Components
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
-@using OperationsFlow.Models
 @using OperationsFlow.Services
+@using CorrectiveActionModel = OperationsFlow.Models.CorrectiveAction
 @inject OperationsFlowDbContext Db
 @inject ActivityLogService ActivityLogService
 @inject NavigationManager Navigation
@@ -17,8 +17,8 @@
             <p class="eyebrow dark">Operations</p>
             <h1>Edit Corrective Action</h1>
             <p>
-                Update corrective action ownership, priority, status, due date,
-                completion state, and notes.
+                Update assigned owner, priority, status, due date, completion state,
+                and follow-up notes for a corrective or improvement action.
             </p>
         </div>
 
@@ -77,6 +77,21 @@
                     </div>
 
                     <div class="form-field">
+                        <label>Site</label>
+                        <InputText class="form-input" @bind-Value="correctiveAction.Site" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Department</label>
+                        <InputText class="form-input" @bind-Value="correctiveAction.Department" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Owner</label>
+                        <InputText class="form-input" @bind-Value="correctiveAction.Owner" />
+                    </div>
+
+                    <div class="form-field">
                         <label>Action Type</label>
                         <InputSelect class="form-input" @bind-Value="correctiveAction.ActionType">
                             @foreach (var actionType in ActionTypeOptions)
@@ -84,31 +99,6 @@
                                 <option value="@actionType">@actionType</option>
                             }
                         </InputSelect>
-                    </div>
-
-                    <div class="form-field">
-                        <label>Site</label>
-                        <InputSelect class="form-input" @bind-Value="correctiveAction.Site">
-                            @foreach (var site in SiteOptions)
-                            {
-                                <option value="@site">@site</option>
-                            }
-                        </InputSelect>
-                    </div>
-
-                    <div class="form-field">
-                        <label>Department</label>
-                        <InputSelect class="form-input" @bind-Value="correctiveAction.Department">
-                            @foreach (var department in DepartmentOptions)
-                            {
-                                <option value="@department">@department</option>
-                            }
-                        </InputSelect>
-                    </div>
-
-                    <div class="form-field">
-                        <label>Owner</label>
-                        <InputText class="form-input" @bind-Value="correctiveAction.Owner" />
                     </div>
 
                     <div class="form-field">
@@ -129,11 +119,6 @@
                                 <option value="@status">@status</option>
                             }
                         </InputSelect>
-                    </div>
-
-                    <div class="form-field">
-                        <label>Created Date</label>
-                        <InputDate class="form-input" @bind-Value="correctiveAction.CreatedDate" />
                     </div>
 
                     <div class="form-field">
@@ -164,6 +149,10 @@
                 </div>
             </EditForm>
         </section>
+
+        <ActivityHistoryPanel ModuleName="Corrective Actions"
+                              RecordId="@correctiveAction.Id"
+                              Title="Corrective Action Activity History" />
     }
 
 </div>
@@ -175,7 +164,7 @@
     [SupplyParameterFromQuery]
     public string? ReturnUrl { get; set; }
 
-    private CorrectiveAction? correctiveAction;
+    private CorrectiveActionModel? correctiveAction;
     private bool isLoading = true;
     private string errorMessage = "";
 
@@ -194,6 +183,8 @@
         "Inspection",
         "Internal Audit",
         "Risk Review",
+        "Document Review",
+        "Training Compliance",
         "Hazard Report",
         "Quality Review",
         "Management Review"
@@ -205,29 +196,10 @@
         "Repair",
         "Process Review",
         "Document Update",
-        "Checklist",
         "Training",
-        "System Update"
-    };
-
-    private List<string> SiteOptions = new()
-    {
-        "Main Workshop",
-        "Yard",
-        "Admin Office",
-        "Warehouse",
-        "Dispatch Bay"
-    };
-
-    private List<string> DepartmentOptions = new()
-    {
-        "Operations",
-        "Health & Safety",
-        "Admin",
-        "Maintenance",
-        "Warehouse",
-        "Dispatch",
-        "Quality"
+        "Follow-up",
+        "Improvement",
+        "Containment"
     };
 
     private List<string> PriorityOptions = new()
@@ -286,18 +258,18 @@
             return;
         }
 
-        if (correctiveAction.DueDate < correctiveAction.CreatedDate)
+        if (correctiveAction.DueDate < correctiveAction.CreatedDate.Date)
         {
             errorMessage = "Due date cannot be before created date.";
             return;
         }
 
-        if (IsCompletedStatus(correctiveAction.Status) && correctiveAction.CompletedDate == null)
+        if (IsClosedStatus(correctiveAction.Status) && correctiveAction.CompletedDate == null)
         {
             correctiveAction.CompletedDate = DateTime.Today;
         }
 
-        if (!IsCompletedStatus(correctiveAction.Status))
+        if (!IsClosedStatus(correctiveAction.Status))
         {
             correctiveAction.CompletedDate = null;
         }
@@ -399,7 +371,7 @@
         Navigation.NavigateTo(ReturnUrl);
     }
 
-    private static bool IsCompletedStatus(string? status)
+    private static bool IsClosedStatus(string? status)
     {
         return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
             || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);

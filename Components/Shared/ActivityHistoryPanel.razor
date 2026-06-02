@@ -1,0 +1,119 @@
+﻿@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@inject OperationsFlowDbContext Db
+
+<section class="record-history-card">
+    <div class="record-history-header">
+        <div>
+            <p class="eyebrow dark">Traceability</p>
+            <h2>@PanelTitle</h2>
+            <p>
+                Activity history for this record, including creation, updates, reviews,
+                and workflow changes.
+            </p>
+        </div>
+
+        <span class="settings-count-badge">@activityLogs.Count events</span>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="empty-state">Loading activity history...</div>
+    }
+    else if (!activityLogs.Any())
+    {
+        <div class="empty-state">No activity has been recorded for this item yet.</div>
+    }
+    else
+    {
+        <div class="record-history-list">
+            @foreach (var item in activityLogs)
+            {
+                <article class="record-history-item">
+                    <div class="record-history-icon">
+                        @GetIconLetter(item.ActionType)
+                    </div>
+
+                    <div class="record-history-content">
+                        <div class="record-history-line">
+                            <strong>@item.RecordReference</strong>
+                            <span>@item.CreatedDate.ToString("dd MMM yyyy HH:mm")</span>
+                        </div>
+
+                        <p>@item.Description</p>
+
+                        <div class="record-history-tags">
+                            <span class="badge badge-muted">@item.ModuleName</span>
+                            <span class="@GetActionClass(item.ActionType)">@item.ActionType</span>
+                            <span class="badge badge-muted">@item.CreatedBy</span>
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter]
+    public string ModuleName { get; set; } = "";
+
+    [Parameter]
+    public int RecordId { get; set; }
+
+    [Parameter]
+    public string? Title { get; set; }
+
+    private List<ActivityLog> activityLogs = new();
+    private bool isLoading = true;
+
+    private string PanelTitle =>
+        string.IsNullOrWhiteSpace(Title)
+            ? "Activity History"
+            : Title;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        isLoading = true;
+
+        if (string.IsNullOrWhiteSpace(ModuleName) || RecordId <= 0)
+        {
+            activityLogs = new List<ActivityLog>();
+            isLoading = false;
+            return;
+        }
+
+        activityLogs = await Db.ActivityLogs
+            .AsNoTracking()
+            .Where(x => x.ModuleName == ModuleName && x.RecordId == RecordId)
+            .OrderByDescending(x => x.CreatedDate)
+            .ToListAsync();
+
+        isLoading = false;
+    }
+
+    private static string GetIconLetter(string? actionType)
+    {
+        if (string.IsNullOrWhiteSpace(actionType))
+        {
+            return "A";
+        }
+
+        return actionType.Trim()[0].ToString().ToUpper();
+    }
+
+    private static string GetActionClass(string? actionType)
+    {
+        return actionType?.ToLower() switch
+        {
+            "created" => "badge badge-success",
+            "updated" => "badge badge-warning",
+            "reviewed" => "badge badge-info",
+            "completed" => "badge badge-success",
+            "closed" => "badge badge-success",
+            "deleted" => "badge badge-danger",
+            _ => "badge badge-muted"
+        };
+    }
+}

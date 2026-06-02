@@ -1,4 +1,5 @@
-﻿@page "/work-orders/{id:int}"
+﻿@page "/work-orders/details/{Id:int}"
+@page "/work-orders/view/{Id:int}"
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
@@ -21,14 +22,12 @@
             <div>
                 <p class="eyebrow dark">Operations</p>
                 <h1>Work Order Not Found</h1>
-                <p>
-                    The selected work order could not be found.
-                </p>
+                <p>The requested work order could not be found.</p>
             </div>
         </section>
 
         <div class="form-actions">
-            <button type="button" class="secondary-button" @onclick="BackToList">
+            <button type="button" class="secondary-button" @onclick="BackToWorkOrders">
                 Back to Work Orders
             </button>
         </div>
@@ -39,9 +38,7 @@
             <div>
                 <p class="eyebrow dark">Operations</p>
                 <h1>@workOrder.WorkOrderNumber</h1>
-                <p>
-                    @workOrder.Title
-                </p>
+                <p>@workOrder.Title</p>
             </div>
 
             <div class="module-header-actions">
@@ -50,7 +47,8 @@
                     <strong>@workOrder.Status</strong>
                 </div>
 
-                <a class="primary-link-button" href="/work-orders/edit/@workOrder.Id?returnUrl=/work-orders/@workOrder.Id">
+                <a class="primary-link-button"
+                   href="@BuildEditUrl()">
                     Edit Work Order
                 </a>
             </div>
@@ -60,146 +58,108 @@
             <article class="module-summary-card info-card">
                 <span>Priority</span>
                 <strong>@workOrder.Priority</strong>
-                <small>Current priority level</small>
+                <small>@workOrder.Type</small>
             </article>
 
-            <article class="@GetDueCardClass()">
+            <article class="module-summary-card warning-card">
                 <span>Due Date</span>
                 <strong>@workOrder.DueDate.ToString("dd MMM")</strong>
                 <small>@workOrder.DueDate.ToString("yyyy")</small>
             </article>
 
-            <article class="module-summary-card">
+            <article class="module-summary-card @(workOrder.IsOverdue ? "danger-card" : "success-card")">
+                <span>Flag</span>
+                <strong>@(workOrder.IsOverdue ? "Overdue" : "On Track")</strong>
+                <small>@(workOrder.IsOverdue ? "Past due and not closed" : "No overdue flag")</small>
+            </article>
+
+            <article class="module-summary-card success-card">
                 <span>Owner</span>
                 <strong>@workOrder.Owner</strong>
-                <small>Assigned person</small>
-            </article>
-
-            <article class="module-summary-card">
-                <span>Type</span>
-                <strong>@workOrder.Type</strong>
-                <small>Work category</small>
+                <small>@workOrder.Department</small>
             </article>
         </section>
 
-        <section class="details-grid">
-            <article class="details-card">
-                <div class="details-card-header">
-                    <h2>Work Order Information</h2>
+        <section class="form-card">
+            <div class="details-grid">
+                <div class="details-field">
+                    <span>Work Order Number</span>
+                    <strong>@workOrder.WorkOrderNumber</strong>
                 </div>
 
-                <div class="details-list">
-                    <div class="details-row">
-                        <span>Work Order Number</span>
-                        <strong>@workOrder.WorkOrderNumber</strong>
-                    </div>
-
-                    <div class="details-row">
-                        <span>Title</span>
-                        <strong>@workOrder.Title</strong>
-                    </div>
-
-                    <div class="details-row">
-                        <span>Site</span>
-                        <strong>@workOrder.Site</strong>
-                    </div>
-
-                    <div class="details-row">
-                        <span>Department</span>
-                        <strong>@workOrder.Department</strong>
-                    </div>
-
-                    <div class="details-row">
-                        <span>Owner</span>
-                        <strong>@workOrder.Owner</strong>
-                    </div>
-
-                    <div class="details-row">
-                        <span>Type</span>
-                        <strong>@workOrder.Type</strong>
-                    </div>
-                </div>
-            </article>
-
-            <article class="details-card">
-                <div class="details-card-header">
-                    <h2>Status & Dates</h2>
+                <div class="details-field">
+                    <span>Title</span>
+                    <strong>@workOrder.Title</strong>
                 </div>
 
-                <div class="details-list">
-                    <div class="details-row">
-                        <span>Priority</span>
-                        <strong>
-                            <span class="@GetPriorityClass(workOrder.Priority)">
-                                @workOrder.Priority
-                            </span>
-                        </strong>
-                    </div>
-
-                    <div class="details-row">
-                        <span>Status</span>
-                        <strong>
-                            <span class="@GetStatusClass(workOrder.Status)">
-                                @workOrder.Status
-                            </span>
-                        </strong>
-                    </div>
-
-                    <div class="details-row">
-                        <span>Created Date</span>
-                        <strong>@workOrder.CreatedDate.ToString("dd MMM yyyy")</strong>
-                    </div>
-
-                    <div class="details-row">
-                        <span>Due Date</span>
-                        <strong>@workOrder.DueDate.ToString("dd MMM yyyy")</strong>
-                    </div>
-
-                    <div class="details-row">
-                        <span>Flag</span>
-                        <strong>
-                            @if (workOrder.IsOverdue)
-                            {
-                                <span class="badge badge-danger">Overdue</span>
-                            }
-                            else
-                            {
-                                <span class="badge badge-muted">On Track</span>
-                            }
-                        </strong>
-                    </div>
+                <div class="details-field">
+                    <span>Site</span>
+                    <strong>@workOrder.Site</strong>
                 </div>
-            </article>
-        </section>
 
-        <section class="details-card">
-            <div class="details-card-header">
-                <h2>Notes</h2>
+                <div class="details-field">
+                    <span>Department</span>
+                    <strong>@workOrder.Department</strong>
+                </div>
+
+                <div class="details-field">
+                    <span>Owner</span>
+                    <strong>@workOrder.Owner</strong>
+                </div>
+
+                <div class="details-field">
+                    <span>Type</span>
+                    <strong>@workOrder.Type</strong>
+                </div>
+
+                <div class="details-field">
+                    <span>Priority</span>
+                    <strong>
+                        <span class="@GetPriorityClass(workOrder.Priority)">
+                            @workOrder.Priority
+                        </span>
+                    </strong>
+                </div>
+
+                <div class="details-field">
+                    <span>Status</span>
+                    <strong>
+                        <span class="@GetStatusClass(workOrder.Status)">
+                            @workOrder.Status
+                        </span>
+                    </strong>
+                </div>
+
+                <div class="details-field">
+                    <span>Created Date</span>
+                    <strong>@workOrder.CreatedDate.ToString("dd MMM yyyy")</strong>
+                </div>
+
+                <div class="details-field">
+                    <span>Due Date</span>
+                    <strong>@workOrder.DueDate.ToString("dd MMM yyyy")</strong>
+                </div>
+
+                <div class="details-field details-field-full">
+                    <span>Notes</span>
+                    <p>@DisplayText(workOrder.Notes)</p>
+                </div>
             </div>
 
-            @if (string.IsNullOrWhiteSpace(workOrder.Notes))
-            {
-                <p class="details-notes muted-text">
-                    No notes have been added for this work order.
-                </p>
-            }
-            else
-            {
-                <p class="details-notes">
-                    @workOrder.Notes
-                </p>
-            }
+            <div class="form-actions">
+                <button type="button" class="secondary-button" @onclick="BackToWorkOrders">
+                    Back to Work Orders
+                </button>
+
+                <button type="button" class="primary-button" @onclick="GoToEdit">
+                    Edit Work Order
+                </button>
+            </div>
         </section>
 
-        <div class="form-actions">
-            <button type="button" class="secondary-button" @onclick="BackToList">
-                Back to Work Orders
-            </button>
-
-            <a class="primary-link-button" href="/work-orders/edit/@workOrder.Id?returnUrl=/work-orders/@workOrder.Id">
-                Edit Work Order
-            </a>
-        </div>
+        <ActivityHistoryPanel ModuleName="Work Orders"
+                              RecordId="@workOrder.Id"
+                              Title="Work Order Activity History" />
     }
 
 </div>
@@ -220,29 +180,38 @@
         isLoading = false;
     }
 
-    private void BackToList()
+    private string BuildEditUrl()
+    {
+        return $"/work-orders/edit/{Id}?returnUrl={Uri.EscapeDataString($"/work-orders/details/{Id}")}";
+    }
+
+    private void GoToEdit()
+    {
+        Navigation.NavigateTo(BuildEditUrl());
+    }
+
+    private void BackToWorkOrders()
     {
         Navigation.NavigateTo("/work-orders");
     }
 
-    private string GetDueCardClass()
+    private static string DisplayText(string? value)
     {
-        if (workOrder == null)
-        {
-            return "module-summary-card";
-        }
+        return string.IsNullOrWhiteSpace(value)
+            ? "No notes recorded."
+            : value;
+    }
 
-        if (workOrder.IsOverdue)
+    private static string GetPriorityClass(string? priority)
+    {
+        return priority?.ToLower() switch
         {
-            return "module-summary-card danger-card";
-        }
-
-        if (workOrder.DueDate <= DateTime.Today.AddDays(7))
-        {
-            return "module-summary-card warning-card";
-        }
-
-        return "module-summary-card success-card";
+            "critical" => "badge badge-danger",
+            "high" => "badge badge-warning",
+            "medium" => "badge badge-info",
+            "low" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
     }
 
     private static string GetStatusClass(string? status)
@@ -254,18 +223,6 @@
             "in progress" => "badge badge-info",
             "open" => "badge badge-warning",
             "new" => "badge badge-warning",
-            _ => "badge badge-muted"
-        };
-    }
-
-    private static string GetPriorityClass(string? priority)
-    {
-        return priority?.ToLower() switch
-        {
-            "critical" => "badge badge-danger",
-            "high" => "badge badge-warning",
-            "medium" => "badge badge-info",
-            "low" => "badge badge-muted",
             _ => "badge badge-muted"
         };
     }

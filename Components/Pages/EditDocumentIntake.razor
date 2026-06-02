@@ -1,4 +1,4 @@
-﻿@page "/document-intake/edit/{id:int}"
+﻿@page "/document-intake/edit/{Id:int}"
 @using Microsoft.AspNetCore.Components
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
@@ -159,6 +159,10 @@
                 </div>
             </EditForm>
         </section>
+
+        <ActivityHistoryPanel ModuleName="Document Intake"
+                              RecordId="@documentIntake.Id"
+                              Title="Document Intake Activity History" />
     }
 
 </div>
