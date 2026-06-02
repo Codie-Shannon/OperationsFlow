@@ -1,0 +1,468 @@
+﻿@page "/workload"
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
+@inject OperationsFlowDbContext Db
+
+<PageTitle>Workload - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Management View</p>
+            <h1>Workload</h1>
+            <p>
+                View assigned work across work orders, corrective actions, and document intake.
+                Identify overdue work, high-priority items, and owner workload pressure.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>Active Owners</span>
+            <strong>@WorkloadRows.Count</strong>
+        </div>
+    </section>
+
+    <section class="module-summary-grid">
+        <article class="module-summary-card info-card">
+            <span>Total Assigned</span>
+            <strong>@TotalAssignedCount</strong>
+            <small>Open assigned items</small>
+        </article>
+
+        <article class="module-summary-card danger-card">
+            <span>Overdue</span>
+            <strong>@TotalOverdueCount</strong>
+            <small>Assigned items past due</small>
+        </article>
+
+        <article class="module-summary-card warning-card">
+            <span>High Priority</span>
+            <strong>@TotalHighPriorityCount</strong>
+            <small>High or critical assigned items</small>
+        </article>
+
+        <article class="module-summary-card success-card">
+            <span>Highest Load</span>
+            <strong>@HighestLoadCount</strong>
+            <small>@HighestLoadOwner</small>
+        </article>
+    </section>
+
+    <section class="module-toolbar">
+        <input class="search-input"
+               placeholder="Search owner, department, or item..."
+               @bind="searchText"
+               @bind:event="oninput" />
+
+        <select class="filter-select" @bind="pressureFilter">
+            <option value="">All Pressure Levels</option>
+            <option value="High">High Pressure</option>
+            <option value="Medium">Medium Pressure</option>
+            <option value="Low">Low Pressure</option>
+        </select>
+
+        <select class="filter-select" @bind="ownerFilter">
+            <option value="">All Owners</option>
+            @foreach (var owner in OwnerOptions)
+            {
+                <option value="@owner">@owner</option>
+            }
+        </select>
+    </section>
+
+    <section class="table-card">
+        @if (!FilteredWorkloadRows.Any())
+        {
+            <div class="empty-state">No workload records match the current filters.</div>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Owner</th>
+                        <th>Pressure</th>
+                        <th>Total Assigned</th>
+                        <th>Work Orders</th>
+                        <th>Corrective Actions</th>
+                        <th>Document Intake</th>
+                        <th>Overdue</th>
+                        <th>High Priority</th>
+                        <th>Next Due</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in FilteredWorkloadRows)
+                    {
+                        <tr>
+                            <td class="strong-cell">@row.Owner</td>
+                            <td>
+                                <span class="@GetPressureClass(row.PressureLevel)">
+                                    @row.PressureLevel
+                                </span>
+                            </td>
+                            <td class="strong-cell">@row.TotalAssigned</td>
+                            <td>@row.OpenWorkOrders</td>
+                            <td>@row.OpenCorrectiveActions</td>
+                            <td>@row.OpenDocumentIntake</td>
+                            <td>
+                                @if (row.OverdueCount > 0)
+                                {
+                                    <span class="badge badge-danger">@row.OverdueCount</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-success">0</span>
+                                }
+                            </td>
+                            <td>
+                                @if (row.HighPriorityCount > 0)
+                                {
+                                    <span class="badge badge-warning">@row.HighPriorityCount</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-muted">0</span>
+                                }
+                            </td>
+                            <td>
+                                @if (row.NextDueDate.HasValue)
+                                {
+                                    @row.NextDueDate.Value.ToString("dd MMM yyyy")
+                                }
+                                else
+                                {
+                                    <span class="muted-text">No due items</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+    <section class="workload-detail-grid">
+        @foreach (var row in FilteredWorkloadRows)
+        {
+            <article class="workload-owner-card">
+                <div class="workload-owner-header">
+                    <div>
+                        <p class="eyebrow dark">Owner</p>
+                        <h2>@row.Owner</h2>
+                    </div>
+
+                    <span class="@GetPressureClass(row.PressureLevel)">
+                        @row.PressureLevel
+                    </span>
+                </div>
+
+                <div class="workload-mini-grid">
+                    <div>
+                        <span>Total</span>
+                        <strong>@row.TotalAssigned</strong>
+                    </div>
+
+                    <div>
+                        <span>Overdue</span>
+                        <strong>@row.OverdueCount</strong>
+                    </div>
+
+                    <div>
+                        <span>High</span>
+                        <strong>@row.HighPriorityCount</strong>
+                    </div>
+                </div>
+
+                @if (!row.Items.Any())
+                {
+                    <div class="empty-state">No active items assigned.</div>
+                }
+                else
+                {
+                    <div class="workload-item-list">
+                        @foreach (var item in row.Items.Take(8))
+                        {
+                            <article class="workload-item">
+                                <div>
+                                    <strong>@item.Reference</strong>
+                                    <p>@item.Title</p>
+                                    <small>@item.ModuleName • Due @item.DueDate.ToString("dd MMM yyyy")</small>
+                                </div>
+
+                                <div class="workload-badge-stack">
+                                    @if (item.IsOverdue)
+                                    {
+                                        <span class="badge badge-danger">Overdue</span>
+                                    }
+
+                                    @if (IsHighPriority(item.Priority))
+                                    {
+                                        <span class="badge badge-warning">@item.Priority</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-muted">@item.Priority</span>
+                                    }
+                                </div>
+                            </article>
+                        }
+                    </div>
+                }
+            </article>
+        }
+    </section>
+
+</div>
+
+@code {
+    private List<WorkOrder> workOrders = new();
+    private List<CorrectiveAction> correctiveActions = new();
+    private List<DocumentIntakeModel> documentIntakeItems = new();
+
+    private string searchText = "";
+    private string pressureFilter = "";
+    private string ownerFilter = "";
+
+    private List<WorkloadRow> WorkloadRows
+    {
+        get
+        {
+            var workloadItems = new List<WorkloadItem>();
+
+            workloadItems.AddRange(
+                workOrders
+                    .Where(x => !IsClosedStatus(x.Status))
+                    .Select(x => new WorkloadItem(
+                        Owner: string.IsNullOrWhiteSpace(x.Owner) ? "Unassigned" : x.Owner,
+                        ModuleName: "Work Orders",
+                        Reference: x.WorkOrderNumber,
+                        Title: x.Title,
+                        Priority: x.Priority,
+                        DueDate: x.DueDate,
+                        IsOverdue: x.IsOverdue
+                    ))
+            );
+
+            workloadItems.AddRange(
+                correctiveActions
+                    .Where(x => !IsClosedStatus(x.Status))
+                    .Select(x => new WorkloadItem(
+                        Owner: string.IsNullOrWhiteSpace(x.Owner) ? "Unassigned" : x.Owner,
+                        ModuleName: "Corrective Actions",
+                        Reference: $"CA-{x.Id}",
+                        Title: x.Title,
+                        Priority: x.Priority,
+                        DueDate: x.DueDate,
+                        IsOverdue: x.IsOverdue
+                    ))
+            );
+
+            workloadItems.AddRange(
+                documentIntakeItems
+                    .Where(x => !x.IsCompleted)
+                    .Select(x => new WorkloadItem(
+                        Owner: string.IsNullOrWhiteSpace(x.AssignedTo) ? "Unassigned" : x.AssignedTo,
+                        ModuleName: "Document Intake",
+                        Reference: $"DI-{x.Id}",
+                        Title: x.DocumentName,
+                        Priority: x.Priority,
+                        DueDate: x.DueDate,
+                        IsOverdue: x.IsOverdue
+                    ))
+            );
+
+            return workloadItems
+                .GroupBy(x => x.Owner)
+                .Select(group =>
+                {
+                    var items = group
+                        .OrderByDescending(x => x.IsOverdue)
+                        .ThenBy(x => x.DueDate)
+                        .ThenBy(x => x.ModuleName)
+                        .ToList();
+
+                    var openWorkOrders = items.Count(x => x.ModuleName == "Work Orders");
+                    var openCorrectiveActions = items.Count(x => x.ModuleName == "Corrective Actions");
+                    var openDocumentIntake = items.Count(x => x.ModuleName == "Document Intake");
+                    var overdueCount = items.Count(x => x.IsOverdue);
+                    var highPriorityCount = items.Count(x => IsHighPriority(x.Priority));
+                    var nextDueDate = items.Any() ? items.Min(x => x.DueDate) : (DateTime?)null;
+
+                    var pressureLevel = GetPressureLevel(
+                        totalAssigned: items.Count,
+                        overdueCount: overdueCount,
+                        highPriorityCount: highPriorityCount
+                    );
+
+                    return new WorkloadRow(
+                        Owner: group.Key,
+                        TotalAssigned: items.Count,
+                        OpenWorkOrders: openWorkOrders,
+                        OpenCorrectiveActions: openCorrectiveActions,
+                        OpenDocumentIntake: openDocumentIntake,
+                        OverdueCount: overdueCount,
+                        HighPriorityCount: highPriorityCount,
+                        NextDueDate: nextDueDate,
+                        PressureLevel: pressureLevel,
+                        Items: items
+                    );
+                })
+                .OrderByDescending(x => x.PressureSort)
+                .ThenByDescending(x => x.TotalAssigned)
+                .ThenBy(x => x.Owner)
+                .ToList();
+        }
+    }
+
+    private IEnumerable<WorkloadRow> FilteredWorkloadRows
+    {
+        get
+        {
+            var query = WorkloadRows.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(row =>
+                    Contains(row.Owner, searchText) ||
+                    row.Items.Any(item =>
+                        Contains(item.ModuleName, searchText) ||
+                        Contains(item.Reference, searchText) ||
+                        Contains(item.Title, searchText) ||
+                        Contains(item.Priority, searchText)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(pressureFilter))
+            {
+                query = query.Where(row => string.Equals(row.PressureLevel, pressureFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(ownerFilter))
+            {
+                query = query.Where(row => string.Equals(row.Owner, ownerFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return query.ToList();
+        }
+    }
+
+    private int TotalAssignedCount => WorkloadRows.Sum(x => x.TotalAssigned);
+
+    private int TotalOverdueCount => WorkloadRows.Sum(x => x.OverdueCount);
+
+    private int TotalHighPriorityCount => WorkloadRows.Sum(x => x.HighPriorityCount);
+
+    private int HighestLoadCount =>
+        WorkloadRows.Any() ? WorkloadRows.Max(x => x.TotalAssigned) : 0;
+
+    private string HighestLoadOwner =>
+        WorkloadRows
+            .OrderByDescending(x => x.TotalAssigned)
+            .ThenBy(x => x.Owner)
+            .FirstOrDefault()?.Owner ?? "No assigned work";
+
+    private List<string> OwnerOptions =>
+        WorkloadRows
+            .Select(x => x.Owner)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+    protected override async Task OnInitializedAsync()
+    {
+        workOrders = await Db.WorkOrders
+            .AsNoTracking()
+            .ToListAsync();
+
+        correctiveActions = await Db.CorrectiveActions
+            .AsNoTracking()
+            .ToListAsync();
+
+        documentIntakeItems = await Db.DocumentIntakeItems
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private static bool IsClosedStatus(string? status)
+    {
+        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(status, "Rejected", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsHighPriority(string? priority)
+    {
+        return string.Equals(priority, "High", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(priority, "Critical", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetPressureLevel(int totalAssigned, int overdueCount, int highPriorityCount)
+    {
+        if (overdueCount >= 2 || highPriorityCount >= 3 || totalAssigned >= 8)
+        {
+            return "High";
+        }
+
+        if (overdueCount >= 1 || highPriorityCount >= 1 || totalAssigned >= 4)
+        {
+            return "Medium";
+        }
+
+        return "Low";
+    }
+
+    private static string GetPressureClass(string? pressure)
+    {
+        return pressure?.ToLower() switch
+        {
+            "high" => "badge badge-danger",
+            "medium" => "badge badge-warning",
+            "low" => "badge badge-success",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private static bool Contains(string? source, string search)
+    {
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return false;
+        }
+
+        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private record WorkloadItem(
+        string Owner,
+        string ModuleName,
+        string Reference,
+        string Title,
+        string Priority,
+        DateTime DueDate,
+        bool IsOverdue);
+
+    private record WorkloadRow(
+        string Owner,
+        int TotalAssigned,
+        int OpenWorkOrders,
+        int OpenCorrectiveActions,
+        int OpenDocumentIntake,
+        int OverdueCount,
+        int HighPriorityCount,
+        DateTime? NextDueDate,
+        string PressureLevel,
+        List<WorkloadItem> Items)
+    {
+        public int PressureSort =>
+            PressureLevel switch
+            {
+                "High" => 3,
+                "Medium" => 2,
+                "Low" => 1,
+                _ => 0
+            };
+    }
+}
