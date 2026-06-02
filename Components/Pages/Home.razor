@@ -1,7 +1,10 @@
 ﻿@page "/"
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
 @using OperationsFlow.Models
 @using OperationsFlow.Services
 @inject DashboardService DashboardService
+@inject OperationsFlowDbContext Db
 
 <PageTitle>OperationsFlow Dashboard</PageTitle>
 
@@ -23,7 +26,7 @@ else
                 <h1>OperationsFlow Dashboard</h1>
                 <p class="hero-text">
                     Live overview of work orders, corrective actions, document control,
-                    risk register items, and training compliance.
+                    risk register items, training compliance, and recent system activity.
                 </p>
             </div>
 
@@ -181,14 +184,100 @@ else
             </article>
         </section>
 
+        <section class="recent-activity-card">
+            <div class="recent-activity-header">
+                <div>
+                    <p class="eyebrow dark">Traceability</p>
+                    <h2>Recent Activity</h2>
+                    <p>
+                        Latest work order creation, edit, review, and workflow events.
+                    </p>
+                </div>
+
+                <a class="primary-link-button" href="/activity-log">
+                    View Full Log
+                </a>
+            </div>
+
+            @if (recentActivities == null)
+            {
+                <div class="empty-state">
+                    Loading recent activity...
+                </div>
+            }
+            else if (!recentActivities.Any())
+            {
+                <div class="empty-state">
+                    No activity has been logged yet. Create or edit a work order to generate activity.
+                </div>
+            }
+            else
+            {
+                <div class="activity-list">
+                    @foreach (var item in recentActivities)
+                    {
+                        <article class="activity-item">
+                            <div class="@GetActivityIconClass(item.ActionType)">
+                                @GetActivityInitial(item.ActionType)
+                            </div>
+
+                            <div class="activity-content">
+                                <div class="activity-topline">
+                                    <strong>@item.RecordReference</strong>
+                                    <span>@item.CreatedDate.ToString("dd MMM yyyy HH:mm")</span>
+                                </div>
+
+                                <p>@item.Description</p>
+
+                                <div class="activity-meta">
+                                    <span>@item.ModuleName</span>
+                                    <span>@item.ActionType</span>
+                                    <span>@item.CreatedBy</span>
+                                </div>
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+        </section>
+
     </div>
 }
 
 @code {
     private DashboardSummary? summary;
+    private List<ActivityLog>? recentActivities;
 
     protected override async Task OnInitializedAsync()
     {
         summary = await DashboardService.GetDashboardSummaryAsync();
+
+        recentActivities = await Db.ActivityLogs
+            .AsNoTracking()
+            .OrderByDescending(x => x.CreatedDate)
+            .Take(6)
+            .ToListAsync();
+    }
+
+    private static string GetActivityIconClass(string? actionType)
+    {
+        return actionType?.ToLower() switch
+        {
+            "created" => "activity-icon activity-created",
+            "updated" => "activity-icon activity-updated",
+            "reviewed" => "activity-icon activity-reviewed",
+            "deleted" => "activity-icon activity-deleted",
+            _ => "activity-icon"
+        };
+    }
+
+    private static string GetActivityInitial(string? actionType)
+    {
+        if (string.IsNullOrWhiteSpace(actionType))
+        {
+            return "A";
+        }
+
+        return actionType.Trim()[0].ToString().ToUpper();
     }
 }
