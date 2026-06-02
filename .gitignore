@@ -9,19 +9,28 @@ obj/
 *.userosscache
 *.sln.docstates
 
-# Rider / JetBrains
+# Rider
 .idea/
+
+# VS Code
+.vscode/
+
+# Local database files
+*.db
+*.db-shm
+*.db-wal
+operationsflow.db
+operationsflow.db-shm
+operationsflow.db-wal
+
+# Logs
+*.log
+logs/
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-
-# SQLite temporary files
-*.db-shm
-*.db-wal
-
-# Local environment files
-.env
+# Publish output
+publish/
+artifacts/
