@@ -21,6 +21,7 @@ public static class DemoDataSeeder
         SeedDocuments(db);
         SeedRisks(db);
         SeedTraining(db);
+        SeedDocumentIntake(db);
 
         db.SaveChanges();
     }
@@ -818,6 +819,162 @@ public static class DemoDataSeeder
                 ExpiryDate = DateTime.Today.AddMonths(3),
                 IsRequired = false,
                 Notes = "Optional warden training for dispatch area."
+            }
+        );
+    }
+
+    private static void SeedDocumentIntake(OperationsFlowDbContext db)
+    {
+        db.DocumentIntakeItems.AddRange(
+            new DocumentIntake
+            {
+                DocumentName = "Supplier invoice batch - May",
+                ReceivedDate = DateTime.Today.AddDays(-6),
+                ReceivedFrom = "Bay Industrial Supplies",
+                SourceType = "Email",
+                DocumentType = "Supplier Invoice",
+                AssignedTo = "Casey",
+                TargetSystem = "Xero",
+                Status = "Needs Review",
+                Priority = "High",
+                DueDate = DateTime.Today.AddDays(-1),
+                CompletedDate = null,
+                Notes = "Invoices received by email. Needs checking before entry into Xero."
+            },
+            new DocumentIntake
+            {
+                DocumentName = "Customer quote request - workshop doors",
+                ReceivedDate = DateTime.Today.AddDays(-3),
+                ReceivedFrom = "Total Doors",
+                SourceType = "PDF",
+                DocumentType = "Quote Request",
+                AssignedTo = "Riley",
+                TargetSystem = "Internal System",
+                Status = "Data Checked",
+                Priority = "Medium",
+                DueDate = DateTime.Today.AddDays(2),
+                CompletedDate = null,
+                Notes = "Measurements checked. Waiting final confirmation before quote entry."
+            },
+            new DocumentIntake
+            {
+                DocumentName = "Delivery docket scan - dispatch",
+                ReceivedDate = DateTime.Today.AddDays(-2),
+                ReceivedFrom = "Dispatch Bay",
+                SourceType = "Scanned Document",
+                DocumentType = "Delivery Docket",
+                AssignedTo = "Riley",
+                TargetSystem = "WorkflowMax",
+                Status = "Entered",
+                Priority = "Medium",
+                DueDate = DateTime.Today.AddDays(1),
+                CompletedDate = null,
+                Notes = "Docket entered. Waiting supervisor confirmation."
+            },
+            new DocumentIntake
+            {
+                DocumentName = "Contractor insurance certificate",
+                ReceivedDate = DateTime.Today.AddDays(-10),
+                ReceivedFrom = "ABC Electrical",
+                SourceType = "Email",
+                DocumentType = "Compliance Document",
+                AssignedTo = "Mia",
+                TargetSystem = "SharePoint",
+                Status = "Completed",
+                Priority = "Low",
+                DueDate = DateTime.Today.AddDays(-5),
+                CompletedDate = DateTime.Today.AddDays(-6),
+                Notes = "Certificate saved to contractor compliance folder."
+            },
+            new DocumentIntake
+            {
+                DocumentName = "Purchase order confirmation",
+                ReceivedDate = DateTime.Today.AddDays(-1),
+                ReceivedFrom = "Rotorua Engineering",
+                SourceType = "Supplier Document",
+                DocumentType = "Purchase Order",
+                AssignedTo = "Casey",
+                TargetSystem = "Cin7",
+                Status = "Received",
+                Priority = "Medium",
+                DueDate = DateTime.Today.AddDays(4),
+                CompletedDate = null,
+                Notes = "PO received. Needs matching against supplier quote."
+            },
+            new DocumentIntake
+            {
+                DocumentName = "Incident photo evidence pack",
+                ReceivedDate = DateTime.Today.AddDays(-4),
+                ReceivedFrom = "Operations Team",
+                SourceType = "Internal Form",
+                DocumentType = "Incident Evidence",
+                AssignedTo = "Taylor",
+                TargetSystem = "SharePoint",
+                Status = "Saved",
+                Priority = "High",
+                DueDate = DateTime.Today.AddDays(1),
+                CompletedDate = null,
+                Notes = "Photos saved. Needs review alongside incident report."
+            },
+            new DocumentIntake
+            {
+                DocumentName = "Supplier statement - monthly",
+                ReceivedDate = DateTime.Today.AddDays(-8),
+                ReceivedFrom = "Coastal Parts Ltd",
+                SourceType = "Email",
+                DocumentType = "Supplier Statement",
+                AssignedTo = "Casey",
+                TargetSystem = "Xero",
+                Status = "Needs Review",
+                Priority = "High",
+                DueDate = DateTime.Today.AddDays(-2),
+                CompletedDate = null,
+                Notes = "Statement does not match two invoices. Needs checking before reconciliation."
+            },
+            new DocumentIntake
+            {
+                DocumentName = "Customer specification sheet",
+                ReceivedDate = DateTime.Today.AddDays(-5),
+                ReceivedFrom = "Nairn Fisher Client",
+                SourceType = "PDF",
+                DocumentType = "Specification",
+                AssignedTo = "Sam",
+                TargetSystem = "Internal System",
+                Status = "Data Checked",
+                Priority = "Medium",
+                DueDate = DateTime.Today.AddDays(3),
+                CompletedDate = null,
+                Notes = "Specification reviewed. Some fields still need confirmation."
+            },
+            new DocumentIntake
+            {
+                DocumentName = "Training certificate upload",
+                ReceivedDate = DateTime.Today.AddDays(-2),
+                ReceivedFrom = "Jordan",
+                SourceType = "Email",
+                DocumentType = "Training Certificate",
+                AssignedTo = "Mia",
+                TargetSystem = "SharePoint",
+                Status = "Completed",
+                Priority = "Low",
+                DueDate = DateTime.Today.AddDays(5),
+                CompletedDate = DateTime.Today.AddDays(-1),
+                Notes = "Certificate saved and training record updated."
+            },
+            new DocumentIntake
+            {
+                DocumentName = "Job completion paperwork",
+                ReceivedDate = DateTime.Today.AddDays(-1),
+                ReceivedFrom = "Main Workshop",
+                SourceType = "Scanned Document",
+                DocumentType = "Job Paperwork",
+                AssignedTo = "Casey",
+                TargetSystem = "WorkflowMax",
+                Status = "Received",
+                Priority = "Medium",
+                DueDate = DateTime.Today.AddDays(6),
+                CompletedDate = null,
+                Notes = "Paperwork scanned. Needs entry and filing."
             }
         );
     }

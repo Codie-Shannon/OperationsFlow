@@ -18,4 +18,5 @@ public class OperationsFlowDbContext : DbContext
     public DbSet<Site> Sites { get; set; }
     public DbSet<Department> Departments { get; set; }
     public DbSet<ActivityLog> ActivityLogs { get; set; }
+    public DbSet<DocumentIntake> DocumentIntakeItems { get; set; }
 }

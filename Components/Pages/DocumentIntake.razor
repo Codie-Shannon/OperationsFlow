@@ -1,0 +1,331 @@
+﻿@page "/document-intake"
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@inject OperationsFlowDbContext Db
+@using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
+
+<PageTitle>Document Intake - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Admin Workflow</p>
+            <h1>Document Intake</h1>
+            <p>
+                Track incoming emails, PDFs, forms, supplier documents, job paperwork,
+                and admin processing through review, entry, and completion.
+            </p>
+        </div>
+
+        <div class="module-header-actions">
+            <div class="module-header-stat">
+                <span>Needs Review</span>
+                <strong>@NeedsReviewCount</strong>
+            </div>
+
+            <a class="primary-link-button" href="/document-intake/create">
+                + New Intake
+            </a>
+        </div>
+    </section>
+
+    <section class="module-summary-grid">
+        <article class="module-summary-card info-card">
+            <span>Total Intake</span>
+            <strong>@TotalCount</strong>
+            <small>All incoming document records</small>
+        </article>
+
+        <article class="module-summary-card warning-card">
+            <span>Needs Review</span>
+            <strong>@NeedsReviewCount</strong>
+            <small>Awaiting manual check</small>
+        </article>
+
+        <article class="module-summary-card danger-card">
+            <span>Overdue</span>
+            <strong>@OverdueCount</strong>
+            <small>Past due and not completed</small>
+        </article>
+
+        <article class="module-summary-card success-card">
+            <span>Completed</span>
+            <strong>@CompletedCount</strong>
+            <small>Processed or rejected records</small>
+        </article>
+    </section>
+
+    <section class="module-toolbar">
+        <input class="search-input"
+               placeholder="Search document intake..."
+               @bind="searchText"
+               @bind:event="oninput" />
+
+        <select class="filter-select" @bind="statusFilter">
+            <option value="">All Statuses</option>
+            @foreach (var status in StatusOptions)
+            {
+                <option value="@status">@status</option>
+            }
+        </select>
+
+        <select class="filter-select" @bind="sourceTypeFilter">
+            <option value="">All Sources</option>
+            @foreach (var sourceType in SourceTypeOptions)
+            {
+                <option value="@sourceType">@sourceType</option>
+            }
+        </select>
+
+        <select class="filter-select" @bind="targetSystemFilter">
+            <option value="">All Target Systems</option>
+            @foreach (var targetSystem in TargetSystemOptions)
+            {
+                <option value="@targetSystem">@targetSystem</option>
+            }
+        </select>
+
+        <select class="filter-select" @bind="priorityFilter">
+            <option value="">All Priorities</option>
+            @foreach (var priority in PriorityOptions)
+            {
+                <option value="@priority">@priority</option>
+            }
+        </select>
+    </section>
+
+    <section class="table-card">
+        @if (documentIntakeItems == null)
+        {
+            <div class="empty-state">Loading document intake...</div>
+        }
+        else if (!FilteredItems.Any())
+        {
+            <div class="empty-state">No intake records match the current filters.</div>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Received From</th>
+                        <th>Source</th>
+                        <th>Type</th>
+                        <th>Assigned To</th>
+                        <th>Target System</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                        <th>Flag</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in FilteredItems)
+                    {
+                        <tr>
+                            <td class="strong-cell">@item.DocumentName</td>
+                            <td>@item.ReceivedFrom</td>
+                            <td>@item.SourceType</td>
+                            <td>@item.DocumentType</td>
+                            <td>@item.AssignedTo</td>
+                            <td>@item.TargetSystem</td>
+                            <td>
+                                <span class="@GetPriorityClass(item.Priority)">
+                                    @item.Priority
+                                </span>
+                            </td>
+                            <td>
+                                <span class="@GetStatusClass(item.Status)">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>@item.DueDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (item.IsOverdue)
+                                {
+                                    <span class="badge badge-danger">Overdue</span>
+                                }
+                                else if (item.NeedsReview)
+                                {
+                                    <span class="badge badge-warning">Needs Review</span>
+                                }
+                                else if (item.IsDueSoon)
+                                {
+                                    <span class="badge badge-info">Due Soon</span>
+                                }
+                                else if (item.IsCompleted)
+                                {
+                                    <span class="badge badge-success">Complete</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-muted">On Track</span>
+                                }
+                            </td>
+                            <td>
+                                <a class="table-action-link" href="/document-intake/edit/@item.Id?returnUrl=/document-intake">
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+</div>
+
+@code {
+    private List<DocumentIntakeModel>? documentIntakeItems;
+    private string searchText = "";
+    private string statusFilter = "";
+    private string sourceTypeFilter = "";
+    private string targetSystemFilter = "";
+    private string priorityFilter = "";
+
+    private IEnumerable<DocumentIntakeModel> FilteredItems
+    {
+        get
+        {
+            if (documentIntakeItems == null)
+            {
+                return Enumerable.Empty<DocumentIntakeModel>();
+            }
+
+            var query = documentIntakeItems.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(x =>
+                    Contains(x.DocumentName, searchText) ||
+                    Contains(x.ReceivedFrom, searchText) ||
+                    Contains(x.SourceType, searchText) ||
+                    Contains(x.DocumentType, searchText) ||
+                    Contains(x.AssignedTo, searchText) ||
+                    Contains(x.TargetSystem, searchText) ||
+                    Contains(x.Status, searchText) ||
+                    Contains(x.Priority, searchText) ||
+                    Contains(x.Notes, searchText));
+            }
+
+            if (!string.IsNullOrWhiteSpace(statusFilter))
+            {
+                query = query.Where(x => string.Equals(x.Status, statusFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(sourceTypeFilter))
+            {
+                query = query.Where(x => string.Equals(x.SourceType, sourceTypeFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(targetSystemFilter))
+            {
+                query = query.Where(x => string.Equals(x.TargetSystem, targetSystemFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(priorityFilter))
+            {
+                query = query.Where(x => string.Equals(x.Priority, priorityFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return query
+                .OrderByDescending(x => x.IsOverdue)
+                .ThenByDescending(x => x.NeedsReview)
+                .ThenBy(x => x.DueDate)
+                .ThenBy(x => x.DocumentName)
+                .ToList();
+        }
+    }
+
+    private int TotalCount => documentIntakeItems?.Count ?? 0;
+
+    private int NeedsReviewCount =>
+        documentIntakeItems?.Count(x => x.NeedsReview) ?? 0;
+
+    private int OverdueCount =>
+        documentIntakeItems?.Count(x => x.IsOverdue) ?? 0;
+
+    private int CompletedCount =>
+        documentIntakeItems?.Count(x => x.IsCompleted) ?? 0;
+
+    private List<string> StatusOptions =>
+        documentIntakeItems?
+            .Select(x => x.Status)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    private List<string> SourceTypeOptions =>
+        documentIntakeItems?
+            .Select(x => x.SourceType)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    private List<string> TargetSystemOptions =>
+        documentIntakeItems?
+            .Select(x => x.TargetSystem)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    private List<string> PriorityOptions =>
+        documentIntakeItems?
+            .Select(x => x.Priority)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        documentIntakeItems = await Db.DocumentIntakeItems
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private static bool Contains(string? source, string search)
+    {
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return false;
+        }
+
+        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetPriorityClass(string? priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "critical" => "badge badge-danger",
+            "high" => "badge badge-warning",
+            "medium" => "badge badge-info",
+            "low" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private static string GetStatusClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" => "badge badge-success",
+            "rejected" => "badge badge-danger",
+            "entered" => "badge badge-info",
+            "data checked" => "badge badge-info",
+            "needs review" => "badge badge-warning",
+            "saved" => "badge badge-muted",
+            "received" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
+    }
+}
