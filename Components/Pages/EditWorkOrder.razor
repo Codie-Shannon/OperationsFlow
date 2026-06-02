@@ -1,0 +1,289 @@
+﻿@page "/work-orders/edit/{id:int}"
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@inject OperationsFlowDbContext Db
+@inject NavigationManager Navigation
+
+<PageTitle>Edit Work Order - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Operations</p>
+            <h1>Edit Work Order</h1>
+            <p>
+                Update an operational work request, including owner, priority, status,
+                due date, and notes.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>Editing</span>
+            <strong>@DisplayWorkOrderNumber</strong>
+        </div>
+    </section>
+
+    @if (isLoading)
+    {
+        <section class="form-card">
+            <div class="empty-state">Loading work order...</div>
+        </section>
+    }
+    else if (workOrder == null)
+    {
+        <section class="alert-card danger-alert">
+            Work order could not be found.
+        </section>
+
+        <div class="form-actions">
+            <button type="button" class="secondary-button" @onclick="BackToList">
+                Back to Work Orders
+            </button>
+        </div>
+    }
+    else
+    {
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <section class="alert-card danger-alert">
+                @errorMessage
+            </section>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(successMessage))
+        {
+            <section class="alert-card success-alert">
+                @successMessage
+            </section>
+        }
+
+        <section class="form-card">
+            <EditForm Model="workOrder" OnValidSubmit="SaveWorkOrder">
+                <DataAnnotationsValidator />
+
+                <div class="form-grid">
+
+                    <div class="form-field">
+                        <label>Work Order Number</label>
+                        <InputText class="form-input" @bind-Value="workOrder.WorkOrderNumber" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Title</label>
+                        <InputText class="form-input" @bind-Value="workOrder.Title" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Site</label>
+                        <InputSelect class="form-input" @bind-Value="workOrder.Site">
+                            @foreach (var site in SiteOptions)
+                            {
+                                <option value="@site">@site</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Department</label>
+                        <InputSelect class="form-input" @bind-Value="workOrder.Department">
+                            @foreach (var department in DepartmentOptions)
+                            {
+                                <option value="@department">@department</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Owner</label>
+                        <InputText class="form-input" @bind-Value="workOrder.Owner" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Type</label>
+                        <InputSelect class="form-input" @bind-Value="workOrder.Type">
+                            @foreach (var type in TypeOptions)
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Priority</label>
+                        <InputSelect class="form-input" @bind-Value="workOrder.Priority">
+                            @foreach (var priority in PriorityOptions)
+                            {
+                                <option value="@priority">@priority</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Status</label>
+                        <InputSelect class="form-input" @bind-Value="workOrder.Status">
+                            @foreach (var status in StatusOptions)
+                            {
+                                <option value="@status">@status</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Created Date</label>
+                        <InputDate class="form-input" @bind-Value="workOrder.CreatedDate" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Due Date</label>
+                        <InputDate class="form-input" @bind-Value="workOrder.DueDate" />
+                    </div>
+
+                    <div class="form-field form-field-full">
+                        <label>Notes</label>
+                        <InputTextArea class="form-input form-textarea" @bind-Value="workOrder.Notes" />
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="secondary-button" @onclick="BackToList">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="primary-button">
+                        Save Changes
+                    </button>
+                </div>
+            </EditForm>
+        </section>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private WorkOrder? workOrder;
+    private bool isLoading = true;
+    private string errorMessage = "";
+    private string successMessage = "";
+
+    private string DisplayWorkOrderNumber =>
+        string.IsNullOrWhiteSpace(workOrder?.WorkOrderNumber)
+            ? "WO"
+            : workOrder.WorkOrderNumber;
+
+    private List<string> SiteOptions = new()
+    {
+        "Main Workshop",
+        "Yard",
+        "Admin Office",
+        "Warehouse",
+        "Dispatch Bay"
+    };
+
+    private List<string> DepartmentOptions = new()
+    {
+        "Operations",
+        "Health & Safety",
+        "Admin",
+        "Maintenance",
+        "Warehouse",
+        "Dispatch",
+        "Quality"
+    };
+
+    private List<string> TypeOptions = new()
+    {
+        "Maintenance",
+        "Repair",
+        "Supply",
+        "Admin",
+        "Compliance",
+        "Inspection",
+        "Preventative Maintenance",
+        "Site Improvement",
+        "IT Support"
+    };
+
+    private List<string> PriorityOptions = new()
+    {
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+    };
+
+    private List<string> StatusOptions = new()
+    {
+        "Open",
+        "In Progress",
+        "Completed",
+        "Closed"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        workOrder = await Db.WorkOrders
+            .FirstOrDefaultAsync(x => x.Id == Id);
+
+        isLoading = false;
+    }
+
+    private async Task SaveWorkOrder()
+    {
+        errorMessage = "";
+        successMessage = "";
+
+        if (workOrder == null)
+        {
+            errorMessage = "Work order could not be saved because it was not loaded.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(workOrder.Title))
+        {
+            errorMessage = "Please enter a title.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(workOrder.Owner))
+        {
+            errorMessage = "Please enter an owner.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(workOrder.WorkOrderNumber))
+        {
+            errorMessage = "Please enter a work order number.";
+            return;
+        }
+
+        if (workOrder.DueDate < workOrder.CreatedDate)
+        {
+            errorMessage = "Due date cannot be before created date.";
+            return;
+        }
+
+        var duplicateNumberExists = await Db.WorkOrders
+            .AnyAsync(x => x.Id != workOrder.Id && x.WorkOrderNumber == workOrder.WorkOrderNumber);
+
+        if (duplicateNumberExists)
+        {
+            errorMessage = "Another work order already uses this work order number.";
+            return;
+        }
+
+        await Db.SaveChangesAsync();
+
+        Navigation.NavigateTo("/work-orders");
+    }
+
+    private void BackToList()
+    {
+        Navigation.NavigateTo("/work-orders");
+    }
+}

@@ -103,6 +103,7 @@
                         <th>Status</th>
                         <th>Due Date</th>
                         <th>Flag</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -135,6 +136,11 @@
                                 {
                                     <span class="badge badge-muted">On Track</span>
                                 }
+                            </td>
+                            <td>
+                                <a class="table-action-link" href="/work-orders/edit/@item.Id">
+                                    Edit
+                                </a>
                             </td>
                         </tr>
                     }
