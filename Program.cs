@@ -18,6 +18,7 @@ builder.Services.AddDbContext<OperationsFlowDbContext>(options =>
 });
 
 builder.Services.AddScoped<DashboardService>();
+builder.Services.AddScoped<ActivityLogService>();
 
 var app = builder.Build();
 

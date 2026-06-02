@@ -3,7 +3,9 @@
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+@using OperationsFlow.Services
 @inject OperationsFlowDbContext Db
+@inject ActivityLogService ActivityLogService
 @inject NavigationManager Navigation
 
 <PageTitle>Edit Work Order - OperationsFlow</PageTitle>
@@ -167,6 +169,12 @@
     private bool isLoading = true;
     private string errorMessage = "";
 
+    private string originalStatus = "";
+    private string originalPriority = "";
+    private DateTime originalDueDate;
+    private string originalOwner = "";
+    private string originalTitle = "";
+
     private string DisplayWorkOrderNumber =>
         string.IsNullOrWhiteSpace(workOrder?.WorkOrderNumber)
             ? "WO"
@@ -226,7 +234,53 @@
         workOrder = await Db.WorkOrders
             .FirstOrDefaultAsync(x => x.Id == Id);
 
+        if (workOrder != null)
+        {
+            originalStatus = workOrder.Status;
+            originalPriority = workOrder.Priority;
+            originalDueDate = workOrder.DueDate;
+            originalOwner = workOrder.Owner;
+            originalTitle = workOrder.Title;
+        }
+
         isLoading = false;
+    }
+
+    private List<string> BuildChangeDescriptions()
+    {
+        var changes = new List<string>();
+
+        if (workOrder == null)
+        {
+            return changes;
+        }
+
+        if (!string.Equals(originalTitle, workOrder.Title, StringComparison.Ordinal))
+        {
+            changes.Add($"title changed from '{originalTitle}' to '{workOrder.Title}'");
+        }
+
+        if (!string.Equals(originalOwner, workOrder.Owner, StringComparison.Ordinal))
+        {
+            changes.Add($"owner changed from '{originalOwner}' to '{workOrder.Owner}'");
+        }
+
+        if (!string.Equals(originalStatus, workOrder.Status, StringComparison.Ordinal))
+        {
+            changes.Add($"status changed from '{originalStatus}' to '{workOrder.Status}'");
+        }
+
+        if (!string.Equals(originalPriority, workOrder.Priority, StringComparison.Ordinal))
+        {
+            changes.Add($"priority changed from '{originalPriority}' to '{workOrder.Priority}'");
+        }
+
+        if (originalDueDate.Date != workOrder.DueDate.Date)
+        {
+            changes.Add($"due date changed from {originalDueDate:dd MMM yyyy} to {workOrder.DueDate:dd MMM yyyy}");
+        }
+
+        return changes;
     }
 
     private async Task SaveWorkOrder()
@@ -272,7 +326,30 @@
             return;
         }
 
+        var changeDescriptions = BuildChangeDescriptions();
+
         await Db.SaveChangesAsync();
+
+        if (changeDescriptions.Any())
+        {
+            await ActivityLogService.LogAsync(
+                moduleName: "Work Orders",
+                recordId: workOrder.Id,
+                recordReference: workOrder.WorkOrderNumber,
+                actionType: "Updated",
+                description: $"Updated work order {workOrder.WorkOrderNumber}: {string.Join("; ", changeDescriptions)}."
+            );
+        }
+        else
+        {
+            await ActivityLogService.LogAsync(
+                moduleName: "Work Orders",
+                recordId: workOrder.Id,
+                recordReference: workOrder.WorkOrderNumber,
+                actionType: "Reviewed",
+                description: $"Reviewed work order {workOrder.WorkOrderNumber} with no tracked field changes."
+            );
+        }
 
         BackToReturnPage();
     }

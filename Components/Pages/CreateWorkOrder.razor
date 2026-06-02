@@ -1,7 +1,9 @@
 ﻿@page "/work-orders/create"
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+@using OperationsFlow.Services
 @inject OperationsFlowDbContext Db
+@inject ActivityLogService ActivityLogService
 @inject NavigationManager Navigation
 
 <PageTitle>Create Work Order - OperationsFlow</PageTitle>
@@ -279,6 +281,14 @@
 
         Db.WorkOrders.Add(workOrder);
         await Db.SaveChangesAsync();
+
+        await ActivityLogService.LogAsync(
+            moduleName: "Work Orders",
+            recordId: workOrder.Id,
+            recordReference: workOrder.WorkOrderNumber,
+            actionType: "Created",
+            description: $"Created work order {workOrder.WorkOrderNumber}: {workOrder.Title}."
+        );
 
         Navigation.NavigateTo("/work-orders");
     }

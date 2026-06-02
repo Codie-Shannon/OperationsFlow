@@ -10,11 +10,12 @@ public class OperationsFlowDbContext : DbContext
     {
     }
 
-    public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
-    public DbSet<CorrectiveAction> CorrectiveActions => Set<CorrectiveAction>();
-    public DbSet<DocumentRecord> DocumentRecords => Set<DocumentRecord>();
-    public DbSet<RiskItem> RiskItems => Set<RiskItem>();
-    public DbSet<TrainingRecord> TrainingRecords => Set<TrainingRecord>();
-    public DbSet<Site> Sites => Set<Site>();
-    public DbSet<Department> Departments => Set<Department>();
+    public DbSet<WorkOrder> WorkOrders { get; set; }
+    public DbSet<CorrectiveAction> CorrectiveActions { get; set; }
+    public DbSet<DocumentRecord> DocumentRecords { get; set; }
+    public DbSet<RiskItem> RiskItems { get; set; }
+    public DbSet<TrainingRecord> TrainingRecords { get; set; }
+    public DbSet<Site> Sites { get; set; }
+    public DbSet<Department> Departments { get; set; }
+    public DbSet<ActivityLog> ActivityLogs { get; set; }
 }

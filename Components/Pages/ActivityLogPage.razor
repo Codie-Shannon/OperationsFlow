@@ -1,0 +1,220 @@
+﻿@page "/activity-log"
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@inject OperationsFlowDbContext Db
+
+<PageTitle>Activity Log - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">System Tracking</p>
+            <h1>Activity Log</h1>
+            <p>
+                Track record changes across OperationsFlow, including created work orders,
+                edited records, status changes, and workflow updates.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>Total Events</span>
+            <strong>@TotalCount</strong>
+        </div>
+    </section>
+
+    <section class="module-summary-grid">
+        <article class="module-summary-card info-card">
+            <span>Total Events</span>
+            <strong>@TotalCount</strong>
+            <small>All logged system activity</small>
+        </article>
+
+        <article class="module-summary-card success-card">
+            <span>Created</span>
+            <strong>@CreatedCount</strong>
+            <small>New records created</small>
+        </article>
+
+        <article class="module-summary-card warning-card">
+            <span>Updated</span>
+            <strong>@UpdatedCount</strong>
+            <small>Existing records changed</small>
+        </article>
+
+        <article class="module-summary-card">
+            <span>Today</span>
+            <strong>@TodayCount</strong>
+            <small>Activity logged today</small>
+        </article>
+    </section>
+
+    <section class="module-toolbar">
+        <input class="search-input"
+               placeholder="Search activity..."
+               @bind="searchText"
+               @bind:event="oninput" />
+
+        <select class="filter-select" @bind="moduleFilter">
+            <option value="">All Modules</option>
+            @foreach (var module in ModuleOptions)
+            {
+                <option value="@module">@module</option>
+            }
+        </select>
+
+        <select class="filter-select" @bind="actionFilter">
+            <option value="">All Actions</option>
+            @foreach (var action in ActionOptions)
+            {
+                <option value="@action">@action</option>
+            }
+        </select>
+    </section>
+
+    <section class="table-card">
+        @if (activityLogs == null)
+        {
+            <div class="empty-state">Loading activity log...</div>
+        }
+        else if (!FilteredActivityLogs.Any())
+        {
+            <div class="empty-state">No activity log records match the current filters.</div>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date / Time</th>
+                        <th>Module</th>
+                        <th>Record</th>
+                        <th>Action</th>
+                        <th>Description</th>
+                        <th>Created By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in FilteredActivityLogs)
+                    {
+                        <tr>
+                            <td class="strong-cell">@item.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
+                            <td>@item.ModuleName</td>
+                            <td>@item.RecordReference</td>
+                            <td>
+                                <span class="@GetActionClass(item.ActionType)">
+                                    @item.ActionType
+                                </span>
+                            </td>
+                            <td>@item.Description</td>
+                            <td>@item.CreatedBy</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+</div>
+
+@code {
+    private List<ActivityLog>? activityLogs;
+    private string searchText = "";
+    private string moduleFilter = "";
+    private string actionFilter = "";
+
+    private IEnumerable<ActivityLog> FilteredActivityLogs
+    {
+        get
+        {
+            if (activityLogs == null)
+            {
+                return Enumerable.Empty<ActivityLog>();
+            }
+
+            var query = activityLogs.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(x =>
+                    Contains(x.ModuleName, searchText) ||
+                    Contains(x.RecordReference, searchText) ||
+                    Contains(x.ActionType, searchText) ||
+                    Contains(x.Description, searchText) ||
+                    Contains(x.CreatedBy, searchText));
+            }
+
+            if (!string.IsNullOrWhiteSpace(moduleFilter))
+            {
+                query = query.Where(x => string.Equals(x.ModuleName, moduleFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(actionFilter))
+            {
+                query = query.Where(x => string.Equals(x.ActionType, actionFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return query
+                .OrderByDescending(x => x.CreatedDate)
+                .ToList();
+        }
+    }
+
+    private int TotalCount => activityLogs?.Count ?? 0;
+
+    private int CreatedCount =>
+        activityLogs?.Count(x => string.Equals(x.ActionType, "Created", StringComparison.OrdinalIgnoreCase)) ?? 0;
+
+    private int UpdatedCount =>
+        activityLogs?.Count(x => string.Equals(x.ActionType, "Updated", StringComparison.OrdinalIgnoreCase)) ?? 0;
+
+    private int TodayCount =>
+        activityLogs?.Count(x => x.CreatedDate.Date == DateTime.Today) ?? 0;
+
+    private List<string> ModuleOptions =>
+        activityLogs?
+            .Select(x => x.ModuleName)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    private List<string> ActionOptions =>
+        activityLogs?
+            .Select(x => x.ActionType)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList() ?? new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        activityLogs = await Db.ActivityLogs
+            .AsNoTracking()
+            .OrderByDescending(x => x.CreatedDate)
+            .ToListAsync();
+    }
+
+    private static bool Contains(string? source, string search)
+    {
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return false;
+        }
+
+        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetActionClass(string? action)
+    {
+        return action?.ToLower() switch
+        {
+            "created" => "badge badge-success",
+            "updated" => "badge badge-warning",
+            "reviewed" => "badge badge-info",
+            "deleted" => "badge badge-danger",
+            _ => "badge badge-muted"
+        };
+    }
+}
