@@ -1,0 +1,407 @@
+﻿@page "/corrective-actions/edit/{id:int}"
+@using Microsoft.AspNetCore.Components
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@using OperationsFlow.Services
+@inject OperationsFlowDbContext Db
+@inject ActivityLogService ActivityLogService
+@inject NavigationManager Navigation
+
+<PageTitle>Edit Corrective Action - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Operations</p>
+            <h1>Edit Corrective Action</h1>
+            <p>
+                Update corrective action ownership, priority, status, due date,
+                completion state, and notes.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>Editing</span>
+            <strong>@DisplayReference</strong>
+        </div>
+    </section>
+
+    @if (isLoading)
+    {
+        <section class="form-card">
+            <div class="empty-state">Loading corrective action...</div>
+        </section>
+    }
+    else if (correctiveAction == null)
+    {
+        <section class="alert-card danger-alert">
+            Corrective action could not be found.
+        </section>
+
+        <div class="form-actions">
+            <button type="button" class="secondary-button" @onclick="BackToReturnPage">
+                Back
+            </button>
+        </div>
+    }
+    else
+    {
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <section class="alert-card danger-alert">
+                @errorMessage
+            </section>
+        }
+
+        <section class="form-card">
+            <EditForm Model="correctiveAction" OnValidSubmit="SaveCorrectiveAction">
+                <DataAnnotationsValidator />
+
+                <div class="form-grid">
+
+                    <div class="form-field form-field-full">
+                        <label>Title</label>
+                        <InputText class="form-input" @bind-Value="correctiveAction.Title" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Source</label>
+                        <InputSelect class="form-input" @bind-Value="correctiveAction.Source">
+                            @foreach (var source in SourceOptions)
+                            {
+                                <option value="@source">@source</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Action Type</label>
+                        <InputSelect class="form-input" @bind-Value="correctiveAction.ActionType">
+                            @foreach (var actionType in ActionTypeOptions)
+                            {
+                                <option value="@actionType">@actionType</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Site</label>
+                        <InputSelect class="form-input" @bind-Value="correctiveAction.Site">
+                            @foreach (var site in SiteOptions)
+                            {
+                                <option value="@site">@site</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Department</label>
+                        <InputSelect class="form-input" @bind-Value="correctiveAction.Department">
+                            @foreach (var department in DepartmentOptions)
+                            {
+                                <option value="@department">@department</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Owner</label>
+                        <InputText class="form-input" @bind-Value="correctiveAction.Owner" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Priority</label>
+                        <InputSelect class="form-input" @bind-Value="correctiveAction.Priority">
+                            @foreach (var priority in PriorityOptions)
+                            {
+                                <option value="@priority">@priority</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Status</label>
+                        <InputSelect class="form-input" @bind-Value="correctiveAction.Status">
+                            @foreach (var status in StatusOptions)
+                            {
+                                <option value="@status">@status</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Created Date</label>
+                        <InputDate class="form-input" @bind-Value="correctiveAction.CreatedDate" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Due Date</label>
+                        <InputDate class="form-input" @bind-Value="correctiveAction.DueDate" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Completed Date</label>
+                        <InputDate class="form-input" @bind-Value="correctiveAction.CompletedDate" />
+                    </div>
+
+                    <div class="form-field form-field-full">
+                        <label>Notes</label>
+                        <InputTextArea class="form-input form-textarea" @bind-Value="correctiveAction.Notes" />
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="secondary-button" @onclick="BackToReturnPage">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="primary-button">
+                        Save Changes
+                    </button>
+                </div>
+            </EditForm>
+        </section>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
+    private CorrectiveAction? correctiveAction;
+    private bool isLoading = true;
+    private string errorMessage = "";
+
+    private string originalTitle = "";
+    private string originalOwner = "";
+    private string originalStatus = "";
+    private string originalPriority = "";
+    private DateTime originalDueDate;
+    private DateTime? originalCompletedDate;
+
+    private string DisplayReference => correctiveAction == null ? "CA" : $"CA-{correctiveAction.Id}";
+
+    private List<string> SourceOptions = new()
+    {
+        "Incident",
+        "Inspection",
+        "Internal Audit",
+        "Risk Review",
+        "Hazard Report",
+        "Quality Review",
+        "Management Review"
+    };
+
+    private List<string> ActionTypeOptions = new()
+    {
+        "Investigation",
+        "Repair",
+        "Process Review",
+        "Document Update",
+        "Checklist",
+        "Training",
+        "System Update"
+    };
+
+    private List<string> SiteOptions = new()
+    {
+        "Main Workshop",
+        "Yard",
+        "Admin Office",
+        "Warehouse",
+        "Dispatch Bay"
+    };
+
+    private List<string> DepartmentOptions = new()
+    {
+        "Operations",
+        "Health & Safety",
+        "Admin",
+        "Maintenance",
+        "Warehouse",
+        "Dispatch",
+        "Quality"
+    };
+
+    private List<string> PriorityOptions = new()
+    {
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+    };
+
+    private List<string> StatusOptions = new()
+    {
+        "Open",
+        "In Progress",
+        "Completed",
+        "Closed"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        correctiveAction = await Db.CorrectiveActions
+            .FirstOrDefaultAsync(x => x.Id == Id);
+
+        if (correctiveAction != null)
+        {
+            originalTitle = correctiveAction.Title;
+            originalOwner = correctiveAction.Owner;
+            originalStatus = correctiveAction.Status;
+            originalPriority = correctiveAction.Priority;
+            originalDueDate = correctiveAction.DueDate;
+            originalCompletedDate = correctiveAction.CompletedDate;
+        }
+
+        isLoading = false;
+    }
+
+    private async Task SaveCorrectiveAction()
+    {
+        errorMessage = "";
+
+        if (correctiveAction == null)
+        {
+            errorMessage = "Corrective action could not be saved because it was not loaded.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(correctiveAction.Title))
+        {
+            errorMessage = "Please enter a title.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(correctiveAction.Owner))
+        {
+            errorMessage = "Please enter an owner.";
+            return;
+        }
+
+        if (correctiveAction.DueDate < correctiveAction.CreatedDate)
+        {
+            errorMessage = "Due date cannot be before created date.";
+            return;
+        }
+
+        if (IsCompletedStatus(correctiveAction.Status) && correctiveAction.CompletedDate == null)
+        {
+            correctiveAction.CompletedDate = DateTime.Today;
+        }
+
+        if (!IsCompletedStatus(correctiveAction.Status))
+        {
+            correctiveAction.CompletedDate = null;
+        }
+
+        var changeDescriptions = BuildChangeDescriptions();
+
+        await Db.SaveChangesAsync();
+
+        if (changeDescriptions.Any())
+        {
+            await ActivityLogService.LogAsync(
+                moduleName: "Corrective Actions",
+                recordId: correctiveAction.Id,
+                recordReference: $"CA-{correctiveAction.Id}",
+                actionType: "Updated",
+                description: $"Updated corrective action CA-{correctiveAction.Id}: {string.Join("; ", changeDescriptions)}."
+            );
+        }
+        else
+        {
+            await ActivityLogService.LogAsync(
+                moduleName: "Corrective Actions",
+                recordId: correctiveAction.Id,
+                recordReference: $"CA-{correctiveAction.Id}",
+                actionType: "Reviewed",
+                description: $"Reviewed corrective action CA-{correctiveAction.Id} with no tracked field changes."
+            );
+        }
+
+        BackToReturnPage();
+    }
+
+    private List<string> BuildChangeDescriptions()
+    {
+        var changes = new List<string>();
+
+        if (correctiveAction == null)
+        {
+            return changes;
+        }
+
+        if (!string.Equals(originalTitle, correctiveAction.Title, StringComparison.Ordinal))
+        {
+            changes.Add($"title changed from '{originalTitle}' to '{correctiveAction.Title}'");
+        }
+
+        if (!string.Equals(originalOwner, correctiveAction.Owner, StringComparison.Ordinal))
+        {
+            changes.Add($"owner changed from '{originalOwner}' to '{correctiveAction.Owner}'");
+        }
+
+        if (!string.Equals(originalStatus, correctiveAction.Status, StringComparison.Ordinal))
+        {
+            changes.Add($"status changed from '{originalStatus}' to '{correctiveAction.Status}'");
+        }
+
+        if (!string.Equals(originalPriority, correctiveAction.Priority, StringComparison.Ordinal))
+        {
+            changes.Add($"priority changed from '{originalPriority}' to '{correctiveAction.Priority}'");
+        }
+
+        if (originalDueDate.Date != correctiveAction.DueDate.Date)
+        {
+            changes.Add($"due date changed from {originalDueDate:dd MMM yyyy} to {correctiveAction.DueDate:dd MMM yyyy}");
+        }
+
+        if (originalCompletedDate?.Date != correctiveAction.CompletedDate?.Date)
+        {
+            var oldDate = originalCompletedDate.HasValue
+                ? originalCompletedDate.Value.ToString("dd MMM yyyy")
+                : "not completed";
+
+            var newDate = correctiveAction.CompletedDate.HasValue
+                ? correctiveAction.CompletedDate.Value.ToString("dd MMM yyyy")
+                : "not completed";
+
+            changes.Add($"completed date changed from {oldDate} to {newDate}");
+        }
+
+        return changes;
+    }
+
+    private void BackToReturnPage()
+    {
+        var fallbackUrl = "/corrective-actions";
+
+        if (string.IsNullOrWhiteSpace(ReturnUrl))
+        {
+            Navigation.NavigateTo(fallbackUrl);
+            return;
+        }
+
+        if (!ReturnUrl.StartsWith("/"))
+        {
+            Navigation.NavigateTo(fallbackUrl);
+            return;
+        }
+
+        Navigation.NavigateTo(ReturnUrl);
+    }
+
+    private static bool IsCompletedStatus(string? status)
+    {
+        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
+    }
+}

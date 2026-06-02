@@ -1,0 +1,279 @@
+﻿@page "/corrective-actions/create"
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@using OperationsFlow.Services
+@inject OperationsFlowDbContext Db
+@inject ActivityLogService ActivityLogService
+@inject NavigationManager Navigation
+
+<PageTitle>Create Corrective Action - OperationsFlow</PageTitle>
+
+<div class="page-shell module-page">
+
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">Operations</p>
+            <h1>Create Corrective Action</h1>
+            <p>
+                Add a corrective or improvement action from an incident, audit,
+                inspection, risk review, or management follow-up.
+            </p>
+        </div>
+
+        <div class="module-header-stat">
+            <span>New Record</span>
+            <strong>CA</strong>
+        </div>
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <section class="alert-card danger-alert">
+            @errorMessage
+        </section>
+    }
+
+    <section class="form-card">
+        <EditForm Model="correctiveAction" OnValidSubmit="SaveCorrectiveAction">
+            <DataAnnotationsValidator />
+
+            <div class="form-grid">
+
+                <div class="form-field form-field-full">
+                    <label>Title</label>
+                    <InputText class="form-input" @bind-Value="correctiveAction.Title" />
+                </div>
+
+                <div class="form-field">
+                    <label>Source</label>
+                    <InputSelect class="form-input" @bind-Value="correctiveAction.Source">
+                        @foreach (var source in SourceOptions)
+                        {
+                            <option value="@source">@source</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-field">
+                    <label>Action Type</label>
+                    <InputSelect class="form-input" @bind-Value="correctiveAction.ActionType">
+                        @foreach (var actionType in ActionTypeOptions)
+                        {
+                            <option value="@actionType">@actionType</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-field">
+                    <label>Site</label>
+                    <InputSelect class="form-input" @bind-Value="correctiveAction.Site">
+                        @foreach (var site in SiteOptions)
+                        {
+                            <option value="@site">@site</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-field">
+                    <label>Department</label>
+                    <InputSelect class="form-input" @bind-Value="correctiveAction.Department">
+                        @foreach (var department in DepartmentOptions)
+                        {
+                            <option value="@department">@department</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-field">
+                    <label>Owner</label>
+                    <InputText class="form-input" @bind-Value="correctiveAction.Owner" />
+                </div>
+
+                <div class="form-field">
+                    <label>Priority</label>
+                    <InputSelect class="form-input" @bind-Value="correctiveAction.Priority">
+                        @foreach (var priority in PriorityOptions)
+                        {
+                            <option value="@priority">@priority</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-field">
+                    <label>Status</label>
+                    <InputSelect class="form-input" @bind-Value="correctiveAction.Status">
+                        @foreach (var status in StatusOptions)
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-field">
+                    <label>Created Date</label>
+                    <InputDate class="form-input" @bind-Value="correctiveAction.CreatedDate" />
+                </div>
+
+                <div class="form-field">
+                    <label>Due Date</label>
+                    <InputDate class="form-input" @bind-Value="correctiveAction.DueDate" />
+                </div>
+
+                <div class="form-field form-field-full">
+                    <label>Notes</label>
+                    <InputTextArea class="form-input form-textarea" @bind-Value="correctiveAction.Notes" />
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="secondary-button" @onclick="Cancel">
+                    Cancel
+                </button>
+
+                <button type="submit" class="primary-button">
+                    Save Corrective Action
+                </button>
+            </div>
+        </EditForm>
+    </section>
+
+</div>
+
+@code {
+    private CorrectiveAction correctiveAction = new();
+    private string errorMessage = "";
+
+    private List<string> SourceOptions = new()
+    {
+        "Incident",
+        "Inspection",
+        "Internal Audit",
+        "Risk Review",
+        "Hazard Report",
+        "Quality Review",
+        "Management Review"
+    };
+
+    private List<string> ActionTypeOptions = new()
+    {
+        "Investigation",
+        "Repair",
+        "Process Review",
+        "Document Update",
+        "Checklist",
+        "Training",
+        "System Update"
+    };
+
+    private List<string> SiteOptions = new()
+    {
+        "Main Workshop",
+        "Yard",
+        "Admin Office",
+        "Warehouse",
+        "Dispatch Bay"
+    };
+
+    private List<string> DepartmentOptions = new()
+    {
+        "Operations",
+        "Health & Safety",
+        "Admin",
+        "Maintenance",
+        "Warehouse",
+        "Dispatch",
+        "Quality"
+    };
+
+    private List<string> PriorityOptions = new()
+    {
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+    };
+
+    private List<string> StatusOptions = new()
+    {
+        "Open",
+        "In Progress",
+        "Completed",
+        "Closed"
+    };
+
+    protected override void OnInitialized()
+    {
+        correctiveAction = new CorrectiveAction
+        {
+            Title = "",
+            Source = "Incident",
+            Site = "Main Workshop",
+            Department = "Health & Safety",
+            Owner = "",
+            ActionType = "Investigation",
+            Priority = "Medium",
+            Status = "Open",
+            CreatedDate = DateTime.Today,
+            DueDate = DateTime.Today.AddDays(14),
+            CompletedDate = null,
+            Notes = ""
+        };
+    }
+
+    private async Task SaveCorrectiveAction()
+    {
+        errorMessage = "";
+
+        if (string.IsNullOrWhiteSpace(correctiveAction.Title))
+        {
+            errorMessage = "Please enter a title.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(correctiveAction.Owner))
+        {
+            errorMessage = "Please enter an owner.";
+            return;
+        }
+
+        if (correctiveAction.DueDate < correctiveAction.CreatedDate)
+        {
+            errorMessage = "Due date cannot be before created date.";
+            return;
+        }
+
+        if (IsCompletedStatus(correctiveAction.Status))
+        {
+            correctiveAction.CompletedDate = DateTime.Today;
+        }
+        else
+        {
+            correctiveAction.CompletedDate = null;
+        }
+
+        Db.CorrectiveActions.Add(correctiveAction);
+        await Db.SaveChangesAsync();
+
+        await ActivityLogService.LogAsync(
+            moduleName: "Corrective Actions",
+            recordId: correctiveAction.Id,
+            recordReference: $"CA-{correctiveAction.Id}",
+            actionType: "Created",
+            description: $"Created corrective action CA-{correctiveAction.Id}: {correctiveAction.Title}."
+        );
+
+        Navigation.NavigateTo("/corrective-actions");
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/corrective-actions");
+    }
+
+    private static bool IsCompletedStatus(string? status)
+    {
+        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
+    }
+}

@@ -18,9 +18,15 @@
             </p>
         </div>
 
-        <div class="module-header-stat">
-            <span>Open Actions</span>
-            <strong>@OpenCount</strong>
+        <div class="module-header-actions">
+            <div class="module-header-stat">
+                <span>Open Actions</span>
+                <strong>@OpenCount</strong>
+            </div>
+
+            <a class="primary-link-button" href="/corrective-actions/create">
+                + New Corrective Action
+            </a>
         </div>
     </section>
 
@@ -106,6 +112,7 @@
                         <th>Due Date</th>
                         <th>Completed</th>
                         <th>Flag</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -152,6 +159,11 @@
                                 {
                                     <span class="badge badge-muted">On Track</span>
                                 }
+                            </td>
+                            <td>
+                                <a class="table-action-link" href="/corrective-actions/edit/@item.Id?returnUrl=/corrective-actions">
+                                    Edit
+                                </a>
                             </td>
                         </tr>
                     }
