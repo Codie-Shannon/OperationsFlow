@@ -1,0 +1,517 @@
+﻿@page "/technical-overview"
+
+<PageTitle>Technical Overview - OperationsFlow</PageTitle>
+
+<div class="operations-dashboard technical-overview-page">
+    <PageIntro Eyebrow="Technical Review"
+               Title="Technical Overview"
+               Subtitle="A technical explanation of how OperationsFlow is structured as a Blazor/.NET business workflow prototype, what the main modules do, and how the project could be upgraded for production.">
+        <a class="btn btn-secondary" href="portfolio-hub">Portfolio Hub</a>
+        <a class="btn btn-secondary" href="prototype-scope">Prototype Scope</a>
+        <a class="btn btn-primary" href="implementation-plan">Implementation Plan</a>
+    </PageIntro>
+
+    <div class="page-purpose-note">
+        <strong>Purpose:</strong> use this page to explain the technical side of OperationsFlow: stack, modules, data flow, workflow model, local prototype storage, and the path from demo system to production-ready internal business application.
+    </div>
+
+    <section class="kpi-grid">
+        <div class="kpi-card">
+            <span class="kpi-label">Frontend</span>
+            <strong>Blazor</strong>
+            <span class="kpi-note">Razor components/pages</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Language</span>
+            <strong>C#</strong>
+            <span class="kpi-note">.NET application logic</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Data Layer</span>
+            <strong>EF Core</strong>
+            <span class="kpi-note">Models and persistence</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Prototype DB</span>
+            <strong>SQLite</strong>
+            <span class="kpi-note">Local demo storage</span>
+        </div>
+    </section>
+
+    <section class="summary-grid technical-overview-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>System Summary</h2>
+                    <p>What the technical build demonstrates.</p>
+                </div>
+            </div>
+
+            <p class="technical-copy">
+                OperationsFlow is structured as a Blazor/.NET business workflow prototype. The project uses Razor pages/components
+                for the user interface, C# for workflow logic, model classes for business records, local seeded data for demo review,
+                and reporting pages that reuse the same operational and compliance records across multiple management views.
+            </p>
+
+            <ul class="action-list">
+                <li>Razor pages for each major business module.</li>
+                <li>Reusable visual patterns for cards, tables, badges, page intros, and workflow guidance.</li>
+                <li>Business records grouped by owner, status, priority, due date, and module.</li>
+                <li>Reporting, workload, reminders, data quality, and activity history built around shared workflow concepts.</li>
+            </ul>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Architecture Style</h2>
+                    <p>The project is built like a modular internal business system.</p>
+                </div>
+            </div>
+
+            <div class="technical-highlight">
+                <span>Architecture pattern</span>
+                <strong>Module-based workflow app</strong>
+                <p>
+                    Each module has a clear business purpose, but the management pages combine records across modules.
+                    That makes the project more useful than isolated CRUD pages because the same data supports safety review,
+                    workload review, reminders, reporting, data quality, and portfolio explanation.
+                </p>
+            </div>
+
+            <ol class="action-list">
+                <li>Operational modules create and maintain records.</li>
+                <li>Compliance modules surface review and follow-up pressure.</li>
+                <li>Management modules group records for reporting and decision-making.</li>
+                <li>System pages explain scope, value, rollout, review evidence, and production path.</li>
+            </ol>
+        </div>
+    </section>
+
+    <section class="technical-card-grid">
+        @foreach (var card in TechnicalCards)
+        {
+            <article class="technical-card">
+                <div class="technical-card-header">
+                    <span>@card.Number</span>
+                    <div>
+                        <p class="eyebrow">@card.Category</p>
+                        <h2>@card.Title</h2>
+                    </div>
+                </div>
+
+                <p>@card.Description</p>
+
+                <ul>
+                    @foreach (var item in card.Items)
+                    {
+                        <li>@item</li>
+                    }
+                </ul>
+            </article>
+        }
+    </section>
+
+    <section class="report-card">
+        <div class="panel-header">
+            <div>
+                <h2>Module Architecture Map</h2>
+                <p>How the main pages fit into the technical and workflow structure.</p>
+            </div>
+        </div>
+
+        <table class="report-table technical-module-table">
+            <thead>
+                <tr>
+                    <th>Layer</th>
+                    <th>Module / Page</th>
+                    <th>Technical Role</th>
+                    <th>Business Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var module in ModuleMap)
+                {
+                    <tr>
+                        <td><span class="@module.BadgeClass">@module.Layer</span></td>
+                        <td><strong>@module.Module</strong></td>
+                        <td>@module.TechnicalRole</td>
+                        <td>@module.BusinessRole</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Data Flow</h2>
+                    <p>How information moves through the prototype.</p>
+                </div>
+            </div>
+
+            <div class="technical-flow-list">
+                @foreach (var step in DataFlow)
+                {
+                    <article>
+                        <span>@step.Number</span>
+                        <div>
+                            <strong>@step.Title</strong>
+                            <p>@step.Description</p>
+                        </div>
+                    </article>
+                }
+            </div>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Technical Proof Points</h2>
+                    <p>What this project demonstrates to a technical reviewer.</p>
+                </div>
+            </div>
+
+            <div class="technical-proof-grid">
+                @foreach (var proof in ProofPoints)
+                {
+                    <article>
+                        <span>@proof.Label</span>
+                        <strong>@proof.Title</strong>
+                        <p>@proof.Description</p>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="report-card">
+        <div class="panel-header">
+            <div>
+                <h2>Production Technical Upgrade Path</h2>
+                <p>What would need to change before this became a live business system.</p>
+            </div>
+        </div>
+
+        <table class="report-table technical-upgrade-table">
+            <thead>
+                <tr>
+                    <th>Area</th>
+                    <th>Prototype State</th>
+                    <th>Production Requirement</th>
+                    <th>Recommended Upgrade</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var upgrade in UpgradeItems)
+                {
+                    <tr>
+                        <td><strong>@upgrade.Area</strong></td>
+                        <td><span class="@upgrade.BadgeClass">@upgrade.PrototypeState</span></td>
+                        <td>@upgrade.ProductionRequirement</td>
+                        <td>@upgrade.RecommendedUpgrade</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="report-card technical-summary-card">
+        <div class="panel-header">
+            <div>
+                <h2>Technical Summary</h2>
+                <p>A short technical description for portfolio review.</p>
+            </div>
+        </div>
+
+        <div class="technical-summary-copy">
+            <p>
+                OperationsFlow is a Blazor/.NET business workflow prototype that demonstrates modular page design,
+                reusable UI patterns, workflow-oriented records, reporting views, activity traceability, and data quality review.
+                The project uses realistic seeded data to show how operational records can feed management views such as workload,
+                reminders, safety meeting summaries, compliance planning, reports, and system health checks.
+            </p>
+
+            <p>
+                A production version would add authentication, role-based permissions, hosted SQL storage, Microsoft 365 integrations,
+                document storage, API endpoints, automated tests, deployment pipeline, backups, logging, monitoring, and support documentation.
+                The current version is intentionally scoped as a local portfolio prototype with clear production upgrade planning.
+            </p>
+        </div>
+    </section>
+</div>
+
+@code {
+    private static readonly IReadOnlyList<TechnicalCard> TechnicalCards = new[]
+    {
+        new TechnicalCard(
+            Number: "01",
+            Category: "Frontend",
+            Title: "Blazor/Razor UI",
+            Description: "The user interface is built with Razor pages/components and consistent reusable layout patterns.",
+            Items: new[]
+            {
+                "PageIntro component for consistent page headers.",
+                "KPI cards, summary panels, report tables, badges, and workflow helper sections.",
+                "Navigation grouped by Overview, Operations, Compliance, Admin Workflow, Management, and System.",
+                "Reviewer support pages for portfolio explanation and guided review."
+            }
+        ),
+        new TechnicalCard(
+            Number: "02",
+            Category: "Workflow",
+            Title: "Business record model",
+            Description: "The project is built around workflow records that have owners, statuses, priorities, dates, notes, and review logic.",
+            Items: new[]
+            {
+                "Corrective actions track owner, source, priority, status, due date, completed date, and notes.",
+                "Document intake tracks incoming admin/document work through processing states.",
+                "Training, risk, document control, and work orders feed compliance and reporting views.",
+                "Activity history supports traceability."
+            }
+        ),
+        new TechnicalCard(
+            Number: "03",
+            Category: "Reporting",
+            Title: "Management views",
+            Description: "The reporting layer reuses workflow data to create review-ready summaries instead of isolated one-off pages.",
+            Items: new[]
+            {
+                "Safety Meeting Pack summarises attention items.",
+                "Compliance Calendar groups work by due windows.",
+                "Workload groups ownership pressure.",
+                "Data Quality finds weak, overdue, expired, and incomplete records."
+            }
+        ),
+        new TechnicalCard(
+            Number: "04",
+            Category: "Production",
+            Title: "Upgrade-aware design",
+            Description: "The project clearly separates local demo functionality from production requirements.",
+            Items: new[]
+            {
+                "Prototype Scope explains what is working and what is not production-ready.",
+                "Implementation Plan explains phased rollout.",
+                "Business Value explains why the system matters.",
+                "Reviewer Checklist explains how to assess the project."
+            }
+        )
+    };
+
+    private static readonly IReadOnlyList<ModuleMapItem> ModuleMap = new[]
+    {
+        new ModuleMapItem(
+            Layer: "Operations",
+            BadgeClass: "badge badge-info",
+            Module: "Work Orders",
+            TechnicalRole: "Operational record list and status grouping.",
+            BusinessRole: "Tracks maintenance/operational work and supports owner workload."
+        ),
+        new ModuleMapItem(
+            Layer: "Operations",
+            BadgeClass: "badge badge-info",
+            Module: "Corrective Actions",
+            TechnicalRole: "Editable workflow records with status, priority, owner, dates, notes, and activity history.",
+            BusinessRole: "Tracks corrective/improvement actions from incidents, audits, inspections, risks, documents, and training."
+        ),
+        new ModuleMapItem(
+            Layer: "Compliance",
+            BadgeClass: "badge badge-warning",
+            Module: "Safety Meeting Pack",
+            TechnicalRole: "Aggregated review page combining actions, risks, training, document reviews, and activity.",
+            BusinessRole: "Provides meeting-ready safety/compliance discussion points."
+        ),
+        new ModuleMapItem(
+            Layer: "Compliance",
+            BadgeClass: "badge badge-warning",
+            Module: "Compliance Calendar",
+            TechnicalRole: "Due-date grouping and planning view.",
+            BusinessRole: "Shows overdue, due this week, due next 30 days, and future compliance work."
+        ),
+        new ModuleMapItem(
+            Layer: "Admin",
+            BadgeClass: "badge badge-success",
+            Module: "Document Intake",
+            TechnicalRole: "Editable admin/document workflow records.",
+            BusinessRole: "Tracks incoming documents, owners, target systems, due dates, status, and processing notes."
+        ),
+        new ModuleMapItem(
+            Layer: "Management",
+            BadgeClass: "badge badge-info",
+            Module: "Workload",
+            TechnicalRole: "Cross-module owner grouping and pressure calculation.",
+            BusinessRole: "Shows who owns work, who has overdue items, and who needs follow-up."
+        ),
+        new ModuleMapItem(
+            Layer: "Management",
+            BadgeClass: "badge badge-info",
+            Module: "Reports",
+            TechnicalRole: "Grouped tables, summary cards, and export/reporting concepts.",
+            BusinessRole: "Supports management review and external analysis."
+        ),
+        new ModuleMapItem(
+            Layer: "System",
+            BadgeClass: "badge badge-muted",
+            Module: "Data Quality",
+            TechnicalRole: "Rule-style checks for weak, missing, expired, and overdue records.",
+            BusinessRole: "Finds problems before management reporting or compliance review."
+        ),
+        new ModuleMapItem(
+            Layer: "System",
+            BadgeClass: "badge badge-muted",
+            Module: "Portfolio / Reviewer Pages",
+            TechnicalRole: "Documentation-style pages inside the app.",
+            BusinessRole: "Explains value, scope, review path, implementation plan, and production upgrade thinking."
+        )
+    };
+
+    private static readonly IReadOnlyList<DataFlowStep> DataFlow = new[]
+    {
+        new DataFlowStep(
+            Number: "01",
+            Title: "Records are created or seeded",
+            Description: "Demo records represent work orders, corrective actions, risks, training, document reviews, and document intake work."
+        ),
+        new DataFlowStep(
+            Number: "02",
+            Title: "Records carry workflow fields",
+            Description: "Common fields such as owner, priority, status, due date, completed date, notes, and module type make records reviewable."
+        ),
+        new DataFlowStep(
+            Number: "03",
+            Title: "Operational pages edit records",
+            Description: "Pages like Corrective Actions and Document Intake allow records to be reviewed and updated."
+        ),
+        new DataFlowStep(
+            Number: "04",
+            Title: "Management pages aggregate records",
+            Description: "Safety Meeting Pack, Compliance Calendar, Workload, Reports, Reminders, and Data Quality reuse records for review."
+        ),
+        new DataFlowStep(
+            Number: "05",
+            Title: "Reviewer pages explain the system",
+            Description: "Portfolio Hub, Reviewer Checklist, Business Value, Prototype Scope, and Implementation Plan explain what the system proves."
+        )
+    };
+
+    private static readonly IReadOnlyList<ProofPoint> ProofPoints = new[]
+    {
+        new ProofPoint(
+            Label: "UI",
+            Title: "Consistent layout system",
+            Description: "Pages share consistent cards, badges, tables, intro sections, links, and helper guidance."
+        ),
+        new ProofPoint(
+            Label: "CRUD",
+            Title: "Editable workflow records",
+            Description: "Corrective actions and document intake records can be reviewed and updated."
+        ),
+        new ProofPoint(
+            Label: "Logic",
+            Title: "Status and due-date thinking",
+            Description: "Records are grouped by open/completed state, due windows, owner pressure, and review urgency."
+        ),
+        new ProofPoint(
+            Label: "Reports",
+            Title: "Management-ready views",
+            Description: "The system includes summaries, grouped tables, export concepts, and meeting-ready review pages."
+        ),
+        new ProofPoint(
+            Label: "Quality",
+            Title: "Data quality awareness",
+            Description: "Weak or risky records are surfaced before they affect reporting or compliance review."
+        ),
+        new ProofPoint(
+            Label: "Scope",
+            Title: "Production-aware planning",
+            Description: "The system documents what is prototype-only and what would need to change for production."
+        )
+    };
+
+    private static readonly IReadOnlyList<UpgradeItem> UpgradeItems = new[]
+    {
+        new UpgradeItem(
+            Area: "Authentication",
+            PrototypeState: "Not included",
+            BadgeClass: "badge badge-warning",
+            ProductionRequirement: "Users need secure sign-in and access control.",
+            RecommendedUpgrade: "Add Microsoft identity or another authentication provider with role-based permissions."
+        ),
+        new UpgradeItem(
+            Area: "Database",
+            PrototypeState: "Local",
+            BadgeClass: "badge badge-warning",
+            ProductionRequirement: "Business data needs hosted storage, backups, and access controls.",
+            RecommendedUpgrade: "Move from local SQLite/demo data to SQL Server, Azure SQL, or another approved production database."
+        ),
+        new UpgradeItem(
+            Area: "Documents",
+            PrototypeState: "Tracked",
+            BadgeClass: "badge badge-info",
+            ProductionRequirement: "Controlled documents need secure file storage and review history.",
+            RecommendedUpgrade: "Connect document records to SharePoint document libraries or another controlled storage system."
+        ),
+        new UpgradeItem(
+            Area: "Notifications",
+            PrototypeState: "Planned",
+            BadgeClass: "badge badge-muted",
+            ProductionRequirement: "Owners need reminders for overdue and due-soon work.",
+            RecommendedUpgrade: "Add Teams or Outlook notifications after owner/status rules are confirmed."
+        ),
+        new UpgradeItem(
+            Area: "Testing",
+            PrototypeState: "Manual",
+            BadgeClass: "badge badge-info",
+            ProductionRequirement: "Production workflows need repeatable checks before release.",
+            RecommendedUpgrade: "Add automated tests for record saving, editing, reporting, filtering, exports, and data quality rules."
+        ),
+        new UpgradeItem(
+            Area: "Deployment",
+            PrototypeState: "Local",
+            BadgeClass: "badge badge-warning",
+            ProductionRequirement: "Users need a hosted system with monitoring and support.",
+            RecommendedUpgrade: "Create a deployment pipeline with logging, monitoring, backups, and rollback planning."
+        )
+    };
+
+    private record TechnicalCard(
+        string Number,
+        string Category,
+        string Title,
+        string Description,
+        IReadOnlyList<string> Items
+    );
+
+    private record ModuleMapItem(
+        string Layer,
+        string BadgeClass,
+        string Module,
+        string TechnicalRole,
+        string BusinessRole
+    );
+
+    private record DataFlowStep(
+        string Number,
+        string Title,
+        string Description
+    );
+
+    private record ProofPoint(
+        string Label,
+        string Title,
+        string Description
+    );
+
+    private record UpgradeItem(
+        string Area,
+        string PrototypeState,
+        string BadgeClass,
+        string ProductionRequirement,
+        string RecommendedUpgrade
+    );
+}
