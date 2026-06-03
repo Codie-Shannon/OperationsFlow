@@ -396,7 +396,7 @@
                     Reference: reference,
                     Issue: $"Work order is overdue. Due date was {item.DueDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Review status, update due date, or close the work order if completed."
+                    RecommendedAction: "Review progress, confirm the owner, update the due date/status, or close the work order if completed."
                 ));
             }
 
@@ -408,7 +408,7 @@
                     Reference: reference,
                     Issue: "Work order is missing an owner.",
                     Owner: "Unassigned",
-                    RecommendedAction: "Assign an owner so the work can be tracked in workload reporting."
+                    RecommendedAction: "Assign an owner so responsibility is clear and the item appears correctly in workload reporting."
                 ));
             }
 
@@ -420,7 +420,7 @@
                     Reference: reference,
                     Issue: "Work order has blank notes.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Add notes explaining context, progress, or expected next action."
+                    RecommendedAction: "Add notes explaining the current progress, blocker, decision, or expected next action."
                 ));
             }
         }
@@ -440,7 +440,7 @@
                     Reference: reference,
                     Issue: $"Corrective action is overdue. Due date was {item.DueDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Review action progress, update status, or close if completed."
+                    RecommendedAction: "Review action progress, update the owner/status, adjust the due date if required, or close if completed."
                 ));
             }
 
@@ -452,7 +452,7 @@
                     Reference: reference,
                     Issue: "Corrective action is missing an owner.",
                     Owner: "Unassigned",
-                    RecommendedAction: "Assign an owner so accountability is clear."
+                    RecommendedAction: "Assign an owner so safety/compliance follow-up accountability is clear."
                 ));
             }
 
@@ -464,7 +464,7 @@
                     Reference: reference,
                     Issue: "Corrective action is completed/closed without a completed date.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Set the completed date or reopen the action if it is not complete."
+                    RecommendedAction: "Set the completed date for traceability, or reopen the action if follow-up is not actually complete."
                 ));
             }
 
@@ -476,7 +476,7 @@
                     Reference: reference,
                     Issue: "Corrective action has blank notes.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Add notes explaining the cause, follow-up, or closure detail."
+                    RecommendedAction: "Add notes explaining the cause, follow-up decision, current blocker, or closure detail."
                 ));
             }
         }
@@ -496,7 +496,7 @@
                     Reference: reference,
                     Issue: $"Document review is overdue. Review date was {item.NextReviewDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Review the document, update the version/status, or create a corrective action."
+                    RecommendedAction: "Review the document, update the version/status, record the review outcome, or create a corrective action if follow-up is required."
                 ));
             }
             else if (item.IsDueSoon)
@@ -507,7 +507,7 @@
                     Reference: reference,
                     Issue: $"Document review is due soon on {item.NextReviewDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Schedule document review before it becomes overdue."
+                    RecommendedAction: "Schedule the document review, confirm the owner, and update the record before it becomes overdue."
                 ));
             }
 
@@ -519,7 +519,7 @@
                     Reference: reference,
                     Issue: "Document is missing an owner.",
                     Owner: "Unassigned",
-                    RecommendedAction: "Assign a document owner for review accountability."
+                    RecommendedAction: "Assign a document owner so future reviews have clear accountability."
                 ));
             }
         }
@@ -539,7 +539,7 @@
                     Reference: reference,
                     Issue: $"{item.RiskLevel} risk requires monitoring. Risk score is {item.RiskScore}.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Confirm controls are current and create a corrective action if follow-up is needed."
+                    RecommendedAction: "Confirm controls are current, review the risk rating, and create a corrective action if follow-up is needed."
                 ));
             }
 
@@ -551,7 +551,7 @@
                     Reference: reference,
                     Issue: $"Risk review is overdue. Review date was {item.ReviewDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Review the risk score, controls, and status."
+                    RecommendedAction: "Review the risk score, confirm controls are still effective, update the review date, and create a corrective action if required."
                 ));
             }
 
@@ -563,7 +563,7 @@
                     Reference: reference,
                     Issue: "Risk item is missing controls.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Add controls so the risk treatment is clear."
+                    RecommendedAction: "Add or update controls so the risk treatment is clear and reviewable."
                 ));
             }
         }
@@ -581,9 +581,9 @@
                     Severity: "Critical",
                     ModuleName: "Training",
                     Reference: reference,
-                    Issue: $"Training is expired. Expiry date was {item.ExpiryDate:dd MMM yyyy}.",
+                    Issue: $"Training record is expired. Expiry date was {item.ExpiryDate:dd MMM yyyy}.",
                     Owner: item.StaffName,
-                    RecommendedAction: "Schedule refresher training and update the record once completed."
+                    RecommendedAction: "Confirm retraining requirement, book the refresher, and update the compliance status once completed."
                 ));
             }
             else if (item.IsExpiringSoon)
@@ -594,7 +594,7 @@
                     Reference: reference,
                     Issue: $"Training expires soon on {item.ExpiryDate:dd MMM yyyy}.",
                     Owner: item.StaffName,
-                    RecommendedAction: "Book renewal before expiry."
+                    RecommendedAction: "Book renewal before expiry and confirm the follow-up owner."
                 ));
             }
         }
@@ -614,7 +614,7 @@
                     Reference: reference,
                     Issue: $"Document intake item is overdue. Due date was {item.DueDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.AssignedTo),
-                    RecommendedAction: "Review the intake item, update the status, or complete/reject it."
+                    RecommendedAction: "Review the intake item, confirm the processing owner, update the status, or complete/reject it."
                 ));
             }
 
@@ -626,7 +626,7 @@
                     Reference: reference,
                     Issue: "Document intake item is waiting for manual review.",
                     Owner: SafeOwner(item.AssignedTo),
-                    RecommendedAction: "Check the document and move it to Data Checked, Entered, Completed, or Rejected."
+                    RecommendedAction: "Check the document, confirm the required processing step, and move it to Data Checked, Entered, Completed, or Rejected."
                 ));
             }
 
@@ -638,7 +638,7 @@
                     Reference: reference,
                     Issue: "Document intake item is missing an assigned person.",
                     Owner: "Unassigned",
-                    RecommendedAction: "Assign the intake item so workload reporting is accurate."
+                    RecommendedAction: "Assign the intake item so responsibility is clear and workload reporting is accurate."
                 ));
             }
 
@@ -650,7 +650,7 @@
                     Reference: reference,
                     Issue: "Document intake item is completed/rejected without a completed date.",
                     Owner: SafeOwner(item.AssignedTo),
-                    RecommendedAction: "Set the completed date or reopen the item if not actually completed."
+                    RecommendedAction: "Set the completed date for traceability, or reopen the item if it was not actually completed."
                 ));
             }
 
@@ -662,7 +662,7 @@
                     Reference: reference,
                     Issue: "Document intake item has blank notes.",
                     Owner: SafeOwner(item.AssignedTo),
-                    RecommendedAction: "Add notes explaining source, processing step, or next action."
+                    RecommendedAction: "Add notes explaining the document source, processing decision, blocker, or next action."
                 ));
             }
         }
