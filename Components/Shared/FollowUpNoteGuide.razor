@@ -1,0 +1,19 @@
+﻿<div class="follow-up-note-guide">
+    <div>
+        <strong>@Title</strong>
+        <p>@Description</p>
+    </div>
+
+    <ul>
+        @foreach (var item in Items)
+        {
+            <li>@item</li>
+        }
+    </ul>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Follow-up note guide";
+    [Parameter] public string Description { get; set; } = "Use notes to explain what happened, what changed, and what needs to happen next.";
+    [Parameter] public IReadOnlyList<string> Items { get; set; } = Array.Empty<string>();
+}

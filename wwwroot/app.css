@@ -2454,3 +2454,47 @@ main {
         grid-template-columns: 1fr;
     }
 }
+
+/* ---------------------------------------------------------
+   Follow-up / review note guidance
+   --------------------------------------------------------- */
+
+.follow-up-note-guide {
+    display: grid;
+    gap: 12px;
+    margin-top: 10px;
+    padding: 14px 16px;
+    border: 1px solid #bfdbfe;
+    border-radius: 16px;
+    background: #eff6ff;
+}
+
+    .follow-up-note-guide strong {
+        display: block;
+        color: #172554;
+        font-size: 0.9rem;
+        font-weight: 900;
+        margin-bottom: 4px;
+    }
+
+    .follow-up-note-guide p {
+        margin: 0;
+        color: #1e3a8a;
+        font-size: 0.84rem;
+        font-weight: 700;
+        line-height: 1.45;
+    }
+
+    .follow-up-note-guide ul {
+        display: grid;
+        gap: 6px;
+        margin: 0;
+        padding-left: 18px;
+    }
+
+    .follow-up-note-guide li {
+        color: #1e40af;
+        font-size: 0.82rem;
+        font-weight: 750;
+        line-height: 1.35;
+    }

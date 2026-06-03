@@ -144,6 +144,9 @@
                     <div class="form-field form-field-full">
                         <label>Notes</label>
                         <InputTextArea class="form-input form-textarea" @bind-Value="documentIntake.Notes" />
+                        <FollowUpNoteGuide Title="Document intake note guidance"
+                                           Description="Good intake notes should explain where the document came from, what processing step is next, and why the current status was chosen."
+                                           Items="DocumentIntakeNoteGuideItems" />
                     </div>
 
                 </div>
@@ -411,4 +414,13 @@
         return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
             || string.Equals(status, "Rejected", StringComparison.OrdinalIgnoreCase);
     }
+
+    private static readonly IReadOnlyList<string> DocumentIntakeNoteGuideItems = new[]
+    {
+        "Where did the document come from?",
+        "What target system or folder does it belong in?",
+        "What has already been checked or entered?",
+        "What is still blocking completion?",
+        "If completed or rejected, what confirms the outcome?"
+    };
 }

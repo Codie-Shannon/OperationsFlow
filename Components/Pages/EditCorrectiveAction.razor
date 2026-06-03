@@ -134,6 +134,9 @@
                     <div class="form-field form-field-full">
                         <label>Notes</label>
                         <InputTextArea class="form-input form-textarea" @bind-Value="correctiveAction.Notes" />
+                        <FollowUpNoteGuide Title="Corrective action note guidance"
+                                           Description="Good corrective action notes should explain the current follow-up state, not just repeat the title."
+                                           Items="CorrectiveActionNoteGuideItems" />
                     </div>
 
                 </div>
@@ -376,4 +379,13 @@
         return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
             || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
     }
+
+    private static readonly IReadOnlyList<string> CorrectiveActionNoteGuideItems = new[]
+    {
+        "What was reviewed or changed?",
+        "What is the current blocker or risk?",
+        "Who owns the next action?",
+        "What needs to happen before this can be closed?",
+        "If closing, what evidence or outcome confirms completion?"
+    };
 }
