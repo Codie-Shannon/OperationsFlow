@@ -119,6 +119,10 @@
                                 <option value="@status">@status</option>
                             }
                         </InputSelect>
+
+                        <StatusFlowGuide Title="Corrective action status flow"
+                                         Description="Use statuses consistently so overdue, completed, and active follow-up work stays clear."
+                                         Steps="CorrectiveActionStatusSteps" />
                     </div>
 
                     <div class="form-field">
@@ -387,5 +391,13 @@
         "Who owns the next action?",
         "What needs to happen before this can be closed?",
         "If closing, what evidence or outcome confirms completion?"
+    };
+
+    private static readonly IReadOnlyList<StatusFlowGuide.StatusFlowStep> CorrectiveActionStatusSteps = new[]
+    {
+        new StatusFlowGuide.StatusFlowStep("Open", "Action has been raised but work has not started yet.", "badge badge-warning"),
+        new StatusFlowGuide.StatusFlowStep("In Progress", "Owner is actively working through the follow-up.", "badge badge-info"),
+        new StatusFlowGuide.StatusFlowStep("Completed", "Work is finished and should have a completed date.", "badge badge-success"),
+        new StatusFlowGuide.StatusFlowStep("Closed", "Final review is complete and no further follow-up is needed.", "badge badge-success")
     };
 }

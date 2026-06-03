@@ -129,6 +129,10 @@
                                 <option value="@status">@status</option>
                             }
                         </InputSelect>
+
+                        <StatusFlowGuide Title="Document intake status flow"
+                                         Description="Use statuses to show where the document is in the admin processing workflow."
+                                         Steps="DocumentIntakeStatusSteps" />
                     </div>
 
                     <div class="form-field">
@@ -422,5 +426,16 @@
         "What has already been checked or entered?",
         "What is still blocking completion?",
         "If completed or rejected, what confirms the outcome?"
+    };
+
+    private static readonly IReadOnlyList<StatusFlowGuide.StatusFlowStep> DocumentIntakeStatusSteps = new[]
+    {
+        new StatusFlowGuide.StatusFlowStep("Received", "Document has arrived but has not yet been saved or reviewed.", "badge badge-muted"),
+        new StatusFlowGuide.StatusFlowStep("Saved", "Document has been stored in the correct location.", "badge badge-info"),
+        new StatusFlowGuide.StatusFlowStep("Needs Review", "Manual check is required before processing can continue.", "badge badge-warning"),
+        new StatusFlowGuide.StatusFlowStep("Data Checked", "Key information has been checked before entry.", "badge badge-info"),
+        new StatusFlowGuide.StatusFlowStep("Entered", "Data has been entered into the target system.", "badge badge-info"),
+        new StatusFlowGuide.StatusFlowStep("Completed", "Processing is finished and should have a completed date.", "badge badge-success"),
+        new StatusFlowGuide.StatusFlowStep("Rejected", "Document will not be processed and should have a completed date/reason.", "badge badge-danger")
     };
 }

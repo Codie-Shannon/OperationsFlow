@@ -2498,3 +2498,62 @@ main {
         font-weight: 750;
         line-height: 1.35;
     }
+
+/* ---------------------------------------------------------
+   Status flow guidance
+   --------------------------------------------------------- */
+
+.status-flow-guide {
+    display: grid;
+    gap: 12px;
+    margin-top: 10px;
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #f8fafc;
+}
+
+.status-flow-header strong {
+    display: block;
+    color: #0f172a;
+    font-size: 0.9rem;
+    font-weight: 900;
+    margin-bottom: 4px;
+}
+
+.status-flow-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.84rem;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.status-flow-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.status-flow-step {
+    display: grid;
+    gap: 6px;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+    .status-flow-step p {
+        margin: 0;
+        color: #475569;
+        font-size: 0.8rem;
+        font-weight: 650;
+        line-height: 1.4;
+    }
+
+@media (max-width: 900px) {
+    .status-flow-steps {
+        grid-template-columns: 1fr;
+    }
+}

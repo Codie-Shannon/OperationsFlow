@@ -1,0 +1,24 @@
+﻿<div class="status-flow-guide">
+    <div class="status-flow-header">
+        <strong>@Title</strong>
+        <p>@Description</p>
+    </div>
+
+    <div class="status-flow-steps">
+        @foreach (var step in Steps)
+        {
+            <div class="status-flow-step">
+                <span class="@step.BadgeClass">@step.Status</span>
+                <p>@step.Description</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Status flow guide";
+    [Parameter] public string Description { get; set; } = "Use the status field to show where this item sits in the workflow.";
+    [Parameter] public IReadOnlyList<StatusFlowStep> Steps { get; set; } = Array.Empty<StatusFlowStep>();
+
+    public record StatusFlowStep(string Status, string Description, string BadgeClass);
+}
