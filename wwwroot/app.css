@@ -3417,3 +3417,262 @@ main {
         grid-template-columns: 1fr;
     }
 }
+
+/* ---------------------------------------------------------
+   Reviewer Checklist
+   --------------------------------------------------------- */
+
+.reviewer-checklist-page .reviewer-overview-grid {
+    align-items: stretch;
+}
+
+.reviewer-fast-path {
+    margin-top: 18px;
+}
+
+.reviewer-proof-stack {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+    .reviewer-proof-stack article {
+        display: flex;
+        gap: 14px;
+        padding: 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: #f8fafc;
+    }
+
+        .reviewer-proof-stack article > span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 0.78rem;
+            font-weight: 900;
+        }
+
+    .reviewer-proof-stack strong {
+        display: block;
+        color: #0f172a;
+        font-size: 0.95rem;
+        font-weight: 900;
+        margin-bottom: 4px;
+    }
+
+    .reviewer-proof-stack p {
+        margin: 0;
+        color: #475569;
+        font-size: 0.82rem;
+        font-weight: 650;
+        line-height: 1.45;
+    }
+
+.review-checklist-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin: 24px 0;
+}
+
+.review-checklist-card {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+    min-height: 100%;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.05);
+}
+
+.review-checklist-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+    .review-checklist-card-header > span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: 36px;
+        height: 36px;
+        border-radius: 999px;
+        background: #2563eb;
+        color: #ffffff;
+        font-size: 0.82rem;
+        font-weight: 900;
+    }
+
+    .review-checklist-card-header h2 {
+        margin: 0;
+        color: #0f172a;
+        font-size: 1.08rem;
+        font-weight: 900;
+        line-height: 1.2;
+    }
+
+.review-checklist-card > p {
+    margin: 0;
+    color: #475569;
+    font-size: 0.84rem;
+    font-weight: 650;
+    line-height: 1.5;
+}
+
+.review-checklist-items {
+    display: grid;
+    gap: 12px;
+}
+
+.review-checklist-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #f8fafc;
+}
+
+.fake-checkbox {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    border: 2px solid #93c5fd;
+    border-radius: 5px;
+    background: #ffffff;
+}
+
+.review-checklist-item strong {
+    display: block;
+    color: #0f172a;
+    font-size: 0.82rem;
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 3px;
+}
+
+.review-checklist-item span {
+    display: block;
+    color: #475569;
+    font-size: 0.76rem;
+    font-weight: 650;
+    line-height: 1.4;
+}
+
+.review-checklist-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    margin-top: auto;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+    .review-checklist-link:hover {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+.reviewer-evidence-table td:nth-child(3),
+.reviewer-evidence-table td:nth-child(4) {
+    color: #475569;
+    font-weight: 650;
+    line-height: 1.45;
+}
+
+.reviewer-script-list {
+    margin-top: 18px;
+}
+
+.review-outcome-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 18px;
+}
+
+    .review-outcome-grid article {
+        display: grid;
+        gap: 8px;
+        padding: 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: #f8fafc;
+    }
+
+    .review-outcome-grid span {
+        color: #2563eb;
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    .review-outcome-grid strong {
+        color: #0f172a;
+        font-size: 0.95rem;
+        font-weight: 900;
+        line-height: 1.2;
+    }
+
+    .review-outcome-grid p {
+        margin: 0;
+        color: #475569;
+        font-size: 0.82rem;
+        font-weight: 650;
+        line-height: 1.45;
+    }
+
+.reviewer-summary-card {
+    margin-top: 24px;
+}
+
+.reviewer-summary-copy {
+    display: grid;
+    gap: 14px;
+    max-width: 1120px;
+}
+
+    .reviewer-summary-copy p {
+        margin: 0;
+        color: #475569;
+        font-size: 0.92rem;
+        font-weight: 650;
+        line-height: 1.6;
+    }
+
+@media (max-width: 1400px) {
+    .review-checklist-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .review-checklist-grid,
+    .review-outcome-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reviewer-proof-stack article {
+        flex-direction: column;
+    }
+}

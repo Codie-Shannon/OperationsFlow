@@ -1,0 +1,482 @@
+﻿@page "/reviewer-checklist"
+
+<PageTitle>Reviewer Checklist - OperationsFlow</PageTitle>
+
+<div class="operations-dashboard reviewer-checklist-page">
+    <PageIntro Eyebrow="Portfolio Review"
+               Title="Reviewer Checklist"
+               Subtitle="A practical checklist for reviewing OperationsFlow as a business workflow, safety/compliance, admin process, and .NET portfolio project.">
+        <a class="btn btn-secondary" href="demo-guide">Demo Guide</a>
+        <a class="btn btn-secondary" href="prototype-scope">Prototype Scope</a>
+        <a class="btn btn-primary" href="business-value">Business Value</a>
+    </PageIntro>
+
+    <div class="page-purpose-note">
+        <strong>Purpose:</strong> use this page as a guided review checklist. It shows what to click, what to verify, what each area demonstrates, and what evidence proves the project is more than a static dashboard.
+    </div>
+
+    <section class="kpi-grid">
+        <div class="kpi-card">
+            <span class="kpi-label">Checklist Areas</span>
+            <strong>6</strong>
+            <span class="kpi-note">Business, workflow, data, and technical review</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Review Style</span>
+            <strong>Guided</strong>
+            <span class="kpi-note">Click-through verification</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Best Starting Page</span>
+            <strong>Demo Guide</strong>
+            <span class="kpi-note">Recommended walkthrough path</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Main Proof</span>
+            <strong>Workflow</strong>
+            <span class="kpi-note">Records, reports, traceability, and review views</span>
+        </div>
+    </section>
+
+    <section class="summary-grid reviewer-overview-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>How To Review This Project</h2>
+                    <p>A fast path for someone opening the project for the first time.</p>
+                </div>
+            </div>
+
+            <ol class="demo-step-list reviewer-fast-path">
+                <li>
+                    <strong>Start with Demo Guide</strong>
+                    <span>Use the guided paths to understand the business, admin, and technical review routes.</span>
+                </li>
+
+                <li>
+                    <strong>Review the business case</strong>
+                    <span>Open Business Value to understand the problem, value created, and before/after workflow shift.</span>
+                </li>
+
+                <li>
+                    <strong>Check the working workflow</strong>
+                    <span>Open Safety Meeting Pack, Compliance Calendar, Workload, Reports, and Data Quality.</span>
+                </li>
+
+                <li>
+                    <strong>Verify record editing</strong>
+                    <span>Edit a corrective action or document intake record and confirm guidance, saving, and activity history.</span>
+                </li>
+
+                <li>
+                    <strong>Review production thinking</strong>
+                    <span>Open Prototype Scope and Implementation Plan to confirm limits, rollout plan, and upgrade path.</span>
+                </li>
+            </ol>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>What A Reviewer Should Notice</h2>
+                    <p>The key signals that make this a strong portfolio project.</p>
+                </div>
+            </div>
+
+            <div class="reviewer-proof-stack">
+                <article>
+                    <span>01</span>
+                    <strong>It solves a business problem</strong>
+                    <p>Missed follow-up, weak ownership, manual reporting, and poor traceability are made visible.</p>
+                </article>
+
+                <article>
+                    <span>02</span>
+                    <strong>It connects multiple modules</strong>
+                    <p>Work orders, corrective actions, document intake, risk, training, documents, workload, reports, and data quality all support the same review process.</p>
+                </article>
+
+                <article>
+                    <span>03</span>
+                    <strong>It is honest about scope</strong>
+                    <p>The prototype clearly separates what works now from what production would need next.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="review-checklist-grid">
+        @foreach (var section in ChecklistSections)
+        {
+            <article class="review-checklist-card">
+                <div class="review-checklist-card-header">
+                    <span>@section.Number</span>
+                    <div>
+                        <p class="eyebrow">@section.Category</p>
+                        <h2>@section.Title</h2>
+                    </div>
+                </div>
+
+                <p>@section.Description</p>
+
+                <div class="review-checklist-items">
+                    @foreach (var item in section.Items)
+                    {
+                        <div class="review-checklist-item">
+                            <div class="fake-checkbox"></div>
+                            <div>
+                                <strong>@item.Task</strong>
+                                <span>@item.ExpectedEvidence</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <a class="review-checklist-link" href="@section.Url">@section.LinkText</a>
+            </article>
+        }
+    </section>
+
+    <section class="report-card">
+        <div class="panel-header">
+            <div>
+                <h2>Review Evidence Matrix</h2>
+                <p>Use this table to confirm what each part of the system proves.</p>
+            </div>
+        </div>
+
+        <table class="report-table reviewer-evidence-table">
+            <thead>
+                <tr>
+                    <th>Evidence Area</th>
+                    <th>Where To Check</th>
+                    <th>What It Demonstrates</th>
+                    <th>Reviewer Question</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in EvidenceItems)
+                {
+                    <tr>
+                        <td><strong>@item.Area</strong></td>
+                        <td><span class="@item.BadgeClass">@item.Page</span></td>
+                        <td>@item.Demonstrates</td>
+                        <td>@item.Question</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Manual Review Script</h2>
+                    <p>A quick script for walking someone through the project.</p>
+                </div>
+            </div>
+
+            <ol class="demo-step-list reviewer-script-list">
+                <li>
+                    <strong>Open Demo Guide</strong>
+                    <span>Explain that the project has business, admin, and technical review paths.</span>
+                </li>
+
+                <li>
+                    <strong>Open Safety Meeting Pack</strong>
+                    <span>Show how the system identifies actions, risks, training issues, document reviews, and recent activity.</span>
+                </li>
+
+                <li>
+                    <strong>Open Compliance Calendar</strong>
+                    <span>Show how dates are grouped into overdue, due this week, due next 30 days, and future work.</span>
+                </li>
+
+                <li>
+                    <strong>Open Workload</strong>
+                    <span>Show who owns work, who has overdue items, and who needs follow-up first.</span>
+                </li>
+
+                <li>
+                    <strong>Edit a record</strong>
+                    <span>Open a corrective action and show owner, due date, status guidance, notes guidance, saving, and traceability.</span>
+                </li>
+
+                <li>
+                    <strong>Open Reports and Data Quality</strong>
+                    <span>Show management summaries, export concepts, weak records, and system-health checks.</span>
+                </li>
+
+                <li>
+                    <strong>Finish with scope and implementation</strong>
+                    <span>Show what is prototype-only and what would be needed for production rollout.</span>
+                </li>
+            </ol>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Review Outcome</h2>
+                    <p>What a reviewer should be able to conclude after walking through the system.</p>
+                </div>
+            </div>
+
+            <div class="review-outcome-grid">
+                @foreach (var outcome in Outcomes)
+                {
+                    <article>
+                        <span>@outcome.Label</span>
+                        <strong>@outcome.Title</strong>
+                        <p>@outcome.Description</p>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="report-card reviewer-summary-card">
+        <div class="panel-header">
+            <div>
+                <h2>Reviewer Summary</h2>
+                <p>A short summary for anyone assessing the project.</p>
+            </div>
+        </div>
+
+        <div class="reviewer-summary-copy">
+            <p>
+                OperationsFlow should be reviewed as a working business workflow prototype. The strongest evidence is the way
+                records connect across corrective actions, safety/compliance review, document intake, workload, reminders,
+                reports, activity history, and data quality. It is not just a dashboard; it is a structured workflow model with
+                record editing, ownership, due dates, status handling, reporting views, and production-aware planning.
+            </p>
+
+            <p>
+                The project demonstrates practical .NET/Blazor application building, business process thinking, UI layout,
+                workflow modelling, reporting concepts, traceability, and an implementation path for a real Microsoft 365-style
+                internal business system.
+            </p>
+        </div>
+    </section>
+</div>
+
+@code {
+    private static readonly IReadOnlyList<ChecklistSection> ChecklistSections = new[]
+    {
+        new ChecklistSection(
+            Number: "01",
+            Category: "Business Review",
+            Title: "Confirm the business value",
+            Description: "Check that the project clearly explains the business problem and the value created.",
+            Url: "business-value",
+            LinkText: "Open Business Value",
+            Items: new[]
+            {
+                new ChecklistItem("Identify the business problem", "Missed follow-up, weak ownership, manual reporting, and traceability issues are explained."),
+                new ChecklistItem("Confirm value proposition", "The system shows one place to review what needs attention next."),
+                new ChecklistItem("Check before/after comparison", "Scattered manual follow-up is compared against connected workflow tracking.")
+            }
+        ),
+        new ChecklistSection(
+            Number: "02",
+            Category: "Workflow Review",
+            Title: "Confirm connected workflow",
+            Description: "Check that the app connects multiple workflow areas instead of acting like separate static pages.",
+            Url: "safety-meeting-pack",
+            LinkText: "Open Safety Meeting Pack",
+            Items: new[]
+            {
+                new ChecklistItem("Review attention items", "Open actions, high/critical risks, training issues, and document reviews are summarised."),
+                new ChecklistItem("Check recommended follow-up", "The page explains practical next actions based on current records."),
+                new ChecklistItem("Confirm recent activity visibility", "Recent workflow activity is visible for meeting review.")
+            }
+        ),
+        new ChecklistSection(
+            Number: "03",
+            Category: "Record Review",
+            Title: "Verify editing and traceability",
+            Description: "Check that records can be edited and that the user is guided toward better follow-up data.",
+            Url: "corrective-actions",
+            LinkText: "Open Corrective Actions",
+            Items: new[]
+            {
+                new ChecklistItem("Open an editable record", "Corrective action edit page loads with owner, priority, status, dates, and notes."),
+                new ChecklistItem("Check helper guidance", "Owner, due date, status, and notes guidance help the user enter better data."),
+                new ChecklistItem("Confirm activity history", "Record-level history supports traceability after changes are made.")
+            }
+        ),
+        new ChecklistSection(
+            Number: "04",
+            Category: "Management Review",
+            Title: "Check reporting and workload",
+            Description: "Check whether managers can understand ownership, overdue work, and review pressure.",
+            Url: "workload",
+            LinkText: "Open Workload",
+            Items: new[]
+            {
+                new ChecklistItem("Review owner summary", "Owners are grouped by total assigned work, overdue items, high-priority work, and next due date."),
+                new ChecklistItem("Check pressure indicators", "High-pressure owners and overdue ownership are easy to identify."),
+                new ChecklistItem("Open Reports", "Management summaries and export/report sections support review conversations.")
+            }
+        ),
+        new ChecklistSection(
+            Number: "05",
+            Category: "System Health",
+            Title: "Check data quality",
+            Description: "Check whether the system identifies weak records before they affect reporting.",
+            Url: "data-quality",
+            LinkText: "Open Data Quality",
+            Items: new[]
+            {
+                new ChecklistItem("Review issue totals", "Critical issues, warning issues, data gaps, and modules checked are summarised."),
+                new ChecklistItem("Search and filter issues", "The page supports finding issues by module, owner, reference, or severity."),
+                new ChecklistItem("Confirm recommended action", "Each issue explains what should be reviewed or fixed next.")
+            }
+        ),
+        new ChecklistSection(
+            Number: "06",
+            Category: "Production Thinking",
+            Title: "Review scope and rollout path",
+            Description: "Check that the project is honest about prototype limits and production requirements.",
+            Url: "prototype-scope",
+            LinkText: "Open Prototype Scope",
+            Items: new[]
+            {
+                new ChecklistItem("Confirm prototype boundaries", "The app clearly states what is working and what is not production-ready yet."),
+                new ChecklistItem("Review implementation plan", "Production needs like authentication, roles, hosted database, M365 integrations, tests, deployment, and monitoring are identified."),
+                new ChecklistItem("Check upgrade path", "The project explains how it could move from local demo to real business rollout.")
+            }
+        )
+    };
+
+    private static readonly IReadOnlyList<EvidenceItem> EvidenceItems = new[]
+    {
+        new EvidenceItem(
+            Area: "Business case",
+            Page: "Business Value",
+            BadgeClass: "badge badge-success",
+            Demonstrates: "The project has a clear reason to exist and explains the value of reducing missed follow-up.",
+            Question: "Why would a business care about this?"
+        ),
+        new EvidenceItem(
+            Area: "Workflow connection",
+            Page: "Safety Meeting Pack",
+            BadgeClass: "badge badge-info",
+            Demonstrates: "Multiple record types feed into one safety/compliance review process.",
+            Question: "Does this feel like a connected system or isolated pages?"
+        ),
+        new EvidenceItem(
+            Area: "Planning view",
+            Page: "Compliance Calendar",
+            BadgeClass: "badge badge-info",
+            Demonstrates: "Due dates and review dates are grouped into planning windows.",
+            Question: "Can the reviewer see what is overdue and what is coming next?"
+        ),
+        new EvidenceItem(
+            Area: "Accountability",
+            Page: "Workload",
+            BadgeClass: "badge badge-success",
+            Demonstrates: "Owners, overdue work, high-priority work, and next due dates are visible.",
+            Question: "Can a manager tell who needs follow-up?"
+        ),
+        new EvidenceItem(
+            Area: "Record editing",
+            Page: "Corrective Actions",
+            BadgeClass: "badge badge-warning",
+            Demonstrates: "Records can be edited with owner, status, priority, dates, notes, and helper guidance.",
+            Question: "Does the app support real workflow updates?"
+        ),
+        new EvidenceItem(
+            Area: "Admin workflow",
+            Page: "Document Intake",
+            BadgeClass: "badge badge-success",
+            Demonstrates: "Incoming documents can be tracked through assigned owner, target system, status, due date, and notes.",
+            Question: "Can admin/document work be tracked clearly?"
+        ),
+        new EvidenceItem(
+            Area: "Reporting",
+            Page: "Reports",
+            BadgeClass: "badge badge-info",
+            Demonstrates: "Management summaries, grouped tables, and export concepts are visible.",
+            Question: "Can management review useful information without rebuilding the report manually?"
+        ),
+        new EvidenceItem(
+            Area: "System health",
+            Page: "Data Quality",
+            BadgeClass: "badge badge-warning",
+            Demonstrates: "Weak records, overdue items, expired compliance records, and review issues are surfaced.",
+            Question: "Does the system help find bad data before reporting?"
+        ),
+        new EvidenceItem(
+            Area: "Traceability",
+            Page: "Activity Log",
+            BadgeClass: "badge badge-muted",
+            Demonstrates: "Created, updated, reviewed, and workflow changes are shown in a traceable history.",
+            Question: "Can someone see what changed?"
+        ),
+        new EvidenceItem(
+            Area: "Production awareness",
+            Page: "Prototype Scope",
+            BadgeClass: "badge badge-muted",
+            Demonstrates: "Prototype limits and production upgrade requirements are clearly explained.",
+            Question: "Does the developer understand what production would require?"
+        )
+    };
+
+    private static readonly IReadOnlyList<ReviewOutcome> Outcomes = new[]
+    {
+        new ReviewOutcome(
+            Label: "Business",
+            Title: "Clear value proposition",
+            Description: "The project explains why missed follow-up, ownership, reporting, and compliance review matter."
+        ),
+        new ReviewOutcome(
+            Label: "Workflow",
+            Title: "Connected process model",
+            Description: "Multiple modules support the same follow-up and review process rather than acting as isolated screens."
+        ),
+        new ReviewOutcome(
+            Label: "Technical",
+            Title: "Working Blazor system",
+            Description: "The app demonstrates pages, components, forms, data models, reporting views, seeded data, and local persistence."
+        ),
+        new ReviewOutcome(
+            Label: "Production",
+            Title: "Realistic upgrade path",
+            Description: "The project identifies authentication, database, roles, Microsoft 365 integrations, testing, deployment, and monitoring as production work."
+        )
+    };
+
+    private record ChecklistSection(
+        string Number,
+        string Category,
+        string Title,
+        string Description,
+        string Url,
+        string LinkText,
+        IReadOnlyList<ChecklistItem> Items
+    );
+
+    private record ChecklistItem(
+        string Task,
+        string ExpectedEvidence
+    );
+
+    private record EvidenceItem(
+        string Area,
+        string Page,
+        string BadgeClass,
+        string Demonstrates,
+        string Question
+    );
+
+    private record ReviewOutcome(
+        string Label,
+        string Title,
+        string Description
+    );
+}
