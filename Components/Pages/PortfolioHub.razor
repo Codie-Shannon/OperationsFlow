@@ -1,0 +1,487 @@
+﻿@page "/portfolio-hub"
+
+<PageTitle>Portfolio Hub - OperationsFlow</PageTitle>
+
+<div class="operations-dashboard portfolio-hub-page">
+    <PageIntro Eyebrow="Start Here"
+               Title="Portfolio Hub"
+               Subtitle="A clean starting point for reviewing OperationsFlow as a business workflow, safety/compliance, admin process, reporting, and .NET portfolio project.">
+        <a class="btn btn-secondary" href="reviewer-checklist">Reviewer Checklist</a>
+        <a class="btn btn-secondary" href="demo-guide">Demo Guide</a>
+        <a class="btn btn-primary" href="business-value">Business Value</a>
+    </PageIntro>
+
+    <div class="page-purpose-note">
+        <strong>Purpose:</strong> use this page as the reviewer landing page. It gives a quick overview of what to open first, what the project proves, and which pages explain business value, prototype scope, implementation planning, and technical review.
+    </div>
+
+    <section class="kpi-grid">
+        <div class="kpi-card">
+            <span class="kpi-label">Review Type</span>
+            <strong>Portfolio</strong>
+            <span class="kpi-note">Business systems project</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Best First Page</span>
+            <strong>Checklist</strong>
+            <span class="kpi-note">Guided review path</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Main Proof</span>
+            <strong>Workflow</strong>
+            <span class="kpi-note">Connected follow-up system</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Stack</span>
+            <strong>.NET</strong>
+            <span class="kpi-note">Blazor / EF Core / SQLite</span>
+        </div>
+    </section>
+
+    <section class="summary-grid portfolio-hub-intro-grid">
+        <div class="summary-panel portfolio-hub-primary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Recommended Review Path</h2>
+                    <p>The fastest way to understand the project.</p>
+                </div>
+            </div>
+
+            <ol class="demo-step-list portfolio-review-path">
+                <li>
+                    <strong>Start with Reviewer Checklist</strong>
+                    <span>Use the checklist to verify business value, workflow connection, record editing, reporting, data quality, and production thinking.</span>
+                </li>
+
+                <li>
+                    <strong>Open Demo Guide</strong>
+                    <span>Follow the business, admin/document, or technical demo path depending on the reviewer.</span>
+                </li>
+
+                <li>
+                    <strong>Open Business Value</strong>
+                    <span>Review the business problem, value created, before/after shift, and management case.</span>
+                </li>
+
+                <li>
+                    <strong>Open Prototype Scope</strong>
+                    <span>Confirm what the project is, what it proves, what is prototype-only, and what production would require.</span>
+                </li>
+
+                <li>
+                    <strong>Open Implementation Plan</strong>
+                    <span>Review how this could move from a local portfolio prototype to a real production business system.</span>
+                </li>
+            </ol>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>One-Minute Summary</h2>
+                    <p>What a reviewer should understand quickly.</p>
+                </div>
+            </div>
+
+            <div class="portfolio-summary-highlight">
+                <span>OperationsFlow</span>
+                <strong>Connected business follow-up workflow</strong>
+                <p>
+                    OperationsFlow demonstrates how work orders, corrective actions, risk review,
+                    training compliance, document control, document intake, workload, reminders,
+                    reports, activity history, and data quality can be connected into one reviewable
+                    workflow system.
+                </p>
+            </div>
+
+            <ul class="action-list">
+                <li>It is more than a dashboard because records can be created, edited, reviewed, reported on, and traced.</li>
+                <li>It shows business value through reduced missed follow-up and clearer ownership.</li>
+                <li>It includes reviewer-ready pages that explain scope, value, rollout, and production requirements.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="portfolio-hub-card-grid">
+        @foreach (var card in HubCards)
+        {
+            <a class="portfolio-hub-card" href="@card.Url">
+                <div class="portfolio-hub-card-header">
+                    <span>@card.Number</span>
+                    <div>
+                        <p class="eyebrow">@card.Category</p>
+                        <h2>@card.Title</h2>
+                    </div>
+                </div>
+
+                <p>@card.Description</p>
+
+                <ul>
+                    @foreach (var item in card.Items)
+                    {
+                        <li>@item</li>
+                    }
+                </ul>
+
+                <strong class="portfolio-card-action">@card.ActionText</strong>
+            </a>
+        }
+    </section>
+
+    <section class="report-card">
+        <div class="panel-header">
+            <div>
+                <h2>Reviewer Page Map</h2>
+                <p>Use this table to choose which page to open depending on what the reviewer cares about.</p>
+            </div>
+        </div>
+
+        <table class="report-table portfolio-page-map-table">
+            <thead>
+                <tr>
+                    <th>Reviewer Goal</th>
+                    <th>Best Page</th>
+                    <th>What It Shows</th>
+                    <th>Best Question</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in PageMap)
+                {
+                    <tr>
+                        <td><strong>@item.Goal</strong></td>
+                        <td><span class="@item.BadgeClass">@item.Page</span></td>
+                        <td>@item.Shows</td>
+                        <td>@item.Question</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>What This Portfolio Piece Demonstrates</h2>
+                    <p>The strongest evidence to look for during review.</p>
+                </div>
+            </div>
+
+            <div class="portfolio-proof-grid">
+                @foreach (var proof in ProofItems)
+                {
+                    <article>
+                        <span>@proof.Label</span>
+                        <strong>@proof.Title</strong>
+                        <p>@proof.Description</p>
+                    </article>
+                }
+            </div>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Useful Review Links</h2>
+                    <p>Quick links to the most important live workflow pages.</p>
+                </div>
+            </div>
+
+            <div class="portfolio-link-list">
+                @foreach (var link in WorkflowLinks)
+                {
+                    <a href="@link.Url">
+                        <span>@link.Label</span>
+                        <strong>@link.Title</strong>
+                        <p>@link.Description</p>
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="report-card portfolio-final-summary-card">
+        <div class="panel-header">
+            <div>
+                <h2>Portfolio Summary</h2>
+                <p>A short summary for Vanessa, employers, or technical reviewers.</p>
+            </div>
+        </div>
+
+        <div class="portfolio-final-summary">
+            <p>
+                OperationsFlow is a .NET/Blazor business workflow prototype focused on operational follow-up,
+                safety/compliance review, admin/document workflow, reporting, and management visibility.
+                It demonstrates practical business-systems development: connected records, editable workflows,
+                owner accountability, due-date planning, activity traceability, reporting views, data quality checks,
+                and production-aware implementation planning.
+            </p>
+
+            <p>
+                The project is intentionally presented with reviewer support pages: Portfolio Hub, Reviewer Checklist,
+                Demo Guide, Business Value, Prototype Scope, and Implementation Plan. These pages make the project easier
+                to assess because they explain what the system does, why it matters, what is working now, what is prototype-only,
+                and what would be needed to make it production-ready.
+            </p>
+        </div>
+    </section>
+</div>
+
+@code {
+    private static readonly IReadOnlyList<HubCard> HubCards = new[]
+    {
+        new HubCard(
+            Number: "01",
+            Category: "Start",
+            Title: "Reviewer Checklist",
+            Description: "A guided checklist that explains what to click, what to verify, and what evidence proves the project works.",
+            Url: "reviewer-checklist",
+            ActionText: "Open Reviewer Checklist",
+            Items: new[]
+            {
+                "Best first page for a reviewer.",
+                "Confirms business, workflow, data, and production thinking.",
+                "Gives a clear manual review script."
+            }
+        ),
+        new HubCard(
+            Number: "02",
+            Category: "Demo",
+            Title: "Demo Guide",
+            Description: "Guided walkthrough paths for business users, admin/document workflow, and technical reviewers.",
+            Url: "demo-guide",
+            ActionText: "Open Demo Guide",
+            Items: new[]
+            {
+                "Shows recommended click paths.",
+                "Explains the prototype in reviewer-friendly language.",
+                "Useful when presenting the project live."
+            }
+        ),
+        new HubCard(
+            Number: "03",
+            Category: "Business Case",
+            Title: "Business Value",
+            Description: "Explains the practical value of reduced missed follow-up, clearer ownership, better reporting, and stronger visibility.",
+            Url: "business-value",
+            ActionText: "Open Business Value",
+            Items: new[]
+            {
+                "Shows the business problem.",
+                "Explains before vs after.",
+                "Maps features to business outcomes."
+            }
+        ),
+        new HubCard(
+            Number: "04",
+            Category: "Scope",
+            Title: "Prototype Scope",
+            Description: "Explains what OperationsFlow is, what it proves, what is prototype-only, and what production would need.",
+            Url: "prototype-scope",
+            ActionText: "Open Prototype Scope",
+            Items: new[]
+            {
+                "Sets honest expectations.",
+                "Separates current features from future work.",
+                "Shows production awareness."
+            }
+        ),
+        new HubCard(
+            Number: "05",
+            Category: "Rollout",
+            Title: "Implementation Plan",
+            Description: "Shows how the prototype could be introduced into a real business environment with a phased rollout.",
+            Url: "implementation-plan",
+            ActionText: "Open Implementation Plan",
+            Items: new[]
+            {
+                "Covers pilot setup.",
+                "Lists production readiness needs.",
+                "Explains low-risk rollout."
+            }
+        ),
+        new HubCard(
+            Number: "06",
+            Category: "Evidence",
+            Title: "Activity Log",
+            Description: "Shows record-level traceability for created, updated, reviewed, and workflow changes.",
+            Url: "activity-log",
+            ActionText: "Open Activity Log",
+            Items: new[]
+            {
+                "Supports audit-style review.",
+                "Shows workflow movement.",
+                "Proves changes are not invisible."
+            }
+        )
+    };
+
+    private static readonly IReadOnlyList<PageMapItem> PageMap = new[]
+    {
+        new PageMapItem(
+            Goal: "Understand where to start",
+            Page: "Portfolio Hub",
+            BadgeClass: "badge badge-info",
+            Shows: "A central landing page for reviewing the project.",
+            Question: "What should I open first?"
+        ),
+        new PageMapItem(
+            Goal: "Review the whole project",
+            Page: "Reviewer Checklist",
+            BadgeClass: "badge badge-success",
+            Shows: "A structured checklist for business, workflow, record, reporting, data quality, and production review.",
+            Question: "What should I verify?"
+        ),
+        new PageMapItem(
+            Goal: "Watch a guided path",
+            Page: "Demo Guide",
+            BadgeClass: "badge badge-info",
+            Shows: "Business, admin/document, and technical walkthrough routes.",
+            Question: "How do I click through this demo?"
+        ),
+        new PageMapItem(
+            Goal: "Understand business value",
+            Page: "Business Value",
+            BadgeClass: "badge badge-success",
+            Shows: "The practical value created by connected follow-up, reporting, ownership, and traceability.",
+            Question: "Why would a business care?"
+        ),
+        new PageMapItem(
+            Goal: "Understand boundaries",
+            Page: "Prototype Scope",
+            BadgeClass: "badge badge-warning",
+            Shows: "What is working, what is prototype-only, and what is not production-ready yet.",
+            Question: "What has actually been built?"
+        ),
+        new PageMapItem(
+            Goal: "Understand production path",
+            Page: "Implementation Plan",
+            BadgeClass: "badge badge-muted",
+            Shows: "A phased rollout path, production readiness checklist, and upgrade requirements.",
+            Question: "What would be needed to use this for real?"
+        ),
+        new PageMapItem(
+            Goal: "Review live workflow",
+            Page: "Safety Meeting Pack",
+            BadgeClass: "badge badge-info",
+            Shows: "Open actions, high/critical risks, training issues, document reviews, and follow-up discussion points.",
+            Question: "What needs attention?"
+        ),
+        new PageMapItem(
+            Goal: "Review management pressure",
+            Page: "Workload",
+            BadgeClass: "badge badge-success",
+            Shows: "Owner workload, overdue items, high-priority work, next due dates, and pressure levels.",
+            Question: "Who needs follow-up first?"
+        )
+    };
+
+    private static readonly IReadOnlyList<ProofItem> ProofItems = new[]
+    {
+        new ProofItem(
+            Label: "Business",
+            Title: "Process understanding",
+            Description: "The project is built around real follow-up problems: ownership, overdue work, reporting, compliance review, and admin tracking."
+        ),
+        new ProofItem(
+            Label: "Workflow",
+            Title: "Connected modules",
+            Description: "Corrective actions, risks, training, documents, intake, reports, workload, reminders, and data quality support the same review model."
+        ),
+        new ProofItem(
+            Label: "Technical",
+            Title: "Working Blazor app",
+            Description: "The app demonstrates Razor pages/components, forms, models, database-backed records, seeded data, and reusable UI patterns."
+        ),
+        new ProofItem(
+            Label: "Reporting",
+            Title: "Management visibility",
+            Description: "The project includes meeting-ready summaries, grouped tables, CSV/export concepts, data quality checks, and review matrices."
+        ),
+        new ProofItem(
+            Label: "Traceability",
+            Title: "Activity history",
+            Description: "Record-level activity supports audit-style review and makes workflow changes visible."
+        ),
+        new ProofItem(
+            Label: "Production",
+            Title: "Upgrade planning",
+            Description: "The app clearly identifies authentication, roles, hosted database, Microsoft 365 integrations, tests, deployment, monitoring, and backups as production work."
+        )
+    };
+
+    private static readonly IReadOnlyList<WorkflowLink> WorkflowLinks = new[]
+    {
+        new WorkflowLink(
+            Label: "Safety",
+            Title: "Safety Meeting Pack",
+            Description: "Meeting-ready summary of safety/compliance attention items.",
+            Url: "safety-meeting-pack"
+        ),
+        new WorkflowLink(
+            Label: "Planning",
+            Title: "Compliance Calendar",
+            Description: "Overdue, due-soon, next 30 days, and future compliance work.",
+            Url: "compliance-calendar"
+        ),
+        new WorkflowLink(
+            Label: "Actions",
+            Title: "Corrective Actions",
+            Description: "Create, edit, review, and trace corrective/improvement actions.",
+            Url: "corrective-actions"
+        ),
+        new WorkflowLink(
+            Label: "Admin",
+            Title: "Document Intake",
+            Description: "Track incoming document/admin work by owner, target system, status, and due date.",
+            Url: "document-intake"
+        ),
+        new WorkflowLink(
+            Label: "Management",
+            Title: "Workload",
+            Description: "Review owner pressure, overdue responsibility, and high-priority work.",
+            Url: "workload"
+        ),
+        new WorkflowLink(
+            Label: "Health",
+            Title: "Data Quality",
+            Description: "Identify weak records, overdue items, expired records, and review issues.",
+            Url: "data-quality"
+        )
+    };
+
+    private record HubCard(
+        string Number,
+        string Category,
+        string Title,
+        string Description,
+        string Url,
+        string ActionText,
+        IReadOnlyList<string> Items
+    );
+
+    private record PageMapItem(
+        string Goal,
+        string Page,
+        string BadgeClass,
+        string Shows,
+        string Question
+    );
+
+    private record ProofItem(
+        string Label,
+        string Title,
+        string Description
+    );
+
+    private record WorkflowLink(
+        string Label,
+        string Title,
+        string Description,
+        string Url
+    );
+}
