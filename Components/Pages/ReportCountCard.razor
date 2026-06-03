@@ -1,0 +1,43 @@
+﻿@using OperationsFlow.Components.Pages
+
+<div class="report-card">
+    <div class="panel-header">
+        <div>
+            <h2>@Title</h2>
+            <p>@Subtitle</p>
+        </div>
+    </div>
+
+    @if (!Rows.Any())
+    {
+        <p class="empty-state">@EmptyMessage</p>
+    }
+    else
+    {
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>@FirstColumn</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Rows)
+                {
+                    <tr>
+                        <td>@row.Label</td>
+                        <td><span class="badge badge-info">@row.Count</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Subtitle { get; set; } = "";
+    [Parameter] public string FirstColumn { get; set; } = "";
+    [Parameter] public IReadOnlyList<Reports.ReportCountRow> Rows { get; set; } = Array.Empty<Reports.ReportCountRow>();
+    [Parameter] public string EmptyMessage { get; set; } = "";
+}
