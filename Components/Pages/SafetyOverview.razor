@@ -147,7 +147,6 @@
                             <th>Action</th>
                             <th>Owner</th>
                             <th>Priority</th>
-                            <th>Source</th>
                             <th>Due Date</th>
                         </tr>
                     </thead>
@@ -155,14 +154,16 @@
                         @foreach (var item in OverdueCorrectiveActions.Take(8))
                         {
                             <tr>
-                                <td class="strong-cell">@item.Title</td>
+                                <td>
+                                    <div class="strong-cell">@item.Title</div>
+                                    <small class="muted-text">@item.Source</small>
+                                </td>
                                 <td>@item.Owner</td>
                                 <td>
                                     <span class="@GetPriorityClass(item.Priority)">
                                         @item.Priority
                                     </span>
                                 </td>
-                                <td>@item.Source</td>
                                 <td>@item.DueDate.ToString("dd MMM yyyy")</td>
                             </tr>
                         }
@@ -247,7 +248,6 @@
                         <tr>
                             <th>Document</th>
                             <th>Owner</th>
-                            <th>Department</th>
                             <th>Review Date</th>
                             <th>Flag</th>
                         </tr>
@@ -256,9 +256,11 @@
                         @foreach (var item in DocumentReviewAttentionItems.Take(8))
                         {
                             <tr>
-                                <td class="strong-cell">@item.Title</td>
+                                <td>
+                                    <div class="strong-cell">@item.Title</div>
+                                    <small class="muted-text">@item.Department</small>
+                                </td>
                                 <td>@item.Owner</td>
-                                <td>@item.Department</td>
                                 <td>@item.NextReviewDate.ToString("dd MMM yyyy")</td>
                                 <td>
                                     @if (item.IsReviewOverdue)
