@@ -1,0 +1,72 @@
+﻿@using OperationsFlow.Components.Pages
+
+<div class="calendar-section report-card">
+    <div class="panel-header">
+        <div>
+            <h2>@Title</h2>
+            <p>@Subtitle</p>
+        </div>
+        <span class="badge badge-info">@Items.Count item(s)</span>
+    </div>
+
+    @if (!Items.Any())
+    {
+        <p class="empty-state">@EmptyMessage</p>
+    }
+    else
+    {
+        <table class="report-table calendar-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type / Status</th>
+                    <th>Item</th>
+                    <th>Owner</th>
+                    <th>Priority</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Items)
+                {
+                    <tr>
+                        <td>
+                            <strong>@item.DateLabel</strong>
+                            <span class="muted-text">@item.Date.ToString("dd MMM yyyy")</span>
+                        </td>
+
+                        <td>
+                            <span class="@ComplianceCalendar.GetTypeClass(item.Type)">@item.Type</span>
+                            <span class="@ComplianceCalendar.GetStatusClass(item)">@item.Status</span>
+                        </td>
+
+                        <td>
+                            <strong>@item.Title</strong>
+                            <span class="muted-text">@item.Source</span>
+                        </td>
+
+                        <td>
+                            <strong>@item.Owner</strong>
+                            <span class="muted-text">@item.Department</span>
+                        </td>
+
+                        <td>
+                            <span class="@ComplianceCalendar.GetPriorityClass(item.Priority)">@item.Priority</span>
+                        </td>
+
+                        <td class="table-actions">
+                            <a class="btn btn-secondary" href="@item.Url">Open</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Subtitle { get; set; } = "";
+    [Parameter] public List<ComplianceCalendar.CalendarItem> Items { get; set; } = new();
+    [Parameter] public string EmptyMessage { get; set; } = "";
+}
