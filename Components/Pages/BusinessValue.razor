@@ -1,0 +1,421 @@
+﻿@page "/business-value"
+
+<PageTitle>Business Value - OperationsFlow</PageTitle>
+
+<div class="operations-dashboard business-value-page">
+    <PageIntro Eyebrow="Business Case"
+               Title="Business Value"
+               Subtitle="A practical explanation of the value OperationsFlow creates for safety/compliance review, admin workflow, reporting, accountability, and management follow-up.">
+        <a class="btn btn-secondary" href="implementation-plan">Implementation Plan</a>
+        <a class="btn btn-secondary" href="prototype-scope">Prototype Scope</a>
+        <a class="btn btn-primary" href="reports">Reports</a>
+    </PageIntro>
+
+    <div class="page-purpose-note">
+        <strong>Purpose:</strong> use this page to explain why OperationsFlow matters to a business. The value is not only the screens — it is the reduced missed follow-up, clearer ownership, cleaner reporting, and better visibility across safety, compliance, admin, and operations.
+    </div>
+
+    <section class="kpi-grid">
+        <div class="kpi-card">
+            <span class="kpi-label">Main Value</span>
+            <strong>Follow-up</strong>
+            <span class="kpi-note">Less work falling through gaps</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Business Area</span>
+            <strong>OSHE</strong>
+            <span class="kpi-note">Safety / compliance / admin</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Visibility</span>
+            <strong>Owner-based</strong>
+            <span class="kpi-note">Who owns what next</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Reporting</span>
+            <strong>Ready</strong>
+            <span class="kpi-note">Meeting and management review</span>
+        </div>
+    </section>
+
+    <section class="summary-grid business-value-hero-grid">
+        <div class="summary-panel business-value-main-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>The Core Business Problem</h2>
+                    <p>OperationsFlow is designed around a common problem in small and medium businesses.</p>
+                </div>
+            </div>
+
+            <p class="business-value-copy">
+                Important follow-up work often starts in emails, conversations, inspections, safety meetings,
+                paper forms, spreadsheets, or document folders. Without a connected workflow, it becomes hard
+                to see what is overdue, who owns the next step, what has already been reviewed, and what needs
+                to be escalated before it becomes a bigger issue.
+            </p>
+
+            <div class="business-problem-grid">
+                <article>
+                    <span>01</span>
+                    <strong>Missed follow-up</strong>
+                    <p>Corrective actions, document reviews, training expiries, and admin tasks can sit unnoticed.</p>
+                </article>
+
+                <article>
+                    <span>02</span>
+                    <strong>Weak ownership</strong>
+                    <p>People may know something needs doing, but the system does not make ownership clear.</p>
+                </article>
+
+                <article>
+                    <span>03</span>
+                    <strong>Manual reporting</strong>
+                    <p>Managers often need to rebuild status summaries from scattered records before meetings.</p>
+                </article>
+
+                <article>
+                    <span>04</span>
+                    <strong>Poor traceability</strong>
+                    <p>When records change, it can be hard to see what changed, when, and why.</p>
+                </article>
+            </div>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>OperationsFlow Response</h2>
+                    <p>How the prototype answers that problem.</p>
+                </div>
+            </div>
+
+            <div class="business-value-highlight">
+                <span>Value proposition</span>
+                <strong>One place to review what needs attention next</strong>
+                <p>
+                    OperationsFlow brings operational work, corrective actions, risk review, training,
+                    document control, document intake, reminders, workload, reports, activity history,
+                    and data quality into one connected workflow view.
+                </p>
+            </div>
+
+            <ul class="action-list">
+                <li>Shows overdue and due-soon work before it is forgotten.</li>
+                <li>Groups work by owner so follow-up responsibility is visible.</li>
+                <li>Turns safety/compliance review into a meeting-ready workflow.</li>
+                <li>Creates reporting views that support weekly and monthly management review.</li>
+                <li>Uses activity history and data quality checks to improve accountability.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="business-value-card-grid">
+        @foreach (var value in ValueCards)
+        {
+            <article class="business-value-card">
+                <div class="business-value-card-header">
+                    <span>@value.Number</span>
+                    <div>
+                        <p class="eyebrow">@value.Category</p>
+                        <h2>@value.Title</h2>
+                    </div>
+                </div>
+
+                <p>@value.Description</p>
+
+                <ul>
+                    @foreach (var item in value.Items)
+                    {
+                        <li>@item</li>
+                    }
+                </ul>
+            </article>
+        }
+    </section>
+
+    <section class="report-card">
+        <div class="panel-header">
+            <div>
+                <h2>Business Value Matrix</h2>
+                <p>How each part of OperationsFlow contributes to practical business outcomes.</p>
+            </div>
+        </div>
+
+        <table class="report-table business-value-table">
+            <thead>
+                <tr>
+                    <th>Business Need</th>
+                    <th>OperationsFlow Feature</th>
+                    <th>Value Created</th>
+                    <th>Example Review Question</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ValueMatrix)
+                {
+                    <tr>
+                        <td><strong>@item.BusinessNeed</strong></td>
+                        <td><span class="@item.BadgeClass">@item.Feature</span></td>
+                        <td>@item.ValueCreated</td>
+                        <td>@item.ReviewQuestion</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Before vs After</h2>
+                    <p>The practical shift this project demonstrates.</p>
+                </div>
+            </div>
+
+            <div class="before-after-grid">
+                <article class="before-card">
+                    <span>Before</span>
+                    <h3>Scattered follow-up</h3>
+                    <ul>
+                        <li>Actions spread across emails, meetings, notes, and spreadsheets.</li>
+                        <li>Manual chasing required to confirm progress.</li>
+                        <li>Reports rebuilt only when someone asks for them.</li>
+                        <li>Hard to identify who is overloaded or what is overdue.</li>
+                    </ul>
+                </article>
+
+                <article class="after-card">
+                    <span>After</span>
+                    <h3>Connected workflow</h3>
+                    <ul>
+                        <li>Work is tracked with owner, due date, status, priority, and notes.</li>
+                        <li>Overdue and due-soon items appear in review views automatically.</li>
+                        <li>Reports, workload, reminders, and data quality reuse the same records.</li>
+                        <li>Managers can review follow-up without rebuilding the story from scratch.</li>
+                    </ul>
+                </article>
+            </div>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Where Value Shows Up</h2>
+                    <p>The pages that make the business case visible.</p>
+                </div>
+            </div>
+
+            <div class="business-link-list">
+                @foreach (var link in BusinessLinks)
+                {
+                    <a href="@link.Url">
+                        <span>@link.Label</span>
+                        <strong>@link.Title</strong>
+                        <p>@link.Description</p>
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="report-card business-summary-card">
+        <div class="panel-header">
+            <div>
+                <h2>Business Case Summary</h2>
+                <p>A short summary that can be used in a portfolio review, demo, or message.</p>
+            </div>
+        </div>
+
+        <div class="business-case-summary">
+            <p>
+                OperationsFlow demonstrates how a business can move from scattered manual follow-up to a
+                connected workflow system. It creates value by making overdue work visible, assigning clear
+                owners, supporting safety/compliance meetings, improving document and training review,
+                exposing data quality issues, and giving managers reporting views without needing to rebuild
+                everything manually from spreadsheets or emails.
+            </p>
+
+            <p>
+                The strongest business value is in safety/compliance and admin follow-up: the same records
+                support the Safety Meeting Pack, Compliance Calendar, Workload, Reminders, Reports, Activity Log,
+                and Data Quality pages. That makes OperationsFlow a practical example of business systems thinking,
+                workflow design, reporting, and production-aware planning.
+            </p>
+        </div>
+    </section>
+</div>
+
+@code {
+    private static readonly IReadOnlyList<ValueCard> ValueCards = new[]
+    {
+        new ValueCard(
+            Number: "01",
+            Category: "Accountability",
+            Title: "Clear ownership",
+            Description: "The system makes it easier to see who owns the next step and which owners have the most follow-up pressure.",
+            Items: new[]
+            {
+                "Owner fields are used across work orders, corrective actions, document intake, risk review, and training follow-up.",
+                "Workload shows assigned items by person.",
+                "Reminders and reports make owner responsibility visible."
+            }
+        ),
+        new ValueCard(
+            Number: "02",
+            Category: "Compliance",
+            Title: "Less missed review work",
+            Description: "Safety and compliance records are easier to review because overdue and due-soon work is surfaced in multiple places.",
+            Items: new[]
+            {
+                "Safety Meeting Pack identifies attention items.",
+                "Compliance Calendar groups overdue, due this week, due next 30 days, and future work.",
+                "Data Quality highlights weak or risky records."
+            }
+        ),
+        new ValueCard(
+            Number: "03",
+            Category: "Reporting",
+            Title: "Meeting-ready summaries",
+            Description: "Managers can use structured reporting views instead of rebuilding the same summary manually before each review.",
+            Items: new[]
+            {
+                "Reports page groups operational and compliance information.",
+                "Export cards show where CSV/reporting outputs fit.",
+                "Safety Meeting Pack provides practical discussion points."
+            }
+        ),
+        new ValueCard(
+            Number: "04",
+            Category: "Traceability",
+            Title: "Change history and review evidence",
+            Description: "Activity history helps explain what changed and supports follow-up review.",
+            Items: new[]
+            {
+                "Activity Log captures created, updated, reviewed, and workflow changes.",
+                "Record-level history supports traceability.",
+                "Notes guidance encourages better follow-up evidence."
+            }
+        )
+    };
+
+    private static readonly IReadOnlyList<ValueMatrixItem> ValueMatrix = new[]
+    {
+        new ValueMatrixItem(
+            BusinessNeed: "Know what needs attention",
+            Feature: "Safety Meeting Pack",
+            BadgeClass: "badge badge-info",
+            ValueCreated: "Creates a meeting-ready summary of overdue actions, high risks, training issues, document reviews, and recent activity.",
+            ReviewQuestion: "What needs to be discussed before the next safety/compliance meeting?"
+        ),
+        new ValueMatrixItem(
+            BusinessNeed: "Plan follow-up dates",
+            Feature: "Compliance Calendar",
+            BadgeClass: "badge badge-info",
+            ValueCreated: "Groups overdue, due this week, due next 30 days, and future work into a planning view.",
+            ReviewQuestion: "What is already overdue and what is about to become overdue?"
+        ),
+        new ValueMatrixItem(
+            BusinessNeed: "Assign responsibility",
+            Feature: "Workload",
+            BadgeClass: "badge badge-success",
+            ValueCreated: "Shows who owns open work, who has overdue items, and which owners are under the most pressure.",
+            ReviewQuestion: "Who needs help, escalation, or follow-up first?"
+        ),
+        new ValueMatrixItem(
+            BusinessNeed: "Find weak records",
+            Feature: "Data Quality",
+            BadgeClass: "badge badge-warning",
+            ValueCreated: "Identifies overdue, missing, expired, and weak records before they distort reporting.",
+            ReviewQuestion: "Which records need cleanup before management review?"
+        ),
+        new ValueMatrixItem(
+            BusinessNeed: "Track admin work",
+            Feature: "Document Intake",
+            BadgeClass: "badge badge-success",
+            ValueCreated: "Tracks incoming documents, assigned owners, target systems, due dates, statuses, and processing notes.",
+            ReviewQuestion: "Which documents still need processing, checking, or saving?"
+        ),
+        new ValueMatrixItem(
+            BusinessNeed: "Review management status",
+            Feature: "Reports",
+            BadgeClass: "badge badge-success",
+            ValueCreated: "Provides summary counts, grouped tables, export concepts, and management review sections.",
+            ReviewQuestion: "What can management review without manually rebuilding the report?"
+        ),
+        new ValueMatrixItem(
+            BusinessNeed: "Prove workflow change",
+            Feature: "Activity Log",
+            BadgeClass: "badge badge-info",
+            ValueCreated: "Shows record-level traceability for changes, reviews, creations, and workflow movement.",
+            ReviewQuestion: "What changed, when, and by whom?"
+        ),
+        new ValueMatrixItem(
+            BusinessNeed: "Explain the system",
+            Feature: "Demo / Scope / Plan",
+            BadgeClass: "badge badge-muted",
+            ValueCreated: "Provides reviewer-ready explanation of the prototype, its value, boundaries, and production upgrade path.",
+            ReviewQuestion: "Can someone understand the system without a long live explanation?"
+        )
+    };
+
+    private static readonly IReadOnlyList<BusinessLink> BusinessLinks = new[]
+    {
+        new BusinessLink(
+            Label: "Review",
+            Title: "Safety Meeting Pack",
+            Description: "Shows attention items and recommended follow-up actions.",
+            Url: "safety-meeting-pack"
+        ),
+        new BusinessLink(
+            Label: "Planning",
+            Title: "Compliance Calendar",
+            Description: "Shows overdue, due-soon, and future compliance work.",
+            Url: "compliance-calendar"
+        ),
+        new BusinessLink(
+            Label: "Management",
+            Title: "Workload",
+            Description: "Shows owner pressure, overdue work, and follow-up responsibility.",
+            Url: "workload"
+        ),
+        new BusinessLink(
+            Label: "Reporting",
+            Title: "Reports",
+            Description: "Shows management summaries and report/export concepts.",
+            Url: "reports"
+        ),
+        new BusinessLink(
+            Label: "System Health",
+            Title: "Data Quality",
+            Description: "Shows weak records and issues before reporting review.",
+            Url: "data-quality"
+        )
+    };
+
+    private record ValueCard(
+        string Number,
+        string Category,
+        string Title,
+        string Description,
+        IReadOnlyList<string> Items
+    );
+
+    private record ValueMatrixItem(
+        string BusinessNeed,
+        string Feature,
+        string BadgeClass,
+        string ValueCreated,
+        string ReviewQuestion
+    );
+
+    private record BusinessLink(
+        string Label,
+        string Title,
+        string Description,
+        string Url
+    );
+}
