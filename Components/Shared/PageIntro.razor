@@ -1,0 +1,29 @@
+﻿<section class="page-intro-card">
+    <div>
+        @if (!string.IsNullOrWhiteSpace(Eyebrow))
+        {
+            <p class="eyebrow">@Eyebrow</p>
+        }
+
+        <h1>@Title</h1>
+
+        @if (!string.IsNullOrWhiteSpace(Subtitle))
+        {
+            <p>@Subtitle</p>
+        }
+    </div>
+
+    @if (ChildContent is not null)
+    {
+        <div class="page-intro-actions">
+            @ChildContent
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public string Eyebrow { get; set; } = "";
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Subtitle { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
