@@ -2189,3 +2189,161 @@ main {
         align-items: flex-start;
     }
 }
+
+/* ---------------------------------------------------------
+   Reports page polish
+   --------------------------------------------------------- */
+
+.reports-dashboard .summary-grid {
+    align-items: stretch;
+}
+
+.reports-dashboard .summary-panel,
+.reports-dashboard .report-card,
+.reports-dashboard .kpi-card {
+    min-width: 0;
+}
+
+.reports-dashboard .report-card {
+    overflow: visible;
+}
+
+.reports-dashboard .report-table {
+    width: 100%;
+    table-layout: auto;
+}
+
+    .reports-dashboard .report-table th,
+    .reports-dashboard .report-table td {
+        padding: 12px 12px;
+        vertical-align: top;
+        white-space: normal;
+    }
+
+    .reports-dashboard .report-table th {
+        line-height: 1.25;
+    }
+
+    .reports-dashboard .report-table td {
+        line-height: 1.4;
+    }
+
+        .reports-dashboard .report-table td .badge {
+            margin-top: 2px;
+        }
+
+        .reports-dashboard .report-table td:first-child {
+            min-width: 120px;
+        }
+
+        .reports-dashboard .report-table td:last-child {
+            width: 1%;
+            white-space: nowrap;
+        }
+
+.reports-dashboard .export-grid {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+}
+
+.reports-dashboard .export-card {
+    min-height: 112px;
+}
+
+    .reports-dashboard .export-card strong {
+        line-height: 1.25;
+    }
+
+    .reports-dashboard .export-card span {
+        line-height: 1.45;
+    }
+
+.reports-dashboard .panel-header {
+    gap: 16px;
+}
+
+    .reports-dashboard .panel-header .header-actions {
+        flex-shrink: 0;
+    }
+
+/* Make the denser reporting cards breathe better */
+.reports-dashboard .summary-grid:has(.report-card) {
+    gap: 24px;
+}
+
+/* Prevent small reporting cards from creating awkward horizontal scrollbars */
+.reports-dashboard .report-card .report-table {
+    min-width: 0;
+}
+
+    /* Keep document review and owner reports readable */
+    .reports-dashboard .report-card .report-table th:nth-child(2),
+    .reports-dashboard .report-card .report-table td:nth-child(2) {
+        min-width: 120px;
+    }
+
+/* Better mobile/tablet behaviour */
+@media (max-width: 1200px) {
+    .reports-dashboard .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reports-dashboard .export-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reports-dashboard .report-table td:last-child {
+        width: auto;
+        white-space: normal;
+    }
+}
+
+@media (max-width: 800px) {
+    .reports-dashboard .report-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+        .reports-dashboard .report-table th,
+        .reports-dashboard .report-table td {
+            white-space: nowrap;
+        }
+}
+
+/* Reports: fix training/owner card clipping */
+.reports-dashboard .summary-grid {
+    grid-template-columns: repeat(2, minmax(420px, 1fr));
+}
+
+    .reports-dashboard .summary-grid:has(> .report-card:nth-child(3)) {
+        grid-template-columns: repeat(3, minmax(320px, 1fr));
+    }
+
+.reports-dashboard .report-card {
+    min-width: 0;
+}
+
+    .reports-dashboard .report-card .report-table {
+        width: 100%;
+        table-layout: auto;
+    }
+
+        .reports-dashboard .report-card .report-table th,
+        .reports-dashboard .report-card .report-table td {
+            padding: 12px 10px;
+            white-space: normal;
+        }
+
+            .reports-dashboard .report-card .report-table td:last-child,
+            .reports-dashboard .report-card .report-table th:last-child {
+                width: auto;
+                white-space: nowrap;
+            }
+
+    .reports-dashboard .report-card .panel-header {
+        align-items: flex-start;
+    }
+
+        .reports-dashboard .report-card .panel-header .btn {
+            white-space: nowrap;
+        }
