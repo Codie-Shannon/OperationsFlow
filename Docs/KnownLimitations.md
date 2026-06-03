@@ -1,8 +1,10 @@
 # Known Limitations
 
-OperationsFlow is currently a portfolio/semi-live prototype. It is designed to demonstrate business workflow thinking, Blazor/.NET development, SQLite persistence, reporting, exports, activity history, reminders, workload, and enterprise direction.
+OperationsFlow is currently a portfolio/semi-live prototype. It is designed to demonstrate business workflow thinking, Blazor/.NET development, SQLite persistence, safety/compliance visibility, reporting, exports, activity history, reminders, workload, and enterprise direction.
 
 It is not yet a production enterprise deployment.
+
+---
 
 ## Current Technical Limitations
 
@@ -14,6 +16,21 @@ It is not yet a production enterprise deployment.
 - No production logging/error monitoring.
 - No hosted deployment pipeline.
 
+---
+
+## Safety Overview Limitations
+
+- Safety Overview currently uses local SQLite/demo data.
+- Safety Overview is a focused dashboard/management view, not a production safety management system.
+- Safety Overview aggregates existing corrective action, risk, training, document review, and activity data.
+- Safety Overview does not currently include configurable compliance rules.
+- No automated overdue corrective action notifications yet.
+- No scheduled training expiry notifications yet.
+- No automated document review approval workflow yet.
+- No real authenticated safety/compliance user roles yet.
+
+---
+
 ## Security / User Limitations
 
 - No authentication.
@@ -21,6 +38,8 @@ It is not yet a production enterprise deployment.
 - No role-based permissions.
 - No Microsoft Entra ID / Azure AD integration.
 - Current `CreatedBy` values are demo-style rather than real authenticated users.
+
+---
 
 ## Integration Limitations
 
@@ -35,7 +54,9 @@ No live integrations yet with:
 - Power BI
 - Azure Blob Storage
 
-The current CSV export and Document Intake workflows are designed to demonstrate the direction before live integration work.
+The current CSV export, Safety Overview, and Document Intake workflows are designed to demonstrate the direction before live integration work.
+
+---
 
 ## Admin Settings Limitations
 
@@ -43,6 +64,8 @@ The current CSV export and Document Intake workflows are designed to demonstrate
 - Some dropdown values are still hardcoded in forms.
 - Settings are not yet fully database-driven.
 - Settings are not yet editable through the UI.
+
+---
 
 ## Document Intake Limitations
 
@@ -52,11 +75,16 @@ The current CSV export and Document Intake workflows are designed to demonstrate
 - No SharePoint document library connection yet.
 - Document records track workflow metadata, not actual file content.
 
+---
+
 ## Reporting Limitations
 
 - Reports are app-based prototype reports.
 - No Power BI embedding yet.
 - CSV export is available, but scheduled reporting and automated distribution are not implemented.
+- Safety/compliance reports are not yet generated as scheduled packs.
+
+---
 
 ## Production Upgrade Path
 
@@ -73,3 +101,5 @@ To become production-ready, OperationsFlow would need:
 - Deployment pipeline.
 - Real integrations.
 - File storage and document security.
+- Configurable safety/compliance rules.
+- Automated notifications and reminders.

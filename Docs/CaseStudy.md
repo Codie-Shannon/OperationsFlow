@@ -2,9 +2,11 @@
 
 ## Summary
 
-OperationsFlow is a semi-live Blazor/.NET business operations prototype built to demonstrate practical business systems development. It tracks operational work, corrective actions, document intake, document reviews, risk items, training compliance, reminders, workload, reports, CSV exports, data quality, and activity traceability.
+OperationsFlow is a semi-live Blazor/.NET business operations prototype built to demonstrate practical business systems development. It tracks operational work, corrective actions, safety/compliance issues, document intake, document reviews, risk items, training compliance, reminders, workload, reports, CSV exports, data quality, and activity traceability.
 
-The project is designed as a portfolio-ready proof of capability for .NET business systems, admin workflow automation, compliance tracking, and reporting.
+The project is designed as a portfolio-ready proof of capability for .NET business systems, admin workflow automation, compliance tracking, safety/compliance visibility, and reporting.
+
+OperationsFlow v1.1 adds a focused Safety Overview dashboard for Vanessa/OSHE-style demos. This gives a health, safety, or compliance manager a single place to review open corrective actions, overdue corrective actions, high/critical risks, expired training, document review issues, and recent compliance activity.
 
 ---
 
@@ -29,7 +31,14 @@ This creates common problems:
 - Training records expire.
 - Incoming paperwork gets stuck in email.
 - Managers lack a clear workload/reporting view.
+- Safety/compliance attention items are split across separate registers.
 - Data quality issues are hard to spot before reporting.
+
+For a health, safety, or compliance manager, the key issue is often simple:
+
+```text
+What needs attention today, who owns it, and can I prove it was followed up?
+```
 
 ---
 
@@ -40,12 +49,14 @@ Build a semi-live prototype that shows how these workflows can be centralised in
 The goal was to demonstrate:
 
 1. Operational tracking.
-2. Compliance follow-up.
-3. Document/admin intake tracking.
-4. Dashboard visibility.
-5. Reporting/export capability.
-6. Activity traceability.
-7. A realistic path toward an enterprise version.
+2. Safety/compliance follow-up.
+3. Corrective action management.
+4. Risk, training, and document review visibility.
+5. Document/admin intake tracking.
+6. Dashboard visibility.
+7. Reporting/export capability.
+8. Activity traceability.
+9. A realistic path toward an enterprise version.
 
 ---
 
@@ -54,6 +65,7 @@ The goal was to demonstrate:
 ### Core Modules
 
 - Dashboard
+- Safety Overview
 - Work Orders
 - Corrective Actions
 - Document Control
@@ -70,6 +82,21 @@ The goal was to demonstrate:
 ---
 
 ## Key Workflows
+
+### Safety Overview Workflow
+
+A user can open Safety Overview and immediately see:
+
+- Total attention items
+- Open corrective actions
+- Overdue corrective actions
+- High/critical risks
+- Expired training
+- Training expiring soon
+- Overdue and due-soon document reviews
+- Recent safety/compliance activity
+
+This gives the Vanessa/OSHE demo a focused starting point before drilling into the source modules.
 
 ### Work Order Workflow
 
@@ -91,6 +118,36 @@ A user can:
 - Automatically set completed date when completed/closed.
 - Log creation, update, and review events.
 
+### Risk to Corrective Action Workflow
+
+A user can:
+
+- Open the Risk Register.
+- Review high/critical risks.
+- Identify overdue or risky items.
+- Generate a corrective action from a risk item.
+- Assign the action to an owner.
+- Track its priority, status, and due date.
+- See the resulting action in Corrective Actions, reports, reminders, and traceability views.
+
+### Training to Corrective Action Workflow
+
+A user can:
+
+- Open Training Compliance.
+- Identify expired or expiring training.
+- Generate a corrective action from a training issue.
+- Track retraining follow-up through Corrective Actions.
+
+### Document Review to Corrective Action Workflow
+
+A user can:
+
+- Open Document Control.
+- Identify overdue or due-soon document reviews.
+- Generate a corrective action from a document review issue.
+- Track the review follow-up through Corrective Actions.
+
 ### Document Intake Workflow
 
 A user can:
@@ -110,6 +167,19 @@ OperationsFlow includes management-style views:
 ### Dashboard
 
 Shows overall status and recent activity.
+
+### Safety Overview
+
+Shows the safety/compliance items that need attention now:
+
+- Open corrective actions
+- Overdue corrective actions
+- High/critical risks
+- Expired training
+- Training expiring soon
+- Overdue document reviews
+- Documents due soon
+- Recent compliance activity
 
 ### Reminder Centre
 
@@ -191,6 +261,7 @@ A future enterprise refactor would move more page logic into services such as:
 - `WorkOrderService`
 - `CorrectiveActionService`
 - `DocumentIntakeService`
+- `SafetyOverviewService`
 - `ReportService`
 - `ReminderService`
 - `SettingsService`
@@ -201,6 +272,7 @@ Activity logs are created when records are created, edited, reviewed, or updated
 
 - Global Activity Log
 - Dashboard Recent Activity
+- Safety Overview Recent Compliance Activity, where relevant
 - Per-record Activity History
 
 ### CSV Export
@@ -216,6 +288,8 @@ OperationsFlow shows how a business could:
 - Reduce missed follow-ups.
 - Improve accountability.
 - Track compliance work.
+- Centralise safety/compliance attention items.
+- Track corrective actions from risk, training, and document review issues.
 - Centralise incoming document/admin processing.
 - Give managers visibility into workload.
 - Improve reporting.
@@ -230,6 +304,7 @@ OperationsFlow shows how a business could:
 
 Relevant features:
 
+- Safety Overview
 - Corrective actions
 - Risk Register
 - Training Compliance
@@ -239,6 +314,20 @@ Relevant features:
 - Data Quality Report
 - Activity Log
 - CSV exports
+
+Suggested Vanessa/OSHE demo path:
+
+1. Open Safety Overview.
+2. Explain the attention items.
+3. Show high/critical risks.
+4. Generate a corrective action from a risk.
+5. Open Corrective Actions and show ownership, priority, due dates, and status.
+6. Show expired/expiring training records.
+7. Show document review issues.
+8. Open Reminder Centre.
+9. Open Data Quality.
+10. Open Reports and CSV exports.
+11. Open Activity Log or per-record Activity History for traceability.
 
 ### Office/Admin Document Workflow
 
@@ -282,6 +371,8 @@ Limitations:
 - Demo data.
 - No authentication/permissions.
 - No live Microsoft 365, SharePoint, Outlook, Teams, Xero, Cin7, or WorkflowMax integrations.
+- No automated safety notifications yet.
+- No file upload/storage yet.
 - Some settings are still hardcoded in forms.
 - Admin Settings is a starter configuration page.
 - No full automated testing.
@@ -297,6 +388,9 @@ Limitations:
 - SQL Server/PostgreSQL/Azure SQL.
 - EF Core migrations.
 - Service-layer refactor.
+- Safety/compliance notification rules.
+- Training expiry reminders.
+- Document review approval workflow.
 - File upload and document attachment tracking.
 - SharePoint document library integration.
 - Outlook email intake.
@@ -312,4 +406,4 @@ Limitations:
 
 OperationsFlow is a strong portfolio prototype showing the ability to plan, build, and explain a practical internal business system.
 
-It demonstrates business workflow thinking, .NET/Blazor development, persistence, traceability, reporting, exports, and an enterprise upgrade path.
+It demonstrates business workflow thinking, .NET/Blazor development, persistence, safety/compliance visibility, traceability, reporting, exports, and an enterprise upgrade path.

@@ -15,6 +15,8 @@ Tasks:
 - Add final screenshots.
 - Keep README updated.
 - Keep case study and roadmap clear.
+- Confirm Safety Overview counts and quick links.
+- Confirm Vanessa/OSHE demo path starts with Safety Overview.
 - Confirm all CSV exports.
 - Confirm dashboard/report/reminder/workload counts.
 - Confirm activity logging.
@@ -38,6 +40,7 @@ Future services:
 - `WorkOrderService`
 - `CorrectiveActionService`
 - `DocumentIntakeService`
+- `SafetyOverviewService`
 - `ReportService`
 - `ReminderService`
 - `WorkloadService`
@@ -61,6 +64,7 @@ Benefits:
 - Cleaner pages.
 - Reusable business logic.
 - Better enterprise architecture.
+- Easier to maintain safety/compliance aggregation rules.
 
 ---
 
@@ -93,6 +97,9 @@ Potential option groups:
 - SourceType
 - Department
 - Site
+- RiskLevel
+- TrainingStatus
+- DocumentReviewStatus
 
 Admin Settings would eventually allow users to create/edit/deactivate settings.
 
@@ -125,6 +132,8 @@ Potential roles:
 
 - Admin
 - Manager
+- Safety Manager
+- Compliance Manager
 - Supervisor
 - Worker
 - Viewer
@@ -133,6 +142,8 @@ Examples:
 
 - Admin can edit settings.
 - Manager can view reports.
+- Safety Manager can review corrective actions, risks, training, and document review issues.
+- Compliance Manager can review audit/activity history and export reports.
 - Supervisor can assign work.
 - Worker can update assigned tasks.
 - Viewer can read only.
@@ -159,20 +170,54 @@ Future audit fields:
 
 This would support a stronger compliance/audit story.
 
+For safety/compliance workflows, audit history could show:
+
+- Corrective action status changes
+- Risk review changes
+- Training compliance updates
+- Document review completion
+- Owner/priority/due date changes
+- Export/report generation events, if required
+
 ---
 
-## Phase 7 - File Storage and Attachments
+## Phase 7 - Safety and Compliance Workflow Upgrades
 
-Goal: make Document Intake handle real files.
+Goal: evolve Safety Overview from a prototype dashboard into a stronger OSHE/compliance workspace.
+
+Future features:
+
+- Role-based safety/compliance views.
+- Configurable attention thresholds.
+- Automated overdue corrective action notifications.
+- Scheduled training expiry reminders.
+- Document review reminders.
+- Document review approval workflow.
+- Corrective action escalation rules.
+- Risk review scheduling.
+- Compliance calendar view.
+- Safety meeting export pack.
+- Power BI-ready reporting feed.
+- Audit-grade activity history with real user IDs.
+
+These are roadmap items only. The current prototype demonstrates the workflow direction using local SQLite/demo data.
+
+---
+
+## Phase 8 - File Storage and Attachments
+
+Goal: make Document Intake and Document Control handle real files.
 
 Future features:
 
 - Upload file
 - Link file to intake record
+- Link file to document review record
 - Store file metadata
 - Preview/download attachment
 - Mark attachment type
 - Track storage location
+- Document version attachment history
 
 Possible storage options:
 
@@ -182,7 +227,7 @@ Possible storage options:
 
 ---
 
-## Phase 8 - Microsoft 365 Integration
+## Phase 9 - Microsoft 365 Integration
 
 Goal: connect OperationsFlow to Microsoft 365 workflows.
 
@@ -200,11 +245,13 @@ Examples:
 - Incoming Outlook email creates Document Intake record.
 - Uploaded file stored in SharePoint.
 - Overdue corrective action sends Teams notification.
+- Training expiring soon sends reminder.
+- Document review due soon sends reminder.
 - Reports exported to Power BI.
 
 ---
 
-## Phase 9 - Business System Integrations
+## Phase 10 - Business System Integrations
 
 Goal: connect Document Intake and workflow records to external systems.
 
@@ -226,7 +273,7 @@ Possible architecture:
 
 ---
 
-## Phase 10 - API Layer and Testing
+## Phase 11 - API Layer and Testing
 
 Goal: prepare for production maintainability.
 
@@ -237,13 +284,15 @@ Add:
 - Validation layer
 - Unit tests
 - Integration tests
+- Safety/compliance calculation tests
+- Export tests
 - Seed/test data helpers
 - Error logging
 - CI/CD pipeline
 
 ---
 
-## Phase 11 - Deployment
+## Phase 12 - Deployment
 
 Goal: make OperationsFlow deployable.
 
@@ -283,7 +332,9 @@ Production Database + Migrations
 ↓
 Authentication + Roles
 ↓
-Audit + Attachments
+Audit + Safety/Compliance Workflow
+↓
+Attachments
 ↓
 Integrations
 ↓

@@ -49,6 +49,58 @@ The prototype uses early-stage schema handling. A production version would use p
 
 ---
 
+## Why Safety Overview?
+
+Safety Overview was added because the Vanessa/OSHE demo needed a focused compliance starting point.
+
+The existing app already tracked relevant records across:
+
+- Corrective Actions
+- Risk Register
+- Training Compliance
+- Document Control
+- Activity Log
+
+Instead of creating a separate safety system, Safety Overview aggregates those existing records into one management view.
+
+It answers:
+
+```text
+What safety/compliance items need attention right now?
+```
+
+Current implemented Safety Overview areas include:
+
+- Attention Items total
+- Open Corrective Actions
+- Overdue Corrective Actions
+- High/Critical Risks
+- Expired Training
+- Training Expiring Soon
+- Document Reviews
+- Documents Due Soon
+- Recent Safety/Compliance Activity
+- Quick links into the relevant compliance modules
+
+This was added as a focused dashboard rather than a separate data module. That keeps the prototype simple while demonstrating how operational records can be reused for OSHE/compliance review.
+
+Current limitation:
+
+Safety Overview currently uses local SQLite/demo data. It does not yet include configurable compliance rules, role-based views, automated notifications, or production audit controls.
+
+Future upgrade:
+
+- `SafetyOverviewService`
+- Configurable attention thresholds
+- Role-based compliance views
+- Automated overdue corrective action notifications
+- Training expiry notifications
+- Document review reminders
+- Power BI-ready compliance reporting
+- Audit-grade user history
+
+---
+
 ## Why Activity Log?
 
 Activity Log was added to show traceability.
@@ -57,6 +109,7 @@ Current implemented activity features:
 
 - Global Activity Log
 - Dashboard Recent Activity
+- Safety Overview Recent Compliance Activity, where relevant
 - Per-record Activity History
 - Created/Updated/Reviewed style events
 
@@ -95,6 +148,7 @@ Benefits:
 - Excel-friendly output.
 - Power BI-friendly direction.
 - Practical business workflow credibility.
+- Useful safety/compliance export path for corrective actions, risks, training, and document reviews.
 
 ---
 
@@ -149,6 +203,8 @@ Current implemented reminder areas:
 - Training Compliance
 - Document Intake Follow-ups
 
+For Vanessa/OSHE demos, Reminder Centre supports Safety Overview by showing the daily follow-up list after the high-level safety/compliance snapshot.
+
 ---
 
 ## Why Workload Page?
@@ -169,6 +225,8 @@ Current implemented workload inputs:
 - Corrective Actions
 - Document Intake
 
+For safety/compliance work, this helps show that corrective actions need ownership, not just status tracking.
+
 ---
 
 ## Why Data Quality Report?
@@ -187,6 +245,8 @@ It checks for issues such as:
 - Document Intake records needing review
 
 This shows that the app is not only storing data, but also helping identify weak or risky records.
+
+For Vanessa/OSHE demos, Data Quality supports compliance confidence by highlighting records that should be cleaned up before management reporting.
 
 ---
 
@@ -214,6 +274,7 @@ Future upgrade:
 - Active/inactive settings
 - Sort orders
 - Forms pulling dropdown values from the database
+- Configurable compliance thresholds/statuses
 
 ---
 
@@ -224,6 +285,7 @@ Authentication was not included in the current prototype to keep the scope contr
 Current goal:
 
 - Demonstrate workflows.
+- Demonstrate safety/compliance visibility.
 - Demonstrate reporting.
 - Demonstrate data persistence.
 - Demonstrate traceability.
@@ -236,6 +298,7 @@ Future production upgrade:
 - User-specific workload
 - Real `CreatedBy` values
 - Audit trail tied to authenticated users
+- Safety/compliance manager views
 
 ---
 
@@ -257,6 +320,7 @@ Current prototype value:
 - Demonstrates the workflow structure.
 - Tracks target systems as metadata.
 - Shows where integrations would connect later.
+- Shows how safety/compliance records could be reported and exported before full integration work.
 
 Future upgrade:
 
@@ -267,6 +331,7 @@ Create integration services such as:
 - `INotificationService`
 - `IAccountingExportService`
 - `IInventoryExportService`
+- `IComplianceNotificationService`
 
 ---
 
@@ -276,6 +341,7 @@ The current technical decisions prioritise:
 
 - Rapid portfolio proof.
 - Practical business workflow demonstration.
+- Safety/compliance visibility.
 - Real local persistence.
 - Traceability.
 - Reporting/export capability.

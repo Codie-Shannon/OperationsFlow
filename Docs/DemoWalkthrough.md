@@ -10,16 +10,18 @@ Use this when you only have a few minutes.
 
 1. Open the Dashboard.
 2. Show KPIs and Recent Activity.
-3. Open Document Intake.
-4. Explain incoming document/admin workflow tracking.
-5. Open Reminder Centre.
-6. Show overdue and due-soon work.
-7. Open Workload.
-8. Show assigned work grouped by owner.
-9. Open Reports.
-10. Show reporting and CSV export options.
-11. Open Data Quality.
-12. Show system health/data issue checks.
+3. Open Safety Overview.
+4. Explain safety/compliance attention items.
+5. Open Document Intake.
+6. Explain incoming document/admin workflow tracking.
+7. Open Reminder Centre.
+8. Show overdue and due-soon work.
+9. Open Workload.
+10. Show assigned work grouped by owner.
+11. Open Reports.
+12. Show reporting and CSV export options.
+13. Open Data Quality.
+14. Show system health/data issue checks.
 
 ---
 
@@ -37,11 +39,46 @@ Show:
 
 Explain:
 
-OperationsFlow is a semi-live local prototype. Records saved in the app update the dashboard, reports, reminders, workload views, activity logs, and CSV exports.
+OperationsFlow is a semi-live local prototype. Records saved in the app update the dashboard, Safety Overview, reports, reminders, workload views, activity logs, and CSV exports.
 
 ---
 
-### 2. Work Orders
+### 2. Safety Overview
+
+Open Safety Overview.
+
+Show:
+
+- Attention Items total
+- Open Corrective Actions
+- Overdue Corrective Actions
+- High/Critical Risks
+- Expired Training
+- Training Expiring Soon
+- Document Reviews
+- Documents Due Soon
+- Recent Compliance Activity
+- Quick links into Risk Register, Corrective Actions, Training, Documents, and Activity Log
+
+Explain:
+
+Safety Overview is the focused OSHE/compliance dashboard. It brings together the items a safety or compliance manager would want to check first: overdue actions, high/critical risks, training issues, document review issues, and recent activity.
+
+Suggested action:
+
+- Point out one high/critical risk.
+- Point out one overdue corrective action.
+- Point out one expired/expiring training item.
+- Point out one document review issue.
+- Use the quick links to move into a source module.
+
+Clarify:
+
+Safety Overview currently uses the same local SQLite/demo data as the rest of the prototype. It is not a production safety system yet, but it demonstrates how compliance attention items can be centralised.
+
+---
+
+### 3. Work Orders
 
 Open Work Orders.
 
@@ -64,7 +101,7 @@ Work Orders represent operational tasks or work requests that need ownership and
 
 ---
 
-### 3. Corrective Actions
+### 4. Corrective Actions
 
 Open Corrective Actions.
 
@@ -82,7 +119,7 @@ Corrective Actions can be created manually or generated from Risk, Document, and
 
 ---
 
-### 4. Document Intake
+### 5. Document Intake
 
 Open Document Intake.
 
@@ -115,7 +152,7 @@ The current prototype tracks target systems as workflow metadata. It does not cu
 
 ---
 
-### 5. Linked Corrective Action Generation
+### 6. Linked Corrective Action Generation
 
 Open one of these modules:
 
@@ -132,9 +169,78 @@ Explain:
 
 This demonstrates a workflow loop: identify an issue, generate an action, assign it, track it, and report on it.
 
+For the Vanessa/OSHE path, the strongest example is:
+
+```text
+Risk Register → Create Corrective Action → Corrective Actions → Activity Log
+```
+
 ---
 
-### 6. Activity Log
+### 7. Risk Register
+
+Open Risk Register.
+
+Show:
+
+- Risk list
+- Search/filtering
+- Risk score/level
+- High/critical risk items
+- Review overdue flags
+- Create Corrective Action from risk
+
+Explain:
+
+Risk Register tracks hazards, risk ratings, controls, owners, and review status. It supports the OSHE story by showing how risk follow-up can turn into assigned corrective action work.
+
+Suggested action:
+
+- Pick a high or critical risk.
+- Generate a corrective action from it.
+- Open Corrective Actions to show the follow-up item.
+
+---
+
+### 8. Training Compliance
+
+Open Training Compliance.
+
+Show:
+
+- Training list
+- Search/filtering
+- Expired training
+- Expiring soon training
+- Department/status visibility
+- Create Corrective Action from training issue
+
+Explain:
+
+Training Compliance helps identify expired or expiring training records so retraining follow-up can be assigned and tracked.
+
+---
+
+### 9. Document Control
+
+Open Document Control/Documents.
+
+Show:
+
+- Document list
+- Owners
+- Departments
+- Review dates
+- Due soon / overdue review flags
+- Create Corrective Action from document review
+
+Explain:
+
+Document Control tracks document ownership and review timing. Overdue or due-soon reviews can become corrective actions when they need formal follow-up.
+
+---
+
+### 10. Activity Log
 
 Open Activity Log.
 
@@ -149,9 +255,15 @@ Explain:
 
 The Activity Log gives record-level traceability. Per-record Activity History shows the same concept scoped to a specific item.
 
+For safety/compliance demos, this supports the question:
+
+```text
+Can we show what happened and when it was followed up?
+```
+
 ---
 
-### 7. Reminder Centre
+### 11. Reminder Centre
 
 Open Reminder Centre.
 
@@ -167,9 +279,16 @@ Explain:
 
 Reminder Centre answers: “What needs attention today?”
 
+For Vanessa/OSHE, connect this back to Safety Overview:
+
+```text
+Safety Overview gives the compliance snapshot.
+Reminder Centre gives the daily follow-up list.
+```
+
 ---
 
-### 8. Workload
+### 12. Workload
 
 Open Workload.
 
@@ -188,9 +307,11 @@ Explain:
 
 Workload shows who has work assigned and where pressure is building.
 
+For Vanessa/OSHE, explain that corrective actions and follow-up work need clear ownership, not just a list of issues.
+
 ---
 
-### 9. Reports
+### 13. Reports
 
 Open Reports.
 
@@ -213,9 +334,17 @@ Explain:
 
 Reports turn operational data into management views and exportable data.
 
+For Vanessa/OSHE, highlight:
+
+- Corrective actions by priority
+- Risks by level
+- Training by department
+- Overdue items by owner
+- Document reviews
+
 ---
 
-### 10. Data Quality
+### 14. Data Quality
 
 Open Data Quality.
 
@@ -233,9 +362,17 @@ Explain:
 
 Data Quality Report shows where records need cleanup before management reporting.
 
+For Vanessa/OSHE, explain that weak records can affect compliance confidence. Examples:
+
+- Corrective action has no owner.
+- Training record is expired.
+- Document review is overdue.
+- Critical risk requires monitoring.
+- Completed record is missing completed date.
+
 ---
 
-### 11. Admin Settings
+### 15. Admin Settings
 
 Open Admin Settings.
 
@@ -258,19 +395,44 @@ Admin Settings is currently a starter/configuration overview. It shows the direc
 
 Focus on:
 
-1. Dashboard
-2. Risk Register
-3. Create Corrective Action from risk
-4. Corrective Actions
-5. Training Compliance
-6. Document Control
-7. Reminder Centre
-8. Reports
-9. Data Quality
+1. Safety Overview
+2. High/Critical Risks
+3. Risk Register
+4. Create Corrective Action from risk
+5. Corrective Actions
+6. Training Compliance
+7. Document Control
+8. Reminder Centre
+9. Workload
+10. Reports
+11. CSV exports
+12. Data Quality
+13. Activity Log
+14. Per-record Activity History
+
+Suggested walkthrough:
+
+1. Open Safety Overview and explain the attention items.
+2. Show the total attention count.
+3. Show open and overdue corrective actions.
+4. Show high/critical risks.
+5. Show expired or expiring training.
+6. Show overdue or due-soon document reviews.
+7. Open Risk Register from the quick link.
+8. Generate a corrective action from a high/critical risk.
+9. Open Corrective Actions and show owner, priority, due date, status, and completed date behaviour.
+10. Open Training Compliance and show expired/expiring records.
+11. Open Document Control and show document review flags.
+12. Open Reminder Centre to show what needs attention now.
+13. Open Workload to show ownership pressure.
+14. Open Reports and show management/export views.
+15. Download one CSV export.
+16. Open Data Quality to show cleanup issues before reporting.
+17. Open Activity Log or per-record Activity History to show traceability.
 
 Main message:
 
-OperationsFlow helps centralise safety/compliance follow-up work, identify overdue actions, monitor training/document/risk issues, and support management reporting.
+OperationsFlow helps centralise safety/compliance follow-up work, identify overdue corrective actions, monitor training/document/risk issues, assign ownership, support management reporting, export data, and provide traceability.
 
 ---
 
@@ -301,12 +463,14 @@ Focus on:
 
 1. Tech stack
 2. Dashboard
-3. Work Orders CRUD
-4. Document Intake CRUD
-5. Activity Log and per-record history
-6. Reports and CSV export
-7. Data Quality
-8. Enterprise roadmap
+3. Safety Overview
+4. Work Orders CRUD
+5. Document Intake CRUD
+6. Corrective Action generation from Risk/Document/Training
+7. Activity Log and per-record history
+8. Reports and CSV export
+9. Data Quality
+10. Enterprise roadmap
 
 Main message:
 

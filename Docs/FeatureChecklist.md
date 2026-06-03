@@ -3,12 +3,15 @@
 ## Overview
 
 - [x] Dashboard
+- [x] Safety Overview
 - [x] Recent Activity
 - [x] SQLite persistence
 - [x] Seed/demo data
 - [x] Grouped navigation
 - [x] Portfolio documentation
 - [ ] Demo video
+
+---
 
 ## Operations
 
@@ -38,7 +41,29 @@
 - [x] Reports integration
 - [x] CSV export
 
+---
+
 ## Compliance
+
+### Safety Overview
+
+- [x] Focused safety/compliance dashboard
+- [x] Attention Items total
+- [x] Open Corrective Actions count
+- [x] Overdue Corrective Actions count
+- [x] High/Critical Risks visibility
+- [x] Expired Training visibility
+- [x] Training Expiring Soon visibility
+- [x] Document Reviews visibility
+- [x] Documents Due Soon visibility
+- [x] Recent Safety/Compliance Activity
+- [x] Critical/High Risks section
+- [x] Overdue Corrective Actions section
+- [x] Expired/Expiring Training section
+- [x] Document Review Issues section
+- [x] Quick links into Risk Register, Corrective Actions, Training, Documents, and Activity Log
+- [x] Sidebar navigation under Compliance
+- [x] README screenshot support through `Docs/Screenshots/safety-overview.png`
 
 ### Document Control
 
@@ -68,6 +93,8 @@
 - [x] Reports integration
 - [x] CSV export
 
+---
+
 ## Admin Workflow
 
 ### Document Intake
@@ -87,6 +114,8 @@
 - [x] Reports integration
 - [x] Data Quality integration
 - [x] CSV export
+
+---
 
 ## Management
 
@@ -119,6 +148,7 @@
 - [x] Document Intake by Status
 - [x] Document Intake by Target System
 - [x] Document Intake Attention Report
+- [x] CSV export options
 
 ### Data Quality
 
@@ -131,6 +161,8 @@
 - [x] Completed records missing completed dates
 - [x] Document Intake review issues
 
+---
+
 ## System
 
 ### Activity Log
@@ -140,6 +172,7 @@
 - [x] Updated events
 - [x] Reviewed events
 - [x] Dashboard Recent Activity
+- [x] Safety Overview Recent Compliance Activity, where relevant
 - [x] Per-record Activity History
 
 ### Admin Settings
@@ -153,6 +186,25 @@
 - [ ] Database-driven settings
 - [ ] Editable settings
 
+---
+
+## Vanessa / OSHE Demo Readiness
+
+- [x] Safety Overview available as the first OSHE demo page
+- [x] Corrective Actions visible as safety/process improvement work
+- [x] Risk Register supports high/critical risk follow-up
+- [x] Training Compliance supports expired/expiring training visibility
+- [x] Document Control supports overdue/due-soon review visibility
+- [x] Corrective Actions can be generated from Risk, Document, and Training modules
+- [x] Reminder Centre shows overdue/due-soon follow-up items
+- [x] Workload shows ownership pressure
+- [x] Reports provide management summaries
+- [x] CSV exports support Excel/Power BI-style workflows
+- [x] Activity Log supports record-level traceability
+- [x] Data Quality highlights weak or risky records before reporting
+
+---
+
 ## Enterprise Roadmap
 
 - [ ] EF Core migrations
@@ -164,6 +216,9 @@
 - [ ] SharePoint integration
 - [ ] Outlook intake
 - [ ] Teams/email notifications
+- [ ] Safety/compliance notification rules
+- [ ] Training expiry reminders
+- [ ] Document review approval workflow
 - [ ] Xero/Cin7/WorkflowMax integration
 - [ ] API layer
 - [ ] Automated tests

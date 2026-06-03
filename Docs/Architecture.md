@@ -2,7 +2,7 @@
 
 ## Overview
 
-OperationsFlow is currently a semi-live Blazor/.NET portfolio prototype using local SQLite data persistence. It is designed to demonstrate practical business workflow tracking, reporting, CSV exports, reminders, workload visibility, data quality checks, and activity traceability.
+OperationsFlow is currently a semi-live Blazor/.NET portfolio prototype using local SQLite data persistence. It is designed to demonstrate practical business workflow tracking, safety/compliance visibility, reporting, CSV exports, reminders, workload visibility, data quality checks, and activity traceability.
 
 This document describes the current implemented architecture and the intended upgrade direction. Anything listed under future architecture is not presented as existing functionality.
 
@@ -50,7 +50,7 @@ Create/Edit record
 ↓
 SQLite data updates
 ↓
-Dashboard/reports/reminders/workload update
+Dashboard/Safety Overview/reports/reminders/workload update
 ↓
 Activity Log records the change
 ↓
@@ -64,6 +64,7 @@ CSV export reflects the saved data
 Current implemented modules include:
 
 - Dashboard
+- Safety Overview
 - Work Orders
 - Corrective Actions
 - Document Control
@@ -77,6 +78,45 @@ Current implemented modules include:
 - Data Quality Report
 - Admin Settings starter
 - Demo Guide page, if added from this package
+
+---
+
+## Safety Overview Architecture
+
+The Safety Overview page is a focused management/compliance view.
+
+Current page:
+
+- `Components/Pages/SafetyOverview.razor`
+- Route: `/compliance-dashboard`
+- Display name: `Safety Overview`
+
+The page is not a separate production safety engine. It is a Blazor page that aggregates existing prototype data from:
+
+- Corrective Actions
+- Risk Register
+- Training Compliance
+- Document Control
+- Activity Log
+
+It is designed to answer a practical OSHE/compliance question:
+
+```text
+What safety/compliance items need attention right now?
+```
+
+The page shows:
+
+- Total attention items
+- Open corrective actions
+- Overdue corrective actions
+- High/critical risks
+- Expired training
+- Training expiring soon
+- Document reviews overdue or due soon
+- Recent safety/compliance activity
+
+This keeps the architecture simple while demonstrating how existing operational records can be reused for focused management dashboards.
 
 ---
 
@@ -94,6 +134,7 @@ ActivityLogService creates an ActivityLog record
 Activity appears in:
 - Global Activity Log
 - Dashboard Recent Activity
+- Safety Overview Recent Compliance Activity, where relevant
 - Per-record Activity History
 ```
 
@@ -193,6 +234,7 @@ At the current prototype stage, not every form is database-driven from Admin Set
 Current implemented management views include:
 
 - Dashboard KPIs
+- Safety Overview
 - Recent Activity
 - Reminder Centre
 - Workload page
@@ -201,6 +243,32 @@ Current implemented management views include:
 - Activity Log
 
 These views are generated from the current SQLite data.
+
+---
+
+## Vanessa / OSHE Architecture Notes
+
+For a Vanessa/OSHE-focused demo, the important architecture point is that OperationsFlow uses the same stored records across multiple views:
+
+```text
+Corrective Actions
+Risk Register
+Training Compliance
+Document Control
+Activity Log
+↓
+Safety Overview
+Reminder Centre
+Reports
+Data Quality
+CSV Exports
+```
+
+This demonstrates a practical business-system pattern:
+
+- One record is created once.
+- The same record appears in dashboards, reminders, reports, workload, and traceability views.
+- Safety/compliance attention items can be surfaced without duplicating data across spreadsheets.
 
 ---
 
@@ -255,6 +323,9 @@ Future upgrades could include:
 - SharePoint document storage
 - Outlook email intake
 - Teams/email notifications
+- Safety/compliance notification rules
+- Training expiry notifications
+- Document review approval workflow
 - Xero/Cin7/WorkflowMax integration services
 - API layer
 - Tests
@@ -264,6 +335,6 @@ Future upgrades could include:
 
 ## Current Architecture Summary
 
-OperationsFlow currently proves the business workflow and reporting concept with a working Blazor/SQLite prototype.
+OperationsFlow currently proves the business workflow, safety/compliance visibility, reporting, and traceability concept with a working Blazor/SQLite prototype.
 
 It is intentionally not presented as a finished enterprise application yet. The existing architecture is suitable for a portfolio/demo prototype, and the roadmap explains how it can be improved into a more production-ready internal system.
