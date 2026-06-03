@@ -1,0 +1,364 @@
+﻿@page "/implementation-plan"
+
+<PageTitle>Implementation Plan - OperationsFlow</PageTitle>
+
+<div class="operations-dashboard implementation-plan-page">
+    <PageIntro Eyebrow="Business Handover"
+               Title="Implementation Plan"
+               Subtitle="A practical rollout plan for turning OperationsFlow from a working portfolio prototype into a production-ready business workflow system.">
+        <a class="btn btn-secondary" href="demo-guide">Demo Guide</a>
+        <a class="btn btn-secondary" href="reports">Reports</a>
+        <a class="btn btn-primary" href="data-quality">Data Quality</a>
+    </PageIntro>
+
+    <div class="page-purpose-note">
+        <strong>Purpose:</strong> use this page to explain how OperationsFlow could be introduced into a real business environment, what is already working, what needs production hardening, and what rollout steps would come next.
+    </div>
+
+    <section class="kpi-grid">
+        <div class="kpi-card">
+            <span class="kpi-label">Prototype Stage</span>
+            <strong>v2</strong>
+            <span class="kpi-note">Working local demo</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Primary Use Case</span>
+            <strong>OSHE</strong>
+            <span class="kpi-note">Safety/compliance workflow</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Rollout Style</span>
+            <strong>Phased</strong>
+            <span class="kpi-note">Low-risk adoption path</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Production Target</span>
+            <strong>M365</strong>
+            <span class="kpi-note">SharePoint / Teams / Outlook</span>
+        </div>
+    </section>
+
+    <section class="summary-grid implementation-overview-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Implementation Summary</h2>
+                    <p>How the prototype would become a real business system.</p>
+                </div>
+            </div>
+
+            <p class="implementation-copy">
+                OperationsFlow is currently a working Blazor/.NET prototype using local demo data.
+                A production version would keep the same workflow structure but replace local demo storage
+                with secure user accounts, production database storage, document/file management,
+                Microsoft 365 integrations, notifications, reporting, backups, and deployment monitoring.
+            </p>
+
+            <ul class="action-list">
+                <li>Confirm the first production workflow area: safety/compliance, document intake, or admin workflow.</li>
+                <li>Map current manual process steps and decide which parts need to be tracked in the system.</li>
+                <li>Replace demo data with real departments, sites, owners, statuses, and document categories.</li>
+                <li>Connect authentication, roles, database storage, notifications, and reporting outputs.</li>
+                <li>Run a controlled pilot before expanding to more users or departments.</li>
+            </ul>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Recommended First Rollout</h2>
+                    <p>The safest first production version.</p>
+                </div>
+            </div>
+
+            <div class="implementation-highlight">
+                <span>Start with</span>
+                <strong>Safety / Compliance Follow-Up</strong>
+                <p>
+                    This gives the clearest business value because it connects corrective actions,
+                    risk reviews, training expiries, document reviews, reminders, workload,
+                    reports, activity history, and data quality in one reviewable workflow.
+                </p>
+            </div>
+
+            <ol class="action-list">
+                <li>Start with read/write tracking for corrective actions.</li>
+                <li>Add risk, training, document review, and document intake follow-up links.</li>
+                <li>Use reports and data quality pages for weekly review.</li>
+                <li>Add Microsoft 365 notifications after the workflow is stable.</li>
+            </ol>
+        </div>
+    </section>
+
+    <section class="implementation-phase-grid">
+        @foreach (var phase in Phases)
+        {
+            <article class="implementation-phase-card">
+                <div class="implementation-phase-header">
+                    <div>
+                        <p class="eyebrow">@phase.Label</p>
+                        <h2>@phase.Title</h2>
+                    </div>
+
+                    <span class="@phase.BadgeClass">@phase.Status</span>
+                </div>
+
+                <p>@phase.Description</p>
+
+                <ul>
+                    @foreach (var item in phase.Items)
+                    {
+                        <li>@item</li>
+                    }
+                </ul>
+            </article>
+        }
+    </section>
+
+    <section class="report-card">
+        <div class="panel-header">
+            <div>
+                <h2>Production Readiness Checklist</h2>
+                <p>Items that would need to be confirmed before using OperationsFlow as a live business system.</p>
+            </div>
+        </div>
+
+        <table class="report-table implementation-checklist-table">
+            <thead>
+                <tr>
+                    <th>Area</th>
+                    <th>Prototype Status</th>
+                    <th>Production Requirement</th>
+                    <th>Recommended Next Step</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ReadinessItems)
+                {
+                    <tr>
+                        <td><strong>@item.Area</strong></td>
+                        <td><span class="@item.BadgeClass">@item.PrototypeStatus</span></td>
+                        <td>@item.ProductionRequirement</td>
+                        <td>@item.NextStep</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Low-Risk Pilot Plan</h2>
+                    <p>A practical first deployment path.</p>
+                </div>
+            </div>
+
+            <ol class="demo-step-list implementation-step-list">
+                <li>
+                    <strong>Confirm pilot workflow</strong>
+                    <span>Choose one workflow area, ideally safety/compliance follow-up, so the first rollout has a clear purpose.</span>
+                </li>
+
+                <li>
+                    <strong>Confirm real data fields</strong>
+                    <span>Review sites, departments, owners, statuses, priority labels, due-date rules, and reporting needs.</span>
+                </li>
+
+                <li>
+                    <strong>Set up secured storage</strong>
+                    <span>Move from local demo data to a production database with backups and controlled access.</span>
+                </li>
+
+                <li>
+                    <strong>Add user access and roles</strong>
+                    <span>Use role-based access for admins, managers, reviewers, and standard users.</span>
+                </li>
+
+                <li>
+                    <strong>Run pilot reviews</strong>
+                    <span>Use Safety Meeting Pack, Workload, Reports, and Data Quality pages for weekly review sessions.</span>
+                </li>
+
+                <li>
+                    <strong>Expand after proof</strong>
+                    <span>Add Microsoft 365 notifications, document storage, API endpoints, dashboards, and wider department use.</span>
+                </li>
+            </ol>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>What This Proves</h2>
+                    <p>The implementation plan shows the project was built with real-world rollout thinking.</p>
+                </div>
+            </div>
+
+            <div class="prototype-scope-grid implementation-proof-grid">
+                <article class="prototype-scope-card">
+                    <h3>Business Process Thinking</h3>
+                    <p>Shows how manual follow-up, admin work, compliance review, and reporting can become a structured workflow.</p>
+                </article>
+
+                <article class="prototype-scope-card">
+                    <h3>Production Awareness</h3>
+                    <p>Separates working prototype features from production requirements like users, security, deployment, backups, and integrations.</p>
+                </article>
+
+                <article class="prototype-scope-card">
+                    <h3>Microsoft 365 Fit</h3>
+                    <p>Maps naturally to SharePoint document storage, Teams notifications, Outlook reminders, Excel exports, and Power BI-style reporting.</p>
+                </article>
+
+                <article class="prototype-scope-card">
+                    <h3>Low-Risk Delivery</h3>
+                    <p>Uses phased adoption so a business can test value before expanding into a larger workflow system.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+</div>
+
+@code {
+    private static readonly IReadOnlyList<ImplementationPhase> Phases = new[]
+    {
+        new ImplementationPhase(
+            Label: "Phase 1",
+            Title: "Prototype Review",
+            Status: "Current",
+            BadgeClass: "badge badge-info",
+            Description: "Review the working demo, confirm the workflow value, and identify what should become production functionality.",
+            Items: new[]
+            {
+                "Review Safety Meeting Pack, Compliance Calendar, Reports, Workload, and Data Quality.",
+                "Confirm the business problem being solved.",
+                "Identify which records need to be live in a pilot.",
+                "Decide what data can stay in-app and what belongs in Microsoft 365."
+            }
+        ),
+        new ImplementationPhase(
+            Label: "Phase 2",
+            Title: "Pilot Setup",
+            Status: "Next",
+            BadgeClass: "badge badge-warning",
+            Description: "Prepare a controlled first version with real users, real owners, and a limited workflow scope.",
+            Items: new[]
+            {
+                "Set up production database and backup approach.",
+                "Add authentication and basic role-based access.",
+                "Configure real departments, sites, owners, priorities, and status labels.",
+                "Import or enter pilot corrective actions, document reviews, training records, and risks."
+            }
+        ),
+        new ImplementationPhase(
+            Label: "Phase 3",
+            Title: "Workflow Integration",
+            Status: "Planned",
+            BadgeClass: "badge badge-muted",
+            Description: "Connect the system to business tools so follow-up work moves through the organisation instead of sitting in spreadsheets.",
+            Items: new[]
+            {
+                "Add SharePoint document links and file storage rules.",
+                "Add Teams or Outlook notifications for overdue and due-soon work.",
+                "Add export/reporting routines for management review.",
+                "Add audit/history rules for important workflow changes."
+            }
+        ),
+        new ImplementationPhase(
+            Label: "Phase 4",
+            Title: "Production Rollout",
+            Status: "Future",
+            BadgeClass: "badge badge-success",
+            Description: "Expand beyond the pilot once the workflow has been tested and the business rules are stable.",
+            Items: new[]
+            {
+                "Add advanced dashboards and management reporting.",
+                "Add API endpoints or integration points for other systems.",
+                "Add automated tests and deployment pipeline.",
+                "Monitor usage, data quality, and workflow completion rates."
+            }
+        )
+    };
+
+    private static readonly IReadOnlyList<ReadinessItem> ReadinessItems = new[]
+    {
+        new ReadinessItem(
+            Area: "Authentication",
+            PrototypeStatus: "Prototype",
+            BadgeClass: "badge badge-warning",
+            ProductionRequirement: "Users need secure sign-in and role-based permissions.",
+            NextStep: "Add authentication and define admin, manager, reviewer, and user roles."
+        ),
+        new ReadinessItem(
+            Area: "Database",
+            PrototypeStatus: "Local Demo",
+            BadgeClass: "badge badge-warning",
+            ProductionRequirement: "Production data needs hosted storage, backups, and access control.",
+            NextStep: "Move from local SQLite/demo storage to SQL Server, Azure SQL, or another approved database."
+        ),
+        new ReadinessItem(
+            Area: "Documents",
+            PrototypeStatus: "Tracked",
+            BadgeClass: "badge badge-info",
+            ProductionRequirement: "Document records need links to controlled files and review history.",
+            NextStep: "Connect records to SharePoint document libraries or controlled storage locations."
+        ),
+        new ReadinessItem(
+            Area: "Notifications",
+            PrototypeStatus: "Planned",
+            BadgeClass: "badge badge-muted",
+            ProductionRequirement: "Owners need reminders for due-soon and overdue work.",
+            NextStep: "Add Outlook or Teams notification rules after status and owner workflows are confirmed."
+        ),
+        new ReadinessItem(
+            Area: "Reporting",
+            PrototypeStatus: "Working",
+            BadgeClass: "badge badge-success",
+            ProductionRequirement: "Reports need agreed fields, export routines, and review cadence.",
+            NextStep: "Confirm the exact CSV/report outputs managers need for weekly and monthly review."
+        ),
+        new ReadinessItem(
+            Area: "Audit Trail",
+            PrototypeStatus: "Working",
+            BadgeClass: "badge badge-success",
+            ProductionRequirement: "Important changes need traceability and review history.",
+            NextStep: "Keep activity logging and expand it to any production-critical fields."
+        ),
+        new ReadinessItem(
+            Area: "Testing",
+            PrototypeStatus: "Manual",
+            BadgeClass: "badge badge-info",
+            ProductionRequirement: "Production workflows need repeatable regression checks.",
+            NextStep: "Create manual and automated test coverage for saving, editing, reporting, exporting, and filtering."
+        ),
+        new ReadinessItem(
+            Area: "Deployment",
+            PrototypeStatus: "Local",
+            BadgeClass: "badge badge-warning",
+            ProductionRequirement: "Users need a hosted version with monitoring and support.",
+            NextStep: "Deploy to a controlled hosting environment after pilot requirements are confirmed."
+        )
+    };
+
+    private record ImplementationPhase(
+        string Label,
+        string Title,
+        string Status,
+        string BadgeClass,
+        string Description,
+        IReadOnlyList<string> Items
+    );
+
+    private record ReadinessItem(
+        string Area,
+        string PrototypeStatus,
+        string BadgeClass,
+        string ProductionRequirement,
+        string NextStep
+    );
+}
