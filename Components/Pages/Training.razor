@@ -302,22 +302,27 @@
         var title = $"Resolve training issue: {item.StaffName} - {item.TrainingName}";
 
         var notes =
-            $"Generated from Training Compliance.\n\n" +
+            "Created from Training Compliance issue. Confirm retraining requirement, assign follow-up owner, and update compliance status.\n\n" +
             $"Staff: {item.StaffName}\n" +
             $"Training: {item.TrainingName}\n" +
+            $"Site: {item.Site}\n" +
+            $"Department: {item.Department}\n" +
             $"Status: {item.Status}\n" +
+            $"Completed Date: {item.CompletedDate:dd MMM yyyy}\n" +
             $"Expiry Date: {item.ExpiryDate:dd MMM yyyy}\n" +
-            $"Required: {(item.IsRequired ? "Yes" : "No")}";
+            $"Required: {(item.IsRequired ? "Yes" : "No")}\n" +
+            $"Notes: {item.Notes}\n\n" +
+            "Suggested follow-up: confirm retraining is required, book or assign the training action, then update the training record once compliance is restored.";
 
-        return "/corrective-actions/create"
-            + $"?source={Uri.EscapeDataString("Training Compliance")}"
-            + $"&title={Uri.EscapeDataString(title)}"
-            + $"&site={Uri.EscapeDataString(item.Site)}"
-            + $"&department={Uri.EscapeDataString(item.Department)}"
-            + $"&owner={Uri.EscapeDataString(item.StaffName)}"
-            + $"&priority={Uri.EscapeDataString(priority)}"
-            + $"&actionType={Uri.EscapeDataString("Training")}"
-            + $"&notes={Uri.EscapeDataString(notes)}"
-            + $"&returnUrl={Uri.EscapeDataString("/training")}";
+        return "/corrective-actions/create" +
+            $"?source={Uri.EscapeDataString("Training Compliance")}" +
+            $"&title={Uri.EscapeDataString(title)}" +
+            $"&site={Uri.EscapeDataString(item.Site)}" +
+            $"&department={Uri.EscapeDataString(item.Department)}" +
+            $"&owner={Uri.EscapeDataString(item.StaffName)}" +
+            $"&priority={Uri.EscapeDataString(priority)}" +
+            $"&actionType={Uri.EscapeDataString("Training")}" +
+            $"&notes={Uri.EscapeDataString(notes)}" +
+            $"&returnUrl={Uri.EscapeDataString("/training")}";
     }
 }

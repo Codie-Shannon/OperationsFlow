@@ -199,7 +199,10 @@
         "Training Compliance",
         "Hazard Report",
         "Quality Review",
-        "Management Review"
+        "Management Review",
+        "Risk Register",
+        "Document Control",
+        "Training Compliance"
     };
 
     private List<string> ActionTypeOptions = new()
@@ -303,16 +306,12 @@
         Db.CorrectiveActions.Add(correctiveAction);
         await Db.SaveChangesAsync();
 
-        var createdFromText = IsPrefilled
-            ? " This action was generated from another OperationsFlow module."
-            : "";
-
         await ActivityLogService.LogAsync(
             moduleName: "Corrective Actions",
             recordId: correctiveAction.Id,
             recordReference: $"CA-{correctiveAction.Id}",
             actionType: "Created",
-            description: $"Created corrective action CA-{correctiveAction.Id}: {correctiveAction.Title}.{createdFromText}"
+            description: BuildCreatedActivityDescription()
         );
 
         BackToReturnPage();
@@ -364,5 +363,25 @@
     {
         return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
             || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private string BuildCreatedActivityDescription()
+    {
+        if (!IsPrefilled)
+        {
+            return $"Created corrective action CA-{correctiveAction.Id}: {correctiveAction.Title}.";
+        }
+
+        var sourceText = correctiveAction.Source switch
+        {
+            "Risk Register" => "Risk Register item",
+            "Risk Review" => "Risk Register item",
+            "Document Control" => "Document Control item",
+            "Document Review" => "Document Control item",
+            "Training Compliance" => "Training Compliance item",
+            _ => $"{correctiveAction.Source} item"
+        };
+
+        return $"Created corrective action from {sourceText}: {correctiveAction.Title}.";
     }
 }

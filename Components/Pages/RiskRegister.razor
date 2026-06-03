@@ -267,29 +267,30 @@
         var title = $"Review risk: {item.Title}";
 
         var notes =
-            $"Generated from Risk Register.\n\n" +
+            "Created from Risk Register item. Review current controls, confirm owner, and update follow-up status.\n\n" +
             $"Risk: {item.Title}\n" +
             $"Hazard: {item.Hazard}\n" +
             $"Site: {item.Site}\n" +
             $"Department: {item.Department}\n" +
-            $"Owner: {item.Owner}\n" +
+            $"Current Owner: {item.Owner}\n" +
             $"Likelihood: {item.Likelihood}\n" +
             $"Consequence: {item.Consequence}\n" +
             $"Risk Level: {item.RiskLevel}\n" +
             $"Risk Score: {item.RiskScore}\n" +
             $"Controls: {item.Controls}\n" +
-            $"Review Date: {item.ReviewDate:dd MMM yyyy}";
+            $"Review Date: {item.ReviewDate:dd MMM yyyy}\n\n" +
+            "Suggested follow-up: confirm controls are still effective, record any required changes, and close the corrective action once the risk review has been completed.";
 
-        return "/corrective-actions/create"
-            + $"?source={Uri.EscapeDataString("Risk Review")}"
-            + $"&title={Uri.EscapeDataString(title)}"
-            + $"&site={Uri.EscapeDataString(item.Site)}"
-            + $"&department={Uri.EscapeDataString(item.Department)}"
-            + $"&owner={Uri.EscapeDataString(item.Owner)}"
-            + $"&priority={Uri.EscapeDataString(priority)}"
-            + $"&actionType={Uri.EscapeDataString("Process Review")}"
-            + $"&notes={Uri.EscapeDataString(notes)}"
-            + $"&returnUrl={Uri.EscapeDataString("/risks")}";
+        return "/corrective-actions/create" +
+            $"?source={Uri.EscapeDataString("Risk Register")}" +
+            $"&title={Uri.EscapeDataString(title)}" +
+            $"&site={Uri.EscapeDataString(item.Site)}" +
+            $"&department={Uri.EscapeDataString(item.Department)}" +
+            $"&owner={Uri.EscapeDataString(item.Owner)}" +
+            $"&priority={Uri.EscapeDataString(priority)}" +
+            $"&actionType={Uri.EscapeDataString("Process Review")}" +
+            $"&notes={Uri.EscapeDataString(notes)}" +
+            $"&returnUrl={Uri.EscapeDataString("/risk-register")}";
     }
 
     private static bool Contains(string? source, string search)

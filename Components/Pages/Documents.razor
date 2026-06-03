@@ -278,27 +278,31 @@
 
     private static string BuildCorrectiveActionUrlFromDocument(DocumentRecord item)
     {
-        var priority = item.IsReviewOverdue ? "High" : "Medium";
+        var priority = item.IsReviewOverdue ? "High" : item.IsDueSoon ? "Medium" : "Low";
         var title = $"Review document: {item.Title}";
 
         var notes =
-            $"Generated from Document Control.\n\n" +
+            "Created from Document Control review issue. Review the document version, confirm required changes, and update review status.\n\n" +
             $"Document: {item.Title}\n" +
             $"Document Number: {item.DocumentNumber}\n" +
             $"Document Type: {item.DocumentType}\n" +
+            $"Department: {item.Department}\n" +
+            $"Owner: {item.Owner}\n" +
             $"Status: {item.Status}\n" +
             $"Version: {item.Version}\n" +
-            $"Next Review Date: {item.NextReviewDate:dd MMM yyyy}";
+            $"Last Reviewed: {item.LastReviewedDate:dd MMM yyyy}\n" +
+            $"Next Review Date: {item.NextReviewDate:dd MMM yyyy}\n\n" +
+            "Suggested follow-up: review the controlled document, update version/status if needed, and close the corrective action once the review outcome is recorded.";
 
-        return "/corrective-actions/create"
-            + $"?source={Uri.EscapeDataString("Document Review")}"
-            + $"&title={Uri.EscapeDataString(title)}"
-            + $"&site={Uri.EscapeDataString("Admin Office")}"
-            + $"&department={Uri.EscapeDataString(item.Department)}"
-            + $"&owner={Uri.EscapeDataString(item.Owner)}"
-            + $"&priority={Uri.EscapeDataString(priority)}"
-            + $"&actionType={Uri.EscapeDataString("Document Update")}"
-            + $"&notes={Uri.EscapeDataString(notes)}"
-            + $"&returnUrl={Uri.EscapeDataString("/documents")}";
+        return "/corrective-actions/create" +
+            $"?source={Uri.EscapeDataString("Document Control")}" +
+            $"&title={Uri.EscapeDataString(title)}" +
+            $"&site={Uri.EscapeDataString("Admin Office")}" +
+            $"&department={Uri.EscapeDataString(item.Department)}" +
+            $"&owner={Uri.EscapeDataString(item.Owner)}" +
+            $"&priority={Uri.EscapeDataString(priority)}" +
+            $"&actionType={Uri.EscapeDataString("Document Update")}" +
+            $"&notes={Uri.EscapeDataString(notes)}" +
+            $"&returnUrl={Uri.EscapeDataString("/documents")}";
     }
 }
