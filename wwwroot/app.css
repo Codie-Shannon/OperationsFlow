@@ -1632,3 +1632,70 @@ main {
     .nav-link.active {
         background: rgba(255, 255, 255, 0.18);
     }
+
+.report-card .report-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+    .report-card .report-table th,
+    .report-card .report-table td {
+        vertical-align: top;
+        padding: 12px 10px;
+        white-space: normal;
+    }
+
+    .report-card .report-table th {
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+    }
+
+    .report-card .report-table td {
+        font-size: 0.9rem;
+    }
+
+.report-card .muted-text {
+    display: block;
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.report-card .badge {
+    display: inline-block;
+    margin-top: 4px;
+    white-space: nowrap;
+}
+
+.activity-report-table th,
+.activity-report-table td {
+    padding: 14px 14px;
+}
+
+    .activity-report-table td:nth-child(1) {
+        width: 95px;
+        white-space: nowrap;
+    }
+
+    .activity-report-table td:nth-child(2) {
+        width: 150px;
+        white-space: normal;
+    }
+
+    .activity-report-table td:nth-child(3) {
+        width: 100px;
+        white-space: nowrap;
+    }
+
+    .activity-report-table td:nth-child(4) {
+        min-width: 520px;
+        font-weight: 500;
+        line-height: 1.45;
+    }
+
+    .activity-report-table td:nth-child(5) {
+        width: 90px;
+        white-space: normal;
+    }
