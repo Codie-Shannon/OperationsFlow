@@ -1,0 +1,20 @@
+﻿<div class="form-field-guide">
+    <div class="form-field-guide-icon">i</div>
+
+    <div>
+        @if (!string.IsNullOrWhiteSpace(Title))
+        {
+            <strong>@Title</strong>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Text))
+        {
+            <p>@Text</p>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Text { get; set; } = "";
+}

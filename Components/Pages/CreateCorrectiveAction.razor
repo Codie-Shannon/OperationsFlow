@@ -10,14 +10,13 @@
 <PageTitle>Create Corrective Action - OperationsFlow</PageTitle>
 
 <div class="page-shell module-page">
-
     <section class="module-header">
         <div>
             <p class="eyebrow dark">Operations</p>
             <h1>Create Corrective Action</h1>
             <p>
-                Add a corrective or improvement action from an incident, audit,
-                inspection, risk review, document review, training issue, or management follow-up.
+                Add a corrective or improvement action from an incident, audit, inspection,
+                risk review, document review, training issue, or management follow-up.
             </p>
         </div>
 
@@ -29,180 +28,162 @@
 
     @if (IsPrefilled)
     {
-        <section class="alert-card info-alert">
-            This corrective action was pre-filled from another OperationsFlow module. Review the details before saving.
-        </section>
+        <div class="page-purpose-note">
+            <strong>Pre-filled action:</strong> this corrective action was created from another OperationsFlow module.
+            Review the title, owner, priority, source, due date, and notes before saving.
+        </div>
     }
 
     @if (!string.IsNullOrWhiteSpace(errorMessage))
     {
-        <section class="alert-card danger-alert">
-            @errorMessage
-        </section>
+        <div class="alert alert-danger">@errorMessage</div>
     }
 
-    <section class="form-card">
-        <EditForm Model="correctiveAction" OnValidSubmit="SaveCorrectiveAction">
-            <DataAnnotationsValidator />
-
-            <div class="form-grid">
-
-                <div class="form-field form-field-full">
-                    <label>Title</label>
-                    <InputText class="form-input" @bind-Value="correctiveAction.Title" />
-                </div>
-
-                <div class="form-field">
-                    <label>Source</label>
-                    <InputSelect class="form-input" @bind-Value="correctiveAction.Source">
-                        @foreach (var source in SourceOptions)
-                        {
-                            <option value="@source">@source</option>
-                        }
-                    </InputSelect>
-                </div>
-
-                <div class="form-field">
-                    <label>Action Type</label>
-                    <InputSelect class="form-input" @bind-Value="correctiveAction.ActionType">
-                        @foreach (var actionType in ActionTypeOptions)
-                        {
-                            <option value="@actionType">@actionType</option>
-                        }
-                    </InputSelect>
-                </div>
-
-                <div class="form-field">
-                    <label>Site</label>
-                    <InputSelect class="form-input" @bind-Value="correctiveAction.Site">
-                        @foreach (var site in SiteOptions)
-                        {
-                            <option value="@site">@site</option>
-                        }
-                    </InputSelect>
-                </div>
-
-                <div class="form-field">
-                    <label>Department</label>
-                    <InputSelect class="form-input" @bind-Value="correctiveAction.Department">
-                        @foreach (var department in DepartmentOptions)
-                        {
-                            <option value="@department">@department</option>
-                        }
-                    </InputSelect>
-                </div>
-
-                <div class="form-field">
-                    <label>Owner</label>
-                    <InputText class="form-input" @bind-Value="correctiveAction.Owner" />
-                </div>
-
-                <div class="form-field">
-                    <label>Priority</label>
-                    <InputSelect class="form-input" @bind-Value="correctiveAction.Priority">
-                        @foreach (var priority in PriorityOptions)
-                        {
-                            <option value="@priority">@priority</option>
-                        }
-                    </InputSelect>
-                </div>
-
-                <div class="form-field">
-                    <label>Status</label>
-                    <InputSelect class="form-input" @bind-Value="correctiveAction.Status">
-                        @foreach (var status in StatusOptions)
-                        {
-                            <option value="@status">@status</option>
-                        }
-                    </InputSelect>
-                </div>
-
-                <div class="form-field">
-                    <label>Created Date</label>
-                    <InputDate class="form-input" @bind-Value="correctiveAction.CreatedDate" />
-                </div>
-
-                <div class="form-field">
-                    <label>Due Date</label>
-                    <InputDate class="form-input" @bind-Value="correctiveAction.DueDate" />
-                </div>
-
-                <div class="form-field form-field-full">
-                    <label>Notes</label>
-                    <InputTextArea class="form-input form-textarea" @bind-Value="correctiveAction.Notes" />
-                </div>
-
+    <section class="table-card">
+        <div class="form-grid">
+            <div class="form-field full-width">
+                <label>Title</label>
+                <input class="form-control" @bind="correctiveAction.Title" />
             </div>
 
-            <div class="form-actions">
-                <button type="button" class="secondary-button" @onclick="Cancel">
-                    Cancel
-                </button>
-
-                <button type="submit" class="primary-button">
-                    Save Corrective Action
-                </button>
+            <div class="form-field">
+                <label>Source</label>
+                <select class="form-select" @bind="correctiveAction.Source">
+                    @foreach (var source in SourceOptions)
+                    {
+                        <option value="@source">@source</option>
+                    }
+                </select>
             </div>
-        </EditForm>
+
+            <div class="form-field">
+                <label>Action Type</label>
+                <select class="form-select" @bind="correctiveAction.ActionType">
+                    @foreach (var actionType in ActionTypeOptions)
+                    {
+                        <option value="@actionType">@actionType</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label>Site</label>
+                <select class="form-select" @bind="correctiveAction.Site">
+                    @foreach (var site in SiteOptions)
+                    {
+                        <option value="@site">@site</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label>Department</label>
+                <select class="form-select" @bind="correctiveAction.Department">
+                    @foreach (var department in DepartmentOptions)
+                    {
+                        <option value="@department">@department</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label>Owner</label>
+                <input class="form-control" @bind="correctiveAction.Owner" />
+
+                <FormFieldGuide Title="Owner guidance"
+                                Text="Assign one clear owner so follow-up responsibility appears correctly in workload, reminders, reports, and data quality checks." />
+            </div>
+
+            <div class="form-field">
+                <label>Priority</label>
+                <select class="form-select" @bind="correctiveAction.Priority">
+                    @foreach (var priority in PriorityOptions)
+                    {
+                        <option value="@priority">@priority</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label>Status</label>
+                <select class="form-select" @bind="correctiveAction.Status">
+                    @foreach (var status in StatusOptions)
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <StatusFlowGuide Title="Corrective action status flow"
+                         Description="Use statuses consistently so overdue, completed, and active follow-up work stays clear."
+                         Steps="CorrectiveActionStatusSteps" />
+
+        <div class="form-grid form-grid-spaced">
+            <div class="form-field">
+                <label>Created Date</label>
+                <input class="form-control" type="date" @bind="correctiveAction.CreatedDate" />
+            </div>
+
+            <div class="form-field">
+                <label>Due Date</label>
+                <input class="form-control" type="date" @bind="correctiveAction.DueDate" />
+
+                <FormFieldGuide Title="Due date guidance"
+                                Text="Use the next realistic follow-up date. Overdue actions appear in the Safety Meeting Pack, Compliance Calendar, Workload, Reports, and Data Quality." />
+            </div>
+
+            <div class="form-field full-width">
+                <label>Notes</label>
+                <textarea class="form-control" rows="8" @bind="correctiveAction.Notes"></textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-secondary" type="button" @onclick="Cancel">Cancel</button>
+            <button class="btn btn-primary" type="button" @onclick="SaveCorrectiveAction">Save Corrective Action</button>
+        </div>
     </section>
-
 </div>
 
 @code {
-    [SupplyParameterFromQuery]
-    public string? Source { get; set; }
-
-    [SupplyParameterFromQuery]
-    public string? Title { get; set; }
-
-    [SupplyParameterFromQuery]
-    public string? Site { get; set; }
-
-    [SupplyParameterFromQuery]
-    public string? Department { get; set; }
-
-    [SupplyParameterFromQuery]
-    public string? Owner { get; set; }
-
-    [SupplyParameterFromQuery]
-    public string? Priority { get; set; }
-
-    [SupplyParameterFromQuery]
-    public string? ActionType { get; set; }
-
-    [SupplyParameterFromQuery]
-    public string? Notes { get; set; }
-
-    [SupplyParameterFromQuery]
-    public string? ReturnUrl { get; set; }
+    [SupplyParameterFromQuery] public string? Source { get; set; }
+    [SupplyParameterFromQuery] public string? Title { get; set; }
+    [SupplyParameterFromQuery] public string? Site { get; set; }
+    [SupplyParameterFromQuery] public string? Department { get; set; }
+    [SupplyParameterFromQuery] public string? Owner { get; set; }
+    [SupplyParameterFromQuery] public string? Priority { get; set; }
+    [SupplyParameterFromQuery] public string? ActionType { get; set; }
+    [SupplyParameterFromQuery] public string? Notes { get; set; }
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
 
     private CorrectiveAction correctiveAction = new();
     private string errorMessage = "";
 
     private bool IsPrefilled =>
-        !string.IsNullOrWhiteSpace(Source) ||
-        !string.IsNullOrWhiteSpace(Title) ||
-        !string.IsNullOrWhiteSpace(Site) ||
-        !string.IsNullOrWhiteSpace(Department) ||
-        !string.IsNullOrWhiteSpace(Owner) ||
-        !string.IsNullOrWhiteSpace(Priority) ||
-        !string.IsNullOrWhiteSpace(ActionType) ||
-        !string.IsNullOrWhiteSpace(Notes);
+        !string.IsNullOrWhiteSpace(Source)
+        || !string.IsNullOrWhiteSpace(Title)
+        || !string.IsNullOrWhiteSpace(Site)
+        || !string.IsNullOrWhiteSpace(Department)
+        || !string.IsNullOrWhiteSpace(Owner)
+        || !string.IsNullOrWhiteSpace(Priority)
+        || !string.IsNullOrWhiteSpace(ActionType)
+        || !string.IsNullOrWhiteSpace(Notes);
 
     private List<string> SourceOptions = new()
     {
         "Incident",
         "Inspection",
         "Internal Audit",
+        "Risk Register",
         "Risk Review",
+        "Document Control",
         "Document Review",
         "Training Compliance",
         "Hazard Report",
         "Quality Review",
         "Management Review",
-        "Risk Register",
-        "Document Control",
-        "Training Compliance"
+        "Manual / Internal"
     };
 
     private List<string> ActionTypeOptions = new()
@@ -251,6 +232,14 @@
         "In Progress",
         "Completed",
         "Closed"
+    };
+
+    private static readonly IReadOnlyList<StatusFlowGuide.StatusFlowStep> CorrectiveActionStatusSteps = new[]
+    {
+        new StatusFlowGuide.StatusFlowStep("Open", "Action has been raised but work has not started yet.", "badge badge-warning"),
+        new StatusFlowGuide.StatusFlowStep("In Progress", "Owner is actively working through the follow-up.", "badge badge-info"),
+        new StatusFlowGuide.StatusFlowStep("Completed", "Work is finished and should have a completed date.", "badge badge-success"),
+        new StatusFlowGuide.StatusFlowStep("Closed", "Final review is complete and no further follow-up is needed.", "badge badge-success")
     };
 
     protected override void OnInitialized()
@@ -317,6 +306,26 @@
         BackToReturnPage();
     }
 
+    private string BuildCreatedActivityDescription()
+    {
+        if (!IsPrefilled)
+        {
+            return $"Created corrective action CA-{correctiveAction.Id}: {correctiveAction.Title}.";
+        }
+
+        var sourceText = correctiveAction.Source switch
+        {
+            "Risk Register" => "Risk Register item",
+            "Risk Review" => "Risk Register item",
+            "Document Control" => "Document Control item",
+            "Document Review" => "Document Control item",
+            "Training Compliance" => "Training Compliance item",
+            _ => $"{correctiveAction.Source} item"
+        };
+
+        return $"Created corrective action from {sourceText}: {correctiveAction.Title}.";
+    }
+
     private void Cancel()
     {
         BackToReturnPage();
@@ -363,25 +372,5 @@
     {
         return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
             || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private string BuildCreatedActivityDescription()
-    {
-        if (!IsPrefilled)
-        {
-            return $"Created corrective action CA-{correctiveAction.Id}: {correctiveAction.Title}.";
-        }
-
-        var sourceText = correctiveAction.Source switch
-        {
-            "Risk Register" => "Risk Register item",
-            "Risk Review" => "Risk Register item",
-            "Document Control" => "Document Control item",
-            "Document Review" => "Document Control item",
-            "Training Compliance" => "Training Compliance item",
-            _ => $"{correctiveAction.Source} item"
-        };
-
-        return $"Created corrective action from {sourceText}: {correctiveAction.Title}.";
     }
 }

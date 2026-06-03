@@ -11,7 +11,6 @@
 <PageTitle>Edit Corrective Action - OperationsFlow</PageTitle>
 
 <div class="page-shell module-page">
-
     <section class="module-header">
         <div>
             <p class="eyebrow dark">Operations</p>
@@ -30,146 +29,128 @@
 
     @if (isLoading)
     {
-        <section class="form-card">
-            <div class="empty-state">Loading corrective action...</div>
-        </section>
+        <div class="empty-state">Loading corrective action...</div>
     }
     else if (correctiveAction == null)
     {
-        <section class="alert-card danger-alert">
-            Corrective action could not be found.
-        </section>
+        <div class="empty-state">Corrective action could not be found.</div>
 
         <div class="form-actions">
-            <button type="button" class="secondary-button" @onclick="BackToReturnPage">
-                Back
-            </button>
+            <button class="btn btn-secondary" type="button" @onclick="BackToReturnPage">Back</button>
         </div>
     }
     else
     {
         @if (!string.IsNullOrWhiteSpace(errorMessage))
         {
-            <section class="alert-card danger-alert">
-                @errorMessage
-            </section>
+            <div class="alert alert-danger">@errorMessage</div>
         }
 
-        <section class="form-card">
-            <EditForm Model="correctiveAction" OnValidSubmit="SaveCorrectiveAction">
-                <DataAnnotationsValidator />
-
-                <div class="form-grid">
-
-                    <div class="form-field form-field-full">
-                        <label>Title</label>
-                        <InputText class="form-input" @bind-Value="correctiveAction.Title" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Source</label>
-                        <InputSelect class="form-input" @bind-Value="correctiveAction.Source">
-                            @foreach (var source in SourceOptions)
-                            {
-                                <option value="@source">@source</option>
-                            }
-                        </InputSelect>
-                    </div>
-
-                    <div class="form-field">
-                        <label>Site</label>
-                        <InputText class="form-input" @bind-Value="correctiveAction.Site" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Department</label>
-                        <InputText class="form-input" @bind-Value="correctiveAction.Department" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Owner</label>
-                        <InputText class="form-input" @bind-Value="correctiveAction.Owner" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Action Type</label>
-                        <InputSelect class="form-input" @bind-Value="correctiveAction.ActionType">
-                            @foreach (var actionType in ActionTypeOptions)
-                            {
-                                <option value="@actionType">@actionType</option>
-                            }
-                        </InputSelect>
-                    </div>
-
-                    <div class="form-field">
-                        <label>Priority</label>
-                        <InputSelect class="form-input" @bind-Value="correctiveAction.Priority">
-                            @foreach (var priority in PriorityOptions)
-                            {
-                                <option value="@priority">@priority</option>
-                            }
-                        </InputSelect>
-                    </div>
-
-                    <div class="form-field">
-                        <label>Status</label>
-                        <InputSelect class="form-input" @bind-Value="correctiveAction.Status">
-                            @foreach (var status in StatusOptions)
-                            {
-                                <option value="@status">@status</option>
-                            }
-                        </InputSelect>
-
-                        <StatusFlowGuide Title="Corrective action status flow"
-                                         Description="Use statuses consistently so overdue, completed, and active follow-up work stays clear."
-                                         Steps="CorrectiveActionStatusSteps" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Due Date</label>
-                        <InputDate class="form-input" @bind-Value="correctiveAction.DueDate" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Completed Date</label>
-                        <InputDate class="form-input" @bind-Value="correctiveAction.CompletedDate" />
-                    </div>
-
-                    <div class="form-field form-field-full">
-                        <label>Notes</label>
-                        <InputTextArea class="form-input form-textarea" @bind-Value="correctiveAction.Notes" />
-                        <FollowUpNoteGuide Title="Corrective action note guidance"
-                                           Description="Good corrective action notes should explain the current follow-up state, not just repeat the title."
-                                           Items="CorrectiveActionNoteGuideItems" />
-                    </div>
-
+        <section class="table-card">
+            <div class="form-grid">
+                <div class="form-field full-width">
+                    <label>Title</label>
+                    <input class="form-control" @bind="correctiveAction.Title" />
                 </div>
 
-                <div class="form-actions">
-                    <button type="button" class="secondary-button" @onclick="BackToReturnPage">
-                        Cancel
-                    </button>
-
-                    <button type="submit" class="primary-button">
-                        Save Changes
-                    </button>
+                <div class="form-field">
+                    <label>Source</label>
+                    <select class="form-select" @bind="correctiveAction.Source">
+                        @foreach (var source in SourceOptions)
+                        {
+                            <option value="@source">@source</option>
+                        }
+                    </select>
                 </div>
-            </EditForm>
+
+                <div class="form-field">
+                    <label>Site</label>
+                    <input class="form-control" @bind="correctiveAction.Site" />
+                </div>
+
+                <div class="form-field">
+                    <label>Department</label>
+                    <input class="form-control" @bind="correctiveAction.Department" />
+                </div>
+
+                <div class="form-field">
+                    <label>Owner</label>
+                    <input class="form-control" @bind="correctiveAction.Owner" />
+
+                    <FormFieldGuide Title="Owner guidance"
+                                    Text="Assign one clear owner so follow-up responsibility appears correctly in workload, reminders, reports, and data quality checks." />
+                </div>
+
+                <div class="form-field">
+                    <label>Action Type</label>
+                    <select class="form-select" @bind="correctiveAction.ActionType">
+                        @foreach (var actionType in ActionTypeOptions)
+                        {
+                            <option value="@actionType">@actionType</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label>Priority</label>
+                    <select class="form-select" @bind="correctiveAction.Priority">
+                        @foreach (var priority in PriorityOptions)
+                        {
+                            <option value="@priority">@priority</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label>Status</label>
+                    <select class="form-select" @bind="correctiveAction.Status">
+                        @foreach (var status in StatusOptions)
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <StatusFlowGuide Title="Corrective action status flow"
+                             Description="Use statuses consistently so overdue, completed, and active follow-up work stays clear."
+                             Steps="CorrectiveActionStatusSteps" />
+
+            <div class="form-grid form-grid-spaced">
+                <div class="form-field">
+                    <label>Due Date</label>
+                    <input class="form-control" type="date" @bind="correctiveAction.DueDate" />
+
+                    <FormFieldGuide Title="Due date guidance"
+                                    Text="Use the next realistic follow-up date. Overdue actions appear in the Safety Meeting Pack, Compliance Calendar, Workload, Reports, and Data Quality." />
+                </div>
+
+                <div class="form-field">
+                    <label>Completed Date</label>
+                    <input class="form-control" type="date" @bind="correctiveAction.CompletedDate" />
+                </div>
+
+                <div class="form-field full-width">
+                    <label>Notes</label>
+                    <textarea class="form-control" rows="8" @bind="correctiveAction.Notes"></textarea>
+
+                    <FollowUpNoteGuide Title="Corrective action note guidance"
+                                       Description="Good corrective action notes should explain the current follow-up state, not just repeat the title."
+                                       Items="CorrectiveActionNoteGuideItems" />
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-secondary" type="button" @onclick="BackToReturnPage">Cancel</button>
+                <button class="btn btn-primary" type="button" @onclick="SaveCorrectiveAction">Save Changes</button>
+            </div>
         </section>
-
-        <ActivityHistoryPanel ModuleName="Corrective Actions"
-                              RecordId="@correctiveAction.Id"
-                              Title="Corrective Action Activity History" />
     }
-
 </div>
 
 @code {
-    [Parameter]
-    public int Id { get; set; }
-
-    [SupplyParameterFromQuery]
-    public string? ReturnUrl { get; set; }
+    [Parameter] public int Id { get; set; }
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
 
     private CorrectiveActionModel? correctiveAction;
     private bool isLoading = true;
@@ -189,12 +170,15 @@
         "Incident",
         "Inspection",
         "Internal Audit",
+        "Risk Register",
         "Risk Review",
+        "Document Control",
         "Document Review",
         "Training Compliance",
         "Hazard Report",
         "Quality Review",
-        "Management Review"
+        "Management Review",
+        "Manual / Internal"
     };
 
     private List<string> ActionTypeOptions = new()
@@ -206,7 +190,9 @@
         "Training",
         "Follow-up",
         "Improvement",
-        "Containment"
+        "Containment",
+        "Checklist",
+        "System Update"
     };
 
     private List<string> PriorityOptions = new()
@@ -223,6 +209,23 @@
         "In Progress",
         "Completed",
         "Closed"
+    };
+
+    private static readonly IReadOnlyList<StatusFlowGuide.StatusFlowStep> CorrectiveActionStatusSteps = new[]
+    {
+        new StatusFlowGuide.StatusFlowStep("Open", "Action has been raised but work has not started yet.", "badge badge-warning"),
+        new StatusFlowGuide.StatusFlowStep("In Progress", "Owner is actively working through the follow-up.", "badge badge-info"),
+        new StatusFlowGuide.StatusFlowStep("Completed", "Work is finished and should have a completed date.", "badge badge-success"),
+        new StatusFlowGuide.StatusFlowStep("Closed", "Final review is complete and no further follow-up is needed.", "badge badge-success")
+    };
+
+    private static readonly IReadOnlyList<string> CorrectiveActionNoteGuideItems = new[]
+    {
+        "What was reviewed or changed?",
+        "What is the current blocker or risk?",
+        "Who owns the next action?",
+        "What needs to happen before this can be closed?",
+        "If closing, what evidence or outcome confirms completion?"
     };
 
     protected override async Task OnInitializedAsync()
@@ -345,13 +348,8 @@
 
         if (originalCompletedDate?.Date != correctiveAction.CompletedDate?.Date)
         {
-            var oldDate = originalCompletedDate.HasValue
-                ? originalCompletedDate.Value.ToString("dd MMM yyyy")
-                : "not completed";
-
-            var newDate = correctiveAction.CompletedDate.HasValue
-                ? correctiveAction.CompletedDate.Value.ToString("dd MMM yyyy")
-                : "not completed";
+            var oldDate = originalCompletedDate.HasValue ? originalCompletedDate.Value.ToString("dd MMM yyyy") : "not completed";
+            var newDate = correctiveAction.CompletedDate.HasValue ? correctiveAction.CompletedDate.Value.ToString("dd MMM yyyy") : "not completed";
 
             changes.Add($"completed date changed from {oldDate} to {newDate}");
         }
@@ -383,21 +381,4 @@
         return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
             || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
     }
-
-    private static readonly IReadOnlyList<string> CorrectiveActionNoteGuideItems = new[]
-    {
-        "What was reviewed or changed?",
-        "What is the current blocker or risk?",
-        "Who owns the next action?",
-        "What needs to happen before this can be closed?",
-        "If closing, what evidence or outcome confirms completion?"
-    };
-
-    private static readonly IReadOnlyList<StatusFlowGuide.StatusFlowStep> CorrectiveActionStatusSteps = new[]
-    {
-        new StatusFlowGuide.StatusFlowStep("Open", "Action has been raised but work has not started yet.", "badge badge-warning"),
-        new StatusFlowGuide.StatusFlowStep("In Progress", "Owner is actively working through the follow-up.", "badge badge-info"),
-        new StatusFlowGuide.StatusFlowStep("Completed", "Work is finished and should have a completed date.", "badge badge-success"),
-        new StatusFlowGuide.StatusFlowStep("Closed", "Final review is complete and no further follow-up is needed.", "badge badge-success")
-    };
 }
