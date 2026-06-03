@@ -7,53 +7,115 @@
 
 <PageTitle>Workload - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page">
+<div class="operations-dashboard workload-dashboard">
+    <PageIntro Eyebrow="Management View"
+               Title="Workload"
+               Subtitle="Owner-focused follow-up across work orders, corrective actions, and document intake. Use this page to identify workload pressure, overdue ownership, high-priority work, and the next action each owner needs to take.">
+        <a class="btn btn-secondary" href="corrective-actions">Corrective Actions</a>
+        <a class="btn btn-secondary" href="document-intake">Document Intake</a>
+        <a class="btn btn-primary" href="reminders">Reminders</a>
+    </PageIntro>
 
-    <section class="module-header">
-        <div>
-            <p class="eyebrow dark">Management View</p>
-            <h1>Workload</h1>
-            <p>
-                View assigned work across work orders, corrective actions, and document intake.
-                Identify overdue work, high-priority items, and owner workload pressure.
-            </p>
-        </div>
+    <div class="page-purpose-note">
+        <strong>Purpose:</strong> use this page to answer who owns the follow-up, who is overloaded, what is overdue, and what needs attention next.
+    </div>
 
-        <div class="module-header-stat">
-            <span>Active Owners</span>
+    <section class="kpi-grid">
+        <div class="kpi-card">
+            <span class="kpi-label">Active Owners</span>
             <strong>@WorkloadRows.Count</strong>
+            <span class="kpi-note">People with assigned open work</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Total Assigned</span>
+            <strong>@TotalAssignedCount</strong>
+            <span class="kpi-note">Open assigned items</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Overdue</span>
+            <strong>@TotalOverdueCount</strong>
+            <span class="kpi-note">Assigned items past due</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">High Priority</span>
+            <strong>@TotalHighPriorityCount</strong>
+            <span class="kpi-note">High or critical assigned items</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Highest Load</span>
+            <strong>@HighestLoadCount</strong>
+            <span class="kpi-note">@HighestLoadOwner</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">High Pressure Owners</span>
+            <strong>@HighPressureOwnerCount</strong>
+            <span class="kpi-note">Need review first</span>
         </div>
     </section>
 
-    <section class="module-summary-grid">
-        <article class="module-summary-card info-card">
-            <span>Total Assigned</span>
-            <strong>@TotalAssignedCount</strong>
-            <small>Open assigned items</small>
-        </article>
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Owner Follow-Up Focus</h2>
+                    <p>Use this summary before checking individual owner cards.</p>
+                </div>
+            </div>
 
-        <article class="module-summary-card danger-card">
-            <span>Overdue</span>
-            <strong>@TotalOverdueCount</strong>
-            <small>Assigned items past due</small>
-        </article>
+            <ul class="action-list">
+                @if (HighPressureRows.Any())
+                {
+                    <li>Review @HighPressureRows.Count high-pressure owner(s) first.</li>
+                }
 
-        <article class="module-summary-card warning-card">
-            <span>High Priority</span>
-            <strong>@TotalHighPriorityCount</strong>
-            <small>High or critical assigned items</small>
-        </article>
+                @if (TotalOverdueCount > 0)
+                {
+                    <li>Follow up on @TotalOverdueCount overdue assigned item(s).</li>
+                }
 
-        <article class="module-summary-card success-card">
-            <span>Highest Load</span>
-            <strong>@HighestLoadCount</strong>
-            <small>@HighestLoadOwner</small>
-        </article>
+                @if (TotalHighPriorityCount > 0)
+                {
+                    <li>Confirm owners and next steps for @TotalHighPriorityCount high/critical item(s).</li>
+                }
+
+                @if (UnassignedRow is not null)
+                {
+                    <li>Assign ownership for @UnassignedRow.TotalAssigned unassigned item(s).</li>
+                }
+
+                @if (!HighPressureRows.Any() && TotalOverdueCount == 0 && TotalHighPriorityCount == 0 && UnassignedRow is null)
+                {
+                    <li>No urgent workload pressure found. Review next due dates and upcoming work.</li>
+                }
+            </ul>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Suggested Review Order</h2>
+                    <p>Recommended sequence for a workload or follow-up meeting.</p>
+                </div>
+            </div>
+
+            <ol class="action-list">
+                <li>Start with unassigned work so accountability is clear.</li>
+                <li>Review owners with high pressure or multiple overdue items.</li>
+                <li>Confirm next actions for high/critical work.</li>
+                <li>Check the next due item per owner.</li>
+                <li>Update notes/statuses after follow-up so reports stay accurate.</li>
+            </ol>
+        </div>
     </section>
 
-    <section class="module-toolbar">
+    <section class="module-toolbar workload-toolbar">
         <input class="search-input"
-               placeholder="Search owner, department, or item..."
+               placeholder="Search owner, reference, title, module, priority, or recommended action..."
                @bind="searchText"
                @bind:event="oninput" />
 
@@ -73,38 +135,45 @@
         </select>
     </section>
 
-    <section class="table-card">
+    <section class="report-card">
+        <div class="panel-header">
+            <div>
+                <h2>Owner Workload Summary</h2>
+                <p>Assigned open work grouped by owner, pressure, overdue count, priority, and next due date.</p>
+            </div>
+        </div>
+
         @if (!FilteredWorkloadRows.Any())
         {
             <div class="empty-state">No workload records match the current filters.</div>
         }
         else
         {
-            <table class="data-table">
+            <table class="report-table workload-summary-table">
                 <thead>
                     <tr>
                         <th>Owner</th>
                         <th>Pressure</th>
-                        <th>Total Assigned</th>
+                        <th>Total</th>
                         <th>Work Orders</th>
-                        <th>Corrective Actions</th>
-                        <th>Document Intake</th>
+                        <th>Corrective</th>
+                        <th>Intake</th>
                         <th>Overdue</th>
                         <th>High Priority</th>
                         <th>Next Due</th>
+                        <th>Recommended Focus</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var row in FilteredWorkloadRows)
                     {
                         <tr>
-                            <td class="strong-cell">@row.Owner</td>
                             <td>
-                                <span class="@GetPressureClass(row.PressureLevel)">
-                                    @row.PressureLevel
-                                </span>
+                                <strong>@row.Owner</strong>
+                                <span class="muted-text">@GetOwnerSummary(row)</span>
                             </td>
-                            <td class="strong-cell">@row.TotalAssigned</td>
+                            <td><span class="@GetPressureClass(row.PressureLevel)">@row.PressureLevel</span></td>
+                            <td>@row.TotalAssigned</td>
                             <td>@row.OpenWorkOrders</td>
                             <td>@row.OpenCorrectiveActions</td>
                             <td>@row.OpenDocumentIntake</td>
@@ -125,19 +194,21 @@
                                 }
                                 else
                                 {
-                                    <span class="badge badge-muted">0</span>
+                                    <span class="badge badge-success">0</span>
                                 }
                             </td>
                             <td>
                                 @if (row.NextDueDate.HasValue)
                                 {
-                                    @row.NextDueDate.Value.ToString("dd MMM yyyy")
+                                    <strong>@row.NextDueDate.Value.ToString("dd MMM yyyy")</strong>
+                                    <span class="muted-text">@GetDueTimingText(row.NextDueDate.Value)</span>
                                 }
                                 else
                                 {
                                     <span class="muted-text">No due items</span>
                                 }
                             </td>
+                            <td>@row.RecommendedFocus</td>
                         </tr>
                     }
                 </tbody>
@@ -145,35 +216,36 @@
         }
     </section>
 
-    <section class="workload-detail-grid">
+    <section class="owner-card-grid">
         @foreach (var row in FilteredWorkloadRows)
         {
-            <article class="workload-owner-card">
-                <div class="workload-owner-header">
+            <article class="owner-followup-card">
+                <div class="owner-followup-header">
                     <div>
-                        <p class="eyebrow dark">Owner</p>
+                        <p class="eyebrow">Owner</p>
                         <h2>@row.Owner</h2>
+                        <p>@row.RecommendedFocus</p>
                     </div>
 
-                    <span class="@GetPressureClass(row.PressureLevel)">
-                        @row.PressureLevel
-                    </span>
+                    <span class="@GetPressureClass(row.PressureLevel)">@row.PressureLevel</span>
                 </div>
 
-                <div class="workload-mini-grid">
+                <div class="owner-followup-stats">
                     <div>
                         <span>Total</span>
                         <strong>@row.TotalAssigned</strong>
                     </div>
-
                     <div>
                         <span>Overdue</span>
                         <strong>@row.OverdueCount</strong>
                     </div>
-
                     <div>
                         <span>High</span>
                         <strong>@row.HighPriorityCount</strong>
+                    </div>
+                    <div>
+                        <span>Next Due</span>
+                        <strong>@(row.NextDueDate.HasValue ? row.NextDueDate.Value.ToString("dd MMM") : "None")</strong>
                     </div>
                 </div>
 
@@ -183,39 +255,40 @@
                 }
                 else
                 {
-                    <div class="workload-item-list">
+                    <div class="owner-item-list">
                         @foreach (var item in row.Items.Take(8))
                         {
-                            <article class="workload-item">
+                            <div class="owner-item">
                                 <div>
-                                    <strong>@item.Reference</strong>
-                                    <p>@item.Title</p>
-                                    <small>@item.ModuleName • Due @item.DueDate.ToString("dd MMM yyyy")</small>
+                                    <div class="owner-item-meta">
+                                        <span class="badge badge-muted">@item.ModuleName</span>
+                                        @if (item.IsOverdue)
+                                        {
+                                            <span class="badge badge-danger">Overdue</span>
+                                        }
+
+                                        @if (IsHighPriority(item.Priority))
+                                        {
+                                            <span class="badge badge-warning">@item.Priority</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-info">@item.Priority</span>
+                                        }
+                                    </div>
+
+                                    <strong>@item.Reference — @item.Title</strong>
+                                    <p>@GetDueTimingText(item.DueDate)</p>
                                 </div>
 
-                                <div class="workload-badge-stack">
-                                    @if (item.IsOverdue)
-                                    {
-                                        <span class="badge badge-danger">Overdue</span>
-                                    }
-
-                                    @if (IsHighPriority(item.Priority))
-                                    {
-                                        <span class="badge badge-warning">@item.Priority</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge badge-muted">@item.Priority</span>
-                                    }
-                                </div>
-                            </article>
+                                <a href="@GetItemUrl(item)">Open</a>
+                            </div>
                         }
                     </div>
                 }
             </article>
         }
     </section>
-
 </div>
 
 @code {
@@ -243,7 +316,8 @@
                         Title: x.Title,
                         Priority: x.Priority,
                         DueDate: x.DueDate,
-                        IsOverdue: x.IsOverdue
+                        IsOverdue: x.IsOverdue,
+                        Url: "work-orders"
                     ))
             );
 
@@ -257,7 +331,8 @@
                         Title: x.Title,
                         Priority: x.Priority,
                         DueDate: x.DueDate,
-                        IsOverdue: x.IsOverdue
+                        IsOverdue: x.IsOverdue,
+                        Url: $"corrective-actions/edit/{x.Id}"
                     ))
             );
 
@@ -271,7 +346,8 @@
                         Title: x.DocumentName,
                         Priority: x.Priority,
                         DueDate: x.DueDate,
-                        IsOverdue: x.IsOverdue
+                        IsOverdue: x.IsOverdue,
+                        Url: $"document-intake/edit/{x.Id}"
                     ))
             );
 
@@ -298,6 +374,14 @@
                         highPriorityCount: highPriorityCount
                     );
 
+                    var recommendedFocus = GetRecommendedFocus(
+                        owner: group.Key,
+                        totalAssigned: items.Count,
+                        overdueCount: overdueCount,
+                        highPriorityCount: highPriorityCount,
+                        nextDueDate: nextDueDate
+                    );
+
                     return new WorkloadRow(
                         Owner: group.Key,
                         TotalAssigned: items.Count,
@@ -308,10 +392,13 @@
                         HighPriorityCount: highPriorityCount,
                         NextDueDate: nextDueDate,
                         PressureLevel: pressureLevel,
+                        RecommendedFocus: recommendedFocus,
                         Items: items
                     );
                 })
                 .OrderByDescending(x => x.PressureSort)
+                .ThenByDescending(x => x.OverdueCount)
+                .ThenByDescending(x => x.HighPriorityCount)
                 .ThenByDescending(x => x.TotalAssigned)
                 .ThenBy(x => x.Owner)
                 .ToList();
@@ -327,12 +414,14 @@
             if (!string.IsNullOrWhiteSpace(searchText))
             {
                 query = query.Where(row =>
-                    Contains(row.Owner, searchText) ||
-                    row.Items.Any(item =>
-                        Contains(item.ModuleName, searchText) ||
-                        Contains(item.Reference, searchText) ||
-                        Contains(item.Title, searchText) ||
-                        Contains(item.Priority, searchText)));
+                    Contains(row.Owner, searchText)
+                    || Contains(row.PressureLevel, searchText)
+                    || Contains(row.RecommendedFocus, searchText)
+                    || row.Items.Any(item =>
+                        Contains(item.ModuleName, searchText)
+                        || Contains(item.Reference, searchText)
+                        || Contains(item.Title, searchText)
+                        || Contains(item.Priority, searchText)));
             }
 
             if (!string.IsNullOrWhiteSpace(pressureFilter))
@@ -350,9 +439,7 @@
     }
 
     private int TotalAssignedCount => WorkloadRows.Sum(x => x.TotalAssigned);
-
     private int TotalOverdueCount => WorkloadRows.Sum(x => x.OverdueCount);
-
     private int TotalHighPriorityCount => WorkloadRows.Sum(x => x.HighPriorityCount);
 
     private int HighestLoadCount =>
@@ -363,6 +450,18 @@
             .OrderByDescending(x => x.TotalAssigned)
             .ThenBy(x => x.Owner)
             .FirstOrDefault()?.Owner ?? "No assigned work";
+
+    private int HighPressureOwnerCount =>
+        WorkloadRows.Count(x => x.PressureLevel == "High");
+
+    private List<WorkloadRow> HighPressureRows =>
+        WorkloadRows
+            .Where(x => x.PressureLevel == "High")
+            .ToList();
+
+    private WorkloadRow? UnassignedRow =>
+        WorkloadRows
+            .FirstOrDefault(x => x.Owner == "Unassigned");
 
     private List<string> OwnerOptions =>
         WorkloadRows
@@ -414,6 +513,73 @@
         return "Low";
     }
 
+    private static string GetRecommendedFocus(
+        string owner,
+        int totalAssigned,
+        int overdueCount,
+        int highPriorityCount,
+        DateTime? nextDueDate)
+    {
+        if (owner == "Unassigned")
+        {
+            return "Assign ownership before reviewing workload pressure.";
+        }
+
+        if (overdueCount > 0 && highPriorityCount > 0)
+        {
+            return "Review overdue and high-priority work first.";
+        }
+
+        if (overdueCount > 0)
+        {
+            return "Review overdue work and update status, owner notes, or due dates.";
+        }
+
+        if (highPriorityCount > 0)
+        {
+            return "Confirm next actions for high-priority work.";
+        }
+
+        if (totalAssigned >= 6)
+        {
+            return "Review capacity and upcoming due dates.";
+        }
+
+        if (nextDueDate.HasValue)
+        {
+            return $"Next follow-up due {nextDueDate.Value:dd MMM yyyy}.";
+        }
+
+        return "No immediate follow-up pressure found.";
+    }
+
+    private static string GetOwnerSummary(WorkloadRow row)
+    {
+        return $"{row.OpenWorkOrders} work orders • {row.OpenCorrectiveActions} actions • {row.OpenDocumentIntake} intake";
+    }
+
+    private static string GetDueTimingText(DateTime dueDate)
+    {
+        var days = (dueDate.Date - DateTime.Today).Days;
+
+        if (days < 0)
+        {
+            return $"{Math.Abs(days)} day(s) overdue";
+        }
+
+        if (days == 0)
+        {
+            return "Due today";
+        }
+
+        if (days == 1)
+        {
+            return "Due tomorrow";
+        }
+
+        return $"Due in {days} day(s)";
+    }
+
     private static string GetPressureClass(string? pressure)
     {
         return pressure?.ToLower() switch
@@ -423,6 +589,11 @@
             "low" => "badge badge-success",
             _ => "badge badge-muted"
         };
+    }
+
+    private static string GetItemUrl(WorkloadItem item)
+    {
+        return item.Url;
     }
 
     private static bool Contains(string? source, string search)
@@ -442,7 +613,8 @@
         string Title,
         string Priority,
         DateTime DueDate,
-        bool IsOverdue);
+        bool IsOverdue,
+        string Url);
 
     private record WorkloadRow(
         string Owner,
@@ -454,6 +626,7 @@
         int HighPriorityCount,
         DateTime? NextDueDate,
         string PressureLevel,
+        string RecommendedFocus,
         List<WorkloadItem> Items)
     {
         public int PressureSort =>
