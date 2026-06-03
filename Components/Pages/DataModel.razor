@@ -1,0 +1,662 @@
+﻿@page "/data-model"
+
+<PageTitle>Data Model - OperationsFlow</PageTitle>
+
+<div class="operations-dashboard data-model-page">
+    <PageIntro Eyebrow="Technical Review"
+               Title="Data Model"
+               Subtitle="A technical and business overview of the main OperationsFlow records, fields, relationships, seeded demo data, and how those records feed workflow, reporting, workload, reminders, and data quality.">
+        <a class="btn btn-secondary" href="technical-overview">Technical Overview</a>
+        <a class="btn btn-secondary" href="portfolio-hub">Portfolio Hub</a>
+        <a class="btn btn-primary" href="data-quality">Data Quality</a>
+    </PageIntro>
+
+    <div class="page-purpose-note">
+        <strong>Purpose:</strong> use this page to explain how the project data fits together. OperationsFlow is built around business records with owners, statuses, priorities, dates, notes, and review rules so the same data can support operational screens, compliance review, management reporting, workload, reminders, and data quality checks.
+    </div>
+
+    <section class="kpi-grid">
+        <div class="kpi-card">
+            <span class="kpi-label">Model Style</span>
+            <strong>Workflow</strong>
+            <span class="kpi-note">Records with owner/status/dates</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Storage</span>
+            <strong>SQLite</strong>
+            <span class="kpi-note">Local prototype database</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">ORM</span>
+            <strong>EF Core</strong>
+            <span class="kpi-note">Models and persistence</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-label">Demo Data</span>
+            <strong>Seeded</strong>
+            <span class="kpi-note">Realistic review examples</span>
+        </div>
+    </section>
+
+    <section class="summary-grid data-model-intro-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Data Model Summary</h2>
+                    <p>How the records are designed to support the workflow.</p>
+                </div>
+            </div>
+
+            <p class="data-model-copy">
+                OperationsFlow uses business records that can be reviewed from multiple angles. A corrective action is not just
+                a row in a table — it has a source, owner, priority, status, due date, completed date, notes, and activity history.
+                That same record can appear in corrective action lists, safety meeting review, compliance calendar, workload,
+                reminders, reports, activity log, and data quality checks.
+            </p>
+
+            <ul class="action-list">
+                <li>Operational records hold the workflow detail.</li>
+                <li>Shared fields make records reportable across modules.</li>
+                <li>Management pages aggregate records by owner, priority, status, and due date.</li>
+                <li>Data quality checks identify weak, missing, overdue, or expired records.</li>
+            </ul>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Shared Workflow Fields</h2>
+                    <p>The fields that make records useful across the app.</p>
+                </div>
+            </div>
+
+            <div class="shared-field-grid">
+                @foreach (var field in SharedFields)
+                {
+                    <article>
+                        <span>@field.Label</span>
+                        <strong>@field.Name</strong>
+                        <p>@field.Description</p>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="data-entity-grid">
+        @foreach (var entity in Entities)
+        {
+            <article class="data-entity-card">
+                <div class="data-entity-card-header">
+                    <span>@entity.Number</span>
+                    <div>
+                        <p class="eyebrow">@entity.Category</p>
+                        <h2>@entity.Name</h2>
+                    </div>
+                </div>
+
+                <p>@entity.Description</p>
+
+                <div class="entity-field-list">
+                    @foreach (var field in entity.KeyFields)
+                    {
+                        <div>
+                            <strong>@field.Name</strong>
+                            <span>@field.Description</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="entity-used-by">
+                    <strong>Used by</strong>
+                    <span>@entity.UsedBy</span>
+                </div>
+            </article>
+        }
+    </section>
+
+    <section class="report-card">
+        <div class="panel-header">
+            <div>
+                <h2>Record Relationship Map</h2>
+                <p>How records connect into the wider workflow and reporting model.</p>
+            </div>
+        </div>
+
+        <table class="report-table data-relationship-table">
+            <thead>
+                <tr>
+                    <th>Record Type</th>
+                    <th>Primary Purpose</th>
+                    <th>Shared Fields</th>
+                    <th>Feeds Into</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in RelationshipItems)
+                {
+                    <tr>
+                        <td><strong>@item.RecordType</strong></td>
+                        <td>@item.PrimaryPurpose</td>
+                        <td><span class="@item.BadgeClass">@item.SharedFields</span></td>
+                        <td>@item.FeedsInto</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Data Flow Through The App</h2>
+                    <p>How seeded records become useful review information.</p>
+                </div>
+            </div>
+
+            <div class="data-flow-timeline">
+                @foreach (var step in DataFlowSteps)
+                {
+                    <article>
+                        <span>@step.Number</span>
+                        <div>
+                            <strong>@step.Title</strong>
+                            <p>@step.Description</p>
+                        </div>
+                    </article>
+                }
+            </div>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Database / Persistence Notes</h2>
+                    <p>How this prototype treats storage and what production would change.</p>
+                </div>
+            </div>
+
+            <div class="database-note-grid">
+                @foreach (var note in DatabaseNotes)
+                {
+                    <article>
+                        <span>@note.Label</span>
+                        <strong>@note.Title</strong>
+                        <p>@note.Description</p>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="report-card">
+        <div class="panel-header">
+            <div>
+                <h2>Data Quality Rules</h2>
+                <p>Example rules that turn normal records into reviewable system-health issues.</p>
+            </div>
+        </div>
+
+        <table class="report-table data-quality-rules-table">
+            <thead>
+                <tr>
+                    <th>Rule Area</th>
+                    <th>Example Check</th>
+                    <th>Why It Matters</th>
+                    <th>Review Page</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var rule in DataQualityRules)
+                {
+                    <tr>
+                        <td><strong>@rule.Area</strong></td>
+                        <td>@rule.Check</td>
+                        <td>@rule.WhyItMatters</td>
+                        <td><span class="@rule.BadgeClass">@rule.ReviewPage</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Seeded Demo Data Strategy</h2>
+                    <p>Why the sample data is intentionally realistic.</p>
+                </div>
+            </div>
+
+            <div class="seeded-data-list">
+                @foreach (var item in SeededDataItems)
+                {
+                    <article>
+                        <span>@item.Label</span>
+                        <strong>@item.Title</strong>
+                        <p>@item.Description</p>
+                    </article>
+                }
+            </div>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Production Data Upgrade Path</h2>
+                    <p>What would change for a real deployment.</p>
+                </div>
+            </div>
+
+            <ol class="demo-step-list data-upgrade-list">
+                <li>
+                    <strong>Replace seeded demo data</strong>
+                    <span>Use real company records, controlled imports, and user-created records.</span>
+                </li>
+
+                <li>
+                    <strong>Move to production storage</strong>
+                    <span>Use SQL Server, Azure SQL, or another approved hosted database with backups.</span>
+                </li>
+
+                <li>
+                    <strong>Add user identity</strong>
+                    <span>Connect created/updated/reviewed fields to authenticated users and roles.</span>
+                </li>
+
+                <li>
+                    <strong>Connect document storage</strong>
+                    <span>Use SharePoint or controlled document libraries for real file links and review history.</span>
+                </li>
+
+                <li>
+                    <strong>Add validation and audit rules</strong>
+                    <span>Enforce required fields, status transitions, review evidence, and activity logging.</span>
+                </li>
+            </ol>
+        </div>
+    </section>
+
+    <section class="report-card data-model-summary-card">
+        <div class="panel-header">
+            <div>
+                <h2>Data Model Summary</h2>
+                <p>A short explanation for technical or business reviewers.</p>
+            </div>
+        </div>
+
+        <div class="data-model-summary-copy">
+            <p>
+                OperationsFlow is built around workflow records that share common business fields: owner, status, priority,
+                due date, completed date, notes, source, department, and activity history. This makes each record useful in
+                more than one place. The same corrective action, document intake item, risk review, training record, or
+                document review can support operational editing, safety meeting review, compliance planning, workload,
+                reminders, reporting, activity traceability, and data quality checks.
+            </p>
+
+            <p>
+                The current version uses local prototype data and realistic seeded records to demonstrate the workflow model.
+                A production version would move to secure hosted storage, real user authentication, role-based permissions,
+                controlled document links, stronger validation, audit rules, automated tests, backups, and monitoring.
+            </p>
+        </div>
+    </section>
+</div>
+
+@code {
+    private static readonly IReadOnlyList<SharedField> SharedFields = new[]
+    {
+        new SharedField(
+            Label: "Owner",
+            Name: "Assigned person",
+            Description: "Makes accountability visible in workload, reminders, reports, and data quality."
+        ),
+        new SharedField(
+            Label: "Status",
+            Name: "Workflow state",
+            Description: "Shows whether work is open, in progress, completed, closed, pending, or needs review."
+        ),
+        new SharedField(
+            Label: "Priority",
+            Name: "Review urgency",
+            Description: "Supports high/critical reporting, workload pressure, and safety meeting focus."
+        ),
+        new SharedField(
+            Label: "Due Date",
+            Name: "Follow-up date",
+            Description: "Feeds overdue checks, compliance calendar, reminders, and data quality rules."
+        ),
+        new SharedField(
+            Label: "Notes",
+            Name: "Review evidence",
+            Description: "Explains what happened, what is blocked, what changed, or what still needs review."
+        ),
+        new SharedField(
+            Label: "Activity",
+            Name: "Traceability",
+            Description: "Shows created, updated, reviewed, or workflow-change events for accountability."
+        )
+    };
+
+    private static readonly IReadOnlyList<DataEntity> Entities = new[]
+    {
+        new DataEntity(
+            Number: "01",
+            Category: "Operations",
+            Name: "Work Order",
+            Description: "Operational work record for maintenance, workshop, dispatch, or general business tasks.",
+            UsedBy: "Dashboard, Workload, Reports, Compliance Calendar, Data Quality",
+            KeyFields: new[]
+            {
+                new EntityField("Reference", "Unique work order number or label."),
+                new EntityField("Title", "Short description of the work."),
+                new EntityField("Owner", "Person responsible for follow-up."),
+                new EntityField("Status", "Open, in progress, completed, or closed."),
+                new EntityField("Due Date", "Target completion or review date.")
+            }
+        ),
+        new DataEntity(
+            Number: "02",
+            Category: "Operations",
+            Name: "Corrective Action",
+            Description: "Corrective or improvement action created from an incident, audit, inspection, risk, training issue, document issue, or management review.",
+            UsedBy: "Corrective Actions, Safety Meeting Pack, Workload, Reminders, Reports, Data Quality, Activity Log",
+            KeyFields: new[]
+            {
+                new EntityField("Source", "Where the action came from."),
+                new EntityField("Owner", "Person accountable for follow-up."),
+                new EntityField("Priority", "Low, medium, high, or critical."),
+                new EntityField("Status", "Open, in progress, completed, or closed."),
+                new EntityField("Notes", "Evidence and next-step detail.")
+            }
+        ),
+        new DataEntity(
+            Number: "03",
+            Category: "Admin Workflow",
+            Name: "Document Intake",
+            Description: "Incoming admin/document work that needs processing, checking, saving, routing, or review.",
+            UsedBy: "Document Intake, Workload, Reminders, Reports, Data Quality, Activity Log",
+            KeyFields: new[]
+            {
+                new EntityField("Document Name", "Name of the incoming item."),
+                new EntityField("Target System", "Where the item should end up."),
+                new EntityField("Assigned To", "Person responsible for processing."),
+                new EntityField("Status", "Processing state such as new, pending, needs review, completed, or rejected."),
+                new EntityField("Due Date", "When the processing step should be completed.")
+            }
+        ),
+        new DataEntity(
+            Number: "04",
+            Category: "Compliance",
+            Name: "Risk Item",
+            Description: "Risk register record used for controls, review dates, risk level, owner accountability, and compliance follow-up.",
+            UsedBy: "Risk Register, Safety Overview, Safety Meeting Pack, Reports, Data Quality",
+            KeyFields: new[]
+            {
+                new EntityField("Risk Title", "What the risk is."),
+                new EntityField("Risk Level", "Calculated or assigned risk rating."),
+                new EntityField("Owner", "Person accountable for review."),
+                new EntityField("Controls", "Controls or mitigations."),
+                new EntityField("Review Date", "Next risk review date.")
+            }
+        ),
+        new DataEntity(
+            Number: "05",
+            Category: "Compliance",
+            Name: "Training Record",
+            Description: "Training/compliance record used to track required training, expiry, current status, and follow-up.",
+            UsedBy: "Training, Safety Overview, Safety Meeting Pack, Compliance Calendar, Reports, Data Quality",
+            KeyFields: new[]
+            {
+                new EntityField("Person", "Training holder or employee."),
+                new EntityField("Department", "Department or business area."),
+                new EntityField("Training Type", "Required course or competency."),
+                new EntityField("Expiry Date", "When the training expires."),
+                new EntityField("Status", "Current, expired, missing, or due soon.")
+            }
+        ),
+        new DataEntity(
+            Number: "06",
+            Category: "Document Control",
+            Name: "Controlled Document",
+            Description: "Controlled business or compliance document with owner, version, status, and review date.",
+            UsedBy: "Documents, Safety Meeting Pack, Compliance Calendar, Reports, Data Quality",
+            KeyFields: new[]
+            {
+                new EntityField("Document Number", "Controlled document reference."),
+                new EntityField("Title", "Document title."),
+                new EntityField("Owner", "Responsible document owner."),
+                new EntityField("Version", "Current version number."),
+                new EntityField("Next Review", "Next scheduled review date.")
+            }
+        )
+    };
+
+    private static readonly IReadOnlyList<RelationshipItem> RelationshipItems = new[]
+    {
+        new RelationshipItem(
+            RecordType: "Work Orders",
+            PrimaryPurpose: "Track operational work and maintenance follow-up.",
+            SharedFields: "Owner / Status / Due Date",
+            BadgeClass: "badge badge-info",
+            FeedsInto: "Dashboard, Workload, Reports, Data Quality"
+        ),
+        new RelationshipItem(
+            RecordType: "Corrective Actions",
+            PrimaryPurpose: "Track corrective and improvement actions from multiple sources.",
+            SharedFields: "Owner / Priority / Status / Dates",
+            BadgeClass: "badge badge-warning",
+            FeedsInto: "Safety Meeting Pack, Compliance Calendar, Workload, Reminders, Reports, Activity Log, Data Quality"
+        ),
+        new RelationshipItem(
+            RecordType: "Document Intake",
+            PrimaryPurpose: "Track incoming documents and admin processing work.",
+            SharedFields: "Owner / Target / Status / Due Date",
+            BadgeClass: "badge badge-success",
+            FeedsInto: "Workload, Reminders, Reports, Activity Log, Data Quality"
+        ),
+        new RelationshipItem(
+            RecordType: "Risk Register",
+            PrimaryPurpose: "Track risks, controls, owners, and review requirements.",
+            SharedFields: "Owner / Risk Level / Review Date",
+            BadgeClass: "badge badge-warning",
+            FeedsInto: "Safety Overview, Safety Meeting Pack, Reports, Data Quality"
+        ),
+        new RelationshipItem(
+            RecordType: "Training",
+            PrimaryPurpose: "Track required training, current compliance, and expiry dates.",
+            SharedFields: "Person / Department / Expiry",
+            BadgeClass: "badge badge-info",
+            FeedsInto: "Safety Overview, Compliance Calendar, Reports, Data Quality"
+        ),
+        new RelationshipItem(
+            RecordType: "Controlled Documents",
+            PrimaryPurpose: "Track document ownership, versioning, status, and review dates.",
+            SharedFields: "Owner / Version / Review Date",
+            BadgeClass: "badge badge-muted",
+            FeedsInto: "Documents, Compliance Calendar, Safety Meeting Pack, Reports, Data Quality"
+        )
+    };
+
+    private static readonly IReadOnlyList<DataFlowStep> DataFlowSteps = new[]
+    {
+        new DataFlowStep(
+            Number: "01",
+            Title: "Records are created, imported, or seeded",
+            Description: "The prototype uses realistic seeded records to simulate real operational, safety, compliance, admin, and document workflow data."
+        ),
+        new DataFlowStep(
+            Number: "02",
+            Title: "Records carry workflow fields",
+            Description: "Owner, status, priority, due date, review date, completed date, notes, and source fields make records useful beyond one page."
+        ),
+        new DataFlowStep(
+            Number: "03",
+            Title: "Operational pages manage the records",
+            Description: "Pages like Corrective Actions and Document Intake allow users to review, edit, and save workflow data."
+        ),
+        new DataFlowStep(
+            Number: "04",
+            Title: "Management pages aggregate the records",
+            Description: "Workload, Reports, Safety Meeting Pack, Compliance Calendar, and Reminders group records by owner, date, status, and priority."
+        ),
+        new DataFlowStep(
+            Number: "05",
+            Title: "Data Quality checks the records",
+            Description: "Weak, overdue, expired, missing, or incomplete records are surfaced so they can be fixed before management review."
+        )
+    };
+
+    private static readonly IReadOnlyList<DatabaseNote> DatabaseNotes = new[]
+    {
+        new DatabaseNote(
+            Label: "Local",
+            Title: "SQLite prototype storage",
+            Description: "The current version is designed as a local portfolio/demo build, not a live production database."
+        ),
+        new DatabaseNote(
+            Label: "EF Core",
+            Title: "Model-backed records",
+            Description: "Business records are shaped as application models that can be persisted, queried, and reused across pages."
+        ),
+        new DatabaseNote(
+            Label: "Seeded",
+            Title: "Realistic demo records",
+            Description: "Seeded data is intentionally messy enough to show overdue items, weak records, owner pressure, and review logic."
+        ),
+        new DatabaseNote(
+            Label: "Future",
+            Title: "Production data platform",
+            Description: "A production version would use hosted storage, backups, permissions, monitoring, and controlled release processes."
+        )
+    };
+
+    private static readonly IReadOnlyList<DataQualityRule> DataQualityRules = new[]
+    {
+        new DataQualityRule(
+            Area: "Ownership",
+            Check: "Record has no owner or unclear owner.",
+            WhyItMatters: "Unowned records are unlikely to receive follow-up.",
+            ReviewPage: "Data Quality",
+            BadgeClass: "badge badge-warning"
+        ),
+        new DataQualityRule(
+            Area: "Due Dates",
+            Check: "Record is overdue or has no realistic due date.",
+            WhyItMatters: "Missing or unrealistic dates weaken reminders, workload, and compliance planning.",
+            ReviewPage: "Compliance Calendar",
+            BadgeClass: "badge badge-info"
+        ),
+        new DataQualityRule(
+            Area: "Status",
+            Check: "Record status does not match the workflow state.",
+            WhyItMatters: "Incorrect statuses can hide overdue or incomplete work.",
+            ReviewPage: "Reports",
+            BadgeClass: "badge badge-success"
+        ),
+        new DataQualityRule(
+            Area: "Notes",
+            Check: "Record notes do not explain current state, blocker, evidence, or next step.",
+            WhyItMatters: "Weak notes make management review and audit follow-up harder.",
+            ReviewPage: "Corrective Actions",
+            BadgeClass: "badge badge-warning"
+        ),
+        new DataQualityRule(
+            Area: "Training",
+            Check: "Training is expired, missing, or due soon.",
+            WhyItMatters: "Expired training can become a compliance risk.",
+            ReviewPage: "Training",
+            BadgeClass: "badge badge-info"
+        ),
+        new DataQualityRule(
+            Area: "Documents",
+            Check: "Controlled document review is overdue or due soon.",
+            WhyItMatters: "Outdated documents can weaken process control and compliance evidence.",
+            ReviewPage: "Documents",
+            BadgeClass: "badge badge-muted"
+        )
+    };
+
+    private static readonly IReadOnlyList<SeededDataItem> SeededDataItems = new[]
+    {
+        new SeededDataItem(
+            Label: "Realistic",
+            Title: "Messy enough to review",
+            Description: "The data includes overdue work, high-priority items, due-soon records, expired training, and weak review states."
+        ),
+        new SeededDataItem(
+            Label: "Connected",
+            Title: "Supports multiple pages",
+            Description: "The same style of records can appear in workload, reports, reminders, data quality, and compliance review."
+        ),
+        new SeededDataItem(
+            Label: "Demo",
+            Title: "Easy to explain",
+            Description: "The records are understandable without needing a real company's private data."
+        ),
+        new SeededDataItem(
+            Label: "Portfolio",
+            Title: "Shows business thinking",
+            Description: "The dataset demonstrates workflow problems a real business would recognise."
+        )
+    };
+
+    private record SharedField(
+        string Label,
+        string Name,
+        string Description
+    );
+
+    private record DataEntity(
+        string Number,
+        string Category,
+        string Name,
+        string Description,
+        string UsedBy,
+        IReadOnlyList<EntityField> KeyFields
+    );
+
+    private record EntityField(
+        string Name,
+        string Description
+    );
+
+    private record RelationshipItem(
+        string RecordType,
+        string PrimaryPurpose,
+        string SharedFields,
+        string BadgeClass,
+        string FeedsInto
+    );
+
+    private record DataFlowStep(
+        string Number,
+        string Title,
+        string Description
+    );
+
+    private record DatabaseNote(
+        string Label,
+        string Title,
+        string Description
+    );
+
+    private record DataQualityRule(
+        string Area,
+        string Check,
+        string WhyItMatters,
+        string ReviewPage,
+        string BadgeClass
+    );
+
+    private record SeededDataItem(
+        string Label,
+        string Title,
+        string Description
+    );
+}
