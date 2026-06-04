@@ -4,7 +4,9 @@
 
 It was built as a focused portfolio project to demonstrate practical business systems development: turning scattered admin, operations, safety/compliance, document, and follow-up work into one connected workflow system.
 
-> **Current status:** OperationsFlow is a local portfolio prototype using SQLite and seeded demo data. It demonstrates workflow design, record editing, reporting, exports, reminders, workload visibility, activity traceability, data quality checks, reviewer guidance, production planning, testing awareness, deployment planning, and Microsoft 365 integration direction. It is not yet a production deployment and does not currently include real authentication, role permissions, hosted infrastructure, live SharePoint/Teams/Outlook integration, production file storage, or automated test coverage.
+> **Current status:** OperationsFlow is a local portfolio prototype using SQLite and seeded demo data.
+>
+> It demonstrates workflow design, record editing, reporting, exports, reminders, workload visibility, activity traceability, data quality checks, reviewer guidance, production planning, testing awareness, deployment planning, and Microsoft 365 integration direction. It is not yet a production deployment and does not currently include real authentication, role permissions, hosted infrastructure, live SharePoint/Teams/Outlook integration, production file storage, or automated test coverage.
 
 ---
 
@@ -259,13 +261,13 @@ Current prototype structure:
 
 ```text
 Blazor UI
-↓
+    ↓
 Razor Components / Pages
-↓
+    ↓
 Application Services
-↓
+    ↓
 Entity Framework Core
-↓
+    ↓
 SQLite Database
 ```
 
@@ -279,15 +281,15 @@ Future production direction:
 
 ```text
 Blazor UI
-↓
+    ↓
 Application Services
-↓
+    ↓
 Domain / Business Rules
-↓
+    ↓
 Infrastructure
-↓
+    ↓
 SQL Server / Azure SQL / PostgreSQL
-↓
+    ↓
 Authentication / Permissions / Integrations
 ```
 
@@ -403,6 +405,8 @@ Planned production upgrades:
 - [Demo Walkthrough](Docs/DemoWalkthrough.md)
 - [Feature Checklist](Docs/FeatureChecklist.md)
 - [Screenshot Checklist](Docs/ScreenshotChecklist.md)
+- [Release Package](Docs/ReleasePackage.md)
+- [CSS Cleanup Plan](Docs/CssCleanupPlan.md)
 - [Known Limitations](Docs/KnownLimitations.md)
 - [Enterprise Upgrade Plan](Docs/EnterpriseUpgradePlan.md)
 - [Targeted Pitch Notes](Docs/TargetedPitches.md)
