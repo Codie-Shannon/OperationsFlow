@@ -1,157 +1,208 @@
-# Targeted Pitch Notes
+# OperationsFlow Targeted Pitch Notes
 
-This file contains copy/paste-ready summaries for different audiences. These messages describe the current prototype honestly and do not present future roadmap items as already implemented.
-
----
-
-## Vanessa / OSHE Message
-
-Hi Vanessa,
-
-I’ve been building a Blazor/.NET prototype called OperationsFlow to demonstrate the type of business workflow system I can put together.
-
-The OSHE-relevant side now starts with a focused Safety Overview dashboard. It gives a health, safety, or compliance manager one place to see the main attention items:
-
-- Open corrective actions
-- Overdue corrective actions
-- High/critical risks
-- Expired training
-- Training expiring soon
-- Document reviews overdue or due soon
-- Recent safety/compliance activity
-
-The wider safety/compliance workflow includes:
-
-- Corrective action tracking
-- Risk register follow-up
-- Training compliance
-- Document review tracking
-- Reminder Centre for overdue and due-soon items
-- Workload visibility by owner
-- Reports and CSV exports
-- Activity Log and per-record activity history
-- Data Quality Report for missing or risky records
-
-The idea is to show how safety/compliance work can be centralised so overdue actions, training issues, risk follow-ups, and document reviews are easier to see, assign, manage, export, and trace.
-
-It is not a finished production system yet. It is a working local prototype using SQLite/demo data, but it shows the type of workflow, reporting, and traceability system I can build and improve.
+This document provides short pitch angles for different audiences.
 
 ---
 
-## Vanessa / OSHE Demo Path
+## One-Sentence Summary
 
-Recommended demo order:
-
-1. Open Safety Overview.
-2. Explain the attention items.
-3. Show open corrective actions.
-4. Show overdue corrective actions.
-5. Show high/critical risks.
-6. Show expired or expiring training.
-7. Show overdue or due-soon document reviews.
-8. Open Risk Register.
-9. Generate a corrective action from a high/critical risk.
-10. Open Corrective Actions and show owner, priority, due date, status, and completed date behaviour.
-11. Open Training Compliance and show expired/expiring training records.
-12. Open Document Control and show document review issues.
-13. Open Reminder Centre to show what needs attention now.
-14. Open Workload to show ownership pressure.
-15. Open Reports and show management/export views.
-16. Download one CSV export.
-17. Open Data Quality to show cleanup issues before reporting.
-18. Open Activity Log or per-record Activity History to show traceability.
-
-Main message:
-
-OperationsFlow helps centralise safety/compliance follow-up work, identify overdue actions, monitor training/document/risk issues, assign ownership, support management reporting, export data, and provide traceability.
+OperationsFlow is a Blazor/.NET business workflow prototype that turns scattered operational, safety/compliance, document, and follow-up work into one connected reviewable system with owner accountability, reporting, exports, data quality checks, and activity traceability.
 
 ---
 
-## Vanessa / OSHE Short Version
+## General Portfolio Pitch
 
-OperationsFlow is a Blazor/.NET safety/compliance workflow prototype. The Safety Overview dashboard shows open and overdue corrective actions, high/critical risks, expired or expiring training, document review issues, and recent compliance activity. It connects into Risk Register, Corrective Actions, Training Compliance, Document Control, Reminder Centre, Reports, CSV exports, Data Quality, and Activity Log.
+OperationsFlow is a practical .NET/Blazor portfolio project focused on real business workflow problems rather than a generic CRUD demo.
 
-It is currently a local SQLite/demo-data prototype, not a production system, but it demonstrates the kind of workflow visibility and traceability I can build.
+It includes editable work orders, corrective actions, document intake, risk, training, controlled documents, reminders, workload reporting, CSV exports, data quality checks, activity history, reviewer guidance, and production planning.
 
----
-
-## Vanessa / OSHE One-Sentence Version
-
-OperationsFlow centralises safety/compliance follow-up by showing corrective actions, risk issues, training expiries, document reviews, reminders, reporting, exports, and traceability in one Blazor/.NET prototype.
+The project demonstrates C#, Blazor, EF Core, SQLite, workflow design, reporting, data quality rules, audit thinking, and a realistic Microsoft 365 upgrade path.
 
 ---
 
-## Lester / Peter Message
+## Vanessa / OSHE Pitch
 
-Hi Lester / Peter,
+OperationsFlow helps show how safety and compliance follow-up could be tracked in one place.
 
-I’ve been building a Blazor/.NET prototype called OperationsFlow to demonstrate the kind of admin/document workflow system I can put together.
+The strongest OSHE-relevant areas are:
 
-The document/admin side includes a Document Intake workflow for tracking incoming PDFs, emails, scanned documents, supplier paperwork, customer requests, internal forms, and job paperwork.
+- Safety Meeting Pack
+- Corrective Actions
+- Risk Register
+- Training Compliance
+- Controlled Documents
+- Reminder Centre
+- Workload
+- Reports
+- Data Quality
+- Activity Log
 
-It tracks:
+Key message:
 
-- Received date
-- Received from
-- Source type
-- Document type
-- Assigned person
-- Target system
-- Priority
-- Status
-- Due date
+> The system helps make overdue safety/compliance work visible, assigns ownership, tracks follow-up, highlights weak records, and creates meeting-ready summaries without rebuilding everything manually from emails and spreadsheets.
+
+Suggested demo path:
+
+1. Portfolio Hub
+2. Business Value
+3. Safety Meeting Pack
+4. Risk Register
+5. Create Corrective Action from Risk
+6. Corrective Actions
+7. Training Compliance
+8. Controlled Documents
+9. Workload
+10. Reports
+11. Data Quality
+12. Activity Log
+
+---
+
+## Lester / Peter Pitch
+
+OperationsFlow can also be shown as an admin/document workflow system.
+
+The strongest relevant areas are:
+
+- Document Intake
+- Assigned processing
+- Target system tracking
+- Workflow statuses
+- Due dates
 - Notes
 - Activity history
+- Workload
+- Reports
+- CSV exports
+- Integration Overview
 
-Target systems are tracked as workflow metadata and can include examples like SharePoint, Xero, Cin7, WorkflowMax, email folders, or internal systems.
+Key message:
 
-The prototype also includes reminders, workload views, reports, CSV exports, data quality checks, activity traceability, and a Safety Overview for compliance-style follow-up.
+> The Document Intake workflow shows how incoming emails, PDFs, scanned documents, supplier documents, customer requests, internal forms, and job paperwork could be tracked from receipt through review, processing, completion, reporting, and future system integration.
 
-It is not a live integration with those systems yet, but it shows the workflow structure and direction for tracking document/admin processing before connecting to real systems later.
+Suggested demo path:
+
+1. Portfolio Hub
+2. Document Intake
+3. Create Document Intake item
+4. Edit status/target system/assigned person
+5. Per-record Activity History
+6. Reminder Centre
+7. Workload
+8. Reports
+9. CSV Export
+10. Integration Overview
+11. Implementation Plan
 
 ---
 
-## General Job Application Summary
+## .NET Developer / Employer Pitch
 
-OperationsFlow is a Blazor/.NET 8 business operations prototype built with C#, Entity Framework Core, and SQLite.
+OperationsFlow is a business systems project built with .NET 8, Blazor, C#, Entity Framework Core, SQLite, Razor components, and CSV export endpoints.
 
 It demonstrates:
 
-- CRUD workflows
-- Dashboard KPIs
-- Safety Overview dashboard
-- Search/filtering
-- Activity logging
-- Per-record activity history
-- Document intake workflow
-- Corrective action tracking
-- Risk, training, and document control modules
-- Reminder Centre
-- Workload management
-- Reports
-- CSV exports
-- Data Quality Report
-- Admin Settings starter
-- Enterprise roadmap planning
+- CRUD workflows.
+- Search/filter/list pages.
+- Create/edit forms.
+- Record details.
+- Shared services.
+- EF Core persistence.
+- Seeded demo data.
+- Activity logging.
+- Reporting views.
+- CSV export.
+- Data quality logic.
+- Production planning pages.
 
-This project shows my ability to design and build practical internal business systems that track work, assign responsibility, monitor compliance, export data, provide safety/compliance visibility, and provide management traceability.
+Key message:
 
----
+> This project shows I can build business-focused software that goes beyond isolated screens: records are created, edited, reported, exported, traced, reviewed, and connected into management workflows.
 
-## Short LinkedIn / GitHub Summary
+Suggested demo path:
 
-OperationsFlow is a Blazor/.NET business operations prototype for tracking work orders, corrective actions, document intake, document reviews, risk, training compliance, reminders, workload, reports, CSV exports, data quality, safety/compliance visibility, and activity traceability.
-
-Built with C#, Blazor, EF Core, and SQLite, it demonstrates practical business systems development and a roadmap toward enterprise features such as authentication, permissions, integrations, database-driven settings, and production deployment.
-
----
-
-## One-Sentence Version
-
-OperationsFlow is a Blazor/.NET business workflow prototype that centralises operational work, corrective actions, document intake, compliance tracking, safety overview, reminders, workload visibility, reporting, CSV exports, and activity traceability.
+1. Technical Overview
+2. Data Model
+3. Work Orders
+4. Corrective Actions
+5. Document Intake
+6. Reports
+7. CSV Export
+8. Activity Log
+9. Data Quality
+10. Deployment Overview
+11. Integration Overview
 
 ---
 
-## Honest Prototype Disclaimer
+## Business Analyst / Systems Role Pitch
 
-OperationsFlow is currently a portfolio/semi-live local prototype. It uses SQLite and demo data, and it does not yet include authentication, production hosting, or live integrations with Microsoft 365, SharePoint, Outlook, Xero, Cin7, or WorkflowMax.
+OperationsFlow demonstrates business process thinking.
+
+It models how scattered work becomes structured workflow:
+
+- Identify records that need follow-up.
+- Assign an owner.
+- Add priority/status/due date.
+- Track progress.
+- Surface overdue items.
+- Review workload.
+- Export management summaries.
+- Record activity history.
+- Identify weak data before reporting.
+
+Key message:
+
+> The project shows the ability to understand business problems, model workflows, create review views, and plan a realistic move from prototype to production.
+
+---
+
+## Microsoft 365 / Power Platform Style Pitch
+
+OperationsFlow is not currently a Power Platform app, but it maps naturally to Microsoft 365 workflows.
+
+Future integration path:
+
+- SharePoint for documents/evidence.
+- Teams for reminders/escalations.
+- Outlook for follow-up emails.
+- Microsoft Lists for smaller structured lists if useful.
+- Excel/Power BI-ready exports for reporting.
+- Entra ID for authentication.
+
+Key message:
+
+> The project shows the same thinking used in Microsoft 365 workflow automation: centralising scattered follow-up, connecting documents, assigning owners, sending reminders, and producing management-ready reports.
+
+---
+
+## Short Message for Sending the Repo
+
+Hi,
+
+I’ve put together a working Blazor/.NET portfolio prototype called OperationsFlow.
+
+It demonstrates a connected business workflow system for operational work, corrective actions, safety/compliance follow-up, document intake, reminders, workload visibility, reports, CSV exports, data quality checks, activity traceability, and production planning.
+
+The best starting page is **Portfolio Hub**, then **Reviewer Checklist** or **Demo Guide**. The project is intentionally presented as a local prototype, not a finished production system, and it includes pages explaining the prototype boundaries, deployment requirements, testing path, and Microsoft 365 integration direction.
+
+---
+
+## Honest Scope Line
+
+Use this if someone asks whether it is production-ready:
+
+> Not yet. It is a working local Blazor/SQLite prototype that proves the workflow, reporting, traceability, and production planning. A production version would need authentication, roles, hosted database storage, backups, tests, deployment, monitoring, and live integrations.
+
+---
+
+## Strongest Interview Talking Points
+
+- Built a working Blazor/.NET business workflow prototype.
+- Focused on practical business problems, not just UI pages.
+- Connected multiple workflow areas into reporting and review pages.
+- Added create/edit/save workflows and activity history.
+- Added CSV exports for management/spreadsheet workflows.
+- Added data quality checks to identify weak records.
+- Added reviewer support pages so the project explains itself.
+- Added production planning pages covering data model, roles, audit, deployment, testing, and Microsoft 365 integration.

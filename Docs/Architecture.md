@@ -2,9 +2,9 @@
 
 ## Overview
 
-OperationsFlow is currently a semi-live Blazor/.NET portfolio prototype using local SQLite data persistence. It is designed to demonstrate practical business workflow tracking, safety/compliance visibility, reporting, CSV exports, reminders, workload visibility, data quality checks, and activity traceability.
+OperationsFlow is a Blazor/.NET 8 portfolio prototype using local SQLite data persistence. It demonstrates practical business workflow tracking, reporting, CSV exports, reminders, workload visibility, data quality checks, activity traceability, and production planning.
 
-This document describes the current implemented architecture and the intended upgrade direction. Anything listed under future architecture is not presented as existing functionality.
+The project is intentionally honest about scope. It is a working local prototype, not a finished production ERP or hosted enterprise system.
 
 ---
 
@@ -22,35 +22,20 @@ Entity Framework Core
 SQLite Database
 ```
 
-The current app is mainly a Blazor application with Razor pages/components that read and write data using Entity Framework Core.
-
-Some cross-cutting logic has already been moved into services.
-
 Current implemented services include:
 
 - `DashboardService`
 - `ActivityLogService`
 - `CsvExportService`
 
----
-
-## Current Data Storage
-
-The current prototype uses:
-
-- SQLite
-- Entity Framework Core
-- Demo seed data
-- Local database files during development
-
-The app currently behaves like a semi-live local prototype:
+The app currently behaves like this:
 
 ```text
 Create/Edit record
 ↓
 SQLite data updates
 ↓
-Dashboard/Safety Overview/reports/reminders/workload update
+Dashboard/reports/reminders/workload update
 ↓
 Activity Log records the change
 ↓
@@ -61,68 +46,74 @@ CSV export reflects the saved data
 
 ## Current Main Modules
 
-Current implemented modules include:
+Implemented/reviewable modules include:
 
 - Dashboard
-- Safety Overview
 - Work Orders
 - Corrective Actions
-- Document Control
+- Safety Overview
+- Safety Meeting Pack
+- Compliance Calendar
+- Controlled Documents
 - Risk Register
 - Training Compliance
 - Document Intake
-- Activity Log
 - Reminder Centre
 - Workload
 - Reports
-- Data Quality Report
-- Admin Settings starter
-- Demo Guide page, if added from this package
-
----
-
-## Safety Overview Architecture
-
-The Safety Overview page is a focused management/compliance view.
-
-Current page:
-
-- `Components/Pages/SafetyOverview.razor`
-- Route: `/compliance-dashboard`
-- Display name: `Safety Overview`
-
-The page is not a separate production safety engine. It is a Blazor page that aggregates existing prototype data from:
-
-- Corrective Actions
-- Risk Register
-- Training Compliance
-- Document Control
+- Data Quality
 - Activity Log
+- Admin Settings starter
 
-It is designed to answer a practical OSHE/compliance question:
+Reviewer/support pages include:
 
-```text
-What safety/compliance items need attention right now?
-```
-
-The page shows:
-
-- Total attention items
-- Open corrective actions
-- Overdue corrective actions
-- High/critical risks
-- Expired training
-- Training expiring soon
-- Document reviews overdue or due soon
-- Recent safety/compliance activity
-
-This keeps the architecture simple while demonstrating how existing operational records can be reused for focused management dashboards.
+- Portfolio Hub
+- Reviewer Checklist
+- Demo Guide
+- Business Value
+- Prototype Scope
+- Implementation Plan
+- Technical Overview
+- Data Model
+- User Roles
+- Audit Overview
+- Deployment Overview
+- Testing Overview
+- Integration Overview
 
 ---
 
-## Current Activity Logging Flow
+## Data Storage
 
-Activity logging is currently implemented for key create/edit workflows.
+Current prototype storage:
+
+- SQLite
+- Entity Framework Core
+- Seeded demo data
+- Local database files during development
+
+This supports real create/edit/save/report behaviour for portfolio review.
+
+Future production storage would move to:
+
+- SQL Server
+- Azure SQL
+- PostgreSQL
+- Another approved hosted database
+
+Production storage would also require:
+
+- EF Core migrations
+- Backup/restore procedures
+- Access control
+- Environment-specific connection strings
+- Monitoring
+
+---
+
+## Activity Logging Flow
+
+Current activity logging is record-level traceability.
 
 ```text
 User creates or edits a record
@@ -134,7 +125,6 @@ ActivityLogService creates an ActivityLog record
 Activity appears in:
 - Global Activity Log
 - Dashboard Recent Activity
-- Safety Overview Recent Compliance Activity, where relevant
 - Per-record Activity History
 ```
 
@@ -148,13 +138,22 @@ Current Activity Log fields include:
 - Created by
 - Created date
 
-This is implemented as record-level traceability, not a full per-field enterprise audit trail yet.
+Future production audit logging would add:
+
+- Authenticated user ID
+- Field name
+- Old value
+- New value
+- Event type
+- Source page/action
+- Export history
+- Admin/security events
 
 ---
 
-## Current CSV Export Flow
+## CSV Export Flow
 
-CSV exports are currently implemented through app endpoints and `CsvExportService`.
+CSV exports are implemented through app endpoints and `CsvExportService`.
 
 ```text
 User clicks export link
@@ -168,7 +167,7 @@ CSV string is generated
 Browser downloads CSV file
 ```
 
-Current implemented CSV export areas include:
+Current export areas include:
 
 - Work Orders
 - Corrective Actions
@@ -180,7 +179,7 @@ Current implemented CSV export areas include:
 
 ---
 
-## Current Document Intake Workflow
+## Document Intake Workflow
 
 The current Document Intake module tracks incoming admin/document processing records.
 
@@ -208,91 +207,31 @@ Current target system values include demo options such as:
 - Email Folder
 - Internal System
 
-These are tracked as workflow metadata only. The app does not currently integrate with those external systems.
+These are tracked as workflow metadata only. The app does not currently integrate live with those external systems.
 
 ---
 
-## Current Admin Settings
+## Reporting and Management Views
 
-The current Admin Settings page is a starter/configuration overview.
-
-It currently demonstrates the configuration direction for:
-
-- Sites
-- Departments
-- Target systems
-- Priority levels
-- Workflow statuses
-- Source/document type options
-
-At the current prototype stage, not every form is database-driven from Admin Settings. Some option lists are still hardcoded in the relevant pages.
-
----
-
-## Current Reporting and Management Views
-
-Current implemented management views include:
+Current management views include:
 
 - Dashboard KPIs
-- Safety Overview
 - Recent Activity
 - Reminder Centre
-- Workload page
-- Reports page
-- Data Quality Report
+- Workload
+- Reports
+- Data Quality
 - Activity Log
+- Safety Meeting Pack
+- Compliance Calendar
 
-These views are generated from the current SQLite data.
-
----
-
-## Vanessa / OSHE Architecture Notes
-
-For a Vanessa/OSHE-focused demo, the important architecture point is that OperationsFlow uses the same stored records across multiple views:
-
-```text
-Corrective Actions
-Risk Register
-Training Compliance
-Document Control
-Activity Log
-↓
-Safety Overview
-Reminder Centre
-Reports
-Data Quality
-CSV Exports
-```
-
-This demonstrates a practical business-system pattern:
-
-- One record is created once.
-- The same record appears in dashboards, reminders, reports, workload, and traceability views.
-- Safety/compliance attention items can be surfaced without duplicating data across spreadsheets.
+These views reuse the same workflow records to show owner pressure, overdue work, attention items, weak records, management summaries, and review evidence.
 
 ---
 
-## Future Enterprise Architecture Direction
+## Production Architecture Direction
 
-The current app can be evolved toward a cleaner enterprise structure over time.
-
-A future solution may move toward:
-
-```text
-Blazor UI
-↓
-Application Services
-↓
-Domain / Business Rules
-↓
-Infrastructure
-↓
-SQL Server / PostgreSQL / Azure SQL
-↓
-Authentication / Permissions / Integrations
-```
-
-Possible future project structure:
+A future production version may move toward:
 
 ```text
 OperationsFlow.Web
@@ -303,7 +242,21 @@ OperationsFlow.Shared
 OperationsFlow.Tests
 ```
 
-This structure does not exist in the current prototype unless it is added later.
+Target flow:
+
+```text
+Blazor UI
+↓
+Application Services
+↓
+Domain / Business Rules
+↓
+Infrastructure
+↓
+SQL Server / Azure SQL / PostgreSQL
+↓
+Authentication / Permissions / Integrations
+```
 
 ---
 
@@ -311,30 +264,27 @@ This structure does not exist in the current prototype unless it is added later.
 
 Future upgrades could include:
 
-- Service-layer refactor for all modules
-- Request/view models instead of editing EF entities directly in forms
-- EF Core migrations
-- SQL Server, PostgreSQL, or Azure SQL
-- Authentication
-- Role-based permissions
-- Database-driven settings
-- Per-field audit history
-- File upload and attachment handling
-- SharePoint document storage
-- Outlook email intake
-- Teams/email notifications
-- Safety/compliance notification rules
-- Training expiry notifications
-- Document review approval workflow
-- Xero/Cin7/WorkflowMax integration services
-- API layer
-- Tests
-- Production hosting/deployment pipeline
+- Service-layer refactor for all modules.
+- Request/view models instead of editing EF entities directly in forms.
+- EF Core migrations.
+- SQL Server, PostgreSQL, or Azure SQL.
+- Authentication.
+- Role-based permissions.
+- Database-driven settings.
+- Per-field audit history.
+- File upload and attachment handling.
+- SharePoint document storage.
+- Outlook email intake.
+- Teams/email notifications.
+- Microsoft Lists or API sync.
+- Power BI/Excel-ready reporting.
+- Tests.
+- Production hosting/deployment pipeline.
 
 ---
 
 ## Current Architecture Summary
 
-OperationsFlow currently proves the business workflow, safety/compliance visibility, reporting, and traceability concept with a working Blazor/SQLite prototype.
+OperationsFlow currently proves the business workflow and reporting concept with a working Blazor/SQLite prototype.
 
-It is intentionally not presented as a finished enterprise application yet. The existing architecture is suitable for a portfolio/demo prototype, and the roadmap explains how it can be improved into a more production-ready internal system.
+It is suitable as a portfolio/demo prototype and is structured around a realistic path toward a production internal business workflow system.

@@ -1,128 +1,208 @@
 # OperationsFlow
 
-**OperationsFlow v1.1 Portfolio Prototype** is a semi-live Blazor/.NET business operations prototype for tracking work orders, corrective actions, safety/compliance issues, document intake, reminders, workload, reports, CSV exports, data quality, and activity traceability.
+**OperationsFlow** is a Blazor/.NET 8 business workflow prototype for tracking operational work, corrective actions, document intake, safety/compliance review, risk, training, controlled documents, reminders, workload, reports, CSV exports, data quality, activity history, and production planning.
 
-It was built as a focused portfolio project to demonstrate practical business systems development: turning scattered admin, operations, compliance, document follow-up, risk, training, and corrective action work into one searchable workflow system.
+It was built as a focused portfolio project to demonstrate practical business systems development: turning scattered admin, operations, safety/compliance, document, and follow-up work into one connected workflow system.
 
-> **Demo status:** OperationsFlow currently uses local SQLite and seeded demo data. It demonstrates workflow behaviour, reporting, exports, activity traceability, reminders, workload visibility, data quality checks, and a safety/compliance overview. It is not yet a production deployment and does not currently include authentication, role permissions, live integrations, file storage, or production hosting.
-
----
-
-## Project Metrics
-
-Current prototype includes:
-
-- 14+ app pages/modules
-- 7 CSV export endpoints
-- 3 full create/edit workflows:
-  - Work Orders
-  - Corrective Actions
-  - Document Intake
-- 3 linked corrective action generation paths:
-  - Risk Register → Corrective Action
-  - Document Control → Corrective Action
-  - Training Compliance → Corrective Action
-- Safety Overview dashboard for OSHE/compliance review
-- Global Activity Log
-- Per-record Activity History
-- Dashboard KPIs
-- Reminder Centre
-- Workload page
-- Reports page
-- Data Quality Report
-- Admin Settings starter
-- SQLite persistence
-- Portfolio documentation package
-
----
-
-## What This Project Demonstrates
-
-OperationsFlow demonstrates my ability to:
-
-- Design practical business workflows around real operational problems.
-- Build CRUD modules using C#, Blazor, Entity Framework Core, and SQLite.
-- Create dashboard KPIs, reports, reminders, CSV exports, and workload views.
-- Track activity history globally and per record.
-- Model admin/document intake, compliance follow-up, risk, training, document review, and corrective action processes.
-- Build focused management views for safety, compliance, operations, workload, reporting, and system health.
-- Build a prototype with a clear path toward enterprise features such as authentication, permissions, integrations, database-driven settings, file handling, service-layer separation, automated tests, and production deployment.
-
----
-
-## Screenshots
-
-### Dashboard
-
-![Dashboard](Docs/Screenshots/dashboard.png)
-
-The dashboard gives a manager a quick overview of open work, overdue actions, document intake status, training compliance, risk, and recent system activity.
-
-### Safety / Compliance Overview
-
-![Safety Overview](Docs/Screenshots/safety-overview.png)
-
-Safety Overview gives a health, safety, or compliance manager a focused view of open corrective actions, overdue corrective actions, high/critical risks, expired training, document review issues, and recent compliance activity.
-
-### Document Intake
-
-![Document Intake](Docs/Screenshots/document-intake.png)
-
-Document Intake tracks incoming emails, PDFs, scanned documents, supplier documents, customer requests, internal forms, and job paperwork through review, entry, and completion.
-
-### Workload
-
-![Workload](Docs/Screenshots/workload.png)
-
-The Workload page groups assigned work by owner/person, showing open work, overdue items, high-priority items, and workload pressure.
-
-### Reports
-
-![Reports](Docs/Screenshots/reports.png)
-
-Reports provide management-level summaries across operational work, corrective actions, risk, training, document reviews, and document intake, with CSV export options for Excel, Power BI, email follow-ups, or management meetings.
-
-### Data Quality Report
-
-![Data Quality](Docs/Screenshots/data-quality.png)
-
-The Data Quality Report identifies weak or risky records, including missing owners, blank notes, overdue work, expired training, document review issues, and document intake follow-ups.
-
-### Activity Log
-
-![Activity Log](Docs/Screenshots/activity-log.png)
-
-The Activity Log provides traceability for created, updated, and reviewed records across the system.
-
-### Admin Settings
-
-![Admin Settings](Docs/Screenshots/admin-settings.png)
-
-Admin Settings is a starter configuration area showing the direction for future database-driven settings and editable option lists.
-
-### Work Order Activity History
-
-![Work Order Activity History](Docs/Screenshots/work-order-details-history.png)
-
-Per-record Activity History shows the audit trail for a single record, including creation, updates, reviews, and workflow changes.
+> **Current status:** OperationsFlow is a local portfolio prototype using SQLite and seeded demo data. It demonstrates workflow design, record editing, reporting, exports, reminders, workload visibility, activity traceability, data quality checks, reviewer guidance, production planning, testing awareness, deployment planning, and Microsoft 365 integration direction. It is not yet a production deployment and does not currently include real authentication, role permissions, hosted infrastructure, live SharePoint/Teams/Outlook integration, production file storage, or automated test coverage.
 
 ---
 
 ## Project Purpose
 
-Many small businesses manage operations through a mix of emails, spreadsheets, paper forms, PDFs, shared folders, and manual follow-ups. That can make it hard to know:
+Many small businesses manage operational follow-up through emails, spreadsheets, PDFs, paper forms, shared folders, and manual reminders.
 
-- What work is overdue.
-- Who owns each action.
-- Which corrective actions need attention.
-- Which risks are high or critical.
-- Which documents need review.
-- Which training records are expired or expiring soon.
-- Which incoming documents still need processing.
-- What needs attention today.
-- What can be exported for management reporting.
+That makes it hard to answer:
 
-OperationsFlow is a prototype showing how those workflows could be centralised into a simple internal system.
+- What needs attention today?
+- What work is overdue?
+- Who owns each action?
+- Which safety/compliance items need review?
+- Which training records are expired or due soon?
+- Which documents need review?
+- Which incoming documents still need processing?
+- What changed recently?
+- What can be exported for management review?
+- What would need to change before this became a production business system?
+
+OperationsFlow shows how those workflows could be centralised into a simple internal business system.
+
+---
+
+## What This Project Demonstrates
+
+OperationsFlow demonstrates ability to:
+
+- Design practical business workflows around real operational problems.
+- Build CRUD modules using C#, Blazor, Entity Framework Core, and SQLite.
+- Create dashboard KPIs, reports, reminders, CSV exports, workload views, and data quality checks.
+- Track activity history globally and per record.
+- Model admin/document intake, compliance follow-up, risk, training, controlled documents, and corrective actions.
+- Explain a prototype clearly for business reviewers, technical reviewers, and future production planning.
+- Separate current prototype functionality from future production requirements.
+- Plan a realistic Microsoft 365 upgrade path using SharePoint, Teams, Outlook, identity, reporting exports, and integrations.
+
+---
+
+## Current Project Metrics
+
+Current prototype includes:
+
+- Blazor/.NET 8 app
+- SQLite persistence
+- EF Core data layer
+- Seeded demo data
+- Dashboard and management overview
+- Work Orders workflow
+- Corrective Actions workflow
+- Document Intake workflow
+- Safety Overview
+- Safety Meeting Pack
+- Compliance Calendar
+- Controlled Documents
+- Risk Register
+- Training Compliance
+- Reminder Centre
+- Workload review
+- Reports page
+- CSV export endpoints
+- Data Quality page
+- Global Activity Log
+- Per-record Activity History
+- Admin Settings starter
+- Portfolio Hub
+- Reviewer Checklist
+- Demo Guide
+- Business Value page
+- Prototype Scope page
+- Implementation Plan
+- Technical Overview
+- Data Model overview
+- User Roles overview
+- Audit Overview
+- Deployment Overview
+- Testing Overview
+- Microsoft 365 / Integration Overview
+
+---
+
+## Best Review Path
+
+For someone reviewing the project without a live spoken demo, start here:
+
+1. **Portfolio Hub** — starting point for reviewers.
+2. **Reviewer Checklist** — what to click, verify, and assess.
+3. **Demo Guide** — guided walkthrough paths.
+4. **Business Value** — why the workflow matters.
+5. **Corrective Actions** — editable workflow record example.
+6. **Safety Meeting Pack** — connected compliance review page.
+7. **Workload** — owner-based management visibility.
+8. **Reports** — management summaries and export concepts.
+9. **Data Quality** — weak record and system health checks.
+10. **Technical Overview** — stack, architecture, and production direction.
+11. **Deployment Overview** — what would be needed before real rollout.
+12. **Integration Overview** — Microsoft 365 / SharePoint / Teams / Outlook direction.
+
+---
+
+## Core Features
+
+### Dashboard
+
+- KPI cards.
+- Summary panels.
+- Recent activity feed.
+- Links into main workflow modules.
+
+### Work Orders
+
+- List, search, and filter.
+- Create work order.
+- Edit work order.
+- View work order details.
+- Per-record activity history.
+- Overdue tracking.
+- Dashboard/report integration.
+- CSV export.
+
+### Corrective Actions
+
+- List, search, and filter.
+- Create corrective action.
+- Edit corrective action.
+- Owner, priority, status, due date, completed date, and notes.
+- Status guidance.
+- Completed date behaviour.
+- Activity logging.
+- Per-record activity history.
+- Corrective actions can be generated from risk, document, and training modules.
+
+### Document Intake
+
+Tracks incoming admin/document work such as:
+
+- Emails
+- PDFs
+- Scanned documents
+- Supplier documents
+- Customer requests
+- Internal forms
+- Job paperwork
+
+Fields include:
+
+- Document name
+- Received date
+- Received from
+- Source type
+- Document type
+- Assigned to
+- Target system
+- Priority
+- Status
+- Due date
+- Completed date
+- Notes
+
+Target systems are tracked as workflow metadata only. The current app does not live-integrate with those systems yet.
+
+### Compliance Modules
+
+- Safety Overview
+- Safety Meeting Pack
+- Compliance Calendar
+- Controlled Documents
+- Risk Register
+- Training Compliance
+
+Risk items, document reviews, and training issues can generate corrective actions.
+
+### Management Views
+
+- Reminder Centre
+- Workload
+- Reports
+- Data Quality
+- Activity Log
+- Admin Settings starter
+
+### Reviewer / Portfolio Pages
+
+- Portfolio Hub
+- Reviewer Checklist
+- Demo Guide
+- Business Value
+- Prototype Scope
+- Implementation Plan
+- Technical Overview
+- Data Model
+- User Roles
+- Audit Overview
+- Deployment Overview
+- Testing Overview
+- Integration Overview
+
+These pages make the project reviewable without needing a spoken demo.
 
 ---
 
@@ -162,109 +242,29 @@ Current services include:
 - `ActivityLogService`
 - `CsvExportService`
 
-The future enterprise direction is to move more business logic into services, add database-driven settings, introduce authentication/roles, support production databases, add automated tests, and integrate with business systems such as SharePoint, Outlook, Teams, Xero, Cin7, and WorkflowMax-style tools.
+Future production direction:
+
+```text
+Blazor UI
+↓
+Application Services
+↓
+Domain / Business Rules
+↓
+Infrastructure
+↓
+SQL Server / Azure SQL / PostgreSQL
+↓
+Authentication / Permissions / Integrations
+```
 
 ---
 
-## Core Features
+## CSV Exports
 
-### Dashboard
+CSV export endpoints support management review and spreadsheet workflows.
 
-- Live KPI cards.
-- Summary panels for operations, compliance, training, document intake, and recent work.
-- Recent activity feed.
-- Links into main workflow modules.
-
-### Safety Overview
-
-- Focused OSHE/compliance dashboard.
-- Open corrective action count.
-- Overdue corrective action count.
-- High/critical risk visibility.
-- Expired and expiring training visibility.
-- Overdue and due-soon document review visibility.
-- Recent safety/compliance activity.
-- Quick links into Risk Register, Corrective Actions, Training, Documents, and Activity Log.
-
-### Work Orders
-
-- List/search/filter.
-- Create work order.
-- Edit work order.
-- View work order details.
-- Per-record activity history.
-- Overdue tracking.
-- Dashboard/report integration.
-
-### Corrective Actions
-
-- List/search/filter.
-- Create corrective action.
-- Edit corrective action.
-- Completed date automation.
-- Activity logging.
-- Corrective actions can be generated from Risk Register, Document Control, and Training modules.
-
-### Document Intake
-
-Tracks incoming documents and admin processing work, including:
-
-- Emails
-- PDFs
-- Scanned documents
-- Supplier documents
-- Customer requests
-- Internal forms
-- Job paperwork
-
-Fields include:
-
-- Document name
-- Received date
-- Received from
-- Source type
-- Document type
-- Assigned to
-- Target system
-- Priority
-- Status
-- Due date
-- Completed date
-- Notes
-
-Target systems include:
-
-- SharePoint
-- Xero
-- Cin7
-- WorkflowMax
-- Email Folder
-- Internal System
-
-These target systems are tracked as workflow metadata in the current prototype. The app does not currently integrate live with those systems.
-
-### Compliance Modules
-
-- Safety Overview
-- Document Control
-- Risk Register
-- Training Compliance
-
-Risk items, document reviews, and training issues can generate corrective actions.
-
-### Management Views
-
-- Reminder Centre
-- Workload page grouped by owner/person
-- Reports page
-- Data Quality Report
-- Activity Log
-- Admin Settings starter
-- Demo Guide page, if added
-
-### CSV Exports
-
-CSV export endpoints are available for:
+Export areas include:
 
 - Work Orders
 - Corrective Actions
@@ -276,116 +276,89 @@ CSV export endpoints are available for:
 
 ---
 
-## Vanessa / OSHE Demo Path
+## Current Prototype vs Future Production Version
 
-A strong safety/compliance-focused demo path:
-
-1. Open Safety Overview and explain the attention items.
-2. Show high/critical risks and overdue risk reviews.
-3. Open Risk Register and generate a corrective action from a risk.
-4. Open Corrective Actions and show ownership, priority, due dates, and status.
-5. Open Training Compliance and show expired/expiring training records.
-6. Open Documents and show overdue/due-soon document reviews.
-7. Open Reminder Centre to show what needs attention.
-8. Open Data Quality to show system health issues before reporting.
-9. Open Reports and show CSV export options.
-10. Open Activity Log or per-record Activity History to show traceability.
-
----
-
-## General Demo Workflow
-
-A strong general demo path:
-
-1. Open the Dashboard and explain the live KPIs.
-2. Open Safety Overview and explain the compliance attention items.
-3. Open Work Orders and show list, edit, details, and activity history.
-4. Open Document Intake and create a new incoming document record.
-5. Edit the intake status to Needs Review or Completed.
-6. Show Activity Log and per-record Activity History.
-7. Open Reminder Centre to show overdue and due-soon items.
-8. Open Workload to show assigned work grouped by owner.
-9. Open Reports and show management summaries.
-10. Download a CSV export.
-11. Open Data Quality to show system health checks.
-12. Open Admin Settings to explain future configuration.
-
----
-
-## Current Prototype vs Future Enterprise Version
-
-| Area | Current Prototype | Future Enterprise Version |
+| Area | Current Prototype | Future Production Version |
 |---|---|---|
 | Database | Local SQLite | SQL Server, Azure SQL, or PostgreSQL |
-| Data | Demo seed data | Real business data with migrations/backups |
+| Data | Seeded demo data | Real business data with migrations/backups |
 | Users | Demo user text | Authentication and role-based permissions |
-| Settings | Starter Admin Settings page, some hardcoded options | Editable database-driven settings |
-| Activity | Global Activity Log and per-record Activity History | Per-field audit trail with old/new values and real user IDs |
-| Documents | Document Intake metadata/workflow tracking | File upload, storage, preview, and document security |
-| Integrations | Target systems tracked as metadata only | SharePoint, Outlook, Teams, Xero, Cin7, WorkflowMax-style integrations |
-| Reporting | App reports and CSV exports | Scheduled reports, Power BI feed, richer analytics |
+| Settings | Starter Admin Settings page | Database-driven editable settings |
+| Activity | Global Activity Log and per-record Activity History | Per-field audit trail with old/new values and authenticated user IDs |
+| Documents | Document metadata and workflow tracking | Controlled file storage, preview, document security, and review history |
+| Integrations | Target systems tracked as metadata only | SharePoint, Outlook, Teams, Microsoft Lists, Power BI/Excel exports, APIs |
+| Reporting | App reports and CSV exports | Scheduled reporting, approved KPI definitions, Power BI feed |
 | Deployment | Local development/demo app | Hosted production deployment |
-| Testing | Manual testing | Unit/integration tests and CI/CD pipeline |
+| Testing | Manual build/run/click-through testing | Unit tests, integration tests, UI regression checks, CI/CD pipeline |
+| Security | No real auth yet | Microsoft identity or another authentication provider |
 
 ---
 
 ## How To Run
 
 1. Clone the repository.
-2. Open the solution in Visual Studio.
+2. Open the solution in Visual Studio or VS Code.
 3. Restore NuGet packages if required.
 4. Run the Blazor app.
-5. If the SQLite schema changes during prototype development, delete the local database files and restart the app:
-   - `operationsflow.db`
-   - `operationsflow.db-shm`
-   - `operationsflow.db-wal`
+
+CLI option:
+
+```bash
+dotnet restore
+dotnet build
+dotnet run
+```
+
+If the SQLite schema changes during prototype development, delete local database files and restart the app:
+
+- `operationsflow.db`
+- `operationsflow.db-shm`
+- `operationsflow.db-wal`
 
 ---
 
 ## Current Prototype Limitations
 
-This is a portfolio/semi-live prototype, not a production enterprise deployment.
+This is a portfolio prototype, not a production enterprise deployment.
 
 Current limitations:
 
 - Uses local SQLite.
-- Uses demo seed data.
+- Uses seeded demo data.
 - No real authentication.
 - No role-based permissions.
 - No hosted deployment.
-- No live SharePoint/Outlook/Teams/Xero/Cin7/WorkflowMax integrations.
-- No file upload, file storage, OCR, or AI extraction.
-- Admin Settings is currently a starter/configuration direction page.
-- Some option lists are still hardcoded in forms.
-- No full service-layer refactor yet.
-- No API layer yet.
+- No live SharePoint/Teams/Outlook/Microsoft Lists/Power BI integrations.
+- No live Xero/Cin7/WorkflowMax integration.
+- No production file storage.
 - No automated test suite yet.
-- Database schema management is currently prototype-level rather than production migrations.
+- Some option lists are still hardcoded in forms.
+- Database schema management is prototype-level rather than production migration-managed.
+- CSS needs cleanup/refactor after rapid build-out.
 
 ---
 
-## Enterprise Roadmap
+## Production Upgrade Path
 
-Planned enterprise upgrades:
+Planned production upgrades:
 
+- Service-layer refactor.
 - SQL Server, PostgreSQL, or Azure SQL support.
 - EF Core migrations.
 - Authentication with Microsoft Entra ID or ASP.NET Core Identity.
 - Role-based permissions.
 - Database-driven admin settings.
-- Service-layer refactor.
-- API layer.
 - Per-field audit trail.
 - File upload/document attachment support.
 - SharePoint document library integration.
 - Outlook email intake.
 - Teams/email notifications.
-- Xero/Cin7/WorkflowMax integration layer.
-- OCR/AI-assisted document extraction.
-- Automated data validation rules.
-- Unit/integration tests.
-- CI/CD pipeline.
-- Production hosting and deployment pipeline.
+- Microsoft Lists or API integration where useful.
+- CSV/Excel/Power BI-ready reporting outputs.
+- Unit and integration tests.
+- UI regression checks.
+- Deployment pipeline.
+- Production hosting, backups, monitoring, and support process.
 
 ---
 
@@ -399,11 +372,12 @@ Planned enterprise upgrades:
 - [Known Limitations](Docs/KnownLimitations.md)
 - [Enterprise Upgrade Plan](Docs/EnterpriseUpgradePlan.md)
 - [Targeted Pitch Notes](Docs/TargetedPitches.md)
+- [Build Plan](Docs/BuildPlan.md)
 
 ---
 
 ## Portfolio Summary
 
-OperationsFlow is a practical business systems portfolio project built with C#, Blazor, EF Core, SQLite, workflow logic, reporting, exports, and traceability.
+OperationsFlow is a practical business systems portfolio project built with C#, Blazor, EF Core, SQLite, workflow logic, reporting, exports, data quality checks, and traceability.
 
-It shows that I can design and build software that businesses understand: tracking work, assigning responsibility, monitoring safety/compliance issues, reviewing documents, managing training visibility, exporting data, and planning a realistic enterprise upgrade path.
+It shows the ability to design and build software that businesses understand: tracking work, assigning responsibility, monitoring compliance, showing what needs attention, exporting data, supporting management review, and planning a realistic production upgrade path.

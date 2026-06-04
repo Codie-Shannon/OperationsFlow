@@ -1,346 +1,313 @@
-# Enterprise Upgrade Plan
+# OperationsFlow Enterprise Upgrade Plan
 
-This document explains how the current OperationsFlow portfolio prototype could evolve into a more enterprise-ready internal business system.
+## Purpose
 
-The current app is a semi-live local prototype. The steps below are future upgrades and should not be read as existing functionality unless already implemented elsewhere in the project.
+This document explains how OperationsFlow could move from the current local Blazor/SQLite portfolio prototype into a production-ready internal business workflow system.
+
+The current project already demonstrates workflow design, reporting, exports, reminders, workload visibility, data quality, activity traceability, reviewer support, and production planning. A production version would focus on security, hosting, real data, integrations, testing, monitoring, and support.
 
 ---
 
-## Phase 1 - Stabilise the Portfolio Version
+## Current Prototype State
 
-Goal: keep the current version clean, demoable, and understandable.
+Current state:
+
+- Local Blazor/.NET 8 app.
+- SQLite database.
+- Seeded demo data.
+- Manual build/run testing.
+- No real authentication.
+- No role-based permissions.
+- No live Microsoft 365 integration.
+- No production document storage.
+- No hosted deployment.
+- No automated test suite.
+
+The prototype is suitable for portfolio review and business process demonstration.
+
+---
+
+## Target Production State
+
+A production version would include:
+
+- Hosted application environment.
+- Production database.
+- Secure authentication.
+- Role-based access control.
+- Controlled document storage.
+- Notification rules.
+- Reporting/export governance.
+- Audit logging.
+- Backups and restore testing.
+- Automated tests.
+- Deployment pipeline.
+- Monitoring and support.
+
+---
+
+## Recommended Upgrade Phases
+
+### Phase 1 — Stabilise the Prototype
+
+Goal: make the current local system cleaner, easier to maintain, and safer to expand.
 
 Tasks:
 
-- Add final screenshots.
-- Keep README updated.
-- Keep case study and roadmap clear.
-- Confirm Safety Overview counts and quick links.
-- Confirm Vanessa/OSHE demo path starts with Safety Overview.
-- Confirm all CSV exports.
-- Confirm dashboard/report/reminder/workload counts.
-- Confirm activity logging.
-- Confirm data quality page.
-- Keep known limitations honest.
+- Refactor CSS into smaller files.
+- Clean repeated card/table styles.
+- Review navigation order.
+- Confirm all pages build and load.
+- Confirm all reviewer pages explain the project accurately.
+- Add a final screenshot/demo checklist.
+- Update README and docs.
+- Create release notes.
+
+Outcome:
+
+A polished portfolio/demo package ready for Vanessa, Lester, Peter, employers, and technical reviewers.
 
 ---
 
-## Phase 2 - Service Layer Refactor
+### Phase 2 — Service Layer and Data Rules
 
-Goal: reduce direct business logic in Razor pages.
+Goal: move business logic out of pages and into clearer services.
 
-Current direction already started with:
+Tasks:
 
-- `DashboardService`
-- `ActivityLogService`
-- `CsvExportService`
+- Add `WorkOrderService`.
+- Add `CorrectiveActionService`.
+- Add `DocumentIntakeService`.
+- Add `ReminderService`.
+- Add `ReportService`.
+- Add `DataQualityService`.
+- Add validation rules.
+- Add clearer save/update methods.
+- Reduce direct EF usage inside pages where practical.
 
-Future services:
+Outcome:
 
-- `WorkOrderService`
-- `CorrectiveActionService`
-- `DocumentIntakeService`
-- `SafetyOverviewService`
-- `ReportService`
-- `ReminderService`
-- `WorkloadService`
-- `SettingsService`
-- `DemoDataService`
-
-Target structure:
-
-```text
-Page
-↓
-Service
-↓
-DbContext
-```
-
-Benefits:
-
-- Easier testing.
-- Easier future API layer.
-- Cleaner pages.
-- Reusable business logic.
-- Better enterprise architecture.
-- Easier to maintain safety/compliance aggregation rules.
+The app becomes easier to test, extend, and productionise.
 
 ---
 
-## Phase 3 - Database-Driven Settings
+### Phase 3 — Production Database
 
-Goal: replace hardcoded option lists with database-managed settings.
+Goal: move from local SQLite/demo data to production-capable storage.
 
-Add a model such as:
+Options:
 
-```csharp
-public class SystemOption
-{
-    public int Id { get; set; }
-    public string GroupName { get; set; } = "";
-    public string Value { get; set; } = "";
-    public string Description { get; set; } = "";
-    public bool IsActive { get; set; } = true;
-    public int SortOrder { get; set; }
-}
-```
-
-Potential option groups:
-
-- Priority
-- WorkOrderStatus
-- CorrectiveActionStatus
-- DocumentIntakeStatus
-- TargetSystem
-- DocumentType
-- SourceType
-- Department
-- Site
-- RiskLevel
-- TrainingStatus
-- DocumentReviewStatus
-
-Admin Settings would eventually allow users to create/edit/deactivate settings.
-
----
-
-## Phase 4 - EF Core Migrations and Production Database
-
-Goal: move from prototype database handling to production-style schema management.
+- SQL Server
+- Azure SQL
+- PostgreSQL
+- Another approved hosted database
 
 Tasks:
 
 - Add EF Core migrations.
-- Stop relying on deleting local database files for schema changes.
-- Support SQL Server, PostgreSQL, or Azure SQL.
-- Add connection string configuration.
-- Add development/test/production environment settings.
+- Add environment-specific connection strings.
+- Add production seed/reference data strategy.
+- Add backup and restore procedures.
+- Add data migration approach.
+- Confirm indexes for report/search pages.
+
+Outcome:
+
+The system can store real business workflow data safely.
 
 ---
 
-## Phase 5 - Authentication and Roles
+### Phase 4 — Authentication and Roles
 
-Goal: introduce real users and permissions.
+Goal: ensure users only see and edit what they are allowed to.
 
-Possible options:
+Possible approaches:
 
+- Microsoft Entra ID
 - ASP.NET Core Identity
-- Microsoft Entra ID / Azure AD
+- Another approved identity provider
 
-Potential roles:
+Roles:
 
-- Admin
+- Administrator
 - Manager
-- Safety Manager
-- Compliance Manager
-- Supervisor
-- Worker
+- Safety / Compliance Reviewer
+- Action Owner
+- Document Processor
 - Viewer
 
-Examples:
+Tasks:
 
-- Admin can edit settings.
-- Manager can view reports.
-- Safety Manager can review corrective actions, risks, training, and document review issues.
-- Compliance Manager can review audit/activity history and export reports.
-- Supervisor can assign work.
-- Worker can update assigned tasks.
-- Viewer can read only.
+- Add sign-in.
+- Add user identity to created/updated records.
+- Add page/action permissions.
+- Restrict admin settings.
+- Restrict exports.
+- Restrict sensitive record areas.
+- Add role review documentation.
 
----
+Outcome:
 
-## Phase 6 - Improved Audit Trail
-
-Goal: expand current Activity Log into more detailed audit history.
-
-Current implemented activity logging is record-level.
-
-Future audit fields:
-
-- Record type
-- Record ID
-- Field name
-- Old value
-- New value
-- Changed by user ID
-- Changed date/time
-- Source page/action
-- Optional IP/device metadata if required
-
-This would support a stronger compliance/audit story.
-
-For safety/compliance workflows, audit history could show:
-
-- Corrective action status changes
-- Risk review changes
-- Training compliance updates
-- Document review completion
-- Owner/priority/due date changes
-- Export/report generation events, if required
+A production user model with accountability and least-privilege access.
 
 ---
 
-## Phase 7 - Safety and Compliance Workflow Upgrades
+### Phase 5 — Audit and Traceability
 
-Goal: evolve Safety Overview from a prototype dashboard into a stronger OSHE/compliance workspace.
+Goal: strengthen activity logging for production accountability.
 
-Future features:
+Current prototype:
 
-- Role-based safety/compliance views.
-- Configurable attention thresholds.
-- Automated overdue corrective action notifications.
-- Scheduled training expiry reminders.
-- Document review reminders.
-- Document review approval workflow.
-- Corrective action escalation rules.
-- Risk review scheduling.
-- Compliance calendar view.
-- Safety meeting export pack.
-- Power BI-ready reporting feed.
-- Audit-grade activity history with real user IDs.
+- Global Activity Log.
+- Per-record Activity History.
+- Created/updated/reviewed-style events.
 
-These are roadmap items only. The current prototype demonstrates the workflow direction using local SQLite/demo data.
+Production additions:
 
----
+- Authenticated user IDs.
+- Before/after values.
+- Field-level changes.
+- Export history.
+- Admin setting changes.
+- Role changes.
+- Login/security events where appropriate.
+- Retention rules.
 
-## Phase 8 - File Storage and Attachments
+Outcome:
 
-Goal: make Document Intake and Document Control handle real files.
-
-Future features:
-
-- Upload file
-- Link file to intake record
-- Link file to document review record
-- Store file metadata
-- Preview/download attachment
-- Mark attachment type
-- Track storage location
-- Document version attachment history
-
-Possible storage options:
-
-- Local storage for development
-- Azure Blob Storage
-- SharePoint document library
+Managers and auditors can see who changed what, when, and why.
 
 ---
 
-## Phase 9 - Microsoft 365 Integration
+### Phase 6 — Document and Microsoft 365 Integration
 
-Goal: connect OperationsFlow to Microsoft 365 workflows.
+Goal: connect workflow records to the business tools people already use.
 
-Possible integrations:
+Potential integrations:
 
-- Outlook email intake
-- SharePoint document libraries
-- Teams notifications
-- Microsoft Lists
-- Power BI export/feed
-- Entra ID authentication
+- SharePoint document libraries.
+- Teams notifications.
+- Outlook reminders/emails.
+- Microsoft Lists where useful.
+- Excel/Power BI-ready exports.
+- APIs for job/accounting/ERP systems.
 
-Examples:
+Recommended order:
 
-- Incoming Outlook email creates Document Intake record.
-- Uploaded file stored in SharePoint.
-- Overdue corrective action sends Teams notification.
-- Training expiring soon sends reminder.
-- Document review due soon sends reminder.
-- Reports exported to Power BI.
+1. CSV/Excel exports.
+2. SharePoint document links.
+3. Teams/Outlook notifications.
+4. Authentication/roles.
+5. API or scheduled sync.
+6. Two-way integration only after workflow rules are stable.
 
----
+Outcome:
 
-## Phase 10 - Business System Integrations
-
-Goal: connect Document Intake and workflow records to external systems.
-
-Possible systems:
-
-- Xero
-- Cin7
-- WorkflowMax-style job tracking
-- Internal business databases
-
-Possible architecture:
-
-- Integration queue
-- Export status
-- Sync status
-- Failed sync review
-- Retry mechanism
-- Manual override
+OperationsFlow becomes an internal workflow hub rather than another isolated system.
 
 ---
 
-## Phase 11 - API Layer and Testing
+### Phase 7 — Testing and Deployment
 
-Goal: prepare for production maintainability.
+Goal: make releases repeatable and safe.
 
-Add:
+Testing additions:
 
-- Web API endpoints
-- DTOs/request models
-- Validation layer
-- Unit tests
-- Integration tests
-- Safety/compliance calculation tests
-- Export tests
-- Seed/test data helpers
-- Error logging
-- CI/CD pipeline
+- Unit tests for business rules.
+- Integration tests for database reads/writes.
+- UI smoke tests for important pages.
+- Role/security tests.
+- Export tests.
+- Data quality rule tests.
+- Migration tests.
 
----
+Deployment additions:
 
-## Phase 12 - Deployment
+- Build pipeline.
+- Staging environment.
+- Production environment.
+- Release notes.
+- Rollback plan.
+- Monitoring.
+- Logging.
+- Support process.
 
-Goal: make OperationsFlow deployable.
+Outcome:
 
-Possible deployment targets:
-
-- Azure App Service
-- IIS
-- Docker
-- Internal company server
-
-Required production concerns:
-
-- Secure connection strings
-- HTTPS
-- Backup strategy
-- Error logging
-- User access management
-- Database migrations
-- Monitoring
+The system can be updated safely without breaking core workflows.
 
 ---
 
-## Enterprise Summary
+## Low-Risk First Production Pilot
 
-The current OperationsFlow prototype already demonstrates the workflow and business value.
+The safest first production pilot would be one workflow area, not the full system.
 
-The enterprise upgrade path is:
+Recommended pilot:
 
-```text
-Portfolio Prototype
-↓
-Service Layer
-↓
-Database-Driven Settings
-↓
-Production Database + Migrations
-↓
-Authentication + Roles
-↓
-Audit + Safety/Compliance Workflow
-↓
-Attachments
-↓
-Integrations
-↓
-API + Tests
-↓
-Deployment
-```
+**Safety / Compliance Follow-Up**
 
-This allows the current project to remain useful as a portfolio demo while also providing a realistic path toward a full internal business system.
+Why:
+
+- It has clear business value.
+- Records are easy to understand.
+- Corrective actions, risks, training, documents, reminders, workload, reports, and data quality all support the same review process.
+- It can be tested with a small user group before wider rollout.
+
+Pilot scope:
+
+- Corrective Actions
+- Safety Meeting Pack
+- Risk Register
+- Training Compliance
+- Controlled Documents
+- Reminder Centre
+- Workload
+- Reports
+- Data Quality
+- Activity Log
+
+Pilot users:
+
+- 1 manager
+- 1 safety/compliance reviewer
+- 1 admin/document processor
+- 2–5 action owners
+
+Pilot review cadence:
+
+- Weekly safety/compliance review.
+- Weekly workload review.
+- Monthly management report.
+
+---
+
+## Production Risks and Controls
+
+| Risk | Example Problem | Control |
+|---|---|---|
+| Data loss | Records deleted or corrupted | Backups and restore tests |
+| Bad release | Navigation, saving, or reporting breaks | Test/staging/release checks |
+| Unauthorised access | Users see records they should not see | Authentication and role permissions |
+| Notification noise | Too many reminders are sent | Confirm owner/status/due-date rules first |
+| Bad data | Missing owners or weak notes distort reports | Data quality checks and validation |
+| Failed sync | Integration silently fails | Logging, retries, and support ownership |
+| Poor adoption | Users do not trust the system | Small pilot, training, and phased rollout |
+
+---
+
+## Enterprise Upgrade Summary
+
+OperationsFlow should not jump straight from prototype to full ERP replacement.
+
+The best path is:
+
+1. Polish the prototype.
+2. Stabilise services and business rules.
+3. Move to production storage.
+4. Add authentication and roles.
+5. Strengthen audit logging.
+6. Add Microsoft 365 integrations gradually.
+7. Add tests, deployment, monitoring, and support.
+8. Pilot with one workflow before expanding.
+
+This keeps the project realistic and low-risk while preserving the value already demonstrated in the prototype.

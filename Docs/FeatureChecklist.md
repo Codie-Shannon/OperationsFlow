@@ -1,225 +1,246 @@
 # OperationsFlow Feature Checklist
 
-## Overview
+This checklist summarises the current implemented/reviewable features and the main future production upgrades.
 
-- [x] Dashboard
+---
+
+## Core App
+
+- [x] Blazor/.NET 8 application
+- [x] SQLite local database
+- [x] Entity Framework Core data access
+- [x] Seeded demo data
+- [x] Shared navigation
+- [x] Reusable page intro pattern
+- [x] Reusable card/table visual style
+- [x] Dashboard overview
+- [x] Local run/demo workflow
+- [ ] Hosted production deployment
+- [ ] Authentication
+- [ ] Role-based permissions
+- [ ] Production database
+- [ ] Automated tests
+
+---
+
+## Dashboard
+
+- [x] KPI cards
+- [x] Summary panels
+- [x] Recent activity feed
+- [x] Links to workflow modules
+- [x] Shows operations/compliance status
+- [ ] User-personalised dashboard
+- [ ] Configurable KPI definitions
+- [ ] Production analytics feed
+
+---
+
+## Work Orders
+
+- [x] Work order list
+- [x] Search/filter
+- [x] Create work order
+- [x] Edit work order
+- [x] Work order details
+- [x] Owner field
+- [x] Status field
+- [x] Priority field
+- [x] Due date tracking
+- [x] Notes
+- [x] Overdue logic
+- [x] Per-record activity history
+- [x] CSV export
+- [ ] Approval workflow
+- [ ] File attachments
+- [ ] Assignment notifications
+
+---
+
+## Corrective Actions
+
+- [x] Corrective action list
+- [x] Search/filter
+- [x] Create corrective action
+- [x] Edit corrective action
+- [x] Owner field
+- [x] Source field
+- [x] Action type field
+- [x] Priority field
+- [x] Status field
+- [x] Due date field
+- [x] Completed date field
+- [x] Notes field
+- [x] Owner guidance
+- [x] Due date guidance
+- [x] Notes guidance
+- [x] Status flow guidance
+- [x] Activity logging
+- [x] Per-record activity history
+- [x] CSV export
+- [x] Corrective action creation from risk records
+- [x] Corrective action creation from document review records
+- [x] Corrective action creation from training records
+- [ ] Approval/sign-off workflow
+- [ ] File/evidence attachments
+- [ ] Escalation notifications
+
+---
+
+## Document Intake
+
+- [x] Document intake list
+- [x] Search/filter
+- [x] Create document intake item
+- [x] Edit document intake item
+- [x] Document name
+- [x] Received date
+- [x] Received from
+- [x] Source type
+- [x] Document type
+- [x] Assigned to
+- [x] Target system
+- [x] Priority
+- [x] Status
+- [x] Due date
+- [x] Completed date
+- [x] Notes
+- [x] Activity logging
+- [x] CSV export
+- [x] Appears in workload/reminders/reports/data quality
+- [ ] Email inbox integration
+- [ ] OCR/metadata extraction
+- [ ] SharePoint file routing
+- [ ] Approval/rejection workflow
+
+---
+
+## Safety / Compliance
+
 - [x] Safety Overview
-- [x] Recent Activity
-- [x] SQLite persistence
-- [x] Seed/demo data
-- [x] Grouped navigation
-- [x] Portfolio documentation
-- [ ] Demo video
+- [x] Safety Meeting Pack
+- [x] Compliance Calendar
+- [x] Controlled Documents
+- [x] Risk Register
+- [x] Training Compliance
+- [x] High/critical risk visibility
+- [x] Expired training visibility
+- [x] Due-soon training visibility
+- [x] Document review visibility
+- [x] Corrective action generation from compliance records
+- [x] Meeting-ready attention items
+- [ ] Formal review sign-off
+- [ ] Compliance evidence attachments
+- [ ] Scheduled meeting pack export
 
 ---
 
-## Operations
+## Management Views
 
-### Work Orders
-
-- [x] Work Orders list
-- [x] Search/filter
-- [x] Create Work Order
-- [x] Edit Work Order
-- [x] Work Order details page
-- [x] Return-to-details edit flow
-- [x] Overdue tracking
-- [x] Per-record Activity History
-- [x] Dashboard integration
-- [x] Reports integration
-- [x] CSV export
-
-### Corrective Actions
-
-- [x] Corrective Actions list
-- [x] Search/filter
-- [x] Create Corrective Action
-- [x] Edit Corrective Action
-- [x] Completed date automation
-- [x] Activity logging
-- [x] Per-record Activity History
-- [x] Reports integration
-- [x] CSV export
+- [x] Reminder Centre
+- [x] Workload page
+- [x] Reports page
+- [x] Data Quality page
+- [x] Activity Log
+- [x] Owner pressure visibility
+- [x] Overdue visibility
+- [x] Management summary tables
+- [x] CSV export links
+- [x] Weak record checks
+- [ ] Scheduled email reports
+- [ ] Power BI feed
+- [ ] Configurable reporting periods
 
 ---
 
-## Compliance
-
-### Safety Overview
-
-- [x] Focused safety/compliance dashboard
-- [x] Attention Items total
-- [x] Open Corrective Actions count
-- [x] Overdue Corrective Actions count
-- [x] High/Critical Risks visibility
-- [x] Expired Training visibility
-- [x] Training Expiring Soon visibility
-- [x] Document Reviews visibility
-- [x] Documents Due Soon visibility
-- [x] Recent Safety/Compliance Activity
-- [x] Critical/High Risks section
-- [x] Overdue Corrective Actions section
-- [x] Expired/Expiring Training section
-- [x] Document Review Issues section
-- [x] Quick links into Risk Register, Corrective Actions, Training, Documents, and Activity Log
-- [x] Sidebar navigation under Compliance
-- [x] README screenshot support through `Docs/Screenshots/safety-overview.png`
-
-### Document Control
-
-- [x] Document list
-- [x] Search/filter
-- [x] Due soon / overdue review flags
-- [x] Create Corrective Action from document review
-- [x] Reports integration
-- [x] CSV export
-
-### Risk Register
-
-- [x] Risk list
-- [x] Search/filter
-- [x] Risk score/level display
-- [x] Review overdue flags
-- [x] Create Corrective Action from risk item
-- [x] Reports integration
-- [x] CSV export
-
-### Training Compliance
-
-- [x] Training list
-- [x] Search/filter
-- [x] Expired / expiring soon flags
-- [x] Create Corrective Action from training issue
-- [x] Reports integration
-- [x] CSV export
-
----
-
-## Admin Workflow
-
-### Document Intake
-
-- [x] Document Intake list
-- [x] Search/filter
-- [x] Create Intake Record
-- [x] Edit Intake Record
-- [x] Status workflow
-- [x] Target system tracking
-- [x] Completed date automation
-- [x] Activity logging
-- [x] Per-record Activity History
-- [x] Dashboard integration
-- [x] Reminder Centre integration
-- [x] Workload integration
-- [x] Reports integration
-- [x] Data Quality integration
-- [x] CSV export
-
----
-
-## Management
-
-### Reminder Centre
-
-- [x] Overdue Work Orders
-- [x] Overdue Corrective Actions
-- [x] Document Review reminders
-- [x] Training reminders
-- [x] Document Intake follow-ups
-
-### Workload
-
-- [x] Group work by owner/person
-- [x] Work Orders included
-- [x] Corrective Actions included
-- [x] Document Intake included
-- [x] Overdue count
-- [x] High priority count
-- [x] Pressure level
-
-### Reports
-
-- [x] Work Orders by Status
-- [x] Corrective Actions by Priority
-- [x] Risks by Level
-- [x] Training by Department
-- [x] Overdue Items by Owner
-- [x] Document Review Report
-- [x] Document Intake by Status
-- [x] Document Intake by Target System
-- [x] Document Intake Attention Report
-- [x] CSV export options
-
-### Data Quality
-
-- [x] Missing owners
-- [x] Blank notes
-- [x] Overdue work
-- [x] Expired training
-- [x] Document review issues
-- [x] Risk register issues
-- [x] Completed records missing completed dates
-- [x] Document Intake review issues
-
----
-
-## System
-
-### Activity Log
+## Activity / Audit
 
 - [x] Global Activity Log
-- [x] Created events
-- [x] Updated events
-- [x] Reviewed events
-- [x] Dashboard Recent Activity
-- [x] Safety Overview Recent Compliance Activity, where relevant
+- [x] Dashboard recent activity
 - [x] Per-record Activity History
-
-### Admin Settings
-
-- [x] Admin Settings starter page
-- [x] Sites overview
-- [x] Departments overview
-- [x] Target Systems overview
-- [x] Priority Levels overview
-- [x] Workflow Status overview
-- [ ] Database-driven settings
-- [ ] Editable settings
-
----
-
-## Vanessa / OSHE Demo Readiness
-
-- [x] Safety Overview available as the first OSHE demo page
-- [x] Corrective Actions visible as safety/process improvement work
-- [x] Risk Register supports high/critical risk follow-up
-- [x] Training Compliance supports expired/expiring training visibility
-- [x] Document Control supports overdue/due-soon review visibility
-- [x] Corrective Actions can be generated from Risk, Document, and Training modules
-- [x] Reminder Centre shows overdue/due-soon follow-up items
-- [x] Workload shows ownership pressure
-- [x] Reports provide management summaries
-- [x] CSV exports support Excel/Power BI-style workflows
-- [x] Activity Log supports record-level traceability
-- [x] Data Quality highlights weak or risky records before reporting
+- [x] Created/updated/reviewed-style records
+- [x] Module name
+- [x] Record reference
+- [x] Created by display text
+- [x] Created date
+- [ ] Authenticated user ID
+- [ ] Field-level before/after values
+- [ ] Immutable audit events
+- [ ] Export history
+- [ ] Admin/security change tracking
 
 ---
 
-## Enterprise Roadmap
+## CSV Exports
 
-- [ ] EF Core migrations
-- [ ] SQL Server/PostgreSQL/Azure SQL
-- [ ] Authentication
-- [ ] Roles and permissions
-- [ ] Service-layer refactor
-- [ ] File uploads/attachments
-- [ ] SharePoint integration
-- [ ] Outlook intake
-- [ ] Teams/email notifications
-- [ ] Safety/compliance notification rules
-- [ ] Training expiry reminders
-- [ ] Document review approval workflow
-- [ ] Xero/Cin7/WorkflowMax integration
-- [ ] API layer
-- [ ] Automated tests
-- [ ] Production deployment
+- [x] Work Orders export
+- [x] Corrective Actions export
+- [x] Risk Register export
+- [x] Training export
+- [x] Document Reviews export
+- [x] Activity Log export
+- [x] Document Intake export
+- [ ] Export permissions
+- [ ] Scheduled exports
+- [ ] Approved KPI/report definitions
+- [ ] Power BI-ready model/feed
+
+---
+
+## Reviewer / Portfolio Pages
+
+- [x] Portfolio Hub
+- [x] Reviewer Checklist
+- [x] Demo Guide
+- [x] Business Value
+- [x] Prototype Scope
+- [x] Implementation Plan
+- [x] Technical Overview
+- [x] Data Model
+- [x] User Roles
+- [x] Audit Overview
+- [x] Deployment Overview
+- [x] Testing Overview
+- [x] Integration Overview
+- [ ] Final release notes page
+- [ ] Screenshot checklist page/file
+
+---
+
+## Production Planning Pages
+
+- [x] Prototype boundaries explained
+- [x] Production upgrade path explained
+- [x] User roles explained
+- [x] Audit requirements explained
+- [x] Deployment requirements explained
+- [x] Testing requirements explained
+- [x] Microsoft 365 integration path explained
+- [ ] Production architecture implemented
+- [ ] Production permissions implemented
+- [ ] Production integrations implemented
+
+---
+
+## Documentation
+
+- [x] README
+- [x] Case Study
+- [x] Architecture
+- [x] Demo Walkthrough
+- [x] Feature Checklist
+- [x] Known Limitations
+- [x] Enterprise Upgrade Plan
+- [x] Targeted Pitches
+- [x] Technical Decisions
+- [x] Build Plan
+- [ ] Final screenshot pack
+- [ ] Release notes
+
+---
+
+## Current Overall State
+
+OperationsFlow is currently a strong local portfolio prototype that demonstrates business workflow thinking, .NET/Blazor development, CRUD workflows, reporting, exports, data quality, activity traceability, reviewer guidance, and production planning.
+
+It is not yet a production deployment, but it has a clear path toward one.

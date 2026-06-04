@@ -1,350 +1,311 @@
-# Technical Decisions
+# OperationsFlow Technical Decisions
 
-This document explains key technical and product decisions in the current OperationsFlow prototype.
-
----
-
-## Why Blazor?
-
-Blazor was chosen because the project is intended to demonstrate C#/.NET business system development.
-
-Benefits for this prototype:
-
-- C# can be used across the UI and backend logic.
-- Razor components support fast module/page creation.
-- It fits internal business application scenarios.
-- It pairs well with Entity Framework Core.
-- It is relevant to .NET business systems and application support roles.
+This document records key technical decisions made for OperationsFlow and why they were appropriate for the current prototype stage.
 
 ---
 
-## Why SQLite?
+## Project Type
 
-SQLite was chosen for the current prototype because:
+### Decision
 
-- It is lightweight.
-- It works locally without server setup.
-- It supports real persistence.
-- It is simple for portfolio/demo use.
-- It allows create/edit/report/export workflows to behave semi-live.
+Build OperationsFlow as a Blazor/.NET 8 web application.
 
-Current limitation:
+### Reason
 
-SQLite is suitable for this prototype, but a production version would likely use SQL Server, PostgreSQL, or Azure SQL.
+Blazor and .NET are suitable for internal business systems because they support:
 
----
+- C# application logic.
+- Component-based UI.
+- Strong data modelling.
+- Entity Framework Core.
+- Future authentication/roles.
+- Future deployment to internal/cloud hosting.
 
-## Why Entity Framework Core?
+### Trade-off
 
-Entity Framework Core was used because:
-
-- It is standard in many .NET business apps.
-- It provides clean data access for C# models.
-- It works with SQLite for local demo development.
-- It can later support migrations and production database providers.
-
-Current limitation:
-
-The prototype uses early-stage schema handling. A production version would use proper EF Core migrations.
+Blazor is more structured than a quick static HTML prototype, but it better demonstrates real business application development.
 
 ---
 
-## Why Safety Overview?
+## Database
 
-Safety Overview was added because the Vanessa/OSHE demo needed a focused compliance starting point.
+### Decision
 
-The existing app already tracked relevant records across:
+Use SQLite for the current prototype.
 
-- Corrective Actions
-- Risk Register
-- Training Compliance
-- Document Control
-- Activity Log
+### Reason
 
-Instead of creating a separate safety system, Safety Overview aggregates those existing records into one management view.
+SQLite is simple for local portfolio development:
 
-It answers:
+- No database server required.
+- Easy to run locally.
+- Works well with EF Core.
+- Good enough to demonstrate persistence, CRUD, reports, and exports.
 
-```text
-What safety/compliance items need attention right now?
-```
+### Trade-off
 
-Current implemented Safety Overview areas include:
-
-- Attention Items total
-- Open Corrective Actions
-- Overdue Corrective Actions
-- High/Critical Risks
-- Expired Training
-- Training Expiring Soon
-- Document Reviews
-- Documents Due Soon
-- Recent Safety/Compliance Activity
-- Quick links into the relevant compliance modules
-
-This was added as a focused dashboard rather than a separate data module. That keeps the prototype simple while demonstrating how operational records can be reused for OSHE/compliance review.
-
-Current limitation:
-
-Safety Overview currently uses local SQLite/demo data. It does not yet include configurable compliance rules, role-based views, automated notifications, or production audit controls.
-
-Future upgrade:
-
-- `SafetyOverviewService`
-- Configurable attention thresholds
-- Role-based compliance views
-- Automated overdue corrective action notifications
-- Training expiry notifications
-- Document review reminders
-- Power BI-ready compliance reporting
-- Audit-grade user history
+SQLite is not the final production target. A production version would move to SQL Server, Azure SQL, PostgreSQL, or another hosted database.
 
 ---
 
-## Why Activity Log?
+## Entity Framework Core
 
-Activity Log was added to show traceability.
+### Decision
 
-Current implemented activity features:
+Use EF Core for data access and persistence.
 
-- Global Activity Log
-- Dashboard Recent Activity
-- Safety Overview Recent Compliance Activity, where relevant
-- Per-record Activity History
-- Created/Updated/Reviewed style events
+### Reason
 
-Current limitation:
+EF Core provides:
 
-The current Activity Log is record-level traceability, not a full per-field enterprise audit trail.
+- Model-backed records.
+- Querying.
+- Relationship handling.
+- Future migration path.
+- Production database portability.
 
-Future enterprise upgrade:
+### Trade-off
 
-- Field name
-- Old value
-- New value
-- User ID
-- Timestamp
-- Source module/page
+Some pages currently interact with EF models more directly than a fully layered production system should. Future production work should move more logic into services.
 
 ---
 
-## Why CSV Export?
+## Seeded Demo Data
 
-CSV export was added because many businesses still rely on Excel, email, and reporting files.
+### Decision
 
-Current implemented exports include:
+Use seeded demo records.
 
-- Work Orders
-- Corrective Actions
-- Risk Register
-- Training
-- Document Reviews
-- Activity Log
-- Document Intake
+### Reason
 
-Benefits:
+The project needed realistic examples for review without using private business data.
 
-- Simple management reporting.
-- Excel-friendly output.
-- Power BI-friendly direction.
-- Practical business workflow credibility.
-- Useful safety/compliance export path for corrective actions, risks, training, and document reviews.
+Seeded data allows reviewers to see:
 
----
+- Overdue records.
+- High-priority work.
+- Expired training.
+- Document review issues.
+- Risk items.
+- Corrective actions.
+- Document intake examples.
+- Activity history.
 
-## Why Document Intake?
+### Trade-off
 
-Document Intake was added because many businesses process incoming admin documents through emails, PDFs, scans, supplier documents, and job paperwork.
-
-Current implemented Document Intake features:
-
-- List/search/filter
-- Create/edit
-- Source type
-- Document type
-- Assigned person
-- Target system
-- Priority
-- Status
-- Due date
-- Completed date
-- Activity logging
-- Reports/export/reminder/workload integration
-
-Current limitation:
-
-Document Intake currently tracks metadata and workflow status. It does not yet upload, store, OCR, or automatically read actual files.
-
-Future upgrade:
-
-- File uploads
-- SharePoint document library connection
-- Outlook email intake
-- OCR/AI extraction
-- Attachment preview/download
+Seeded data is not the same as live data. Production would require real records, data import, validation, and backups.
 
 ---
 
-## Why Reminder Centre?
+## CRUD Workflows
 
-Reminder Centre was added because business systems need a daily focus view.
+### Decision
 
-It answers:
+Build full create/edit workflows for key modules rather than only static dashboards.
 
-```text
-What needs attention today?
-```
+### Reason
 
-Current implemented reminder areas:
+This demonstrates that OperationsFlow is more than a visual mockup.
 
-- Overdue Work Orders
-- Overdue Corrective Actions
-- Document Reviews
-- Training Compliance
-- Document Intake Follow-ups
-
-For Vanessa/OSHE demos, Reminder Centre supports Safety Overview by showing the daily follow-up list after the high-level safety/compliance snapshot.
-
----
-
-## Why Workload Page?
-
-Workload was added to show management visibility.
-
-It answers:
-
-```text
-Who has what assigned?
-Who has overdue work?
-Who has high-priority work?
-```
-
-Current implemented workload inputs:
+Implemented create/edit workflows include:
 
 - Work Orders
 - Corrective Actions
 - Document Intake
 
-For safety/compliance work, this helps show that corrective actions need ownership, not just status tracking.
+### Trade-off
+
+Building actual workflows takes longer than a static UI, but it better proves practical application development capability.
 
 ---
 
-## Why Data Quality Report?
+## Activity Logging
 
-Data Quality was added to demonstrate business analyst/system health thinking.
+### Decision
 
-It checks for issues such as:
+Add global Activity Log and per-record Activity History.
 
-- Missing owners
-- Blank notes
-- Overdue items
-- Expired training
-- High/critical risks
-- Document review issues
-- Completed records missing completed dates
-- Document Intake records needing review
+### Reason
 
-This shows that the app is not only storing data, but also helping identify weak or risky records.
+Business workflow systems need traceability. Activity logging helps show:
 
-For Vanessa/OSHE demos, Data Quality supports compliance confidence by highlighting records that should be cleaned up before management reporting.
+- What changed.
+- When it changed.
+- Which module/record changed.
+- Whether workflow progress is visible.
 
----
+### Trade-off
 
-## Why Admin Settings Starter?
-
-Admin Settings was added to show configuration direction.
-
-Current state:
-
-- Settings overview page
-- Sites
-- Departments
-- Target systems
-- Priority levels
-- Workflow status groups
-
-Current limitation:
-
-Some form dropdowns are still hardcoded. Admin Settings is not fully database-driven yet.
-
-Future upgrade:
-
-- `SystemOption` database table
-- Editable settings UI
-- Active/inactive settings
-- Sort orders
-- Forms pulling dropdown values from the database
-- Configurable compliance thresholds/statuses
+Current activity logging is prototype-level. Production audit logging would need authenticated users, field-level before/after values, immutable events, and retention rules.
 
 ---
 
-## Why Not Authentication Yet?
+## CSV Export
 
-Authentication was not included in the current prototype to keep the scope controlled.
+### Decision
 
-Current goal:
+Add CSV export endpoints.
 
-- Demonstrate workflows.
-- Demonstrate safety/compliance visibility.
-- Demonstrate reporting.
-- Demonstrate data persistence.
-- Demonstrate traceability.
-- Demonstrate enterprise direction.
+### Reason
 
-Future production upgrade:
+Small businesses often use Excel, email, or management reports even when they have internal systems.
 
-- ASP.NET Core Identity or Microsoft Entra ID
-- Roles and permissions
-- User-specific workload
-- Real `CreatedBy` values
-- Audit trail tied to authenticated users
-- Safety/compliance manager views
+CSV exports demonstrate:
 
----
+- Reporting usefulness.
+- External review capability.
+- Spreadsheet compatibility.
+- Power BI/Excel-ready direction.
 
-## Why Not Real Integrations Yet?
+### Trade-off
 
-Real integrations were intentionally kept out of the current prototype.
-
-Not currently implemented:
-
-- SharePoint integration
-- Outlook email intake
-- Teams notifications
-- Xero integration
-- Cin7 integration
-- WorkflowMax integration
-
-Current prototype value:
-
-- Demonstrates the workflow structure.
-- Tracks target systems as metadata.
-- Shows where integrations would connect later.
-- Shows how safety/compliance records could be reported and exported before full integration work.
-
-Future upgrade:
-
-Create integration services such as:
-
-- `IEmailIntakeService`
-- `ISharePointDocumentService`
-- `INotificationService`
-- `IAccountingExportService`
-- `IInventoryExportService`
-- `IComplianceNotificationService`
+CSV exports are not a full reporting platform. Production reporting would need approved KPI definitions, scheduled exports, permissions, and possibly Power BI integration.
 
 ---
 
-## Summary
+## Reviewer Pages Inside the App
 
-The current technical decisions prioritise:
+### Decision
 
-- Rapid portfolio proof.
-- Practical business workflow demonstration.
-- Safety/compliance visibility.
-- Real local persistence.
-- Traceability.
-- Reporting/export capability.
-- Clear enterprise upgrade path.
+Add pages such as Portfolio Hub, Reviewer Checklist, Demo Guide, Business Value, Prototype Scope, Technical Overview, Deployment Overview, Testing Overview, and Integration Overview.
 
-The current app is not presented as production-ready, but it is intentionally structured as a strong base for a future internal business system.
+### Reason
+
+The project needs to be understandable without a long spoken explanation.
+
+These pages help reviewers understand:
+
+- What the project is.
+- What it proves.
+- What to click.
+- What is prototype-only.
+- What production upgrades would be needed.
+- How it maps to business value and Microsoft 365 workflows.
+
+### Trade-off
+
+These pages are not normal end-user ERP screens, but they are valuable for portfolio review and handover.
+
+---
+
+## Microsoft 365 Integration Planning
+
+### Decision
+
+Document Microsoft 365 integration as a future path rather than implementing live integration immediately.
+
+### Reason
+
+The current project should prove workflow first. Live integration should come after:
+
+- Workflow rules are stable.
+- Ownership/status/due-date logic is confirmed.
+- Security requirements are defined.
+- Source of truth is agreed.
+
+### Future Direction
+
+Potential integration targets:
+
+- SharePoint document libraries.
+- Teams notifications.
+- Outlook reminders.
+- Microsoft Lists.
+- Excel/Power BI-ready exports.
+- Microsoft Entra ID authentication.
+
+---
+
+## Testing Strategy
+
+### Decision
+
+Use manual testing for the current prototype and document the production testing path.
+
+### Reason
+
+The project is still moving quickly and is currently portfolio-focused.
+
+Current testing:
+
+- Build test.
+- Run test.
+- Navigation click-through.
+- Create/edit workflow checks.
+- Report/data quality review.
+- Visual review.
+
+Future testing:
+
+- Unit tests.
+- Integration tests.
+- UI smoke tests.
+- Role/security tests.
+- Export tests.
+- Migration tests.
+- Deployment tests.
+
+---
+
+## CSS Strategy
+
+### Decision
+
+Use one main CSS file during rapid build-out.
+
+### Reason
+
+This allowed faster iteration while building many modules and reviewer pages.
+
+### Trade-off
+
+The CSS file is now large and should be refactored.
+
+Future cleanup:
+
+- Split shared styles from page-specific styles.
+- Consolidate repeated card/table/badge classes.
+- Create design tokens.
+- Remove unused duplicate styles.
+- Review responsive behaviour.
+
+---
+
+## Production Boundary
+
+### Decision
+
+Clearly state that OperationsFlow is not production-ready yet.
+
+### Reason
+
+This keeps the project honest and credible.
+
+Current prototype proves:
+
+- Workflow model.
+- UI structure.
+- Data model.
+- Reporting concept.
+- Traceability concept.
+- Data quality concept.
+- Production upgrade plan.
+
+Production still needs:
+
+- Authentication.
+- Roles.
+- Hosted database.
+- Backups.
+- Monitoring.
+- Automated tests.
+- Deployment pipeline.
+- Live integrations.
+
+---
+
+## Technical Summary
+
+OperationsFlow was built with practical prototype decisions: Blazor for UI, EF Core for persistence, SQLite for local demo data, seeded records for realistic review, activity logging for traceability, CSV exports for management/reporting workflows, and reviewer pages for clear portfolio communication.
+
+The technical direction is realistic for a future production internal business system.
