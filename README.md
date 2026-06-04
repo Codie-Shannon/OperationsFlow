@@ -29,6 +29,38 @@ OperationsFlow shows how those workflows could be centralised into a simple inte
 
 ---
 
+## Screenshots
+
+OperationsFlow includes a **36-image screenshot review pack** covering the main workflow, safety/compliance pages, admin workflow, reviewer pages, technical review pages, and production planning pages.
+
+See the full [Screenshot Checklist](Docs/ScreenshotChecklist.md) for the complete screenshot list and what each image proves.
+
+### Portfolio Hub
+
+![Portfolio Hub](Docs/Screenshots/01-portfolio-hub.png)
+
+### Corrective Actions
+
+![Corrective Actions List](Docs/Screenshots/10-corrective-actions-list.png)
+
+### Corrective Action Edit / Activity History
+
+![Corrective Action Edit Activity History](Docs/Screenshots/12-corrective-action-edit-activity-history.png)
+
+### Safety Meeting Pack
+
+![Safety Meeting Pack](Docs/Screenshots/14-safety-meeting-pack.png)
+
+### Workload
+
+![Workload](Docs/Screenshots/23-workload.png)
+
+### Data Quality
+
+![Data Quality](Docs/Screenshots/25-data-quality.png)
+
+---
+
 ## What This Project Demonstrates
 
 OperationsFlow demonstrates ability to:
@@ -83,6 +115,7 @@ Current prototype includes:
 - Deployment Overview
 - Testing Overview
 - Microsoft 365 / Integration Overview
+- 36-image screenshot review package
 
 ---
 
@@ -134,7 +167,7 @@ For someone reviewing the project without a live spoken demo, start here:
 - Status guidance.
 - Completed date behaviour.
 - Activity logging.
-- Per-record activity history.
+- Per-record activity history shown on the edit/review page.
 - Corrective actions can be generated from risk, document, and training modules.
 
 ### Document Intake
@@ -369,6 +402,7 @@ Planned production upgrades:
 - [Technical Decisions](Docs/TechnicalDecisions.md)
 - [Demo Walkthrough](Docs/DemoWalkthrough.md)
 - [Feature Checklist](Docs/FeatureChecklist.md)
+- [Screenshot Checklist](Docs/ScreenshotChecklist.md)
 - [Known Limitations](Docs/KnownLimitations.md)
 - [Enterprise Upgrade Plan](Docs/EnterpriseUpgradePlan.md)
 - [Targeted Pitch Notes](Docs/TargetedPitches.md)
