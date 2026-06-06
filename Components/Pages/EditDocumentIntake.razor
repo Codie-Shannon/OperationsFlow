@@ -1,24 +1,26 @@
 ﻿@page "/document-intake/edit/{Id:int}"
+
 @using Microsoft.AspNetCore.Components
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
+@using OperationsFlow.Models
 @using OperationsFlow.Services
 @using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
+
 @inject OperationsFlowDbContext Db
 @inject ActivityLogService ActivityLogService
 @inject NavigationManager Navigation
 
 <PageTitle>Edit Document Intake - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page">
-
+<div class="page-shell module-page document-intake-edit-page">
     <section class="module-header">
         <div>
             <p class="eyebrow dark">Admin Workflow</p>
             <h1>Edit Document Intake</h1>
             <p>
-                Update document intake status, assigned person, target system,
-                due date, completion state, and processing notes.
+                Update document intake status, assigned person, target system, due date,
+                completion state, and processing notes.
             </p>
         </div>
 
@@ -30,148 +32,218 @@
 
     @if (isLoading)
     {
-        <section class="form-card">
-            <div class="empty-state">Loading document intake...</div>
+        <section class="table-card">
+            <p>Loading document intake...</p>
         </section>
     }
     else if (documentIntake == null)
     {
-        <section class="alert-card danger-alert">
-            Document intake record could not be found.
-        </section>
+        <section class="table-card">
+            <h2>Document intake record could not be found.</h2>
 
-        <div class="form-actions">
-            <button type="button" class="secondary-button" @onclick="BackToReturnPage">
+            <button class="btn btn-secondary" type="button" @onclick="BackToReturnPage">
                 Back
             </button>
-        </div>
+        </section>
     }
     else
     {
         @if (!string.IsNullOrWhiteSpace(errorMessage))
         {
-            <section class="alert-card danger-alert">
-                @errorMessage
-            </section>
+            <div class="alert alert-danger">@errorMessage</div>
         }
 
-        <section class="form-card">
-            <EditForm Model="documentIntake" OnValidSubmit="SaveDocumentIntake">
-                <DataAnnotationsValidator />
-
-                <div class="form-grid">
-
-                    <div class="form-field form-field-full">
-                        <label>Document Name</label>
-                        <InputText class="form-input" @bind-Value="documentIntake.DocumentName" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Received Date</label>
-                        <InputDate class="form-input" @bind-Value="documentIntake.ReceivedDate" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Received From</label>
-                        <InputText class="form-input" @bind-Value="documentIntake.ReceivedFrom" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Source Type</label>
-                        <InputSelect class="form-input" @bind-Value="documentIntake.SourceType">
-                            @foreach (var sourceType in SourceTypeOptions)
-                            {
-                                <option value="@sourceType">@sourceType</option>
-                            }
-                        </InputSelect>
-                    </div>
-
-                    <div class="form-field">
-                        <label>Document Type</label>
-                        <InputSelect class="form-input" @bind-Value="documentIntake.DocumentType">
-                            @foreach (var documentType in DocumentTypeOptions)
-                            {
-                                <option value="@documentType">@documentType</option>
-                            }
-                        </InputSelect>
-                    </div>
-
-                    <div class="form-field">
-                        <label>Assigned To</label>
-                        <InputText class="form-input" @bind-Value="documentIntake.AssignedTo" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Target System</label>
-                        <InputSelect class="form-input" @bind-Value="documentIntake.TargetSystem">
-                            @foreach (var targetSystem in TargetSystemOptions)
-                            {
-                                <option value="@targetSystem">@targetSystem</option>
-                            }
-                        </InputSelect>
-                    </div>
-
-                    <div class="form-field">
-                        <label>Priority</label>
-                        <InputSelect class="form-input" @bind-Value="documentIntake.Priority">
-                            @foreach (var priority in PriorityOptions)
-                            {
-                                <option value="@priority">@priority</option>
-                            }
-                        </InputSelect>
-                    </div>
-
-                    <div class="form-field">
-                        <label>Status</label>
-                        <InputSelect class="form-input" @bind-Value="documentIntake.Status">
-                            @foreach (var status in StatusOptions)
-                            {
-                                <option value="@status">@status</option>
-                            }
-                        </InputSelect>
-
-                        <StatusFlowGuide Title="Document intake status flow"
-                                         Description="Use statuses to show where the document is in the admin processing workflow."
-                                         Steps="DocumentIntakeStatusSteps" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Due Date</label>
-                        <InputDate class="form-input" @bind-Value="documentIntake.DueDate" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Completed Date</label>
-                        <InputDate class="form-input" @bind-Value="documentIntake.CompletedDate" />
-                    </div>
-
-                    <div class="form-field form-field-full">
-                        <label>Notes</label>
-                        <InputTextArea class="form-input form-textarea" @bind-Value="documentIntake.Notes" />
-                        <FollowUpNoteGuide Title="Document intake note guidance"
-                                           Description="Good intake notes should explain where the document came from, what processing step is next, and why the current status was chosen."
-                                           Items="DocumentIntakeNoteGuideItems" />
-                    </div>
-
+        <section class="table-card document-intake-edit-card">
+            <div class="form-grid">
+                <div class="form-field full-width">
+                    <label>Document Name</label>
+                    <input class="form-control" @bind="documentIntake.DocumentName" />
                 </div>
 
-                <div class="form-actions">
-                    <button type="button" class="secondary-button" @onclick="BackToReturnPage">
-                        Cancel
-                    </button>
-
-                    <button type="submit" class="primary-button">
-                        Save Changes
-                    </button>
+                <div class="form-field">
+                    <label>Received Date</label>
+                    <input class="form-control" type="date" @bind="documentIntake.ReceivedDate" />
                 </div>
-            </EditForm>
+
+                <div class="form-field">
+                    <label>Received From</label>
+                    <input class="form-control" @bind="documentIntake.ReceivedFrom" />
+                </div>
+
+                <div class="form-field">
+                    <label>Source Type</label>
+                    <select class="form-select" @bind="documentIntake.SourceType">
+                        @foreach (var sourceType in SourceTypeOptions)
+                        {
+                            <option value="@sourceType">@sourceType</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label>Document Type</label>
+                    <select class="form-select" @bind="documentIntake.DocumentType">
+                        @foreach (var documentType in DocumentTypeOptions)
+                        {
+                            <option value="@documentType">@documentType</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label>Assigned To</label>
+                    <input class="form-control" @bind="documentIntake.AssignedTo" />
+
+                    <FormFieldGuide Title="Assigned person guidance"
+                                    Text="Assign one person who owns the next processing step so workload, reminders, reports, and data quality checks stay clear." />
+                </div>
+
+                <div class="form-field">
+                    <label>Target System</label>
+                    <select class="form-select" @bind="documentIntake.TargetSystem">
+                        @foreach (var targetSystem in TargetSystemOptions)
+                        {
+                            <option value="@targetSystem">@targetSystem</option>
+                        }
+                    </select>
+
+                    <FormFieldGuide Title="Target system guidance"
+                                    Text="Use the target system to show where the document or data should end up, such as SharePoint, Xero, Cin7, WorkflowMax, an email folder, or another internal system." />
+                </div>
+
+                <div class="form-field">
+                    <label>Priority</label>
+                    <select class="form-select" @bind="documentIntake.Priority">
+                        @foreach (var priority in PriorityOptions)
+                        {
+                            <option value="@priority">@priority</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label>Status</label>
+                    <select class="form-select" @bind="documentIntake.Status">
+                        @foreach (var status in StatusOptions)
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <StatusFlowGuide Title="Document intake status flow"
+                             Description="Use statuses consistently so incoming documents move from received work to reviewed, entered, completed, or rejected."
+                             Steps="DocumentIntakeStatusSteps" />
+
+            <div class="form-grid form-grid-spaced">
+                <div class="form-field">
+                    <label>Due Date</label>
+                    <input class="form-control" type="date" @bind="documentIntake.DueDate" />
+
+                    <FormFieldGuide Title="Due date guidance"
+                                    Text="Use the next realistic processing or review date. Overdue intake records appear in reminders, workload, reports, and data quality." />
+                </div>
+
+                <div class="form-field">
+                    <label>Completed Date</label>
+                    <input class="form-control" type="date" @bind="documentIntake.CompletedDate" />
+
+                    <FormFieldGuide Title="Completed date guidance"
+                                    Text="Completed or rejected records should have a completed date so reporting can separate finished work from active follow-up." />
+                </div>
+
+                <div class="form-field full-width">
+                    <label>Notes</label>
+                    <textarea class="form-control" rows="8" @bind="documentIntake.Notes"></textarea>
+
+                    <div class="guidance-card">
+                        <div>
+                            <strong>Document intake note guidance</strong>
+                            <p>
+                                Good document intake notes should explain the current processing state,
+                                not just repeat the document name.
+                            </p>
+
+                            <ul>
+                                @foreach (var item in DocumentIntakeNoteGuideItems)
+                                {
+                                    <li>@item</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="activity-history-panel">
+                <div class="section-heading-row">
+                    <div>
+                        <h2>Activity History</h2>
+                        <p>
+                            Record-level traceability for this document intake item. This helps reviewers see when
+                            the item was created, updated, reviewed, completed, rejected, or reassigned.
+                        </p>
+                    </div>
+
+                    <div class="activity-count-card">
+                        <span>Events</span>
+                        <strong>@activityHistory.Count</strong>
+                    </div>
+                </div>
+
+                @if (activityHistory.Count == 0)
+                {
+                    <div class="empty-state">
+                        <strong>No activity history yet.</strong>
+                        <p>
+                            Save this document intake record to create a reviewed or updated activity event.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="data-table activity-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                    <th>Description</th>
+                                    <th>Created By</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var activity in activityHistory)
+                                {
+                                    <tr>
+                                        <td>@activity.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
+                                        <td>
+                                            <span class="@GetActivityBadgeClass(activity.ActionType)">
+                                                @activity.ActionType
+                                            </span>
+                                        </td>
+                                        <td>@activity.Description</td>
+                                        <td>@activity.CreatedBy</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </section>
+
+            <div class="form-actions">
+                <button class="btn btn-secondary" type="button" @onclick="BackToReturnPage">
+                    Cancel
+                </button>
+
+                <button class="btn btn-primary" type="button" @onclick="SaveDocumentIntake">
+                    Save Changes
+                </button>
+            </div>
         </section>
-
-        <ActivityHistoryPanel ModuleName="Document Intake"
-                              RecordId="@documentIntake.Id"
-                              Title="Document Intake Activity History" />
     }
-
 </div>
 
 @code {
@@ -182,6 +254,8 @@
     public string? ReturnUrl { get; set; }
 
     private DocumentIntakeModel? documentIntake;
+    private List<ActivityLog> activityHistory = new();
+
     private bool isLoading = true;
     private string errorMessage = "";
 
@@ -248,6 +322,26 @@
         "Rejected"
     };
 
+    private static readonly IReadOnlyList<string> DocumentIntakeNoteGuideItems = new[]
+    {
+        "Where did the document come from?",
+        "What target system or folder does it belong in?",
+        "What has already been checked or entered?",
+        "What is still blocking completion?",
+        "If completed or rejected, what confirms the outcome?"
+    };
+
+    private static readonly IReadOnlyList<StatusFlowGuide.StatusFlowStep> DocumentIntakeStatusSteps = new[]
+    {
+        new StatusFlowGuide.StatusFlowStep("Received", "Document has arrived but has not yet been saved or reviewed.", "badge badge-muted"),
+        new StatusFlowGuide.StatusFlowStep("Saved", "Document has been stored in the correct location.", "badge badge-info"),
+        new StatusFlowGuide.StatusFlowStep("Needs Review", "Manual check is required before processing can continue.", "badge badge-warning"),
+        new StatusFlowGuide.StatusFlowStep("Data Checked", "Key information has been checked before entry.", "badge badge-info"),
+        new StatusFlowGuide.StatusFlowStep("Entered", "Data has been entered into the target system.", "badge badge-info"),
+        new StatusFlowGuide.StatusFlowStep("Completed", "Processing is finished and should have a completed date.", "badge badge-success"),
+        new StatusFlowGuide.StatusFlowStep("Rejected", "Document will not be processed and should have a completed date/reason.", "badge badge-danger")
+    };
+
     protected override async Task OnInitializedAsync()
     {
         documentIntake = await Db.DocumentIntakeItems
@@ -262,6 +356,8 @@
             originalPriority = documentIntake.Priority;
             originalDueDate = documentIntake.DueDate;
             originalCompletedDate = documentIntake.CompletedDate;
+
+            await LoadActivityHistory();
         }
 
         isLoading = false;
@@ -336,7 +432,27 @@
             );
         }
 
+        UpdateOriginalValues();
+        await LoadActivityHistory();
+
         BackToReturnPage();
+    }
+
+    private async Task LoadActivityHistory()
+    {
+        if (documentIntake == null)
+        {
+            activityHistory = new List<ActivityLog>();
+            return;
+        }
+
+        activityHistory = await Db.ActivityLogs
+            .AsNoTracking()
+            .Where(x =>
+                x.ModuleName == "Document Intake" &&
+                x.RecordId == documentIntake.Id)
+            .OrderByDescending(x => x.CreatedDate)
+            .ToListAsync();
     }
 
     private List<string> BuildChangeDescriptions()
@@ -394,6 +510,22 @@
         return changes;
     }
 
+    private void UpdateOriginalValues()
+    {
+        if (documentIntake == null)
+        {
+            return;
+        }
+
+        originalDocumentName = documentIntake.DocumentName;
+        originalAssignedTo = documentIntake.AssignedTo;
+        originalTargetSystem = documentIntake.TargetSystem;
+        originalStatus = documentIntake.Status;
+        originalPriority = documentIntake.Priority;
+        originalDueDate = documentIntake.DueDate;
+        originalCompletedDate = documentIntake.CompletedDate;
+    }
+
     private void BackToReturnPage()
     {
         var fallbackUrl = "/document-intake";
@@ -419,23 +551,18 @@
             || string.Equals(status, "Rejected", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static readonly IReadOnlyList<string> DocumentIntakeNoteGuideItems = new[]
+    private static string GetActivityBadgeClass(string? actionType)
     {
-        "Where did the document come from?",
-        "What target system or folder does it belong in?",
-        "What has already been checked or entered?",
-        "What is still blocking completion?",
-        "If completed or rejected, what confirms the outcome?"
-    };
-
-    private static readonly IReadOnlyList<StatusFlowGuide.StatusFlowStep> DocumentIntakeStatusSteps = new[]
-    {
-        new StatusFlowGuide.StatusFlowStep("Received", "Document has arrived but has not yet been saved or reviewed.", "badge badge-muted"),
-        new StatusFlowGuide.StatusFlowStep("Saved", "Document has been stored in the correct location.", "badge badge-info"),
-        new StatusFlowGuide.StatusFlowStep("Needs Review", "Manual check is required before processing can continue.", "badge badge-warning"),
-        new StatusFlowGuide.StatusFlowStep("Data Checked", "Key information has been checked before entry.", "badge badge-info"),
-        new StatusFlowGuide.StatusFlowStep("Entered", "Data has been entered into the target system.", "badge badge-info"),
-        new StatusFlowGuide.StatusFlowStep("Completed", "Processing is finished and should have a completed date.", "badge badge-success"),
-        new StatusFlowGuide.StatusFlowStep("Rejected", "Document will not be processed and should have a completed date/reason.", "badge badge-danger")
-    };
+        return actionType?.ToLowerInvariant() switch
+        {
+            "created" => "badge badge-success",
+            "updated" => "badge badge-info",
+            "reviewed" => "badge badge-secondary",
+            "completed" => "badge badge-success",
+            "closed" => "badge badge-success",
+            "rejected" => "badge badge-danger",
+            "deleted" => "badge badge-danger",
+            _ => "badge badge-secondary"
+        };
+    }
 }
