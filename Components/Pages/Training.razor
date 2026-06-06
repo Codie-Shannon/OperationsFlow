@@ -1,129 +1,110 @@
 ﻿@page "/training"
-
+@page "/training-compliance"
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
-
 @inject OperationsFlowDbContext Db
 
 <PageTitle>Training Compliance - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page training-page">
-    <section class="module-header">
-        <div>
-            <p class="eyebrow dark">Compliance</p>
-            <h1>Training Compliance</h1>
-            <p>
-                Track staff training records, required training, expiry dates, expired training,
-                upcoming renewals, and corrective action follow-up.
-            </p>
-        </div>
+<PageHero Eyebrow="Compliance"
+          Title="Training Compliance"
+          Subtitle="Track staff training records, required training, expiry dates, expired training, upcoming renewals, and corrective action follow-up."
+          BadgeText="@($"{ComplianceRate:0.0}% compliant")"
+          BadgeClass="@ComplianceBadgeClass">
+    <Actions>
+        <a class="of-btn of-btn-primary" href="/corrective-actions/create">+ New Corrective Action</a>
+        <a class="of-btn of-btn-secondary" href="/corrective-actions">Corrective Actions</a>
+        <a class="of-btn of-btn-secondary" href="/reminders">Reminders</a>
+        <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
+    </Actions>
+</PageHero>
 
-        <div class="module-header-stat">
-            <span>Compliance Rate</span>
-            <strong>@ComplianceRate.ToString("0.0")%</strong>
-        </div>
-    </section>
+<PurposeNote Title="Purpose" Icon="🎓">
+    <p>
+        Use this page to review training compliance and turn expired or expiring training records into owned corrective actions.
+        Training actions are pre-filled with source context so the follow-up remains traceable through action ownership,
+        reminders, reporting, and activity evidence.
+    </p>
+</PurposeNote>
 
-    <section class="page-purpose-note">
-        <strong>Purpose:</strong> use this page to review training compliance and turn expired or expiring
-        training records into owned corrective actions. Training actions are pre-filled with source context
-        so the follow-up remains traceable.
-    </section>
+<MetricGrid>
+    <MetricCard Title="Total Records"
+                Value="@TotalCount.ToString()"
+                Detail="All staff training records"
+                Icon="📋" />
 
-    <section class="module-summary-grid">
-        <article class="module-summary-card info-card">
-            <span>Total Records</span>
-            <strong>@TotalCount</strong>
-            <small>All staff training records</small>
-        </article>
+    <MetricCard Title="Expired"
+                Value="@ExpiredCount.ToString()"
+                Detail="Training currently expired"
+                Icon="🚨"
+                Tone="danger" />
 
-        <article class="module-summary-card danger-card">
-            <span>Expired</span>
-            <strong>@ExpiredCount</strong>
-            <small>Training currently expired</small>
-        </article>
+    <MetricCard Title="Expiring Soon"
+                Value="@ExpiringSoonCount.ToString()"
+                Detail="Needs renewal soon"
+                Icon="📅"
+                Tone="warning" />
 
-        <article class="module-summary-card warning-card">
-            <span>Expiring Soon</span>
-            <strong>@ExpiringSoonCount</strong>
-            <small>Needs renewal soon</small>
-        </article>
+    <MetricCard Title="Required Current"
+                Value="@RequiredCurrentCount.ToString()"
+                Detail="Required records still compliant"
+                Icon="✅"
+                Tone="success" />
 
-        <article class="module-summary-card success-card">
-            <span>Required Current</span>
-            <strong>@RequiredCurrentCount</strong>
-            <small>Required records still compliant</small>
-        </article>
+    <MetricCard Title="Actionable"
+                Value="@ActionableTrainingCount.ToString()"
+                Detail="Expired or expiring records"
+                Icon="🔗"
+                Tone="info" />
+</MetricGrid>
 
-        <article class="module-summary-card">
-            <span>Actionable</span>
-            <strong>@ActionableTrainingCount</strong>
-            <small>Expired or expiring required records</small>
-        </article>
-    </section>
+<InfoPanel Title="Training Follow-Up Focus" Subtitle="Recommended review order for training compliance.">
+    <ChildContent>
+        <ol class="of-review-steps">
+            <li>Review expired required training first.</li>
+            <li>Check training expiring within the next 30 days.</li>
+            <li>Create corrective actions for training that needs booking, renewal, or confirmation.</li>
+            <li>Confirm owner, priority, due date, and source context before saving the corrective action.</li>
+            <li>Use Workload, Reminders, Reports, Data Quality, and Activity Log to track follow-up.</li>
+        </ol>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Training Follow-Up Focus</h2>
-                    <p>Recommended review order for training compliance.</p>
-                </div>
+<InfoPanel Title="Training → Corrective Action Link" Subtitle="What the Create Action button does.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Source</strong>
+                <span>The corrective action source is set to Training Compliance.</span>
             </div>
 
-            <ol class="review-list">
-                <li>Review expired required training first.</li>
-                <li>Check training expiring within the next 30 days.</li>
-                <li>Create corrective actions for training that needs booking, renewal, or confirmation.</li>
-                <li>Confirm owner, priority, due date, and source context before saving the corrective action.</li>
-                <li>Use Workload, Reminders, Reports, Data Quality, and Activity Log to track follow-up.</li>
-            </ol>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Training → Corrective Action Link</h2>
-                    <p>What the Action button does.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Context</strong>
+                <span>Staff, training name, status, dates, required flag, and notes are copied into the action.</span>
             </div>
 
-            <div class="review-note-grid">
-                <div class="review-note-card">
-                    <span>SOURCE</span>
-                    <strong>Training Compliance</strong>
-                    <p>The corrective action source is set to Training Compliance.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Return</strong>
+                <span>After saving, the workflow returns back to Training.</span>
+            </div>
 
-                <div class="review-note-card">
-                    <span>CONTEXT</span>
-                    <strong>Training details included</strong>
-                    <p>Staff, training name, status, dates, required flag, and notes are copied into the action.</p>
-                </div>
-
-                <div class="review-note-card">
-                    <span>RETURN</span>
-                    <strong>Back to Training</strong>
-                    <p>After saving, the workflow returns to this page.</p>
-                </div>
-
-                <div class="review-note-card">
-                    <span>TRACEABILITY</span>
-                    <strong>Activity logged</strong>
-                    <p>The created corrective action is logged as source-linked follow-up work.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Traceability</strong>
+                <span>The created corrective action is logged as source-linked follow-up work.</span>
             </div>
         </div>
-    </section>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="module-toolbar">
-        <input class="search-input"
-               placeholder="Search staff, training, site, department, status, or notes..."
+<FilterBar Title="Filter Training Compliance">
+    <ChildContent>
+        <input class="of-input"
+               placeholder="Search training..."
                @bind="searchText"
                @bind:event="oninput" />
 
-        <select class="filter-select" @bind="statusFilter">
+        <select class="of-select" @bind="statusFilter">
             <option value="">All Statuses</option>
             @foreach (var status in StatusOptions)
             {
@@ -131,7 +112,7 @@
             }
         </select>
 
-        <select class="filter-select" @bind="departmentFilter">
+        <select class="of-select" @bind="departmentFilter">
             <option value="">All Departments</option>
             @foreach (var department in DepartmentOptions)
             {
@@ -139,200 +120,174 @@
             }
         </select>
 
-        <select class="filter-select" @bind="requirementFilter">
+        <select class="of-select" @bind="requirementFilter">
             <option value="">All Records</option>
             <option value="Required">Required Only</option>
             <option value="Optional">Optional Only</option>
         </select>
-    </section>
+    </ChildContent>
 
-    <section class="table-card">
-        <div class="table-card-header">
-            <div>
-                <h2>Training Records</h2>
-                <p>Showing @FilteredTrainingRecords.Count() of @TotalCount training record(s).</p>
-            </div>
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/data-quality">Data Quality</a>
+        <a class="of-btn of-btn-secondary" href="/activity-log">Activity Log</a>
+    </Actions>
+</FilterBar>
 
-            <div class="activity-count-card">
-                <span>Actionable</span>
-                <strong>@FilteredTrainingRecords.Count(IsActionableTraining)</strong>
-            </div>
-        </div>
+@if (trainingRecords == null)
+{
+    <InfoPanel Title="Loading Training Records" Subtitle="Loading training records from the local SQLite database.">
+        <p class="of-muted-text">Loading training records...</p>
+    </InfoPanel>
+}
+else
+{
+    <TableCard Title="Training Records"
+               Subtitle="@($"Showing {FilteredTrainingRecords.Count()} of {TotalCount} training record(s). {FilteredTrainingRecords.Count(IsActionableTraining)} are currently actionable.")"
+               IsEmpty="@(!FilteredTrainingRecords.Any())"
+               EmptyTitle="No training records found"
+               EmptyMessage="No training records match the current search or filter selection.">
+        <table>
+            <thead>
+                <tr>
+                    <th>Staff</th>
+                    <th>Training</th>
+                    <th>Site</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Completed</th>
+                    <th>Expiry</th>
+                    <th>Required</th>
+                    <th>Flag</th>
+                    <th>Follow-Up</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in FilteredTrainingRecords)
+                {
+                    <tr>
+                        <td><strong>@item.StaffName</strong></td>
+                        <td>@item.TrainingName</td>
+                        <td>@item.Site</td>
+                        <td>@item.Department</td>
+                        <td>
+                            <span class="@GetStatusClass(item.Status)">
+                                @DisplayText(item.Status)
+                            </span>
+                        </td>
+                        <td>@item.CompletedDate.ToString("dd MMM yyyy")</td>
+                        <td>@item.ExpiryDate.ToString("dd MMM yyyy")</td>
+                        <td>
+                            @if (item.IsRequired)
+                            {
+                                <span class="of-badge of-badge-info">Required</span>
+                            }
+                            else
+                            {
+                                <span class="of-badge">Optional</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.IsExpired)
+                            {
+                                <span class="of-badge of-badge-danger">Expired</span>
+                            }
+                            else if (item.IsExpiringSoon)
+                            {
+                                <span class="of-badge of-badge-warning">Expiring Soon</span>
+                            }
+                            else
+                            {
+                                <span class="of-badge of-badge-success">Current</span>
+                            }
+                        </td>
+                        <td>
+                            <a class="of-card-link" href="@BuildCorrectiveActionUrlFromTraining(item)">Create Action</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </TableCard>
+}
 
-        @if (trainingRecords == null)
+<InfoPanel Title="Priority Training Follow-Ups"
+           Subtitle="Expired or expiring training records that should be checked first.">
+    <ChildContent>
+        @if (!PriorityTrainingRecords.Any())
         {
-            <div class="empty-state">Loading training records...</div>
-        }
-        else if (!FilteredTrainingRecords.Any())
-        {
-            <div class="empty-state">
-                <strong>No training records match the current filters.</strong>
-                <p>Clear the search or filters to show more training compliance records.</p>
-            </div>
+            <EmptyState Title="No priority training follow-ups"
+                        Message="There are currently no expired or expiring-soon training flags."
+                        Icon="✅" />
         }
         else
         {
-            <div class="table-responsive">
-                <table class="data-table training-table">
-                    <thead>
-                        <tr>
-                            <th>Staff</th>
-                            <th>Training</th>
-                            <th>Site</th>
-                            <th>Department</th>
-                            <th>Status</th>
-                            <th>Completed</th>
-                            <th>Expiry</th>
-                            <th>Required</th>
-                            <th>Flag</th>
-                            <th>Follow-Up</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in FilteredTrainingRecords)
-                        {
-                            <tr>
-                                <td class="strong-cell">@item.StaffName</td>
-                                <td>@item.TrainingName</td>
-                                <td>@item.Site</td>
-                                <td>@item.Department</td>
-                                <td>
-                                    <span class="@GetStatusClass(item.Status)">
-                                        @item.Status
-                                    </span>
-                                </td>
-                                <td>@item.CompletedDate.ToString("dd MMM yyyy")</td>
-                                <td>@item.ExpiryDate.ToString("dd MMM yyyy")</td>
-                                <td>
-                                    @if (item.IsRequired)
-                                    {
-                                        <span class="badge badge-info">Required</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge badge-muted">Optional</span>
-                                    }
-                                </td>
-                                <td>
-                                    @if (item.IsExpired)
-                                    {
-                                        <span class="badge badge-danger">Expired</span>
-                                    }
-                                    else if (item.IsExpiringSoon)
-                                    {
-                                        <span class="badge badge-warning">Expiring Soon</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge badge-success">Current</span>
-                                    }
-                                </td>
-                                <td>
-                                    <a class="btn btn-small btn-primary" href="@BuildCorrectiveActionUrlFromTraining(item)">
-                                        Create Action
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+            <div class="of-review-proof-grid">
+                @foreach (var item in PriorityTrainingRecords.Take(6))
+                {
+                    <div class="of-review-proof-card">
+                        <strong>@item.StaffName — @item.TrainingName</strong>
+                        <span>@item.Department • @item.Site</span>
+                        <span>Status @DisplayText(item.Status) • Expires @item.ExpiryDate.ToString("dd MMM yyyy")</span>
+
+                        <div class="of-link-row">
+                            @if (item.IsExpired)
+                            {
+                                <span class="of-badge of-badge-danger">Expired</span>
+                            }
+                            else
+                            {
+                                <span class="of-badge of-badge-warning">Expiring Soon</span>
+                            }
+
+                            @if (item.IsRequired)
+                            {
+                                <span class="of-badge of-badge-info">Required</span>
+                            }
+
+                            <a class="of-card-link" href="@BuildCorrectiveActionUrlFromTraining(item)">Create Action</a>
+                        </div>
+                    </div>
+                }
             </div>
         }
-    </section>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Priority Training Follow-Ups</h2>
-                    <p>Expired or expiring training records that should be checked first.</p>
-                </div>
-
-                <span class="badge badge-warning">@PriorityTrainingRecords.Count items</span>
+<InfoPanel Title="Training Compliance Notes" Subtitle="How training records should be reviewed.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Required</strong>
+                <span>Required expired records should be actioned before optional training.</span>
             </div>
 
-            @if (!PriorityTrainingRecords.Any())
-            {
-                <div class="empty-state">
-                    <strong>No priority training follow-ups.</strong>
-                    <p>There are currently no expired or expiring-soon training flags.</p>
-                </div>
-            }
-            else
-            {
-                <div class="issue-card-list">
-                    @foreach (var item in PriorityTrainingRecords.Take(6))
-                    {
-                        <article class="issue-card">
-                            <div>
-                                <strong>@item.StaffName — @item.TrainingName</strong>
-                                <p>@item.Department • @item.Site</p>
-                                <small>
-                                    Status @item.Status • Expires @item.ExpiryDate.ToString("dd MMM yyyy")
-                                </small>
-                            </div>
-
-                            <div class="issue-card-actions">
-                                @if (item.IsExpired)
-                                {
-                                    <span class="badge badge-danger">Expired</span>
-                                }
-                                else
-                                {
-                                    <span class="badge badge-warning">Expiring Soon</span>
-                                }
-
-                                @if (item.IsRequired)
-                                {
-                                    <span class="badge badge-info">Required</span>
-                                }
-
-                                <a class="btn btn-small btn-primary" href="@BuildCorrectiveActionUrlFromTraining(item)">
-                                    Create Action
-                                </a>
-                            </div>
-                        </article>
-                    }
-                </div>
-            }
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Training Compliance Notes</h2>
-                    <p>How training records should be reviewed.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Owner</strong>
+                <span>The staff member is used as the default corrective action owner for follow-up visibility.</span>
             </div>
 
-            <div class="review-note-grid">
-                <div class="review-note-card">
-                    <span>REQUIRED</span>
-                    <strong>Prioritise required records</strong>
-                    <p>Required expired records should be actioned before optional training.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Due Date</strong>
+                <span>Expired and expiring records appear in Reminders and Data Quality.</span>
+            </div>
 
-                <div class="review-note-card">
-                    <span>OWNER</span>
-                    <strong>Staff member is owner</strong>
-                    <p>Corrective actions assign the staff member by default for follow-up visibility.</p>
-                </div>
-
-                <div class="review-note-card">
-                    <span>DUE DATE</span>
-                    <strong>Expiry drives reminder</strong>
-                    <p>Expired and expiring records appear in Reminders and Data Quality.</p>
-                </div>
-
-                <div class="review-note-card">
-                    <span>PRODUCTION GAP</span>
-                    <strong>Training provider link</strong>
-                    <p>A production version could store certificates, provider details, and renewal bookings.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Production Gap</strong>
+                <span>A production version could store certificates, provider details, and renewal bookings.</span>
             </div>
         </div>
-    </section>
-</div>
+    </ChildContent>
+</InfoPanel>
+
+<GuidanceNote Title="Review Notes" Icon="💡" Tone="info">
+    <ul>
+        <li>Expired required training should be reviewed first.</li>
+        <li>Create Action links should open a pre-filled corrective action with source set to Training Compliance.</li>
+        <li>Training context should be copied into the corrective action notes for traceability.</li>
+        <li>Follow-up corrective actions should then appear in Corrective Actions, Workload, Reminders, Reports, and Activity Log.</li>
+        <li>This is local SQLite demo data; provider/certificate storage is a later implementation stage.</li>
+    </ul>
+</GuidanceNote>
 
 @code {
     private List<TrainingRecord>? trainingRecords;
@@ -366,14 +321,12 @@
 
             if (!string.IsNullOrWhiteSpace(statusFilter))
             {
-                query = query.Where(x =>
-                    string.Equals(x.Status, statusFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x => string.Equals(x.Status, statusFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(departmentFilter))
             {
-                query = query.Where(x =>
-                    string.Equals(x.Department, departmentFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x => string.Equals(x.Department, departmentFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             if (requirementFilter == "Required")
@@ -388,6 +341,7 @@
             return query
                 .OrderByDescending(x => x.IsExpired)
                 .ThenByDescending(x => x.IsExpiringSoon)
+                .ThenByDescending(x => x.IsRequired)
                 .ThenBy(x => x.ExpiryDate)
                 .ThenBy(x => x.StaffName)
                 .ToList();
@@ -395,16 +349,10 @@
     }
 
     private int TotalCount => trainingRecords?.Count ?? 0;
-
     private int ExpiredCount => trainingRecords?.Count(x => x.IsExpired) ?? 0;
-
     private int ExpiringSoonCount => trainingRecords?.Count(x => x.IsExpiringSoon) ?? 0;
-
-    private int RequiredCurrentCount =>
-        trainingRecords?.Count(x => x.IsRequired && !x.IsExpired) ?? 0;
-
-    private int ActionableTrainingCount =>
-        trainingRecords?.Count(IsActionableTraining) ?? 0;
+    private int RequiredCurrentCount => trainingRecords?.Count(x => x.IsRequired && !x.IsExpired) ?? 0;
+    private int ActionableTrainingCount => trainingRecords?.Count(IsActionableTraining) ?? 0;
 
     private decimal ComplianceRate
     {
@@ -415,9 +363,7 @@
                 return 0;
             }
 
-            var required = trainingRecords
-                .Where(x => x.IsRequired)
-                .ToList();
+            var required = trainingRecords.Where(x => x.IsRequired).ToList();
 
             if (!required.Any())
             {
@@ -428,6 +374,11 @@
             return (decimal)compliant / required.Count * 100;
         }
     }
+
+    private string ComplianceBadgeClass =>
+        ComplianceRate >= 90 ? "of-badge-success" :
+        ComplianceRate >= 75 ? "of-badge-warning" :
+        "of-badge-danger";
 
     private List<TrainingRecord> PriorityTrainingRecords =>
         trainingRecords?
@@ -463,41 +414,35 @@
 
     private static string BuildCorrectiveActionUrlFromTraining(TrainingRecord item)
     {
-        var priority = item.IsExpired
-            ? "High"
-            : item.IsExpiringSoon
-                ? "Medium"
-                : "Low";
-
+        var priority = item.IsExpired ? "High" : item.IsExpiringSoon ? "Medium" : "Low";
         var title = $"Resolve training issue: {item.StaffName} - {item.TrainingName}";
 
-        var notes =
-            "Created from Training Compliance issue." + Environment.NewLine +
-            "Confirm retraining requirement, assign follow-up owner, and update compliance status." + Environment.NewLine +
-            Environment.NewLine +
-            $"Staff: {item.StaffName}" + Environment.NewLine +
-            $"Training: {item.TrainingName}" + Environment.NewLine +
-            $"Site: {item.Site}" + Environment.NewLine +
-            $"Department: {item.Department}" + Environment.NewLine +
-            $"Status: {item.Status}" + Environment.NewLine +
-            $"Completed Date: {item.CompletedDate:dd MMM yyyy}" + Environment.NewLine +
-            $"Expiry Date: {item.ExpiryDate:dd MMM yyyy}" + Environment.NewLine +
-            $"Required: {(item.IsRequired ? "Yes" : "No")}" + Environment.NewLine +
-            $"Notes: {DisplayText(item.Notes)}" + Environment.NewLine +
-            $"Training Flag: {(item.IsExpired ? "Expired" : item.IsExpiringSoon ? "Expiring soon" : "Current")}" + Environment.NewLine +
-            Environment.NewLine +
-            "Suggested follow-up: confirm retraining is required, book or assign the training action, then update the training record once compliance is restored.";
+        var notes = "Created from Training Compliance issue."
+            + Environment.NewLine + "Confirm retraining requirement, assign follow-up owner, and update compliance status."
+            + Environment.NewLine
+            + Environment.NewLine + $"Staff: {item.StaffName}"
+            + Environment.NewLine + $"Training: {item.TrainingName}"
+            + Environment.NewLine + $"Site: {item.Site}"
+            + Environment.NewLine + $"Department: {item.Department}"
+            + Environment.NewLine + $"Status: {item.Status}"
+            + Environment.NewLine + $"Completed Date: {item.CompletedDate:dd MMM yyyy}"
+            + Environment.NewLine + $"Expiry Date: {item.ExpiryDate:dd MMM yyyy}"
+            + Environment.NewLine + $"Required: {(item.IsRequired ? "Yes" : "No")}"
+            + Environment.NewLine + $"Notes: {DisplayText(item.Notes)}"
+            + Environment.NewLine + $"Training Flag: {(item.IsExpired ? "Expired" : item.IsExpiringSoon ? "Expiring soon" : "Current")}"
+            + Environment.NewLine
+            + Environment.NewLine + "Suggested follow-up: confirm retraining is required, book or assign the training action, then update the training record once compliance is restored.";
 
-        return "/corrective-actions/create" +
-            $"?source={Uri.EscapeDataString("Training Compliance")}" +
-            $"&title={Uri.EscapeDataString(title)}" +
-            $"&site={Uri.EscapeDataString(item.Site)}" +
-            $"&department={Uri.EscapeDataString(item.Department)}" +
-            $"&owner={Uri.EscapeDataString(item.StaffName)}" +
-            $"&priority={Uri.EscapeDataString(priority)}" +
-            $"&actionType={Uri.EscapeDataString("Training")}" +
-            $"&notes={Uri.EscapeDataString(notes)}" +
-            $"&returnUrl={Uri.EscapeDataString("/training")}";
+        return "/corrective-actions/create"
+            + $"?source={Uri.EscapeDataString("Training Compliance")}"
+            + $"&title={Uri.EscapeDataString(title)}"
+            + $"&site={Uri.EscapeDataString(item.Site)}"
+            + $"&department={Uri.EscapeDataString(item.Department)}"
+            + $"&owner={Uri.EscapeDataString(item.StaffName)}"
+            + $"&priority={Uri.EscapeDataString(priority)}"
+            + $"&actionType={Uri.EscapeDataString("Training")}"
+            + $"&notes={Uri.EscapeDataString(notes)}"
+            + $"&returnUrl={Uri.EscapeDataString("/training")}";
     }
 
     private static bool IsActionableTraining(TrainingRecord item)
@@ -507,12 +452,8 @@
 
     private static bool Contains(string? source, string search)
     {
-        if (string.IsNullOrWhiteSpace(source))
-        {
-            return false;
-        }
-
-        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+        return !string.IsNullOrWhiteSpace(source) &&
+               source.Contains(search, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string DisplayText(string? value)

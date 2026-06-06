@@ -227,7 +227,9 @@
     [SupplyParameterFromQuery(Name = "department")] public string? QueryDepartment { get; set; }
     [SupplyParameterFromQuery(Name = "owner")] public string? QueryOwner { get; set; }
     [SupplyParameterFromQuery(Name = "priority")] public string? QueryPriority { get; set; }
+    [SupplyParameterFromQuery(Name = "actionType")] public string? QueryActionType { get; set; }
     [SupplyParameterFromQuery(Name = "notes")] public string? QueryNotes { get; set; }
+    [SupplyParameterFromQuery(Name = "returnUrl")] public string? ReturnUrl { get; set; }
 
     private CorrectiveAction correctiveAction = new();
     private string errorMessage = "";
@@ -239,10 +241,15 @@
         "Audit",
         "Inspection",
         "Risk Register",
+        "Risk Review",
         "Training",
+        "Training Compliance",
         "Document Control",
         "Work Order",
         "Management Review",
+        "Quality Review",
+        "Hazard Report",
+        "Internal Audit",
         "Improvement"
     };
 
@@ -310,7 +317,7 @@
             Site = NormalizeOption(QuerySite, SiteOptions, "Main Workshop"),
             Department = NormalizeOption(QueryDepartment, DepartmentOptions, "Operations"),
             Owner = QueryOwner ?? "",
-            ActionType = "Corrective Action",
+            ActionType = NormalizeOption(QueryActionType, ActionTypeOptions, "Corrective Action"),
             Priority = NormalizeOption(QueryPriority, PriorityOptions, "Medium"),
             Status = "Open",
             DueDate = DateTime.Today.AddDays(7),
@@ -366,7 +373,7 @@
             actionType: "Created",
             description: BuildCreatedDescription());
 
-        Navigation.NavigateTo("/corrective-actions");
+        Navigation.NavigateTo(GetSafeReturnUrl());
     }
 
     private string BuildCreatedDescription()
@@ -387,7 +394,22 @@
 
     private void Cancel()
     {
-        Navigation.NavigateTo("/corrective-actions");
+        Navigation.NavigateTo(GetSafeReturnUrl());
+    }
+
+    private string GetSafeReturnUrl()
+    {
+        if (string.IsNullOrWhiteSpace(ReturnUrl))
+        {
+            return "/corrective-actions";
+        }
+
+        if (!ReturnUrl.StartsWith("/"))
+        {
+            return "/corrective-actions";
+        }
+
+        return ReturnUrl;
     }
 
     private static string NormalizeOption(string? value, List<string> options, string fallback)
@@ -398,6 +420,7 @@
         }
 
         var match = options.FirstOrDefault(x => string.Equals(x, value, StringComparison.OrdinalIgnoreCase));
+
         return match ?? value;
     }
 
