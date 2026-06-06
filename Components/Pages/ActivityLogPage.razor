@@ -1,20 +1,21 @@
 ﻿@page "/activity-log"
+
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+
 @inject OperationsFlowDbContext Db
 
 <PageTitle>Activity Log - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page">
-
+<div class="page-shell module-page activity-log-page">
     <section class="module-header">
         <div>
             <p class="eyebrow dark">System Tracking</p>
             <h1>Activity Log</h1>
             <p>
-                Track record changes across OperationsFlow, including created work orders,
-                edited records, status changes, and workflow updates.
+                Track record changes across OperationsFlow, including created records,
+                updated workflow items, reviewed records, status changes, and follow-up activity.
             </p>
         </div>
 
@@ -22,6 +23,11 @@
             <span>Total Events</span>
             <strong>@TotalCount</strong>
         </div>
+    </section>
+
+    <section class="page-purpose-note">
+        <strong>Purpose:</strong> use this page to review system-wide activity. Record-level history is also shown
+        inside key workflow pages such as Corrective Actions, Work Orders, and Document Intake.
     </section>
 
     <section class="module-summary-grid">
@@ -44,15 +50,88 @@
         </article>
 
         <article class="module-summary-card">
+            <span>Reviewed</span>
+            <strong>@ReviewedCount</strong>
+            <small>Records checked with no tracked changes</small>
+        </article>
+
+        <article class="module-summary-card">
             <span>Today</span>
             <strong>@TodayCount</strong>
             <small>Activity logged today</small>
         </article>
     </section>
 
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Activity Coverage</h2>
+                    <p>Modules currently represented in the activity log.</p>
+                </div>
+            </div>
+
+            @if (!ModuleCoverage.Any())
+            {
+                <div class="empty-state">
+                    <strong>No module activity yet.</strong>
+                    <p>Activity will appear here after workflow records are created or updated.</p>
+                </div>
+            }
+            else
+            {
+                <div class="mini-metric-grid">
+                    @foreach (var module in ModuleCoverage)
+                    {
+                        <div class="mini-metric-card">
+                            <span>@module.ModuleName</span>
+                            <strong>@module.Count</strong>
+                            <small>@Pluralise(module.Count, "event", "events")</small>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Review Notes</h2>
+                    <p>What this proves in the Week 2 workflow MVP.</p>
+                </div>
+            </div>
+
+            <div class="review-note-grid">
+                <div class="review-note-card">
+                    <span>TRACEABILITY</span>
+                    <strong>Changes are visible</strong>
+                    <p>Workflow records leave activity evidence when created, updated, or reviewed.</p>
+                </div>
+
+                <div class="review-note-card">
+                    <span>ACCOUNTABILITY</span>
+                    <strong>Owners and records are clear</strong>
+                    <p>Events include module names, record references, action types, dates, and created-by values.</p>
+                </div>
+
+                <div class="review-note-card">
+                    <span>REVIEW</span>
+                    <strong>Searchable activity</strong>
+                    <p>Reviewers can filter by module, action type, or search for record references and descriptions.</p>
+                </div>
+
+                <div class="review-note-card">
+                    <span>PRODUCTION GAP</span>
+                    <strong>Demo identity only</strong>
+                    <p>A production version would tie events to authenticated users and stronger audit rules.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="module-toolbar">
         <input class="search-input"
-               placeholder="Search activity..."
+               placeholder="Search module, record, action, description, or user..."
                @bind="searchText"
                @bind:event="oninput" />
 
@@ -74,63 +153,82 @@
     </section>
 
     <section class="table-card">
+        <div class="table-card-header">
+            <div>
+                <h2>Activity Events</h2>
+                <p>
+                    Showing @FilteredCount of @TotalCount logged events.
+                </p>
+            </div>
+
+            <div class="activity-count-card">
+                <span>Filtered</span>
+                <strong>@FilteredCount</strong>
+            </div>
+        </div>
+
         @if (activityLogs == null)
         {
             <div class="empty-state">Loading activity log...</div>
         }
         else if (!FilteredActivityLogs.Any())
         {
-            <div class="empty-state">No activity log records match the current filters.</div>
+            <div class="empty-state">
+                <strong>No activity log records match the current filters.</strong>
+                <p>Clear the search or filters to show more events.</p>
+            </div>
         }
         else
         {
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Date / Time</th>
-                        <th>Module</th>
-                        <th>Record</th>
-                        <th>Action</th>
-                        <th>Description</th>
-                        <th>Created By</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in FilteredActivityLogs)
-                    {
+            <div class="table-responsive">
+                <table class="data-table activity-table">
+                    <thead>
                         <tr>
-                            <td class="strong-cell">@item.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
-                            <td>@item.ModuleName</td>
-                            <td>@item.RecordReference</td>
-                            <td>
-                                <span class="@GetActionClass(item.ActionType)">
-                                    @item.ActionType
-                                </span>
-                            </td>
-                            <td>@item.Description</td>
-                            <td>@item.CreatedBy</td>
+                            <th>Date / Time</th>
+                            <th>Module</th>
+                            <th>Record</th>
+                            <th>Action</th>
+                            <th>Description</th>
+                            <th>Created By</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in FilteredActivityLogs)
+                        {
+                            <tr>
+                                <td class="strong-cell">@item.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
+                                <td>@DisplayText(item.ModuleName)</td>
+                                <td class="strong-cell">@DisplayText(item.RecordReference)</td>
+                                <td>
+                                    <span class="@GetActionClass(item.ActionType)">
+                                        @DisplayText(item.ActionType)
+                                    </span>
+                                </td>
+                                <td>@DisplayText(item.Description)</td>
+                                <td>@DisplayText(item.CreatedBy)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
     </section>
-
 </div>
 
 @code {
     private List<ActivityLog>? activityLogs;
+
     private string searchText = "";
     private string moduleFilter = "";
     private string actionFilter = "";
 
-    private IEnumerable<ActivityLog> FilteredActivityLogs
+    private List<ActivityLog> FilteredActivityLogs
     {
         get
         {
             if (activityLogs == null)
             {
-                return Enumerable.Empty<ActivityLog>();
+                return new List<ActivityLog>();
             }
 
             var query = activityLogs.AsEnumerable();
@@ -147,12 +245,14 @@
 
             if (!string.IsNullOrWhiteSpace(moduleFilter))
             {
-                query = query.Where(x => string.Equals(x.ModuleName, moduleFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x =>
+                    string.Equals(x.ModuleName, moduleFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(actionFilter))
             {
-                query = query.Where(x => string.Equals(x.ActionType, actionFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x =>
+                    string.Equals(x.ActionType, actionFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             return query
@@ -163,11 +263,16 @@
 
     private int TotalCount => activityLogs?.Count ?? 0;
 
+    private int FilteredCount => FilteredActivityLogs.Count;
+
     private int CreatedCount =>
         activityLogs?.Count(x => string.Equals(x.ActionType, "Created", StringComparison.OrdinalIgnoreCase)) ?? 0;
 
     private int UpdatedCount =>
         activityLogs?.Count(x => string.Equals(x.ActionType, "Updated", StringComparison.OrdinalIgnoreCase)) ?? 0;
+
+    private int ReviewedCount =>
+        activityLogs?.Count(x => string.Equals(x.ActionType, "Reviewed", StringComparison.OrdinalIgnoreCase)) ?? 0;
 
     private int TodayCount =>
         activityLogs?.Count(x => x.CreatedDate.Date == DateTime.Today) ?? 0;
@@ -188,6 +293,15 @@
             .OrderBy(x => x)
             .ToList() ?? new List<string>();
 
+    private List<ModuleActivitySummary> ModuleCoverage =>
+        activityLogs?
+            .Where(x => !string.IsNullOrWhiteSpace(x.ModuleName))
+            .GroupBy(x => x.ModuleName)
+            .Select(x => new ModuleActivitySummary(x.Key, x.Count()))
+            .OrderByDescending(x => x.Count)
+            .ThenBy(x => x.ModuleName)
+            .ToList() ?? new List<ModuleActivitySummary>();
+
     protected override async Task OnInitializedAsync()
     {
         activityLogs = await Db.ActivityLogs
@@ -206,15 +320,30 @@
         return source.Contains(search, StringComparison.OrdinalIgnoreCase);
     }
 
+    private static string DisplayText(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? "Not recorded" : value;
+    }
+
+    private static string Pluralise(int count, string singular, string plural)
+    {
+        return count == 1 ? singular : plural;
+    }
+
     private static string GetActionClass(string? action)
     {
-        return action?.ToLower() switch
+        return action?.ToLowerInvariant() switch
         {
             "created" => "badge badge-success",
-            "updated" => "badge badge-warning",
-            "reviewed" => "badge badge-info",
+            "updated" => "badge badge-info",
+            "reviewed" => "badge badge-secondary",
+            "completed" => "badge badge-success",
+            "closed" => "badge badge-success",
+            "rejected" => "badge badge-danger",
             "deleted" => "badge badge-danger",
             _ => "badge badge-muted"
         };
     }
+
+    private sealed record ModuleActivitySummary(string ModuleName, int Count);
 }
