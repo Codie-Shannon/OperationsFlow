@@ -1,20 +1,21 @@
 ﻿@page "/documents"
+
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+
 @inject OperationsFlowDbContext Db
 
-<PageTitle>Documents - OperationsFlow</PageTitle>
+<PageTitle>Document Control - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page">
-
+<div class="page-shell module-page documents-page">
     <section class="module-header">
         <div>
             <p class="eyebrow dark">Compliance</p>
             <h1>Document Control</h1>
             <p>
                 Track controlled documents, owners, versions, review dates, document status,
-                and upcoming compliance review work.
+                upcoming compliance review work, and corrective action follow-up.
             </p>
         </div>
 
@@ -22,6 +23,12 @@
             <span>Reviews Due Soon</span>
             <strong>@DueSoonCount</strong>
         </div>
+    </section>
+
+    <section class="page-purpose-note">
+        <strong>Purpose:</strong> use this page to review controlled documents and turn overdue or upcoming
+        document reviews into owned corrective actions. Document actions are pre-filled with source context
+        so the follow-up remains traceable.
     </section>
 
     <section class="module-summary-grid">
@@ -48,11 +55,71 @@
             <strong>@CurrentCount</strong>
             <small>Not overdue or due soon</small>
         </article>
+
+        <article class="module-summary-card">
+            <span>Actionable</span>
+            <strong>@ActionableDocumentCount</strong>
+            <small>Overdue or due-soon reviews</small>
+        </article>
+    </section>
+
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Document Review Focus</h2>
+                    <p>Recommended review order for controlled documents.</p>
+                </div>
+            </div>
+
+            <ol class="review-list">
+                <li>Review overdue controlled documents first.</li>
+                <li>Check documents due for review within the next 30 days.</li>
+                <li>Create corrective actions for documents needing version updates, owner review, or formal follow-up.</li>
+                <li>Confirm owner, priority, due date, and source context before saving the corrective action.</li>
+                <li>Use Workload, Reminders, Reports, Data Quality, and Activity Log to track follow-up.</li>
+            </ol>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Document → Corrective Action Link</h2>
+                    <p>What the Action button does.</p>
+                </div>
+            </div>
+
+            <div class="review-note-grid">
+                <div class="review-note-card">
+                    <span>SOURCE</span>
+                    <strong>Document Control</strong>
+                    <p>The corrective action source is set to Document Control.</p>
+                </div>
+
+                <div class="review-note-card">
+                    <span>CONTEXT</span>
+                    <strong>Document details included</strong>
+                    <p>Document number, type, owner, status, version, and review dates are copied into the notes.</p>
+                </div>
+
+                <div class="review-note-card">
+                    <span>RETURN</span>
+                    <strong>Back to Documents</strong>
+                    <p>After saving, the workflow returns to this page.</p>
+                </div>
+
+                <div class="review-note-card">
+                    <span>TRACEABILITY</span>
+                    <strong>Activity logged</strong>
+                    <p>The created corrective action is logged as source-linked follow-up work.</p>
+                </div>
+            </div>
+        </div>
     </section>
 
     <section class="module-toolbar">
         <input class="search-input"
-               placeholder="Search documents..."
+               placeholder="Search document number, title, type, owner, department, status, version, or notes..."
                @bind="searchText"
                @bind:event="oninput" />
 
@@ -82,80 +149,184 @@
     </section>
 
     <section class="table-card">
+        <div class="table-card-header">
+            <div>
+                <h2>Controlled Documents</h2>
+                <p>Showing @FilteredDocuments.Count() of @TotalCount document record(s).</p>
+            </div>
+
+            <div class="activity-count-card">
+                <span>Actionable</span>
+                <strong>@FilteredDocuments.Count(IsActionableDocument)</strong>
+            </div>
+        </div>
+
         @if (documents == null)
         {
             <div class="empty-state">Loading documents...</div>
         }
         else if (!FilteredDocuments.Any())
         {
-            <div class="empty-state">No documents match the current filters.</div>
+            <div class="empty-state">
+                <strong>No documents match the current filters.</strong>
+                <p>Clear the search or filters to show more controlled document records.</p>
+            </div>
         }
         else
         {
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Document #</th>
-                        <th>Title</th>
-                        <th>Type</th>
-                        <th>Owner</th>
-                        <th>Department</th>
-                        <th>Status</th>
-                        <th>Version</th>
-                        <th>Last Reviewed</th>
-                        <th>Next Review</th>
-                        <th>Flag</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in FilteredDocuments)
-                    {
+            <div class="table-responsive">
+                <table class="data-table documents-table">
+                    <thead>
                         <tr>
-                            <td class="strong-cell">@item.DocumentNumber</td>
-                            <td>@item.Title</td>
-                            <td>@item.DocumentType</td>
-                            <td>@item.Owner</td>
-                            <td>@item.Department</td>
-                            <td>
-                                <span class="@GetStatusClass(item.Status)">
-                                    @item.Status
-                                </span>
-                            </td>
-                            <td>@item.Version</td>
-                            <td>@item.LastReviewedDate.ToString("dd MMM yyyy")</td>
-                            <td>@item.NextReviewDate.ToString("dd MMM yyyy")</td>
-                            <td>
+                            <th>Document #</th>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Owner</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Version</th>
+                            <th>Last Reviewed</th>
+                            <th>Next Review</th>
+                            <th>Flag</th>
+                            <th>Follow-Up</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in FilteredDocuments)
+                        {
+                            <tr>
+                                <td class="strong-cell">@item.DocumentNumber</td>
+                                <td>@item.Title</td>
+                                <td>@item.DocumentType</td>
+                                <td>@DisplayText(item.Owner)</td>
+                                <td>@item.Department</td>
+                                <td>
+                                    <span class="@GetStatusClass(item.Status)">
+                                        @item.Status
+                                    </span>
+                                </td>
+                                <td>@item.Version</td>
+                                <td>@item.LastReviewedDate.ToString("dd MMM yyyy")</td>
+                                <td>@item.NextReviewDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    @if (item.IsReviewOverdue)
+                                    {
+                                        <span class="badge badge-danger">Review Overdue</span>
+                                    }
+                                    else if (item.IsDueSoon)
+                                    {
+                                        <span class="badge badge-warning">Due Soon</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-success">Current</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a class="btn btn-small btn-primary" href="@BuildCorrectiveActionUrlFromDocument(item)">
+                                        Create Action
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Priority Document Reviews</h2>
+                    <p>Overdue or upcoming review records that should be checked first.</p>
+                </div>
+
+                <span class="badge badge-warning">@PriorityDocuments.Count items</span>
+            </div>
+
+            @if (!PriorityDocuments.Any())
+            {
+                <div class="empty-state">
+                    <strong>No priority document reviews.</strong>
+                    <p>There are currently no overdue or due-soon document review flags.</p>
+                </div>
+            }
+            else
+            {
+                <div class="issue-card-list">
+                    @foreach (var item in PriorityDocuments.Take(6))
+                    {
+                        <article class="issue-card">
+                            <div>
+                                <strong>@item.DocumentNumber — @item.Title</strong>
+                                <p>@item.DocumentType • @item.Department</p>
+                                <small>
+                                    Owner @DisplayText(item.Owner) • Version @item.Version • Review @item.NextReviewDate.ToString("dd MMM yyyy")
+                                </small>
+                            </div>
+
+                            <div class="issue-card-actions">
                                 @if (item.IsReviewOverdue)
                                 {
                                     <span class="badge badge-danger">Review Overdue</span>
                                 }
-                                else if (item.IsDueSoon)
+                                else
                                 {
                                     <span class="badge badge-warning">Due Soon</span>
                                 }
-                                else
-                                {
-                                    <span class="badge badge-muted">Current</span>
-                                }
-                            </td>
-                            <td>
-                                <a class="table-action-link"
-                                   href="@BuildCorrectiveActionUrlFromDocument(item)">
+
+                                <a class="btn btn-small btn-primary" href="@BuildCorrectiveActionUrlFromDocument(item)">
                                     Create Action
                                 </a>
-                            </td>
-                        </tr>
+                            </div>
+                        </article>
                     }
-                </tbody>
-            </table>
-        }
-    </section>
+                </div>
+            }
+        </div>
 
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Document Control Notes</h2>
+                    <p>How controlled document review work should be handled.</p>
+                </div>
+            </div>
+
+            <div class="review-note-grid">
+                <div class="review-note-card">
+                    <span>REVIEW</span>
+                    <strong>Use next review date</strong>
+                    <p>Overdue and due-soon documents should be checked before management review.</p>
+                </div>
+
+                <div class="review-note-card">
+                    <span>VERSION</span>
+                    <strong>Track version changes</strong>
+                    <p>Corrective actions should explain whether a version/status update is required.</p>
+                </div>
+
+                <div class="review-note-card">
+                    <span>OWNER</span>
+                    <strong>Document owner follows up</strong>
+                    <p>The document owner is used as the default corrective action owner.</p>
+                </div>
+
+                <div class="review-note-card">
+                    <span>PRODUCTION GAP</span>
+                    <strong>File storage link</strong>
+                    <p>A production version could link directly to SharePoint document libraries.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 
 @code {
     private List<DocumentRecord>? documents;
+
     private string searchText = "";
     private string statusFilter = "";
     private string typeFilter = "";
@@ -187,17 +358,20 @@
 
             if (!string.IsNullOrWhiteSpace(statusFilter))
             {
-                query = query.Where(x => string.Equals(x.Status, statusFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x =>
+                    string.Equals(x.Status, statusFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(typeFilter))
             {
-                query = query.Where(x => string.Equals(x.DocumentType, typeFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x =>
+                    string.Equals(x.DocumentType, typeFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(departmentFilter))
             {
-                query = query.Where(x => string.Equals(x.Department, departmentFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x =>
+                    string.Equals(x.Department, departmentFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             return query
@@ -211,14 +385,23 @@
 
     private int TotalCount => documents?.Count ?? 0;
 
-    private int DueSoonCount =>
-        documents?.Count(x => x.IsDueSoon) ?? 0;
+    private int DueSoonCount => documents?.Count(x => x.IsDueSoon) ?? 0;
 
-    private int OverdueReviewCount =>
-        documents?.Count(x => x.IsReviewOverdue) ?? 0;
+    private int OverdueReviewCount => documents?.Count(x => x.IsReviewOverdue) ?? 0;
 
     private int CurrentCount =>
         documents?.Count(x => !x.IsReviewOverdue && !x.IsDueSoon) ?? 0;
+
+    private int ActionableDocumentCount =>
+        documents?.Count(IsActionableDocument) ?? 0;
+
+    private List<DocumentRecord> PriorityDocuments =>
+        documents?
+            .Where(IsActionableDocument)
+            .OrderByDescending(x => x.IsReviewOverdue)
+            .ThenBy(x => x.NextReviewDate)
+            .ThenBy(x => x.Title)
+            .ToList() ?? new List<DocumentRecord>();
 
     private List<string> StatusOptions =>
         documents?
@@ -251,47 +434,32 @@
             .ToListAsync();
     }
 
-    private static bool Contains(string? source, string search)
-    {
-        if (string.IsNullOrWhiteSpace(source))
-        {
-            return false;
-        }
-
-        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static string GetStatusClass(string? status)
-    {
-        return status?.ToLower() switch
-        {
-            "approved" => "badge badge-success",
-            "current" => "badge badge-success",
-            "active" => "badge badge-success",
-            "draft" => "badge badge-info",
-            "under review" => "badge badge-warning",
-            "review required" => "badge badge-warning",
-            "archived" => "badge badge-muted",
-            _ => "badge badge-muted"
-        };
-    }
-
     private static string BuildCorrectiveActionUrlFromDocument(DocumentRecord item)
     {
-        var priority = item.IsReviewOverdue ? "High" : item.IsDueSoon ? "Medium" : "Low";
+        var priority = item.IsReviewOverdue
+            ? "High"
+            : item.IsDueSoon
+                ? "Medium"
+                : "Low";
+
         var title = $"Review document: {item.Title}";
 
         var notes =
-            "Created from Document Control review issue. Review the document version, confirm required changes, and update review status.\n\n" +
-            $"Document: {item.Title}\n" +
-            $"Document Number: {item.DocumentNumber}\n" +
-            $"Document Type: {item.DocumentType}\n" +
-            $"Department: {item.Department}\n" +
-            $"Owner: {item.Owner}\n" +
-            $"Status: {item.Status}\n" +
-            $"Version: {item.Version}\n" +
-            $"Last Reviewed: {item.LastReviewedDate:dd MMM yyyy}\n" +
-            $"Next Review Date: {item.NextReviewDate:dd MMM yyyy}\n\n" +
+            "Created from Document Control review issue." + Environment.NewLine +
+            "Review the document version, confirm required changes, and update review status." + Environment.NewLine +
+            Environment.NewLine +
+            $"Document: {item.Title}" + Environment.NewLine +
+            $"Document Number: {item.DocumentNumber}" + Environment.NewLine +
+            $"Document Type: {item.DocumentType}" + Environment.NewLine +
+            $"Department: {item.Department}" + Environment.NewLine +
+            $"Owner: {item.Owner}" + Environment.NewLine +
+            $"Status: {item.Status}" + Environment.NewLine +
+            $"Version: {item.Version}" + Environment.NewLine +
+            $"Last Reviewed: {item.LastReviewedDate:dd MMM yyyy}" + Environment.NewLine +
+            $"Next Review Date: {item.NextReviewDate:dd MMM yyyy}" + Environment.NewLine +
+            $"Review Flag: {(item.IsReviewOverdue ? "Review overdue" : item.IsDueSoon ? "Due soon" : "Current")}" + Environment.NewLine +
+            $"Notes: {DisplayText(item.Notes)}" + Environment.NewLine +
+            Environment.NewLine +
             "Suggested follow-up: review the controlled document, update version/status if needed, and close the corrective action once the review outcome is recorded.";
 
         return "/corrective-actions/create" +
@@ -304,5 +472,40 @@
             $"&actionType={Uri.EscapeDataString("Document Update")}" +
             $"&notes={Uri.EscapeDataString(notes)}" +
             $"&returnUrl={Uri.EscapeDataString("/documents")}";
+    }
+
+    private static bool IsActionableDocument(DocumentRecord item)
+    {
+        return item.IsReviewOverdue || item.IsDueSoon;
+    }
+
+    private static bool Contains(string? source, string search)
+    {
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return false;
+        }
+
+        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string DisplayText(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? "Not recorded" : value;
+    }
+
+    private static string GetStatusClass(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "approved" => "badge badge-success",
+            "current" => "badge badge-success",
+            "active" => "badge badge-success",
+            "draft" => "badge badge-info",
+            "under review" => "badge badge-warning",
+            "review required" => "badge badge-warning",
+            "archived" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
     }
 }
