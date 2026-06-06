@@ -1,19 +1,21 @@
 ﻿@page "/work-orders/details/{Id:int}"
 @page "/work-orders/view/{Id:int}"
+
+@using Microsoft.AspNetCore.Components
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+
 @inject OperationsFlowDbContext Db
 @inject NavigationManager Navigation
 
 <PageTitle>Work Order Details - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page">
-
+<div class="page-shell module-page work-order-details-page">
     @if (isLoading)
     {
-        <section class="form-card">
-            <div class="empty-state">Loading work order...</div>
+        <section class="table-card">
+            <p>Loading work order...</p>
         </section>
     }
     else if (workOrder == null)
@@ -26,11 +28,11 @@
             </div>
         </section>
 
-        <div class="form-actions">
-            <button type="button" class="secondary-button" @onclick="BackToWorkOrders">
+        <section class="table-card">
+            <button class="btn btn-secondary" type="button" @onclick="BackToWorkOrders">
                 Back to Work Orders
             </button>
-        </div>
+        </section>
     }
     else
     {
@@ -41,127 +43,199 @@
                 <p>@workOrder.Title</p>
             </div>
 
-            <div class="module-header-actions">
-                <div class="module-header-stat">
-                    <span>Status</span>
-                    <strong>@workOrder.Status</strong>
-                </div>
-
-                <a class="primary-link-button"
-                   href="@BuildEditUrl()">
-                    Edit Work Order
-                </a>
+            <div class="module-header-stat">
+                <span>Status</span>
+                <strong>@workOrder.Status</strong>
             </div>
         </section>
 
-        <section class="module-summary-grid">
-            <article class="module-summary-card info-card">
-                <span>Priority</span>
+        <section class="detail-action-bar">
+            <button class="btn btn-secondary" type="button" @onclick="BackToWorkOrders">
+                Back to Work Orders
+            </button>
+
+            <button class="btn btn-primary" type="button" @onclick="GoToEdit">
+                Edit Work Order
+            </button>
+        </section>
+
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <span class="kpi-label">Priority</span>
                 <strong>@workOrder.Priority</strong>
-                <small>@workOrder.Type</small>
-            </article>
+                <span class="kpi-note">@workOrder.Type</span>
+            </div>
 
-            <article class="module-summary-card warning-card">
-                <span>Due Date</span>
+            <div class="kpi-card">
+                <span class="kpi-label">Due Date</span>
                 <strong>@workOrder.DueDate.ToString("dd MMM")</strong>
-                <small>@workOrder.DueDate.ToString("yyyy")</small>
-            </article>
+                <span class="kpi-note">@workOrder.DueDate.ToString("yyyy")</span>
+            </div>
 
-            <article class="module-summary-card @(workOrder.IsOverdue ? "danger-card" : "success-card")">
-                <span>Flag</span>
+            <div class="kpi-card">
+                <span class="kpi-label">Flag</span>
                 <strong>@(workOrder.IsOverdue ? "Overdue" : "On Track")</strong>
-                <small>@(workOrder.IsOverdue ? "Past due and not closed" : "No overdue flag")</small>
-            </article>
+                <span class="kpi-note">@(workOrder.IsOverdue ? "Past due and not closed" : "No overdue flag")</span>
+            </div>
 
-            <article class="module-summary-card success-card">
-                <span>Owner</span>
+            <div class="kpi-card">
+                <span class="kpi-label">Owner</span>
                 <strong>@workOrder.Owner</strong>
-                <small>@workOrder.Department</small>
-            </article>
-        </section>
-
-        <section class="form-card">
-            <div class="details-grid">
-                <div class="details-field">
-                    <span>Work Order Number</span>
-                    <strong>@workOrder.WorkOrderNumber</strong>
-                </div>
-
-                <div class="details-field">
-                    <span>Title</span>
-                    <strong>@workOrder.Title</strong>
-                </div>
-
-                <div class="details-field">
-                    <span>Site</span>
-                    <strong>@workOrder.Site</strong>
-                </div>
-
-                <div class="details-field">
-                    <span>Department</span>
-                    <strong>@workOrder.Department</strong>
-                </div>
-
-                <div class="details-field">
-                    <span>Owner</span>
-                    <strong>@workOrder.Owner</strong>
-                </div>
-
-                <div class="details-field">
-                    <span>Type</span>
-                    <strong>@workOrder.Type</strong>
-                </div>
-
-                <div class="details-field">
-                    <span>Priority</span>
-                    <strong>
-                        <span class="@GetPriorityClass(workOrder.Priority)">
-                            @workOrder.Priority
-                        </span>
-                    </strong>
-                </div>
-
-                <div class="details-field">
-                    <span>Status</span>
-                    <strong>
-                        <span class="@GetStatusClass(workOrder.Status)">
-                            @workOrder.Status
-                        </span>
-                    </strong>
-                </div>
-
-                <div class="details-field">
-                    <span>Created Date</span>
-                    <strong>@workOrder.CreatedDate.ToString("dd MMM yyyy")</strong>
-                </div>
-
-                <div class="details-field">
-                    <span>Due Date</span>
-                    <strong>@workOrder.DueDate.ToString("dd MMM yyyy")</strong>
-                </div>
-
-                <div class="details-field details-field-full">
-                    <span>Notes</span>
-                    <p>@DisplayText(workOrder.Notes)</p>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button type="button" class="secondary-button" @onclick="BackToWorkOrders">
-                    Back to Work Orders
-                </button>
-
-                <button type="button" class="primary-button" @onclick="GoToEdit">
-                    Edit Work Order
-                </button>
+                <span class="kpi-note">@workOrder.Department</span>
             </div>
         </section>
 
-        <ActivityHistoryPanel ModuleName="Work Orders"
-                              RecordId="@workOrder.Id"
-                              Title="Work Order Activity History" />
+        <section class="summary-grid">
+            <div class="summary-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Work Order Details</h2>
+                        <p>Core record information used by workload, reminders, reports, and activity history.</p>
+                    </div>
+                </div>
+
+                <div class="detail-grid">
+                    <div>
+                        <span>Work Order Number</span>
+                        <strong>@workOrder.WorkOrderNumber</strong>
+                    </div>
+
+                    <div>
+                        <span>Title</span>
+                        <strong>@workOrder.Title</strong>
+                    </div>
+
+                    <div>
+                        <span>Site</span>
+                        <strong>@workOrder.Site</strong>
+                    </div>
+
+                    <div>
+                        <span>Department</span>
+                        <strong>@workOrder.Department</strong>
+                    </div>
+
+                    <div>
+                        <span>Owner</span>
+                        <strong>@workOrder.Owner</strong>
+                    </div>
+
+                    <div>
+                        <span>Type</span>
+                        <strong>@workOrder.Type</strong>
+                    </div>
+
+                    <div>
+                        <span>Priority</span>
+                        <strong>
+                            <span class="@GetPriorityClass(workOrder.Priority)">
+                                @workOrder.Priority
+                            </span>
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Status</span>
+                        <strong>
+                            <span class="@GetStatusClass(workOrder.Status)">
+                                @workOrder.Status
+                            </span>
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Created Date</span>
+                        <strong>@workOrder.CreatedDate.ToString("dd MMM yyyy")</strong>
+                    </div>
+
+                    <div>
+                        <span>Due Date</span>
+                        <strong>@workOrder.DueDate.ToString("dd MMM yyyy")</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Notes</h2>
+                        <p>Recorded context, follow-up details, or operational notes for this work order.</p>
+                    </div>
+                </div>
+
+                <div class="notes-panel">
+                    @DisplayText(workOrder.Notes)
+                </div>
+            </div>
+        </section>
+
+        <section class="activity-history-panel">
+            <div class="section-heading-row">
+                <div>
+                    <h2>Activity History</h2>
+                    <p>
+                        Record-level traceability for this work order. This helps reviewers see when the item was
+                        created, updated, reviewed, completed, or changed.
+                    </p>
+                </div>
+
+                <div class="activity-count-card">
+                    <span>Events</span>
+                    <strong>@activityHistory.Count</strong>
+                </div>
+            </div>
+
+            @if (activityHistory.Count == 0)
+            {
+                <div class="empty-state">
+                    <strong>No activity history yet.</strong>
+                    <p>
+                        Create, edit, or review this work order to generate activity history.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="data-table activity-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Action</th>
+                                <th>Description</th>
+                                <th>Created By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var activity in activityHistory)
+                            {
+                                <tr>
+                                    <td>@activity.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
+                                    <td>
+                                        <span class="@GetActivityBadgeClass(activity.ActionType)">
+                                            @activity.ActionType
+                                        </span>
+                                    </td>
+                                    <td>@activity.Description</td>
+                                    <td>@activity.CreatedBy</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <section class="detail-action-bar bottom-actions">
+            <button class="btn btn-secondary" type="button" @onclick="BackToWorkOrders">
+                Back to Work Orders
+            </button>
+
+            <button class="btn btn-primary" type="button" @onclick="GoToEdit">
+                Edit Work Order
+            </button>
+        </section>
     }
-
 </div>
 
 @code {
@@ -169,6 +243,7 @@
     public int Id { get; set; }
 
     private WorkOrder? workOrder;
+    private List<ActivityLog> activityHistory = new();
     private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
@@ -177,7 +252,23 @@
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == Id);
 
+        if (workOrder != null)
+        {
+            await LoadActivityHistory();
+        }
+
         isLoading = false;
+    }
+
+    private async Task LoadActivityHistory()
+    {
+        activityHistory = await Db.ActivityLogs
+            .AsNoTracking()
+            .Where(x =>
+                x.ModuleName == "Work Orders" &&
+                x.RecordId == Id)
+            .OrderByDescending(x => x.CreatedDate)
+            .ToListAsync();
     }
 
     private string BuildEditUrl()
@@ -197,14 +288,12 @@
 
     private static string DisplayText(string? value)
     {
-        return string.IsNullOrWhiteSpace(value)
-            ? "No notes recorded."
-            : value;
+        return string.IsNullOrWhiteSpace(value) ? "No notes recorded." : value;
     }
 
     private static string GetPriorityClass(string? priority)
     {
-        return priority?.ToLower() switch
+        return priority?.ToLowerInvariant() switch
         {
             "critical" => "badge badge-danger",
             "high" => "badge badge-warning",
@@ -216,7 +305,7 @@
 
     private static string GetStatusClass(string? status)
     {
-        return status?.ToLower() switch
+        return status?.ToLowerInvariant() switch
         {
             "completed" => "badge badge-success",
             "closed" => "badge badge-success",
@@ -224,6 +313,20 @@
             "open" => "badge badge-warning",
             "new" => "badge badge-warning",
             _ => "badge badge-muted"
+        };
+    }
+
+    private static string GetActivityBadgeClass(string? actionType)
+    {
+        return actionType?.ToLowerInvariant() switch
+        {
+            "created" => "badge badge-success",
+            "updated" => "badge badge-info",
+            "reviewed" => "badge badge-secondary",
+            "completed" => "badge badge-success",
+            "closed" => "badge badge-success",
+            "deleted" => "badge badge-danger",
+            _ => "badge badge-secondary"
         };
     }
 }
