@@ -1,0 +1,21 @@
+﻿<section class="of-purpose-note @Class">
+    <div class="of-purpose-note__icon">@Icon</div>
+
+    <div class="of-purpose-note__content">
+        @if (!string.IsNullOrWhiteSpace(Title))
+        {
+            <h2>@Title</h2>
+        }
+
+        <div>
+            @ChildContent
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Purpose";
+    [Parameter] public string Icon { get; set; } = "💡";
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

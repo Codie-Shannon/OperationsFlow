@@ -1,0 +1,45 @@
+﻿<section class="of-empty-state @Class">
+    @if (!string.IsNullOrWhiteSpace(Icon))
+    {
+        <div class="of-empty-state__icon">@Icon</div>
+    }
+
+    <div class="of-empty-state__content">
+        <h2>@Title</h2>
+
+        @if (!string.IsNullOrWhiteSpace(Message))
+        {
+            <p>@Message</p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(ActionHref) && !string.IsNullOrWhiteSpace(ActionText))
+        {
+            <a class="of-btn of-btn-primary" href="@ActionHref">@ActionText</a>
+        }
+
+        @if (Actions is not null)
+        {
+            <div class="of-empty-state__actions">
+                @Actions
+            </div>
+        }
+
+        @if (ChildContent is not null)
+        {
+            <div class="of-empty-state__extra">
+                @ChildContent
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Nothing here yet";
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public string Icon { get; set; } = "📭";
+    [Parameter] public string? ActionText { get; set; }
+    [Parameter] public string? ActionHref { get; set; }
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? Actions { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

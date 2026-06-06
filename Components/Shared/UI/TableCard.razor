@@ -1,0 +1,47 @@
+﻿<section class="of-table-card @Class">
+    @if (!string.IsNullOrWhiteSpace(Title) || Actions is not null)
+    {
+        <header class="of-table-card__header">
+            <div>
+                @if (!string.IsNullOrWhiteSpace(Title))
+                {
+                    <h2>@Title</h2>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Subtitle))
+                {
+                    <p>@Subtitle</p>
+                }
+            </div>
+
+            @if (Actions is not null)
+            {
+                <div class="of-table-card__actions">
+                    @Actions
+                </div>
+            }
+        </header>
+    }
+
+    @if (IsEmpty)
+    {
+        <EmptyState Title="@EmptyTitle" Message="@EmptyMessage" />
+    }
+    else
+    {
+        <div class="of-table-card__scroll">
+            @ChildContent
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public bool IsEmpty { get; set; }
+    [Parameter] public string EmptyTitle { get; set; } = "No records found";
+    [Parameter] public string EmptyMessage { get; set; } = "There is nothing to show yet.";
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? Actions { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

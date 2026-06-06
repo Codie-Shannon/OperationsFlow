@@ -1,0 +1,24 @@
+﻿<section class="of-guidance-note @ToneClass @Class">
+    <div class="of-guidance-note__icon">@Icon</div>
+
+    <div class="of-guidance-note__content">
+        @if (!string.IsNullOrWhiteSpace(Title))
+        {
+            <h2>@Title</h2>
+        }
+
+        <div>
+            @ChildContent
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Guidance";
+    [Parameter] public string Icon { get; set; } = "ℹ️";
+    [Parameter] public string Tone { get; set; } = "info";
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string ToneClass => $"of-guidance-note--{Tone}";
+}

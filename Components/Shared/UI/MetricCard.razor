@@ -1,0 +1,43 @@
+﻿<article class="of-metric-card @ToneClass @Class">
+    <div class="of-metric-card__top">
+        @if (!string.IsNullOrWhiteSpace(Icon))
+        {
+            <span class="of-metric-card__icon">@Icon</span>
+        }
+
+        <span class="of-metric-card__title">@Title</span>
+    </div>
+
+    <div class="of-metric-card__value">@Value</div>
+
+    @if (!string.IsNullOrWhiteSpace(Detail))
+    {
+        <div class="of-metric-card__detail">@Detail</div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(LinkHref) && !string.IsNullOrWhiteSpace(LinkText))
+    {
+        <a class="of-card-link" href="@LinkHref">@LinkText</a>
+    }
+
+    @if (ChildContent is not null)
+    {
+        <div class="of-metric-card__extra">
+            @ChildContent
+        </div>
+    }
+</article>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public string Value { get; set; } = string.Empty;
+    [Parameter] public string? Detail { get; set; }
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public string? LinkHref { get; set; }
+    [Parameter] public string? LinkText { get; set; }
+    [Parameter] public string Tone { get; set; } = "default";
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string ToneClass => $"of-metric-card--{Tone}";
+}

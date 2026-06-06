@@ -1,0 +1,61 @@
+﻿<section class="of-status-flow @Class">
+    @if (!string.IsNullOrWhiteSpace(Title))
+    {
+        <header class="of-status-flow__header">
+            <h2>@Title</h2>
+
+            @if (!string.IsNullOrWhiteSpace(Description))
+            {
+                <p>@Description</p>
+            }
+        </header>
+    }
+
+    @if (Steps is not null && Steps.Count > 0)
+    {
+        <ol class="of-status-flow__steps">
+            @for (var i = 0; i < Steps.Count; i++)
+            {
+                var step = Steps[i];
+                var stepNumber = i + 1;
+                var stateClass = GetStepClass(stepNumber);
+
+                <li class="of-status-flow__step @stateClass">
+                    <span class="of-status-flow__number">@stepNumber</span>
+                    <span class="of-status-flow__label">@step</span>
+                </li>
+            }
+        </ol>
+    }
+
+    @if (ChildContent is not null)
+    {
+        <div class="of-status-flow__extra">
+            @ChildContent
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public IReadOnlyList<string> Steps { get; set; } = Array.Empty<string>();
+    [Parameter] public int CurrentStep { get; set; } = 1;
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string GetStepClass(int stepNumber)
+    {
+        if (stepNumber < CurrentStep)
+        {
+            return "of-status-flow__step--complete";
+        }
+
+        if (stepNumber == CurrentStep)
+        {
+            return "of-status-flow__step--current";
+        }
+
+        return "of-status-flow__step--pending";
+    }
+}
