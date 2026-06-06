@@ -6,63 +6,66 @@
 
 <PageTitle>Corrective Actions - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page">
+<PageHero Eyebrow="Operations"
+          Title="Corrective Actions"
+          Subtitle="Track actions created from incidents, audits, inspections, risk reviews, training gaps, document reviews, improvement work, and compliance follow-ups."
+          BadgeText="@($"{OpenCount} open")"
+          BadgeClass="of-badge-warning">
+    <Actions>
+        <a class="of-btn of-btn-primary" href="/corrective-actions/create">+ New Corrective Action</a>
+        <a class="of-btn of-btn-secondary" href="/risk-register">Risk Register</a>
+        <a class="of-btn of-btn-secondary" href="/training">Training</a>
+        <a class="of-btn of-btn-secondary" href="/documents">Documents</a>
+    </Actions>
+</PageHero>
 
-    <section class="module-header">
-        <div>
-            <p class="eyebrow dark">Operations</p>
-            <h1>Corrective Actions</h1>
-            <p>
-                Track actions created from incidents, audits, inspections, risk reviews,
-                improvement work, and compliance follow-ups.
-            </p>
-        </div>
+<PurposeNote Title="Purpose" Icon="✅">
+    <p>
+        Corrective Actions turn issues into owned follow-up work. They connect operational problems,
+        risk findings, training gaps, document review issues, and compliance follow-ups into one action
+        register that can be reviewed through workload, reminders, reports, data quality, and activity evidence.
+    </p>
+</PurposeNote>
 
-        <div class="module-header-actions">
-            <div class="module-header-stat">
-                <span>Open Actions</span>
-                <strong>@OpenCount</strong>
-            </div>
+<MetricGrid>
+    <MetricCard Title="Total Actions"
+                Value="@TotalCount.ToString()"
+                Detail="All corrective and improvement actions"
+                Icon="📋" />
 
-            <a class="primary-link-button" href="/corrective-actions/create">
-                + New Corrective Action
-            </a>
-        </div>
-    </section>
+    <MetricCard Title="Open"
+                Value="@OpenCount.ToString()"
+                Detail="Still active or in progress"
+                Icon="🟡"
+                Tone="warning" />
 
-    <section class="module-summary-grid">
-        <article class="module-summary-card info-card">
-            <span>Total Actions</span>
-            <strong>@TotalCount</strong>
-            <small>All corrective and improvement actions</small>
-        </article>
+    <MetricCard Title="Overdue"
+                Value="@OverdueCount.ToString()"
+                Detail="Past due and not completed"
+                Icon="🚨"
+                Tone="danger" />
 
-        <article class="module-summary-card warning-card">
-            <span>Open</span>
-            <strong>@OpenCount</strong>
-            <small>Still active or in progress</small>
-        </article>
+    <MetricCard Title="Completed"
+                Value="@CompletedCount.ToString()"
+                Detail="Completed or closed actions"
+                Icon="✅"
+                Tone="success" />
 
-        <article class="module-summary-card danger-card">
-            <span>Overdue</span>
-            <strong>@OverdueCount</strong>
-            <small>Past due and not completed</small>
-        </article>
+    <MetricCard Title="Sources"
+                Value="@SourceCount.ToString()"
+                Detail="Unique issue/action sources"
+                Icon="🔗"
+                Tone="info" />
+</MetricGrid>
 
-        <article class="module-summary-card success-card">
-            <span>Completed</span>
-            <strong>@CompletedCount</strong>
-            <small>Completed or closed actions</small>
-        </article>
-    </section>
-
-    <section class="module-toolbar">
-        <input class="search-input"
+<FilterBar Title="Filter Corrective Actions">
+    <ChildContent>
+        <input class="of-input"
                placeholder="Search corrective actions..."
                @bind="searchText"
                @bind:event="oninput" />
 
-        <select class="filter-select" @bind="statusFilter">
+        <select class="of-select" @bind="statusFilter">
             <option value="">All Statuses</option>
             @foreach (var status in StatusOptions)
             {
@@ -70,7 +73,7 @@
             }
         </select>
 
-        <select class="filter-select" @bind="priorityFilter">
+        <select class="of-select" @bind="priorityFilter">
             <option value="">All Priorities</option>
             @foreach (var priority in PriorityOptions)
             {
@@ -78,104 +81,149 @@
             }
         </select>
 
-        <select class="filter-select" @bind="sourceFilter">
+        <select class="of-select" @bind="sourceFilter">
             <option value="">All Sources</option>
             @foreach (var source in SourceOptions)
             {
                 <option value="@source">@source</option>
             }
         </select>
-    </section>
+    </ChildContent>
 
-    <section class="table-card">
-        @if (correctiveActions == null)
-        {
-            <div class="empty-state">Loading corrective actions...</div>
-        }
-        else if (!FilteredCorrectiveActions.Any())
-        {
-            <div class="empty-state">No corrective actions match the current filters.</div>
-        }
-        else
-        {
-            <table class="data-table">
-                <thead>
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/workload">Workload</a>
+        <a class="of-btn of-btn-secondary" href="/reminders">Reminders</a>
+        <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
+    </Actions>
+</FilterBar>
+
+@if (correctiveActions == null)
+{
+    <InfoPanel Title="Loading Corrective Actions" Subtitle="Loading action records from the local SQLite database.">
+        <p class="of-muted-text">Loading corrective actions...</p>
+    </InfoPanel>
+}
+else
+{
+    <TableCard Title="Corrective Action Register"
+               Subtitle="Search, filter, open, and update corrective/improvement actions."
+               IsEmpty="@(!FilteredCorrectiveActions.Any())"
+               EmptyTitle="No corrective actions found"
+               EmptyMessage="No corrective actions match the current search or filter selection.">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Source</th>
+                    <th>Site</th>
+                    <th>Department</th>
+                    <th>Owner</th>
+                    <th>Action Type</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th>Completed</th>
+                    <th>Flag</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in FilteredCorrectiveActions)
+                {
                     <tr>
-                        <th>Title</th>
-                        <th>Source</th>
-                        <th>Site</th>
-                        <th>Department</th>
-                        <th>Owner</th>
-                        <th>Action Type</th>
-                        <th>Priority</th>
-                        <th>Status</th>
-                        <th>Due Date</th>
-                        <th>Completed</th>
-                        <th>Flag</th>
-                        <th>Actions</th>
+                        <td><strong>@item.Title</strong></td>
+                        <td>@DisplayText(item.Source)</td>
+                        <td>@DisplayText(item.Site)</td>
+                        <td>@DisplayText(item.Department)</td>
+                        <td>@DisplayText(item.Owner)</td>
+                        <td>@DisplayText(item.ActionType)</td>
+                        <td>
+                            <span class="@GetPriorityClass(item.Priority)">
+                                @DisplayText(item.Priority)
+                            </span>
+                        </td>
+                        <td>
+                            <span class="@GetStatusClass(item.Status)">
+                                @DisplayText(item.Status)
+                            </span>
+                        </td>
+                        <td>@item.DueDate.ToString("dd MMM yyyy")</td>
+                        <td>
+                            @if (item.CompletedDate.HasValue)
+                            {
+                                @item.CompletedDate.Value.ToString("dd MMM yyyy")
+                            }
+                            else
+                            {
+                                <span class="of-muted-text">Not completed</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.IsOverdue)
+                            {
+                                <span class="of-badge of-badge-danger">Overdue</span>
+                            }
+                            else if (item.CompletedDate.HasValue || IsCompletedStatus(item.Status))
+                            {
+                                <span class="of-badge of-badge-success">Completed</span>
+                            }
+                            else
+                            {
+                                <span class="of-badge of-badge-success">On Track</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="of-row-actions">
+                                <a class="of-card-link" href="@($"/corrective-actions/details/{item.Id}")">View</a>
+                                <a class="of-card-link" href="@($"/corrective-actions/edit/{item.Id}?returnUrl={Uri.EscapeDataString("/corrective-actions")}")">Edit</a>
+                            </div>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in FilteredCorrectiveActions)
-                    {
-                        <tr>
-                            <td class="strong-cell">@item.Title</td>
-                            <td>@item.Source</td>
-                            <td>@item.Site</td>
-                            <td>@item.Department</td>
-                            <td>@item.Owner</td>
-                            <td>@item.ActionType</td>
-                            <td>
-                                <span class="@GetPriorityClass(item.Priority)">
-                                    @item.Priority
-                                </span>
-                            </td>
-                            <td>
-                                <span class="@GetStatusClass(item.Status)">
-                                    @item.Status
-                                </span>
-                            </td>
-                            <td>@item.DueDate.ToString("dd MMM yyyy")</td>
-                            <td>
-                                @if (item.CompletedDate.HasValue)
-                                {
-                                    @item.CompletedDate.Value.ToString("dd MMM yyyy")
-                                }
-                                else
-                                {
-                                    <span class="muted-text">Not completed</span>
-                                }
-                            </td>
-                            <td>
-                                @if (item.IsOverdue)
-                                {
-                                    <span class="badge badge-danger">Overdue</span>
-                                }
-                                else if (item.CompletedDate.HasValue)
-                                {
-                                    <span class="badge badge-success">Completed</span>
-                                }
-                                else
-                                {
-                                    <span class="badge badge-muted">On Track</span>
-                                }
-                            </td>
-                            <td>
-                                <a class="table-action-link" href="/corrective-actions/edit/@item.Id?returnUrl=/corrective-actions">
-                                    Edit
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-    </section>
+                }
+            </tbody>
+        </table>
+    </TableCard>
+}
 
-</div>
+<InfoPanel Title="Source-Linked Follow-Up" Subtitle="Corrective actions are designed to be created from several workflow areas.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Risk Register</strong>
+                <span>Risk items can create corrective actions with source context prefilled.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Training</strong>
+                <span>Expired or expiring training records can become owned follow-up actions.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Documents</strong>
+                <span>Document reviews can create actions for overdue or required updates.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Reports</strong>
+                <span>Actions feed reporting, reminders, workload, and management visibility.</span>
+            </div>
+        </div>
+    </ChildContent>
+</InfoPanel>
+
+<GuidanceNote Title="Review Notes" Icon="💡" Tone="info">
+    <ul>
+        <li>Open actions should appear in Workload and Reminders.</li>
+        <li>Overdue actions should be visible in follow-up views and management reports.</li>
+        <li>Risk Register, Training, and Documents should be able to create prefilled corrective actions.</li>
+        <li>Creating or editing a corrective action should generate activity history.</li>
+        <li>This is still local SQLite demo data; Microsoft 365 sync is a later implementation stage.</li>
+    </ul>
+</GuidanceNote>
 
 @code {
     private List<CorrectiveAction>? correctiveActions;
+
     private string searchText = "";
     private string statusFilter = "";
     private string priorityFilter = "";
@@ -223,6 +271,7 @@
 
             return query
                 .OrderByDescending(x => x.IsOverdue)
+                .ThenBy(x => x.CompletedDate.HasValue)
                 .ThenBy(x => x.DueDate)
                 .ThenBy(x => x.Priority)
                 .ToList();
@@ -233,17 +282,22 @@
 
     private int OpenCount =>
         correctiveActions?.Count(x =>
-            !string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase) &&
-            !string.Equals(x.Status, "Closed", StringComparison.OrdinalIgnoreCase)) ?? 0;
+            !IsCompletedStatus(x.Status) &&
+            !x.CompletedDate.HasValue) ?? 0;
 
-    private int OverdueCount =>
-        correctiveActions?.Count(x => x.IsOverdue) ?? 0;
+    private int OverdueCount => correctiveActions?.Count(x => x.IsOverdue) ?? 0;
 
     private int CompletedCount =>
         correctiveActions?.Count(x =>
-            string.Equals(x.Status, "Completed", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(x.Status, "Closed", StringComparison.OrdinalIgnoreCase) ||
+            IsCompletedStatus(x.Status) ||
             x.CompletedDate.HasValue) ?? 0;
+
+    private int SourceCount =>
+        correctiveActions?
+            .Select(x => x.Source)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Count() ?? 0;
 
     private List<string> StatusOptions =>
         correctiveActions?
@@ -286,9 +340,20 @@
         return source.Contains(search, StringComparison.OrdinalIgnoreCase);
     }
 
+    private static string DisplayText(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? "Not recorded" : value;
+    }
+
+    private static bool IsCompletedStatus(string? status)
+    {
+        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static string GetStatusClass(string? status)
     {
-        return status?.ToLower() switch
+        return status?.ToLowerInvariant() switch
         {
             "completed" => "badge badge-success",
             "closed" => "badge badge-success",
@@ -301,7 +366,7 @@
 
     private static string GetPriorityClass(string? priority)
     {
-        return priority?.ToLower() switch
+        return priority?.ToLowerInvariant() switch
         {
             "critical" => "badge badge-danger",
             "high" => "badge badge-warning",

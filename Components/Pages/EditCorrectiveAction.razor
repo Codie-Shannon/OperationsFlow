@@ -1,324 +1,316 @@
 ﻿@page "/corrective-actions/edit/{Id:int}"
-
-@using Microsoft.AspNetCore.Components
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
 @using OperationsFlow.Services
-@using CorrectiveActionModel = OperationsFlow.Models.CorrectiveAction
-
 @inject OperationsFlowDbContext Db
 @inject ActivityLogService ActivityLogService
 @inject NavigationManager Navigation
 
 <PageTitle>Edit Corrective Action - OperationsFlow</PageTitle>
 
-<div class="page-shell">
-
-    <section class="page-hero">
-        <div>
-            <div class="eyebrow">Operations</div>
-            <h1>Edit Corrective Action</h1>
-            <p>
-                Update assigned owner, priority, status, due date, completion state, and follow-up notes
-                for a corrective or improvement action.
-            </p>
-        </div>
-
-        <div class="hero-stat-card">
-            <span>Editing</span>
-            <strong>@DisplayReference</strong>
-        </div>
-    </section>
-
-    @if (isLoading)
-    {
-        <div class="panel-card">
-            <p>Loading corrective action...</p>
-        </div>
-    }
-    else if (correctiveAction == null)
-    {
-        <div class="panel-card">
-            <h2>Corrective action could not be found.</h2>
-            <button type="button" class="btn btn-secondary" @onclick="BackToReturnPage">
-                Back
-            </button>
-        </div>
-    }
-    else
-    {
-        @if (!string.IsNullOrWhiteSpace(errorMessage))
+<PageHero
+    Eyebrow="Operations"
+    Title="Edit Corrective Action"
+    Subtitle="Update owner, source, action type, priority, status, due date, completion date, and notes."
+    BadgeText="@DisplayReference"
+    BadgeClass="of-badge-warning">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/corrective-actions">Back to Actions</a>
+        @if (correctiveAction != null)
         {
-            <div class="alert alert-danger">
-                @errorMessage
-            </div>
+            <a class="of-btn of-btn-secondary" href="@($"/corrective-actions/details/{correctiveAction.Id}")">View Details</a>
         }
+    </Actions>
+</PageHero>
 
-        <section class="form-card">
-            <div class="form-grid two-column">
+@if (isLoading)
+{
+    <InfoPanel Title="Loading Corrective Action" Subtitle="Retrieving the selected corrective action record.">
+        <p class="of-muted-text">Loading corrective action...</p>
+    </InfoPanel>
+}
+else if (correctiveAction == null)
+{
+    <EmptyState
+        Title="Corrective action could not be found"
+        Message="The record may have been removed, or the link may be using an invalid ID."
+        Icon="⚠️"
+        ActionText="Back to Actions"
+        ActionHref="/corrective-actions" />
+}
+else
+{
+    <PurposeNote Title="Purpose" Icon="✏️">
+        <p>
+            Use this page to keep action ownership, source context, progress, completion evidence,
+            and follow-up dates current. Changes feed Workload, Reminders, Reports, Data Quality,
+            action details, and Activity Log.
+        </p>
+    </PurposeNote>
 
-                <div class="form-group">
-                    <label>Title</label>
-                    <input class="form-control" @bind="correctiveAction.Title" />
-                </div>
+    <MetricGrid>
+        <MetricCard
+            Title="Status"
+            Value="@DisplayText(correctiveAction.Status)"
+            Detail="Update as the action progresses"
+            Icon="🔄"
+            Tone="@GetStatusTone(correctiveAction.Status)" />
 
-                <div class="form-group">
-                    <label>Source</label>
-                    <select class="form-select" @bind="correctiveAction.Source">
-                        @foreach (var source in SourceOptions)
-                        {
-                            <option value="@source">@source</option>
-                        }
-                    </select>
-                </div>
+        <MetricCard
+            Title="Priority"
+            Value="@DisplayText(correctiveAction.Priority)"
+            Detail="@DisplayText(correctiveAction.ActionType)"
+            Icon="⚡"
+            Tone="@GetPriorityTone(correctiveAction.Priority)" />
 
-                <div class="form-group">
-                    <label>Site</label>
-                    <input class="form-control" @bind="correctiveAction.Site" />
-                </div>
+        <MetricCard
+            Title="Owner"
+            Value="@DisplayText(correctiveAction.Owner)"
+            Detail="@DisplayText(correctiveAction.Department)"
+            Icon="👤" />
 
-                <div class="form-group">
-                    <label>Department</label>
-                    <input class="form-control" @bind="correctiveAction.Department" />
-                </div>
+        <MetricCard
+            Title="Due Date"
+            Value="@correctiveAction.DueDate.ToString("dd MMM")"
+            Detail="@correctiveAction.DueDate.ToString("yyyy")"
+            Icon="📅"
+            Tone="info" />
+    </MetricGrid>
 
-                <div class="form-group">
-                    <label>Owner</label>
-                    <input class="form-control" @bind="correctiveAction.Owner" />
-                </div>
+    <GuidanceNote Title="Before Saving" Icon="💡" Tone="info">
+        <ul>
+            <li>Confirm the owner is still responsible for the next action.</li>
+            <li>Update status if the action has moved forward.</li>
+            <li>Use completion date only when the action is completed or closed.</li>
+            <li>Add notes explaining progress, blockers, decisions, or closure evidence.</li>
+            <li>Completed or closed actions should have enough notes to explain the outcome.</li>
+        </ul>
+    </GuidanceNote>
 
-                <div class="form-group">
-                    <label>Action Type</label>
-                    <select class="form-select" @bind="correctiveAction.ActionType">
-                        @foreach (var actionType in ActionTypeOptions)
-                        {
-                            <option value="@actionType">@actionType</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="guidance-box">
-                    <div class="guidance-icon">i</div>
-                    <div>
-                        <strong>Owner guidance</strong>
-                        <p>
-                            Assign one clear owner so follow-up responsibility appears correctly in workload,
-                            reminders, reports, and data quality checks.
-                        </p>
-                    </div>
-                </div>
-
-                <div></div>
-
-                <div class="form-group">
-                    <label>Priority</label>
-                    <select class="form-select" @bind="correctiveAction.Priority">
-                        @foreach (var priority in PriorityOptions)
-                        {
-                            <option value="@priority">@priority</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Status</label>
-                    <select class="form-select" @bind="correctiveAction.Status">
-                        @foreach (var status in StatusOptions)
-                        {
-                            <option value="@status">@status</option>
-                        }
-                    </select>
-                </div>
-
-            </div>
-
-            <div class="status-flow-panel">
-                <h3>Corrective action status flow</h3>
-                <p>Use statuses consistently so overdue, completed, and active follow-up work stays clear.</p>
-
-                <div class="status-flow-grid">
-                    @foreach (var step in CorrectiveActionStatusSteps)
-                    {
-                        <div class="status-flow-card">
-                            <span class="@step.BadgeClass">@step.Label</span>
-                            <p>@step.Description</p>
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <div class="form-grid two-column">
-
-                <div class="form-group">
-                    <label>Due Date</label>
-                    <InputDate class="form-control" @bind-Value="correctiveAction.DueDate" />
-                </div>
-
-                <div class="form-group">
-                    <label>Completed Date</label>
-                    <InputDate class="form-control" @bind-Value="correctiveAction.CompletedDate" />
-                </div>
-
-                <div class="guidance-box">
-                    <div class="guidance-icon">i</div>
-                    <div>
-                        <strong>Due date guidance</strong>
-                        <p>
-                            Use the next realistic follow-up date. Overdue actions appear in the Safety Meeting Pack,
-                            Compliance Calendar, Workload, Reports, and Data Quality.
-                        </p>
-                    </div>
-                </div>
-
-                <div></div>
-
-                <div class="form-group form-span">
-                    <label>Notes</label>
-                    <textarea class="form-control notes-textarea" @bind="correctiveAction.Notes"></textarea>
-                </div>
-
-                <div class="guidance-box form-span">
-                    <div>
-                        <strong>Corrective action note guidance</strong>
-                        <p>
-                            Good corrective action notes should explain the current follow-up state, not just repeat the title.
-                        </p>
-
-                        <ul>
-                            @foreach (var item in CorrectiveActionNoteGuideItems)
-                            {
-                                <li>@item</li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-
-            </div>
-
-            <section class="activity-history-panel">
-                <div class="section-heading-row">
-                    <div>
-                        <h2>Activity History</h2>
-                        <p>
-                            Record-level traceability for this corrective action. This helps reviewers see what changed,
-                            when it changed, and why the item is moving.
-                        </p>
-                    </div>
-
-                    <div class="activity-count-card">
-                        <span>Events</span>
-                        <strong>@activityHistory.Count</strong>
-                    </div>
-                </div>
-
-                @if (activityHistory.Count == 0)
-                {
-                    <div class="empty-state">
-                        <strong>No activity history yet.</strong>
-                        <p>
-                            Save this corrective action to create a reviewed or updated activity event.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <div class="table-responsive">
-                        <table class="data-table activity-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Action</th>
-                                    <th>Description</th>
-                                    <th>Created By</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var activity in activityHistory)
-                                {
-                                    <tr>
-                                        <td>@activity.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
-                                        <td>
-                                            <span class="@GetActivityBadgeClass(activity.ActionType)">
-                                                @activity.ActionType
-                                            </span>
-                                        </td>
-                                        <td>@activity.Description</td>
-                                        <td>@activity.CreatedBy</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </section>
-
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" @onclick="BackToReturnPage">
-                    Cancel
-                </button>
-
-                <button type="button" class="btn btn-primary" @onclick="SaveCorrectiveAction">
-                    Save Changes
-                </button>
-            </div>
-        </section>
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <GuidanceNote Title="Save blocked" Icon="⚠️" Tone="danger">
+            <p>@errorMessage</p>
+        </GuidanceNote>
     }
-</div>
+
+    <InfoPanel Title="Edit Corrective Action" Subtitle="Update the fields below and save the changes.">
+        <ChildContent>
+            <EditForm Model="correctiveAction" OnSubmit="SaveCorrectiveAction">
+                <div class="of-form-grid">
+                    <div class="of-form-field of-form-field--wide">
+                        <label for="title">Title</label>
+                        <InputText id="title" class="of-input" @bind-Value="correctiveAction.Title" />
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="source">Source</label>
+                        <InputSelect id="source" class="of-select" @bind-Value="correctiveAction.Source">
+                            @foreach (var source in SourceOptions)
+                            {
+                                <option value="@source">@source</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="site">Site</label>
+                        <InputSelect id="site" class="of-select" @bind-Value="correctiveAction.Site">
+                            @foreach (var site in SiteOptions)
+                            {
+                                <option value="@site">@site</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="department">Department</label>
+                        <InputSelect id="department" class="of-select" @bind-Value="correctiveAction.Department">
+                            @foreach (var department in DepartmentOptions)
+                            {
+                                <option value="@department">@department</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="owner">Owner</label>
+                        <InputText id="owner" class="of-input" @bind-Value="correctiveAction.Owner" />
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="actionType">Action Type</label>
+                        <InputSelect id="actionType" class="of-select" @bind-Value="correctiveAction.ActionType">
+                            @foreach (var actionType in ActionTypeOptions)
+                            {
+                                <option value="@actionType">@actionType</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="priority">Priority</label>
+                        <InputSelect id="priority" class="of-select" @bind-Value="correctiveAction.Priority">
+                            @foreach (var priority in PriorityOptions)
+                            {
+                                <option value="@priority">@priority</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="status">Status</label>
+                        <InputSelect id="status" class="of-select" @bind-Value="correctiveAction.Status">
+                            @foreach (var status in StatusOptions)
+                            {
+                                <option value="@status">@status</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="dueDate">Due Date</label>
+                        <InputDate id="dueDate" class="of-input" @bind-Value="correctiveAction.DueDate" />
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="completedDate">Completed Date</label>
+                        <InputDate id="completedDate" class="of-input" @bind-Value="correctiveAction.CompletedDate" />
+                    </div>
+
+                    <div class="of-form-field of-form-field--full">
+                        <label for="notes">Notes</label>
+                        <InputTextArea id="notes" class="of-textarea" @bind-Value="correctiveAction.Notes" />
+                    </div>
+                </div>
+
+                <div class="of-form-actions">
+                    <button type="button" class="of-btn of-btn-secondary" @onclick="BackToReturnPage">Cancel</button>
+                    <button type="button" class="of-btn of-btn-secondary" @onclick="GoToDetails">View Details</button>
+                    <button type="submit" class="of-btn of-btn-primary">Save Changes</button>
+                </div>
+            </EditForm>
+        </ChildContent>
+    </InfoPanel>
+
+    <ActivityHistoryPanel Title="Activity History"
+                          Subtitle="Record-level traceability for this corrective action."
+                          IsEmpty="@(!HasActivityHistory)"
+                          EmptyTitle="No activity history yet"
+                          EmptyMessage="Save this corrective action to create a reviewed or updated activity event.">
+        <ChildContent>
+            @if (HasActivityHistory)
+            {
+                <table class="of-activity-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Action</th>
+                            <th>Description</th>
+                            <th>Created By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var activity in activityHistory)
+                        {
+                            <tr>
+                                <td>@activity.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
+                                <td>
+                                    <span class="@GetActivityBadgeClass(activity.ActionType)">
+                                        @activity.ActionType
+                                    </span>
+                                </td>
+                                <td>@activity.Description</td>
+                                <td>@activity.CreatedBy</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </ChildContent>
+    </ActivityHistoryPanel>
+}
 
 @code {
-    [Parameter]
-    public int Id { get; set; }
+    [Parameter] public int Id { get; set; }
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
 
-    [SupplyParameterFromQuery]
-    public string? ReturnUrl { get; set; }
-
-    private CorrectiveActionModel? correctiveAction;
+    private CorrectiveAction? correctiveAction;
     private List<ActivityLog> activityHistory = new();
-
     private bool isLoading = true;
     private string errorMessage = "";
 
     private string originalTitle = "";
+    private string originalSource = "";
+    private string originalSite = "";
+    private string originalDepartment = "";
     private string originalOwner = "";
-    private string originalStatus = "";
+    private string originalActionType = "";
     private string originalPriority = "";
+    private string originalStatus = "";
     private DateTime originalDueDate;
     private DateTime? originalCompletedDate;
+    private string originalNotes = "";
 
-    private string DisplayReference => correctiveAction == null ? "CA" : $"CA-{correctiveAction.Id}";
+    private bool HasActivityHistory => activityHistory.Any();
 
-    private List<string> SourceOptions = new()
+    private string DisplayReference => correctiveAction == null ? "Action" : correctiveAction.Title;
+
+    private readonly List<string> SourceOptions = new()
     {
+        "Manual Entry",
         "Incident",
+        "Audit",
         "Inspection",
-        "Internal Audit",
         "Risk Register",
-        "Risk Review",
-        "Document Control",
-        "Document Review",
-        "Training Compliance",
-        "Hazard Report",
-        "Quality Review",
-        "Management Review",
-        "Manual / Internal"
-    };
-
-    private List<string> ActionTypeOptions = new()
-    {
-        "Investigation",
-        "Repair",
-        "Process Review",
-        "Document Update",
         "Training",
-        "Follow-up",
-        "Improvement",
-        "Containment",
-        "Checklist",
-        "System Update"
+        "Document Control",
+        "Work Order",
+        "Management Review",
+        "Improvement"
     };
 
-    private List<string> PriorityOptions = new()
+    private readonly List<string> SiteOptions = new()
+    {
+        "Main Workshop",
+        "Yard",
+        "Admin Office",
+        "Warehouse",
+        "Dispatch Bay",
+        "All Sites"
+    };
+
+    private readonly List<string> DepartmentOptions = new()
+    {
+        "Operations",
+        "Health & Safety",
+        "Admin",
+        "Maintenance",
+        "Warehouse",
+        "Dispatch",
+        "Quality",
+        "Management"
+    };
+
+    private readonly List<string> ActionTypeOptions = new()
+    {
+        "Corrective Action",
+        "Preventive Action",
+        "Improvement",
+        "Review",
+        "Process Review",
+        "Checklist",
+        "Training",
+        "Document Update",
+        "Maintenance",
+        "Repair",
+        "Investigation",
+        "System Update",
+        "Evidence Required"
+    };
+
+    private readonly List<string> PriorityOptions = new()
     {
         "Low",
         "Medium",
@@ -326,29 +318,12 @@
         "Critical"
     };
 
-    private List<string> StatusOptions = new()
+    private readonly List<string> StatusOptions = new()
     {
         "Open",
         "In Progress",
         "Completed",
         "Closed"
-    };
-
-    private static readonly IReadOnlyList<StatusFlowStep> CorrectiveActionStatusSteps = new[]
-    {
-        new StatusFlowStep("Open", "Action has been raised but work has not started yet.", "badge badge-warning"),
-        new StatusFlowStep("In Progress", "Owner is actively working through the follow-up.", "badge badge-info"),
-        new StatusFlowStep("Completed", "Work is finished and should have a completed date.", "badge badge-success"),
-        new StatusFlowStep("Closed", "Final review is complete and no further follow-up is needed.", "badge badge-success")
-    };
-
-    private static readonly IReadOnlyList<string> CorrectiveActionNoteGuideItems = new[]
-    {
-        "What was reviewed or changed?",
-        "What is the current blocker or risk?",
-        "Who owns the next action?",
-        "What needs to happen before this can be closed?",
-        "If closing, what evidence or outcome confirms completion?"
     };
 
     protected override async Task OnInitializedAsync()
@@ -358,13 +333,7 @@
 
         if (correctiveAction != null)
         {
-            originalTitle = correctiveAction.Title;
-            originalOwner = correctiveAction.Owner;
-            originalStatus = correctiveAction.Status;
-            originalPriority = correctiveAction.Priority;
-            originalDueDate = correctiveAction.DueDate;
-            originalCompletedDate = correctiveAction.CompletedDate;
-
+            CaptureOriginalValues();
             await LoadActivityHistory();
         }
 
@@ -393,20 +362,25 @@
             return;
         }
 
-        if (correctiveAction.DueDate.Date < correctiveAction.CreatedDate.Date)
+        if (string.IsNullOrWhiteSpace(correctiveAction.Source))
         {
-            errorMessage = "Due date cannot be before created date.";
+            errorMessage = "Please select or enter a source.";
             return;
         }
 
-        if (IsClosedStatus(correctiveAction.Status) && correctiveAction.CompletedDate == null)
+        if (IsCompletedStatus(correctiveAction.Status) && !correctiveAction.CompletedDate.HasValue)
         {
             correctiveAction.CompletedDate = DateTime.Today;
         }
 
-        if (!IsClosedStatus(correctiveAction.Status))
+        if (!IsCompletedStatus(correctiveAction.Status))
         {
             correctiveAction.CompletedDate = null;
+        }
+
+        if (string.IsNullOrWhiteSpace(correctiveAction.Notes))
+        {
+            correctiveAction.Notes = BuildDefaultNotes();
         }
 
         var changeDescriptions = BuildChangeDescriptions();
@@ -418,25 +392,22 @@
             await ActivityLogService.LogAsync(
                 moduleName: "Corrective Actions",
                 recordId: correctiveAction.Id,
-                recordReference: $"CA-{correctiveAction.Id}",
-                actionType: "Updated",
-                description: $"Updated corrective action CA-{correctiveAction.Id}: {string.Join("; ", changeDescriptions)}."
-            );
+                recordReference: correctiveAction.Title,
+                actionType: GetSaveActionType(changeDescriptions),
+                description: $"Updated corrective action '{correctiveAction.Title}': {string.Join("; ", changeDescriptions)}.");
         }
         else
         {
             await ActivityLogService.LogAsync(
                 moduleName: "Corrective Actions",
                 recordId: correctiveAction.Id,
-                recordReference: $"CA-{correctiveAction.Id}",
+                recordReference: correctiveAction.Title,
                 actionType: "Reviewed",
-                description: $"Reviewed corrective action CA-{correctiveAction.Id} with no tracked field changes."
-            );
+                description: $"Reviewed corrective action '{correctiveAction.Title}' with no tracked field changes.");
         }
 
-        UpdateOriginalValues();
+        CaptureOriginalValues();
         await LoadActivityHistory();
-
         BackToReturnPage();
     }
 
@@ -449,9 +420,8 @@
         }
 
         activityHistory = await Db.ActivityLogs
-            .Where(x =>
-                x.ModuleName == "Corrective Actions" &&
-                x.RecordId == correctiveAction.Id)
+            .AsNoTracking()
+            .Where(x => x.ModuleName == "Corrective Actions" && x.RecordId == correctiveAction.Id)
             .OrderByDescending(x => x.CreatedDate)
             .ToListAsync();
     }
@@ -470,19 +440,39 @@
             changes.Add($"title changed from '{originalTitle}' to '{correctiveAction.Title}'");
         }
 
+        if (!string.Equals(originalSource, correctiveAction.Source, StringComparison.Ordinal))
+        {
+            changes.Add($"source changed from '{originalSource}' to '{correctiveAction.Source}'");
+        }
+
+        if (!string.Equals(originalSite, correctiveAction.Site, StringComparison.Ordinal))
+        {
+            changes.Add($"site changed from '{originalSite}' to '{correctiveAction.Site}'");
+        }
+
+        if (!string.Equals(originalDepartment, correctiveAction.Department, StringComparison.Ordinal))
+        {
+            changes.Add($"department changed from '{originalDepartment}' to '{correctiveAction.Department}'");
+        }
+
         if (!string.Equals(originalOwner, correctiveAction.Owner, StringComparison.Ordinal))
         {
             changes.Add($"owner changed from '{originalOwner}' to '{correctiveAction.Owner}'");
         }
 
-        if (!string.Equals(originalStatus, correctiveAction.Status, StringComparison.Ordinal))
+        if (!string.Equals(originalActionType, correctiveAction.ActionType, StringComparison.Ordinal))
         {
-            changes.Add($"status changed from '{originalStatus}' to '{correctiveAction.Status}'");
+            changes.Add($"action type changed from '{originalActionType}' to '{correctiveAction.ActionType}'");
         }
 
         if (!string.Equals(originalPriority, correctiveAction.Priority, StringComparison.Ordinal))
         {
             changes.Add($"priority changed from '{originalPriority}' to '{correctiveAction.Priority}'");
+        }
+
+        if (!string.Equals(originalStatus, correctiveAction.Status, StringComparison.Ordinal))
+        {
+            changes.Add($"status changed from '{originalStatus}' to '{correctiveAction.Status}'");
         }
 
         if (originalDueDate.Date != correctiveAction.DueDate.Date)
@@ -492,21 +482,36 @@
 
         if (originalCompletedDate?.Date != correctiveAction.CompletedDate?.Date)
         {
-            var oldDate = originalCompletedDate.HasValue
-                ? originalCompletedDate.Value.ToString("dd MMM yyyy")
-                : "not completed";
+            var oldValue = originalCompletedDate.HasValue ? originalCompletedDate.Value.ToString("dd MMM yyyy") : "Not completed";
+            var newValue = correctiveAction.CompletedDate.HasValue ? correctiveAction.CompletedDate.Value.ToString("dd MMM yyyy") : "Not completed";
+            changes.Add($"completed date changed from {oldValue} to {newValue}");
+        }
 
-            var newDate = correctiveAction.CompletedDate.HasValue
-                ? correctiveAction.CompletedDate.Value.ToString("dd MMM yyyy")
-                : "not completed";
-
-            changes.Add($"completed date changed from {oldDate} to {newDate}");
+        if (!string.Equals(originalNotes?.Trim(), correctiveAction.Notes?.Trim(), StringComparison.Ordinal))
+        {
+            changes.Add("notes updated");
         }
 
         return changes;
     }
 
-    private void UpdateOriginalValues()
+    private string BuildDefaultNotes()
+    {
+        if (correctiveAction == null)
+        {
+            return "";
+        }
+
+        return "Corrective action reviewed."
+            + Environment.NewLine + $"Source: {correctiveAction.Source}"
+            + Environment.NewLine + $"Site: {correctiveAction.Site}"
+            + Environment.NewLine + $"Department: {correctiveAction.Department}"
+            + Environment.NewLine + $"Action Type: {correctiveAction.ActionType}"
+            + Environment.NewLine + $"Owner: {correctiveAction.Owner}"
+            + Environment.NewLine + "Next step: progress, review, complete, or close the action.";
+    }
+
+    private void CaptureOriginalValues()
     {
         if (correctiveAction == null)
         {
@@ -514,16 +519,47 @@
         }
 
         originalTitle = correctiveAction.Title;
+        originalSource = correctiveAction.Source;
+        originalSite = correctiveAction.Site;
+        originalDepartment = correctiveAction.Department;
         originalOwner = correctiveAction.Owner;
-        originalStatus = correctiveAction.Status;
+        originalActionType = correctiveAction.ActionType;
         originalPriority = correctiveAction.Priority;
+        originalStatus = correctiveAction.Status;
         originalDueDate = correctiveAction.DueDate;
         originalCompletedDate = correctiveAction.CompletedDate;
+        originalNotes = correctiveAction.Notes ?? "";
+    }
+
+    private static string GetSaveActionType(List<string> changes)
+    {
+        var statusChange = changes.FirstOrDefault(x =>
+            x.StartsWith("status changed", StringComparison.OrdinalIgnoreCase));
+
+        if (statusChange != null &&
+            (statusChange.Contains("Completed", StringComparison.OrdinalIgnoreCase) ||
+             statusChange.Contains("Closed", StringComparison.OrdinalIgnoreCase)))
+        {
+            return "Completed";
+        }
+
+        return "Updated";
+    }
+
+    private void GoToDetails()
+    {
+        if (correctiveAction == null)
+        {
+            BackToReturnPage();
+            return;
+        }
+
+        Navigation.NavigateTo($"/corrective-actions/details/{correctiveAction.Id}");
     }
 
     private void BackToReturnPage()
     {
-        var fallbackUrl = "/corrective-actions";
+        const string fallbackUrl = "/corrective-actions";
 
         if (string.IsNullOrWhiteSpace(ReturnUrl))
         {
@@ -540,10 +576,40 @@
         Navigation.NavigateTo(ReturnUrl);
     }
 
-    private static bool IsClosedStatus(string? status)
+    private static string DisplayText(string? value)
     {
-        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
+        return string.IsNullOrWhiteSpace(value) ? "Not recorded" : value;
+    }
+
+    private static bool IsCompletedStatus(string? status)
+    {
+        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetStatusTone(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "completed" => "success",
+            "closed" => "success",
+            "in progress" => "info",
+            "open" => "warning",
+            "new" => "warning",
+            _ => "default"
+        };
+    }
+
+    private static string GetPriorityTone(string? priority)
+    {
+        return priority?.ToLowerInvariant() switch
+        {
+            "critical" => "danger",
+            "high" => "warning",
+            "medium" => "info",
+            "low" => "default",
+            _ => "default"
+        };
     }
 
     private static string GetActivityBadgeClass(string? actionType)
@@ -559,6 +625,4 @@
             _ => "badge badge-secondary"
         };
     }
-
-    private sealed record StatusFlowStep(string Label, string Description, string BadgeClass);
 }

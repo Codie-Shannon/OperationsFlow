@@ -1,297 +1,262 @@
 ﻿@page "/corrective-actions/create"
-
-@using Microsoft.AspNetCore.Components
+@using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
 @using OperationsFlow.Services
-
 @inject OperationsFlowDbContext Db
 @inject ActivityLogService ActivityLogService
 @inject NavigationManager Navigation
 
 <PageTitle>Create Corrective Action - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page corrective-action-create-page">
-    <section class="module-header">
-        <div>
-            <p class="eyebrow dark">Operations</p>
-            <h1>Create Corrective Action</h1>
-            <p>
-                Add a corrective or improvement action from an incident, audit, inspection,
-                risk review, document review, training issue, or management follow-up.
-            </p>
-        </div>
+<PageHero Eyebrow="Operations"
+          Title="Create Corrective Action"
+          Subtitle="Create a new owned follow-up action for incidents, audits, inspections, risks, training gaps, document reviews, or improvement work."
+          BadgeText="New Action"
+          BadgeClass="of-badge-warning">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/corrective-actions">Back to Actions</a>
+        <a class="of-btn of-btn-secondary" href="/risk-register">Risk Register</a>
+        <a class="of-btn of-btn-secondary" href="/training">Training</a>
+        <a class="of-btn of-btn-secondary" href="/documents">Documents</a>
+    </Actions>
+</PageHero>
 
-        <div class="module-header-stat">
-            <span>New Record</span>
-            <strong>CA</strong>
-        </div>
-    </section>
+<PurposeNote Title="Purpose" Icon="✅">
+    <p>
+        Corrective Actions turn issues into owned follow-up work. Use this page to capture the action,
+        source, owner, priority, status, due date, completion date, and supporting notes.
+    </p>
+</PurposeNote>
 
-    @if (IsPrefilled)
-    {
-        <section class="page-purpose-note">
-            <strong>Source-linked action:</strong> this corrective action was pre-filled from
-            <strong>@GetSourceDisplayName(correctiveAction.Source)</strong>.
-            Review the source, title, owner, priority, due date, and notes before saving.
-        </section>
+<MetricGrid>
+    <MetricCard Title="Record Type"
+                Value="Action"
+                Detail="Corrective or improvement follow-up"
+                Icon="📋" />
 
-        <section class="summary-grid">
-            <div class="summary-panel">
-                <div class="panel-header">
-                    <div>
-                        <h2>Source Context</h2>
-                        <p>This action is being created from another OperationsFlow module.</p>
-                    </div>
+    <MetricCard Title="Default Status"
+                Value="@correctiveAction.Status"
+                Detail="New actions start as open work"
+                Icon="🟡"
+                Tone="warning" />
 
-                    <span class="@GetSourceBadgeClass(correctiveAction.Source)">
-                        @GetSourceDisplayName(correctiveAction.Source)
-                    </span>
-                </div>
+    <MetricCard Title="Priority"
+                Value="@correctiveAction.Priority"
+                Detail="Adjust if the issue is urgent"
+                Icon="⚡"
+                Tone="@GetPriorityTone(correctiveAction.Priority)" />
 
-                <div class="detail-grid">
-                    <div>
-                        <span>Source Module</span>
-                        <strong>@GetSourceDisplayName(correctiveAction.Source)</strong>
-                    </div>
+    <MetricCard Title="Due Date"
+                Value="@correctiveAction.DueDate.ToString("dd MMM")"
+                Detail="@correctiveAction.DueDate.ToString("yyyy")"
+                Icon="📅"
+                Tone="info" />
+</MetricGrid>
 
-                    <div>
-                        <span>Suggested Owner</span>
-                        <strong>@DisplayText(correctiveAction.Owner)</strong>
-                    </div>
-
-                    <div>
-                        <span>Suggested Priority</span>
-                        <strong>
-                            <span class="@GetPriorityClass(correctiveAction.Priority)">
-                                @DisplayText(correctiveAction.Priority)
-                            </span>
-                        </strong>
-                    </div>
-
-                    <div>
-                        <span>Return After Save</span>
-                        <strong>@GetReturnDestinationText()</strong>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary-panel">
-                <div class="panel-header">
-                    <div>
-                        <h2>Review Before Saving</h2>
-                        <p>Use this check to keep cross-module follow-up clear.</p>
-                    </div>
-                </div>
-
-                <ul class="review-list">
-                    <li>Confirm the title clearly describes the follow-up work.</li>
-                    <li>Confirm the owner is the person responsible for the next action.</li>
-                    <li>Confirm the priority matches the risk, compliance, or operational impact.</li>
-                    <li>Confirm the notes include enough context to understand the source issue.</li>
-                    <li>Save the action so it appears in Corrective Actions, Workload, Reminders, Reports, and Data Quality.</li>
+<InfoPanel Title="Corrective Action Workflow" Subtitle="What this record is expected to track.">
+    <ChildContent>
+        <div class="of-two-column-grid">
+            <GuidanceNote Title="Record should answer" Icon="✅" Tone="success">
+                <ul>
+                    <li>What issue or improvement needs action?</li>
+                    <li>Where did the action come from?</li>
+                    <li>Who owns the next step?</li>
+                    <li>How urgent is the work?</li>
+                    <li>When is the follow-up due?</li>
                 </ul>
-            </div>
-        </section>
-    }
+            </GuidanceNote>
 
-    @if (!string.IsNullOrWhiteSpace(errorMessage))
-    {
-        <div class="alert alert-danger">@errorMessage</div>
-    }
-
-    <section class="table-card corrective-action-create-card" style="padding: 1.35rem; overflow: visible;">
-        <div class="form-grid corrective-action-create-grid" style="padding-top: 0.75rem; padding-left: 0.15rem; overflow: visible;">
-            <div class="form-field full-width" style="overflow: visible;">
-                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Title</label>
-                <input class="form-control" @bind="correctiveAction.Title" />
-            </div>
-
-            <div class="form-field" style="overflow: visible;">
-                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Source</label>
-                <select class="form-select" @bind="correctiveAction.Source">
-                    @foreach (var source in SourceOptions)
-                    {
-                        <option value="@source">@source</option>
-                    }
-                </select>
-
-                <FormFieldGuide Title="Source guidance"
-                                Text="The source explains where this corrective action came from. Source-linked actions should keep enough context in the notes so the follow-up is traceable." />
-            </div>
-
-            <div class="form-field" style="overflow: visible;">
-                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Action Type</label>
-                <select class="form-select" @bind="correctiveAction.ActionType">
-                    @foreach (var actionType in ActionTypeOptions)
-                    {
-                        <option value="@actionType">@actionType</option>
-                    }
-                </select>
-            </div>
-
-            <div class="form-field" style="overflow: visible;">
-                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Site</label>
-                <select class="form-select" @bind="correctiveAction.Site">
-                    @foreach (var site in SiteOptions)
-                    {
-                        <option value="@site">@site</option>
-                    }
-                </select>
-            </div>
-
-            <div class="form-field" style="overflow: visible;">
-                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Department</label>
-                <select class="form-select" @bind="correctiveAction.Department">
-                    @foreach (var department in DepartmentOptions)
-                    {
-                        <option value="@department">@department</option>
-                    }
-                </select>
-            </div>
-
-            <div class="form-field" style="overflow: visible;">
-                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Owner</label>
-                <input class="form-control" @bind="correctiveAction.Owner" />
-
-                <FormFieldGuide Title="Owner guidance"
-                                Text="Assign one clear owner so follow-up responsibility appears correctly in workload, reminders, reports, and data quality checks." />
-            </div>
-
-            <div class="form-field" style="overflow: visible;">
-                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Priority</label>
-                <select class="form-select" @bind="correctiveAction.Priority">
-                    @foreach (var priority in PriorityOptions)
-                    {
-                        <option value="@priority">@priority</option>
-                    }
-                </select>
-            </div>
-
-            <div class="form-field" style="overflow: visible;">
-                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Status</label>
-                <select class="form-select" @bind="correctiveAction.Status">
-                    @foreach (var status in StatusOptions)
-                    {
-                        <option value="@status">@status</option>
-                    }
-                </select>
-            </div>
+            <GuidanceNote Title="Source-linked examples" Icon="🔗" Tone="info">
+                <ul>
+                    <li>Risk Register item needing mitigation.</li>
+                    <li>Training gap needing booking or renewal.</li>
+                    <li>Document review needing update or approval.</li>
+                    <li>Inspection issue needing repair or evidence.</li>
+                    <li>Audit finding needing closure evidence.</li>
+                </ul>
+            </GuidanceNote>
         </div>
+    </ChildContent>
+</InfoPanel>
 
-        <StatusFlowGuide Title="Corrective action status flow"
-                         Description="Use statuses consistently so overdue, completed, and active follow-up work stays clear."
-                         Steps="CorrectiveActionStatusSteps" />
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <GuidanceNote Title="Save blocked" Icon="⚠️" Tone="danger">
+        <p>@errorMessage</p>
+    </GuidanceNote>
+}
 
-        <div class="form-grid form-grid-spaced" style="padding-left: 0.15rem; overflow: visible;">
-            <div class="form-field" style="overflow: visible;">
-                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Created Date</label>
-                <input class="form-control" type="date" @bind="correctiveAction.CreatedDate" />
-            </div>
+<InfoPanel Title="New Corrective Action" Subtitle="Complete the fields below and save the action.">
+    <ChildContent>
+        <EditForm Model="correctiveAction" OnSubmit="SaveCorrectiveAction">
+            <div class="of-form-grid">
+                <div class="of-form-field of-form-field--wide">
+                    <label for="title">Title</label>
+                    <InputText id="title" class="of-input" @bind-Value="correctiveAction.Title" />
+                </div>
 
-            <div class="form-field" style="overflow: visible;">
-                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Due Date</label>
-                <input class="form-control" type="date" @bind="correctiveAction.DueDate" />
+                <div class="of-form-field">
+                    <label for="source">Source</label>
+                    <InputSelect id="source" class="of-select" @bind-Value="correctiveAction.Source">
+                        @foreach (var source in SourceOptions)
+                        {
+                            <option value="@source">@source</option>
+                        }
+                    </InputSelect>
+                </div>
 
-                <FormFieldGuide Title="Due date guidance"
-                                Text="Use the next realistic follow-up date. Overdue actions appear in the Safety Meeting Pack, Compliance Calendar, Workload, Reports, and Data Quality." />
-            </div>
+                <div class="of-form-field">
+                    <label for="site">Site</label>
+                    <InputSelect id="site" class="of-select" @bind-Value="correctiveAction.Site">
+                        @foreach (var site in SiteOptions)
+                        {
+                            <option value="@site">@site</option>
+                        }
+                    </InputSelect>
+                </div>
 
-            <div class="form-field full-width" style="overflow: visible;">
-                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Notes</label>
-                <textarea class="form-control" rows="10" @bind="correctiveAction.Notes"></textarea>
+                <div class="of-form-field">
+                    <label for="department">Department</label>
+                    <InputSelect id="department" class="of-select" @bind-Value="correctiveAction.Department">
+                        @foreach (var department in DepartmentOptions)
+                        {
+                            <option value="@department">@department</option>
+                        }
+                    </InputSelect>
+                </div>
 
-                <div class="guidance-card">
-                    <div>
-                        <strong>Corrective action note guidance</strong>
-                        <p>
-                            Good corrective action notes should explain the current follow-up state, not just repeat the title.
-                        </p>
+                <div class="of-form-field">
+                    <label for="owner">Owner</label>
+                    <InputText id="owner" class="of-input" @bind-Value="correctiveAction.Owner" />
+                </div>
 
-                        <ul>
-                            <li>What source record or issue created this follow-up?</li>
-                            <li>What needs to be reviewed or changed?</li>
-                            <li>Who owns the next action?</li>
-                            <li>What needs to happen before this can be closed?</li>
-                            <li>If closing, what evidence or outcome confirms completion?</li>
-                        </ul>
-                    </div>
+                <div class="of-form-field">
+                    <label for="actionType">Action Type</label>
+                    <InputSelect id="actionType" class="of-select" @bind-Value="correctiveAction.ActionType">
+                        @foreach (var actionType in ActionTypeOptions)
+                        {
+                            <option value="@actionType">@actionType</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="of-form-field">
+                    <label for="priority">Priority</label>
+                    <InputSelect id="priority" class="of-select" @bind-Value="correctiveAction.Priority">
+                        @foreach (var priority in PriorityOptions)
+                        {
+                            <option value="@priority">@priority</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="of-form-field">
+                    <label for="status">Status</label>
+                    <InputSelect id="status" class="of-select" @bind-Value="correctiveAction.Status">
+                        @foreach (var status in StatusOptions)
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="of-form-field">
+                    <label for="dueDate">Due Date</label>
+                    <InputDate id="dueDate" class="of-input" @bind-Value="correctiveAction.DueDate" />
+                </div>
+
+                <div class="of-form-field">
+                    <label for="completedDate">Completed Date</label>
+                    <InputDate id="completedDate" class="of-input" @bind-Value="correctiveAction.CompletedDate" />
+                </div>
+
+                <div class="of-form-field of-form-field--full">
+                    <label for="notes">Notes</label>
+                    <InputTextArea id="notes" class="of-textarea" @bind-Value="correctiveAction.Notes" />
                 </div>
             </div>
-        </div>
 
-        <div class="form-actions">
-            <button class="btn btn-secondary" type="button" @onclick="Cancel">Cancel</button>
-            <button class="btn btn-primary" type="button" @onclick="SaveCorrectiveAction">Save Corrective Action</button>
+            <div class="of-form-actions">
+                <button type="button" class="of-btn of-btn-secondary" @onclick="Cancel">Cancel</button>
+                <button type="submit" class="of-btn of-btn-primary">Save Corrective Action</button>
+            </div>
+        </EditForm>
+    </ChildContent>
+</InfoPanel>
+
+<InfoPanel Title="After Saving" Subtitle="This action becomes part of the wider workflow evidence.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Action Register</strong>
+                <span>The saved action can be searched, filtered, opened, and edited.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Workload</strong>
+                <span>The owner and due date feed workload pressure and follow-up visibility.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Reminders</strong>
+                <span>Overdue and due-soon actions appear in reminder views.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Traceability</strong>
+                <span>The Activity Log records that this corrective action was created.</span>
+            </div>
         </div>
-    </section>
-</div>
+    </ChildContent>
+</InfoPanel>
+
+<GuidanceNote Title="Prototype Boundary" Icon="🧱" Tone="warning">
+    <ul>
+        <li>This page tracks corrective action workflow metadata in local SQLite.</li>
+        <li>It does not yet enforce production approvals, signatures, or evidence attachment rules.</li>
+        <li>It does not yet sync to Microsoft Lists, SharePoint, Teams, Outlook, or Power Automate.</li>
+        <li>A production version would add permissions, notifications, audit retention, evidence files, and approval routing.</li>
+    </ul>
+</GuidanceNote>
 
 @code {
-    [SupplyParameterFromQuery] public string? Source { get; set; }
-    [SupplyParameterFromQuery] public string? Title { get; set; }
-    [SupplyParameterFromQuery] public string? Site { get; set; }
-    [SupplyParameterFromQuery] public string? Department { get; set; }
-    [SupplyParameterFromQuery] public string? Owner { get; set; }
-    [SupplyParameterFromQuery] public string? Priority { get; set; }
-    [SupplyParameterFromQuery] public string? ActionType { get; set; }
-    [SupplyParameterFromQuery] public string? Notes { get; set; }
-    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+    [SupplyParameterFromQuery(Name = "source")] public string? QuerySource { get; set; }
+    [SupplyParameterFromQuery(Name = "title")] public string? QueryTitle { get; set; }
+    [SupplyParameterFromQuery(Name = "site")] public string? QuerySite { get; set; }
+    [SupplyParameterFromQuery(Name = "department")] public string? QueryDepartment { get; set; }
+    [SupplyParameterFromQuery(Name = "owner")] public string? QueryOwner { get; set; }
+    [SupplyParameterFromQuery(Name = "priority")] public string? QueryPriority { get; set; }
+    [SupplyParameterFromQuery(Name = "notes")] public string? QueryNotes { get; set; }
 
     private CorrectiveAction correctiveAction = new();
     private string errorMessage = "";
 
-    private bool IsPrefilled =>
-        !string.IsNullOrWhiteSpace(Source)
-        || !string.IsNullOrWhiteSpace(Title)
-        || !string.IsNullOrWhiteSpace(Site)
-        || !string.IsNullOrWhiteSpace(Department)
-        || !string.IsNullOrWhiteSpace(Owner)
-        || !string.IsNullOrWhiteSpace(Priority)
-        || !string.IsNullOrWhiteSpace(ActionType)
-        || !string.IsNullOrWhiteSpace(Notes)
-        || !string.IsNullOrWhiteSpace(ReturnUrl);
-
-    private List<string> SourceOptions = new()
+    private readonly List<string> SourceOptions = new()
     {
+        "Manual Entry",
         "Incident",
+        "Audit",
         "Inspection",
-        "Internal Audit",
         "Risk Register",
-        "Risk Review",
-        "Document Control",
-        "Document Review",
-        "Training Compliance",
-        "Hazard Report",
-        "Quality Review",
-        "Management Review",
-        "Manual / Internal"
-    };
-
-    private List<string> ActionTypeOptions = new()
-    {
-        "Investigation",
-        "Repair",
-        "Process Review",
-        "Document Update",
-        "Checklist",
         "Training",
-        "System Update",
-        "Follow-up",
-        "Improvement",
-        "Containment"
+        "Document Control",
+        "Work Order",
+        "Management Review",
+        "Improvement"
     };
 
-    private List<string> SiteOptions = new()
+    private readonly List<string> SiteOptions = new()
     {
         "Main Workshop",
         "Yard",
         "Admin Office",
         "Warehouse",
-        "Dispatch Bay"
+        "Dispatch Bay",
+        "All Sites"
     };
 
-    private List<string> DepartmentOptions = new()
+    private readonly List<string> DepartmentOptions = new()
     {
         "Operations",
         "Health & Safety",
@@ -299,10 +264,28 @@
         "Maintenance",
         "Warehouse",
         "Dispatch",
-        "Quality"
+        "Quality",
+        "Management"
     };
 
-    private List<string> PriorityOptions = new()
+    private readonly List<string> ActionTypeOptions = new()
+    {
+        "Corrective Action",
+        "Preventive Action",
+        "Improvement",
+        "Review",
+        "Process Review",
+        "Checklist",
+        "Training",
+        "Document Update",
+        "Maintenance",
+        "Repair",
+        "Investigation",
+        "System Update",
+        "Evidence Required"
+    };
+
+    private readonly List<string> PriorityOptions = new()
     {
         "Low",
         "Medium",
@@ -310,7 +293,7 @@
         "Critical"
     };
 
-    private List<string> StatusOptions = new()
+    private readonly List<string> StatusOptions = new()
     {
         "Open",
         "In Progress",
@@ -318,39 +301,21 @@
         "Closed"
     };
 
-    private static readonly IReadOnlyList<StatusFlowGuide.StatusFlowStep> CorrectiveActionStatusSteps = new[]
-    {
-        new StatusFlowGuide.StatusFlowStep("Open", "Action has been raised but work has not started yet.", "badge badge-warning"),
-        new StatusFlowGuide.StatusFlowStep("In Progress", "Owner is actively working through the follow-up.", "badge badge-info"),
-        new StatusFlowGuide.StatusFlowStep("Completed", "Work is finished and should have a completed date.", "badge badge-success"),
-        new StatusFlowGuide.StatusFlowStep("Closed", "Final review is complete and no further follow-up is needed.", "badge badge-success")
-    };
-
     protected override void OnInitialized()
     {
-        var source = UseAllowedOrDefault(Source, SourceOptions, "Incident");
-        var title = UseOrDefault(Title, "");
-        var site = UseAllowedOrDefault(Site, SiteOptions, "Main Workshop");
-        var department = UseAllowedOrDefault(Department, DepartmentOptions, "Health & Safety");
-        var owner = UseOrDefault(Owner, "");
-        var actionType = UseAllowedOrDefault(ActionType, ActionTypeOptions, GetDefaultActionTypeForSource(source));
-        var priority = UseAllowedOrDefault(Priority, PriorityOptions, "Medium");
-        var notes = BuildSourceAwareNotes(source, Notes);
-
         correctiveAction = new CorrectiveAction
         {
-            Title = title,
-            Source = source,
-            Site = site,
-            Department = department,
-            Owner = owner,
-            ActionType = actionType,
-            Priority = priority,
+            Title = string.IsNullOrWhiteSpace(QueryTitle) ? "" : QueryTitle,
+            Source = NormalizeOption(QuerySource, SourceOptions, "Manual Entry"),
+            Site = NormalizeOption(QuerySite, SiteOptions, "Main Workshop"),
+            Department = NormalizeOption(QueryDepartment, DepartmentOptions, "Operations"),
+            Owner = QueryOwner ?? "",
+            ActionType = "Corrective Action",
+            Priority = NormalizeOption(QueryPriority, PriorityOptions, "Medium"),
             Status = "Open",
-            CreatedDate = DateTime.Today,
-            DueDate = DateTime.Today.AddDays(14),
+            DueDate = DateTime.Today.AddDays(7),
             CompletedDate = null,
-            Notes = notes
+            Notes = QueryNotes ?? ""
         };
     }
 
@@ -370,19 +335,25 @@
             return;
         }
 
-        if (correctiveAction.DueDate < correctiveAction.CreatedDate)
+        if (string.IsNullOrWhiteSpace(correctiveAction.Source))
         {
-            errorMessage = "Due date cannot be before created date.";
+            errorMessage = "Please select or enter a source.";
             return;
         }
 
-        if (IsCompletedStatus(correctiveAction.Status))
+        if (IsCompletedStatus(correctiveAction.Status) && !correctiveAction.CompletedDate.HasValue)
         {
             correctiveAction.CompletedDate = DateTime.Today;
         }
-        else
+
+        if (!IsCompletedStatus(correctiveAction.Status))
         {
             correctiveAction.CompletedDate = null;
+        }
+
+        if (string.IsNullOrWhiteSpace(correctiveAction.Notes))
+        {
+            correctiveAction.Notes = BuildDefaultNotes();
         }
 
         Db.CorrectiveActions.Add(correctiveAction);
@@ -391,190 +362,60 @@
         await ActivityLogService.LogAsync(
             moduleName: "Corrective Actions",
             recordId: correctiveAction.Id,
-            recordReference: $"CA-{correctiveAction.Id}",
+            recordReference: correctiveAction.Title,
             actionType: "Created",
-            description: BuildCreatedActivityDescription()
-        );
+            description: BuildCreatedDescription());
 
-        BackToReturnPage();
+        Navigation.NavigateTo("/corrective-actions");
     }
 
-    private string BuildCreatedActivityDescription()
+    private string BuildCreatedDescription()
     {
-        if (!IsPrefilled)
-        {
-            return $"Created corrective action CA-{correctiveAction.Id}: {correctiveAction.Title}.";
-        }
-
-        return $"Created corrective action CA-{correctiveAction.Id} from {GetSourceDisplayName(correctiveAction.Source)}: {correctiveAction.Title}.";
+        return $"Created corrective action '{correctiveAction.Title}' from source '{correctiveAction.Source}'. Assigned to {correctiveAction.Owner}, priority {correctiveAction.Priority}, status {correctiveAction.Status}.";
     }
 
-    private string BuildSourceAwareNotes(string source, string? incomingNotes)
+    private string BuildDefaultNotes()
     {
-        var cleanNotes = UseOrDefault(incomingNotes, "");
-
-        if (!IsPrefilled)
-        {
-            return cleanNotes;
-        }
-
-        var sourceHeader = $"Source context: {GetSourceDisplayName(source)}";
-        var returnText = string.IsNullOrWhiteSpace(ReturnUrl)
-            ? "Return destination: Corrective Actions"
-            : $"Return destination: {GetReturnDestinationText()}";
-
-        if (string.IsNullOrWhiteSpace(cleanNotes))
-        {
-            return sourceHeader + Environment.NewLine
-                + returnText + Environment.NewLine + Environment.NewLine
-                + "Follow-up notes:" + Environment.NewLine
-                + "- Confirm the source issue." + Environment.NewLine
-                + "- Record the required action." + Environment.NewLine
-                + "- Update the status when reviewed.";
-        }
-
-        if (cleanNotes.Contains("Source context:", StringComparison.OrdinalIgnoreCase))
-        {
-            return cleanNotes;
-        }
-
-        return sourceHeader + Environment.NewLine
-            + returnText + Environment.NewLine + Environment.NewLine
-            + cleanNotes;
+        return "Initial corrective action created."
+            + Environment.NewLine + $"Source: {correctiveAction.Source}"
+            + Environment.NewLine + $"Site: {correctiveAction.Site}"
+            + Environment.NewLine + $"Department: {correctiveAction.Department}"
+            + Environment.NewLine + $"Action Type: {correctiveAction.ActionType}"
+            + Environment.NewLine + $"Owner: {correctiveAction.Owner}"
+            + Environment.NewLine + "Next step: progress, review, complete, or close the action.";
     }
 
     private void Cancel()
     {
-        BackToReturnPage();
+        Navigation.NavigateTo("/corrective-actions");
     }
 
-    private void BackToReturnPage()
-    {
-        var fallbackUrl = "/corrective-actions";
-
-        if (string.IsNullOrWhiteSpace(ReturnUrl))
-        {
-            Navigation.NavigateTo(fallbackUrl);
-            return;
-        }
-
-        if (!ReturnUrl.StartsWith("/"))
-        {
-            Navigation.NavigateTo(fallbackUrl);
-            return;
-        }
-
-        Navigation.NavigateTo(ReturnUrl);
-    }
-
-    private string GetReturnDestinationText()
-    {
-        if (string.IsNullOrWhiteSpace(ReturnUrl))
-        {
-            return "Corrective Actions";
-        }
-
-        return ReturnUrl switch
-        {
-            "/risk-register" => "Risk Register",
-            "/risks" => "Risk Register",
-            "/documents" => "Documents",
-            "/training" => "Training",
-            "/safety-meeting-pack" => "Safety Meeting Pack",
-            "/data-quality" => "Data Quality",
-            "/reminders" => "Reminder Centre",
-            "/workload" => "Workload",
-            "/reports" => "Reports",
-            _ => ReturnUrl
-        };
-    }
-
-    private static string GetDefaultActionTypeForSource(string source)
-    {
-        return source switch
-        {
-            "Risk Register" => "Process Review",
-            "Risk Review" => "Process Review",
-            "Document Control" => "Document Update",
-            "Document Review" => "Document Update",
-            "Training Compliance" => "Training",
-            "Incident" => "Investigation",
-            "Inspection" => "Checklist",
-            "Internal Audit" => "Process Review",
-            _ => "Follow-up"
-        };
-    }
-
-    private static string GetSourceDisplayName(string? source)
-    {
-        return source switch
-        {
-            "Risk Register" => "Risk Register",
-            "Risk Review" => "Risk Register",
-            "Document Control" => "Document Control",
-            "Document Review" => "Document Control",
-            "Training Compliance" => "Training Compliance",
-            "Internal Audit" => "Internal Audit",
-            "Manual / Internal" => "Manual / Internal",
-            null or "" => "Manual / Internal",
-            _ => source
-        };
-    }
-
-    private static string GetSourceBadgeClass(string? source)
-    {
-        return source switch
-        {
-            "Risk Register" => "badge badge-danger",
-            "Risk Review" => "badge badge-danger",
-            "Document Control" => "badge badge-info",
-            "Document Review" => "badge badge-info",
-            "Training Compliance" => "badge badge-warning",
-            "Incident" => "badge badge-danger",
-            "Inspection" => "badge badge-warning",
-            "Internal Audit" => "badge badge-info",
-            _ => "badge badge-muted"
-        };
-    }
-
-    private static string GetPriorityClass(string? priority)
-    {
-        return priority?.ToLowerInvariant() switch
-        {
-            "critical" => "badge badge-danger",
-            "high" => "badge badge-warning",
-            "medium" => "badge badge-info",
-            "low" => "badge badge-muted",
-            _ => "badge badge-muted"
-        };
-    }
-
-    private static string DisplayText(string? value)
-    {
-        return string.IsNullOrWhiteSpace(value) ? "Not recorded" : value;
-    }
-
-    private static string UseOrDefault(string? value, string fallback)
-    {
-        return string.IsNullOrWhiteSpace(value) ? fallback : value;
-    }
-
-    private static string UseAllowedOrDefault(string? value, List<string> allowedValues, string fallback)
+    private static string NormalizeOption(string? value, List<string> options, string fallback)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             return fallback;
         }
 
-        var matchingValue = allowedValues
-            .FirstOrDefault(x => string.Equals(x, value, StringComparison.OrdinalIgnoreCase));
-
-        return matchingValue ?? fallback;
+        var match = options.FirstOrDefault(x => string.Equals(x, value, StringComparison.OrdinalIgnoreCase));
+        return match ?? value;
     }
 
     private static bool IsCompletedStatus(string? status)
     {
-        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
+        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetPriorityTone(string? priority)
+    {
+        return priority?.ToLowerInvariant() switch
+        {
+            "critical" => "danger",
+            "high" => "warning",
+            "medium" => "info",
+            "low" => "default",
+            _ => "default"
+        };
     }
 }

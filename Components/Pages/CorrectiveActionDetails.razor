@@ -1,128 +1,127 @@
-﻿@page "/work-orders/details/{Id:int}"
-@page "/work-orders/view/{Id:int}"
-@using Microsoft.AspNetCore.Components
+﻿@page "/corrective-actions/details/{Id:int}"
+@page "/corrective-actions/view/{Id:int}"
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
 @inject OperationsFlowDbContext Db
 @inject NavigationManager Navigation
 
-<PageTitle>Work Order Details - OperationsFlow</PageTitle>
+<PageTitle>Corrective Action Details - OperationsFlow</PageTitle>
 
 @if (isLoading)
 {
     <PageHero
         Eyebrow="Operations"
-        Title="Loading Work Order"
-        Subtitle="Loading the selected work order record."
+        Title="Loading Corrective Action"
+        Subtitle="Loading the selected corrective action record."
         BadgeText="Loading"
         BadgeClass="of-badge-info" />
 
-    <InfoPanel Title="Loading" Subtitle="Retrieving work order details from the local SQLite database.">
-        <p class="of-muted-text">Loading work order...</p>
+    <InfoPanel Title="Loading" Subtitle="Retrieving corrective action details from the local SQLite database.">
+        <p class="of-muted-text">Loading corrective action...</p>
     </InfoPanel>
 }
-else if (workOrder == null)
+else if (correctiveAction == null)
 {
     <PageHero
         Eyebrow="Operations"
-        Title="Work Order Not Found"
-        Subtitle="The requested work order could not be found."
+        Title="Corrective Action Not Found"
+        Subtitle="The requested corrective action could not be found."
         BadgeText="Missing"
         BadgeClass="of-badge-danger">
         <Actions>
-            <a class="of-btn of-btn-primary" href="/work-orders">Back to Work Orders</a>
+            <a class="of-btn of-btn-primary" href="/corrective-actions">Back to Actions</a>
         </Actions>
     </PageHero>
 
     <EmptyState
-        Title="Work order could not be found"
+        Title="Corrective action could not be found"
         Message="The record may have been removed, or the link may be using an invalid ID."
         Icon="⚠️"
-        ActionText="Back to Work Orders"
-        ActionHref="/work-orders" />
+        ActionText="Back to Actions"
+        ActionHref="/corrective-actions" />
 }
 else
 {
     <PageHero
         Eyebrow="Operations"
-        Title="@workOrder.WorkOrderNumber"
-        Subtitle="@workOrder.Title"
-        BadgeText="@workOrder.Status"
-        BadgeClass="@GetStatusBadgeClass(workOrder.Status)">
+        Title="@correctiveAction.Title"
+        Subtitle="@($"Source: {DisplayText(correctiveAction.Source)}")"
+        BadgeText="@DisplayText(correctiveAction.Status)"
+        BadgeClass="@GetStatusBadgeClass(correctiveAction.Status)">
         <Actions>
-            <a class="of-btn of-btn-secondary" href="/work-orders">Back to Work Orders</a>
-            <a class="of-btn of-btn-primary" href="@BuildEditUrl()">Edit Work Order</a>
+            <a class="of-btn of-btn-secondary" href="/corrective-actions">Back to Actions</a>
+            <a class="of-btn of-btn-primary" href="@BuildEditUrl()">Edit Action</a>
         </Actions>
     </PageHero>
 
     <MetricGrid>
         <MetricCard
             Title="Priority"
-            Value="@workOrder.Priority"
-            Detail="@workOrder.Type"
+            Value="@DisplayText(correctiveAction.Priority)"
+            Detail="@DisplayText(correctiveAction.ActionType)"
             Icon="⚡"
-            Tone="@GetPriorityTone(workOrder.Priority)" />
+            Tone="@GetPriorityTone(correctiveAction.Priority)" />
 
         <MetricCard
             Title="Due Date"
-            Value="@workOrder.DueDate.ToString("dd MMM")"
-            Detail="@workOrder.DueDate.ToString("yyyy")"
+            Value="@correctiveAction.DueDate.ToString("dd MMM")"
+            Detail="@correctiveAction.DueDate.ToString("yyyy")"
             Icon="📅"
             Tone="info" />
 
         <MetricCard
             Title="Flag"
-            Value="@(workOrder.IsOverdue ? "Overdue" : "On Track")"
-            Detail="@(workOrder.IsOverdue ? "Past due and not closed" : "No overdue flag")"
-            Icon="@(workOrder.IsOverdue ? "🚨" : "✅")"
-            Tone="@(workOrder.IsOverdue ? "danger" : "success")" />
+            Value="@GetFlagText()"
+            Detail="@GetFlagDetail()"
+            Icon="@GetFlagIcon()"
+            Tone="@GetFlagTone()" />
 
         <MetricCard
             Title="Owner"
-            Value="@DisplayText(workOrder.Owner)"
-            Detail="@workOrder.Department"
+            Value="@DisplayText(correctiveAction.Owner)"
+            Detail="@DisplayText(correctiveAction.Department)"
             Icon="👤" />
     </MetricGrid>
 
-    <InfoPanel Title="Work Order Details" Subtitle="Core record information used by workload, reminders, reports, and activity history.">
+    <InfoPanel Title="Corrective Action Details" Subtitle="Core record information used by workload, reminders, reports, and activity history.">
         <ChildContent>
             <div class="of-detail-grid">
                 <div class="of-detail-item">
-                    <span>Work Order Number</span>
-                    <strong>@workOrder.WorkOrderNumber</strong>
+                    <span>Title</span>
+                    <strong>@correctiveAction.Title</strong>
                 </div>
 
                 <div class="of-detail-item">
-                    <span>Title</span>
-                    <strong>@workOrder.Title</strong>
+                    <span>Source</span>
+                    <strong>@DisplayText(correctiveAction.Source)</strong>
                 </div>
 
                 <div class="of-detail-item">
                     <span>Site</span>
-                    <strong>@workOrder.Site</strong>
+                    <strong>@DisplayText(correctiveAction.Site)</strong>
                 </div>
 
                 <div class="of-detail-item">
                     <span>Department</span>
-                    <strong>@workOrder.Department</strong>
+                    <strong>@DisplayText(correctiveAction.Department)</strong>
                 </div>
 
                 <div class="of-detail-item">
                     <span>Owner</span>
-                    <strong>@DisplayText(workOrder.Owner)</strong>
+                    <strong>@DisplayText(correctiveAction.Owner)</strong>
                 </div>
 
                 <div class="of-detail-item">
-                    <span>Type</span>
-                    <strong>@workOrder.Type</strong>
+                    <span>Action Type</span>
+                    <strong>@DisplayText(correctiveAction.ActionType)</strong>
                 </div>
 
                 <div class="of-detail-item">
                     <span>Priority</span>
                     <strong>
-                        <span class="@GetPriorityClass(workOrder.Priority)">
-                            @workOrder.Priority
+                        <span class="@GetPriorityClass(correctiveAction.Priority)">
+                            @DisplayText(correctiveAction.Priority)
                         </span>
                     </strong>
                 </div>
@@ -130,36 +129,40 @@ else
                 <div class="of-detail-item">
                     <span>Status</span>
                     <strong>
-                        <span class="@GetStatusClass(workOrder.Status)">
-                            @workOrder.Status
+                        <span class="@GetStatusClass(correctiveAction.Status)">
+                            @DisplayText(correctiveAction.Status)
                         </span>
                     </strong>
                 </div>
 
                 <div class="of-detail-item">
-                    <span>Created Date</span>
-                    <strong>@workOrder.CreatedDate.ToString("dd MMM yyyy")</strong>
+                    <span>Due Date</span>
+                    <strong>@correctiveAction.DueDate.ToString("dd MMM yyyy")</strong>
                 </div>
 
                 <div class="of-detail-item">
-                    <span>Due Date</span>
-                    <strong>@workOrder.DueDate.ToString("dd MMM yyyy")</strong>
+                    <span>Completed Date</span>
+                    <strong>
+                        @(correctiveAction.CompletedDate.HasValue
+                            ? correctiveAction.CompletedDate.Value.ToString("dd MMM yyyy")
+                            : "Not completed")
+                    </strong>
                 </div>
             </div>
         </ChildContent>
     </InfoPanel>
 
-    <InfoPanel Title="Notes" Subtitle="Recorded context, follow-up details, or operational notes for this work order.">
+    <InfoPanel Title="Notes" Subtitle="Recorded context, follow-up detail, source context, closure evidence, or review notes.">
         <ChildContent>
-            <p class="of-notes-box">@DisplayText(workOrder.Notes)</p>
+            <p class="of-notes-box">@DisplayText(correctiveAction.Notes)</p>
         </ChildContent>
     </InfoPanel>
 
     <ActivityHistoryPanel Title="Activity History"
-                          Subtitle="Record-level traceability for this work order."
+                          Subtitle="Record-level traceability for this corrective action."
                           IsEmpty="@(!HasActivityHistory)"
                           EmptyTitle="No activity history yet"
-                          EmptyMessage="Create, edit, or review this work order to generate activity history.">
+                          EmptyMessage="Create, edit, or review this corrective action to generate activity history.">
         <ChildContent>
             @if (HasActivityHistory)
             {
@@ -194,27 +197,27 @@ else
 
     <ActionStrip
         Title="Next Actions"
-        Description="Return to the register or update this work order.">
-        <button type="button" class="of-btn of-btn-secondary" @onclick="BackToWorkOrders">Back to Work Orders</button>
-        <button type="button" class="of-btn of-btn-primary" @onclick="GoToEdit">Edit Work Order</button>
+        Description="Return to the action register or update this corrective action.">
+        <button type="button" class="of-btn of-btn-secondary" @onclick="BackToActions">Back to Actions</button>
+        <button type="button" class="of-btn of-btn-primary" @onclick="GoToEdit">Edit Action</button>
     </ActionStrip>
 }
 
 @code {
     [Parameter] public int Id { get; set; }
 
-    private WorkOrder? workOrder;
+    private CorrectiveAction? correctiveAction;
     private List<ActivityLog> activityHistory = new();
     private bool isLoading = true;
     private bool HasActivityHistory => activityHistory.Any();
 
     protected override async Task OnInitializedAsync()
     {
-        workOrder = await Db.WorkOrders
+        correctiveAction = await Db.CorrectiveActions
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == Id);
 
-        if (workOrder != null)
+        if (correctiveAction != null)
         {
             await LoadActivityHistory();
         }
@@ -226,14 +229,14 @@ else
     {
         activityHistory = await Db.ActivityLogs
             .AsNoTracking()
-            .Where(x => x.ModuleName == "Work Orders" && x.RecordId == Id)
+            .Where(x => x.ModuleName == "Corrective Actions" && x.RecordId == Id)
             .OrderByDescending(x => x.CreatedDate)
             .ToListAsync();
     }
 
     private string BuildEditUrl()
     {
-        return $"/work-orders/edit/{Id}?returnUrl={Uri.EscapeDataString($"/work-orders/details/{Id}")}";
+        return $"/corrective-actions/edit/{Id}?returnUrl={Uri.EscapeDataString($"/corrective-actions/details/{Id}")}";
     }
 
     private void GoToEdit()
@@ -241,14 +244,100 @@ else
         Navigation.NavigateTo(BuildEditUrl());
     }
 
-    private void BackToWorkOrders()
+    private void BackToActions()
     {
-        Navigation.NavigateTo("/work-orders");
+        Navigation.NavigateTo("/corrective-actions");
+    }
+
+    private string GetFlagText()
+    {
+        if (correctiveAction == null)
+        {
+            return "Unknown";
+        }
+
+        if (correctiveAction.IsOverdue)
+        {
+            return "Overdue";
+        }
+
+        if (IsCompletedStatus(correctiveAction.Status) || correctiveAction.CompletedDate.HasValue)
+        {
+            return "Completed";
+        }
+
+        return "On Track";
+    }
+
+    private string GetFlagDetail()
+    {
+        if (correctiveAction == null)
+        {
+            return "";
+        }
+
+        if (correctiveAction.IsOverdue)
+        {
+            return "Past due and not completed";
+        }
+
+        if (IsCompletedStatus(correctiveAction.Status) || correctiveAction.CompletedDate.HasValue)
+        {
+            return "Completion evidence recorded";
+        }
+
+        return "No overdue flag";
+    }
+
+    private string GetFlagIcon()
+    {
+        if (correctiveAction == null)
+        {
+            return "ℹ️";
+        }
+
+        if (correctiveAction.IsOverdue)
+        {
+            return "🚨";
+        }
+
+        if (IsCompletedStatus(correctiveAction.Status) || correctiveAction.CompletedDate.HasValue)
+        {
+            return "✅";
+        }
+
+        return "🟢";
+    }
+
+    private string GetFlagTone()
+    {
+        if (correctiveAction == null)
+        {
+            return "default";
+        }
+
+        if (correctiveAction.IsOverdue)
+        {
+            return "danger";
+        }
+
+        if (IsCompletedStatus(correctiveAction.Status) || correctiveAction.CompletedDate.HasValue)
+        {
+            return "success";
+        }
+
+        return "success";
     }
 
     private static string DisplayText(string? value)
     {
         return string.IsNullOrWhiteSpace(value) ? "Not recorded" : value;
+    }
+
+    private static bool IsCompletedStatus(string? status)
+    {
+        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string GetPriorityTone(string? priority)
