@@ -1,15 +1,17 @@
 ﻿@page "/corrective-actions/create"
+
 @using Microsoft.AspNetCore.Components
 @using OperationsFlow.Data
 @using OperationsFlow.Models
 @using OperationsFlow.Services
+
 @inject OperationsFlowDbContext Db
 @inject ActivityLogService ActivityLogService
 @inject NavigationManager Navigation
 
 <PageTitle>Create Corrective Action - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page">
+<div class="page-shell module-page corrective-action-create-page">
     <section class="module-header">
         <div>
             <p class="eyebrow dark">Operations</p>
@@ -28,10 +30,69 @@
 
     @if (IsPrefilled)
     {
-        <div class="page-purpose-note">
-            <strong>Pre-filled action:</strong> this corrective action was created from another OperationsFlow module.
-            Review the title, owner, priority, source, due date, and notes before saving.
-        </div>
+        <section class="page-purpose-note">
+            <strong>Source-linked action:</strong> this corrective action was pre-filled from
+            <strong>@GetSourceDisplayName(correctiveAction.Source)</strong>.
+            Review the source, title, owner, priority, due date, and notes before saving.
+        </section>
+
+        <section class="summary-grid">
+            <div class="summary-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Source Context</h2>
+                        <p>This action is being created from another OperationsFlow module.</p>
+                    </div>
+
+                    <span class="@GetSourceBadgeClass(correctiveAction.Source)">
+                        @GetSourceDisplayName(correctiveAction.Source)
+                    </span>
+                </div>
+
+                <div class="detail-grid">
+                    <div>
+                        <span>Source Module</span>
+                        <strong>@GetSourceDisplayName(correctiveAction.Source)</strong>
+                    </div>
+
+                    <div>
+                        <span>Suggested Owner</span>
+                        <strong>@DisplayText(correctiveAction.Owner)</strong>
+                    </div>
+
+                    <div>
+                        <span>Suggested Priority</span>
+                        <strong>
+                            <span class="@GetPriorityClass(correctiveAction.Priority)">
+                                @DisplayText(correctiveAction.Priority)
+                            </span>
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Return After Save</span>
+                        <strong>@GetReturnDestinationText()</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Review Before Saving</h2>
+                        <p>Use this check to keep cross-module follow-up clear.</p>
+                    </div>
+                </div>
+
+                <ul class="review-list">
+                    <li>Confirm the title clearly describes the follow-up work.</li>
+                    <li>Confirm the owner is the person responsible for the next action.</li>
+                    <li>Confirm the priority matches the risk, compliance, or operational impact.</li>
+                    <li>Confirm the notes include enough context to understand the source issue.</li>
+                    <li>Save the action so it appears in Corrective Actions, Workload, Reminders, Reports, and Data Quality.</li>
+                </ul>
+            </div>
+        </section>
     }
 
     @if (!string.IsNullOrWhiteSpace(errorMessage))
@@ -54,6 +115,9 @@
                         <option value="@source">@source</option>
                     }
                 </select>
+
+                <FormFieldGuide Title="Source guidance"
+                                Text="The source explains where this corrective action came from. Source-linked actions should keep enough context in the notes so the follow-up is traceable." />
             </div>
 
             <div class="form-field" style="overflow: visible;">
@@ -135,7 +199,24 @@
 
             <div class="form-field full-width" style="overflow: visible;">
                 <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Notes</label>
-                <textarea class="form-control" rows="8" @bind="correctiveAction.Notes"></textarea>
+                <textarea class="form-control" rows="10" @bind="correctiveAction.Notes"></textarea>
+
+                <div class="guidance-card">
+                    <div>
+                        <strong>Corrective action note guidance</strong>
+                        <p>
+                            Good corrective action notes should explain the current follow-up state, not just repeat the title.
+                        </p>
+
+                        <ul>
+                            <li>What source record or issue created this follow-up?</li>
+                            <li>What needs to be reviewed or changed?</li>
+                            <li>Who owns the next action?</li>
+                            <li>What needs to happen before this can be closed?</li>
+                            <li>If closing, what evidence or outcome confirms completion?</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -168,7 +249,8 @@
         || !string.IsNullOrWhiteSpace(Owner)
         || !string.IsNullOrWhiteSpace(Priority)
         || !string.IsNullOrWhiteSpace(ActionType)
-        || !string.IsNullOrWhiteSpace(Notes);
+        || !string.IsNullOrWhiteSpace(Notes)
+        || !string.IsNullOrWhiteSpace(ReturnUrl);
 
     private List<string> SourceOptions = new()
     {
@@ -195,7 +277,9 @@
         "Checklist",
         "Training",
         "System Update",
-        "Follow-up"
+        "Follow-up",
+        "Improvement",
+        "Containment"
     };
 
     private List<string> SiteOptions = new()
@@ -244,20 +328,29 @@
 
     protected override void OnInitialized()
     {
+        var source = UseAllowedOrDefault(Source, SourceOptions, "Incident");
+        var title = UseOrDefault(Title, "");
+        var site = UseAllowedOrDefault(Site, SiteOptions, "Main Workshop");
+        var department = UseAllowedOrDefault(Department, DepartmentOptions, "Health & Safety");
+        var owner = UseOrDefault(Owner, "");
+        var actionType = UseAllowedOrDefault(ActionType, ActionTypeOptions, GetDefaultActionTypeForSource(source));
+        var priority = UseAllowedOrDefault(Priority, PriorityOptions, "Medium");
+        var notes = BuildSourceAwareNotes(source, Notes);
+
         correctiveAction = new CorrectiveAction
         {
-            Title = UseOrDefault(Title, ""),
-            Source = UseAllowedOrDefault(Source, SourceOptions, "Incident"),
-            Site = UseAllowedOrDefault(Site, SiteOptions, "Main Workshop"),
-            Department = UseAllowedOrDefault(Department, DepartmentOptions, "Health & Safety"),
-            Owner = UseOrDefault(Owner, ""),
-            ActionType = UseAllowedOrDefault(ActionType, ActionTypeOptions, "Investigation"),
-            Priority = UseAllowedOrDefault(Priority, PriorityOptions, "Medium"),
+            Title = title,
+            Source = source,
+            Site = site,
+            Department = department,
+            Owner = owner,
+            ActionType = actionType,
+            Priority = priority,
             Status = "Open",
             CreatedDate = DateTime.Today,
             DueDate = DateTime.Today.AddDays(14),
             CompletedDate = null,
-            Notes = UseOrDefault(Notes, "")
+            Notes = notes
         };
     }
 
@@ -313,17 +406,41 @@
             return $"Created corrective action CA-{correctiveAction.Id}: {correctiveAction.Title}.";
         }
 
-        var sourceText = correctiveAction.Source switch
-        {
-            "Risk Register" => "Risk Register item",
-            "Risk Review" => "Risk Register item",
-            "Document Control" => "Document Control item",
-            "Document Review" => "Document Control item",
-            "Training Compliance" => "Training Compliance item",
-            _ => $"{correctiveAction.Source} item"
-        };
+        return $"Created corrective action CA-{correctiveAction.Id} from {GetSourceDisplayName(correctiveAction.Source)}: {correctiveAction.Title}.";
+    }
 
-        return $"Created corrective action from {sourceText}: {correctiveAction.Title}.";
+    private string BuildSourceAwareNotes(string source, string? incomingNotes)
+    {
+        var cleanNotes = UseOrDefault(incomingNotes, "");
+
+        if (!IsPrefilled)
+        {
+            return cleanNotes;
+        }
+
+        var sourceHeader = $"Source context: {GetSourceDisplayName(source)}";
+        var returnText = string.IsNullOrWhiteSpace(ReturnUrl)
+            ? "Return destination: Corrective Actions"
+            : $"Return destination: {GetReturnDestinationText()}";
+
+        if (string.IsNullOrWhiteSpace(cleanNotes))
+        {
+            return sourceHeader + Environment.NewLine
+                + returnText + Environment.NewLine + Environment.NewLine
+                + "Follow-up notes:" + Environment.NewLine
+                + "- Confirm the source issue." + Environment.NewLine
+                + "- Record the required action." + Environment.NewLine
+                + "- Update the status when reviewed.";
+        }
+
+        if (cleanNotes.Contains("Source context:", StringComparison.OrdinalIgnoreCase))
+        {
+            return cleanNotes;
+        }
+
+        return sourceHeader + Environment.NewLine
+            + returnText + Environment.NewLine + Environment.NewLine
+            + cleanNotes;
     }
 
     private void Cancel()
@@ -348,6 +465,93 @@
         }
 
         Navigation.NavigateTo(ReturnUrl);
+    }
+
+    private string GetReturnDestinationText()
+    {
+        if (string.IsNullOrWhiteSpace(ReturnUrl))
+        {
+            return "Corrective Actions";
+        }
+
+        return ReturnUrl switch
+        {
+            "/risk-register" => "Risk Register",
+            "/risks" => "Risk Register",
+            "/documents" => "Documents",
+            "/training" => "Training",
+            "/safety-meeting-pack" => "Safety Meeting Pack",
+            "/data-quality" => "Data Quality",
+            "/reminders" => "Reminder Centre",
+            "/workload" => "Workload",
+            "/reports" => "Reports",
+            _ => ReturnUrl
+        };
+    }
+
+    private static string GetDefaultActionTypeForSource(string source)
+    {
+        return source switch
+        {
+            "Risk Register" => "Process Review",
+            "Risk Review" => "Process Review",
+            "Document Control" => "Document Update",
+            "Document Review" => "Document Update",
+            "Training Compliance" => "Training",
+            "Incident" => "Investigation",
+            "Inspection" => "Checklist",
+            "Internal Audit" => "Process Review",
+            _ => "Follow-up"
+        };
+    }
+
+    private static string GetSourceDisplayName(string? source)
+    {
+        return source switch
+        {
+            "Risk Register" => "Risk Register",
+            "Risk Review" => "Risk Register",
+            "Document Control" => "Document Control",
+            "Document Review" => "Document Control",
+            "Training Compliance" => "Training Compliance",
+            "Internal Audit" => "Internal Audit",
+            "Manual / Internal" => "Manual / Internal",
+            null or "" => "Manual / Internal",
+            _ => source
+        };
+    }
+
+    private static string GetSourceBadgeClass(string? source)
+    {
+        return source switch
+        {
+            "Risk Register" => "badge badge-danger",
+            "Risk Review" => "badge badge-danger",
+            "Document Control" => "badge badge-info",
+            "Document Review" => "badge badge-info",
+            "Training Compliance" => "badge badge-warning",
+            "Incident" => "badge badge-danger",
+            "Inspection" => "badge badge-warning",
+            "Internal Audit" => "badge badge-info",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private static string GetPriorityClass(string? priority)
+    {
+        return priority?.ToLowerInvariant() switch
+        {
+            "critical" => "badge badge-danger",
+            "high" => "badge badge-warning",
+            "medium" => "badge badge-info",
+            "low" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private static string DisplayText(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? "Not recorded" : value;
     }
 
     private static string UseOrDefault(string? value, string fallback)
