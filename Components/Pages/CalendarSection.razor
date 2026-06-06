@@ -1,72 +1,146 @@
 ﻿@using OperationsFlow.Components.Pages
 
-<div class="calendar-section report-card">
-    <div class="panel-header">
-        <div>
-            <h2>@Title</h2>
-            <p>@Subtitle</p>
-        </div>
-        <span class="badge badge-info">@Items.Count item(s)</span>
-    </div>
+<InfoPanel Title="@Title" Subtitle="@Subtitle">
+    <Actions>
+        <span class="of-badge of-badge-info">@Items.Count item(s)</span>
+    </Actions>
 
-    @if (!Items.Any())
-    {
-        <p class="empty-state">@EmptyMessage</p>
-    }
-    else
-    {
-        <table class="report-table calendar-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Type / Status</th>
-                    <th>Item</th>
-                    <th>Owner</th>
-                    <th>Priority</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Items)
-                {
+    <ChildContent>
+        @if (!Items.Any())
+        {
+            <EmptyState Title="No items in this section"
+                        Message="@EmptyMessage"
+                        Icon="✅" />
+        }
+        else
+        {
+            <table class="of-activity-table">
+                <thead>
                     <tr>
-                        <td>
-                            <strong>@item.DateLabel</strong>
-                            <span class="muted-text">@item.Date.ToString("dd MMM yyyy")</span>
-                        </td>
-
-                        <td>
-                            <span class="@ComplianceCalendar.GetTypeClass(item.Type)">@item.Type</span>
-                            <span class="@ComplianceCalendar.GetStatusClass(item)">@item.Status</span>
-                        </td>
-
-                        <td>
-                            <strong>@item.Title</strong>
-                            <span class="muted-text">@item.Source</span>
-                        </td>
-
-                        <td>
-                            <strong>@item.Owner</strong>
-                            <span class="muted-text">@item.Department</span>
-                        </td>
-
-                        <td>
-                            <span class="@ComplianceCalendar.GetPriorityClass(item.Priority)">@item.Priority</span>
-                        </td>
-
-                        <td class="table-actions">
-                            <a class="btn btn-secondary" href="@item.Url">Open</a>
-                        </td>
+                        <th>Date</th>
+                        <th>Type / Status</th>
+                        <th>Item</th>
+                        <th>Owner</th>
+                        <th>Priority</th>
+                        <th>Open</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    }
-</div>
+                </thead>
+                <tbody>
+                    @foreach (var item in Items)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.Date.ToString("dd MMM yyyy")</strong>
+                                <div class="of-muted-text">@item.DateLabel</div>
+                            </td>
+                            <td>
+                                <div class="of-stack-tight">
+                                    <span class="@GetTypeClass(item.Type)">
+                                        @item.Type
+                                    </span>
+
+                                    <span class="@GetStatusClass(item)">
+                                        @item.Status
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <strong>@item.Title</strong>
+                                <div class="of-muted-text">@item.Source</div>
+                            </td>
+                            <td>
+                                <strong>@item.Owner</strong>
+                                <div class="of-muted-text">@item.Department</div>
+                            </td>
+                            <td>
+                                <span class="@GetPriorityClass(item.Priority)">
+                                    @item.Priority
+                                </span>
+                            </td>
+                            <td>
+                                <a class="of-card-link" href="@BuildOpenUrl(item.Url)">Open</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </ChildContent>
+</InfoPanel>
 
 @code {
-    [Parameter] public string Title { get; set; } = "";
-    [Parameter] public string Subtitle { get; set; } = "";
-    [Parameter] public List<ComplianceCalendar.CalendarItem> Items { get; set; } = new();
-    [Parameter] public string EmptyMessage { get; set; } = "";
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    [Parameter]
+    public string Subtitle { get; set; } = "";
+
+    [Parameter]
+    public List<ComplianceCalendar.CalendarItem> Items { get; set; } = new();
+
+    [Parameter]
+    public string EmptyMessage { get; set; } = "No calendar items found.";
+
+    private static string BuildOpenUrl(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            return "/";
+        }
+
+        return url.StartsWith("/")
+            ? url
+            : $"/{url}";
+    }
+
+    private static string GetStatusClass(ComplianceCalendar.CalendarItem item)
+    {
+        if (item.Date.Date < DateTime.Today)
+        {
+            return "badge badge-danger";
+        }
+
+        return item.Status.ToLowerInvariant() switch
+        {
+            "expired" => "badge badge-danger",
+            "overdue" => "badge badge-danger",
+            "critical" => "badge badge-danger",
+            "expiring soon" => "badge badge-warning",
+            "due soon" => "badge badge-warning",
+            "review scheduled" => "badge badge-info",
+            "in progress" => "badge badge-info",
+            "active" => "badge badge-warning",
+            "open" => "badge badge-warning",
+            "high" => "badge badge-warning",
+            "medium" => "badge badge-info",
+            "current" => "badge badge-success",
+            "completed" => "badge badge-success",
+            "closed" => "badge badge-success",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private static string GetTypeClass(string? type)
+    {
+        return type?.ToLowerInvariant() switch
+        {
+            "corrective action" => "of-badge of-badge-info",
+            "risk review" => "of-badge of-badge-warning",
+            "training" => "of-badge of-badge-success",
+            "document review" => "of-badge of-badge-info",
+            _ => "of-badge of-badge-muted"
+        };
+    }
+
+    private static string GetPriorityClass(string? priority)
+    {
+        return priority?.ToLowerInvariant() switch
+        {
+            "critical" => "badge badge-danger",
+            "high" => "badge badge-warning",
+            "medium" => "badge badge-info",
+            "low" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
+    }
 }

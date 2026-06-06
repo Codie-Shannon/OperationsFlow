@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
@@ -10,307 +10,36 @@
 
 @if (summary == null)
 {
-    <div class="page-shell">
-        <div class="loading-card">
-            Loading OperationsFlow dashboard...
-        </div>
-    </div>
+    <EmptyState Title="Loading dashboard" Message="Loading OperationsFlow dashboard data..." Icon="⏳" />
 }
 else
 {
-    <div class="page-shell operations-dashboard">
+    <PageHero Eyebrow="Business Operations Prototype" Title="OperationsFlow Dashboard" Subtitle="Live overview of work orders, corrective actions, document control, risk register items, training compliance, document intake, and recent system activity." BadgeText="SQLite demo data live" BadgeClass="of-badge-success">
+        <Actions><a class="of-btn of-btn-primary" href="/reviewer-checklist">Reviewer Checklist</a><a class="of-btn of-btn-secondary" href="/reports">Reports</a><a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a></Actions>
+    </PageHero>
 
-        <section class="dashboard-hero">
-            <div>
-                <p class="eyebrow">Business Operations Prototype</p>
-                <h1>OperationsFlow Dashboard</h1>
-                <p class="hero-text">
-                    Live overview of work orders, corrective actions, document control,
-                    risk register items, training compliance, and recent system activity.
-                </p>
-            </div>
+    <PurposeNote Title="Purpose" Icon="📊"><p>The dashboard gives the reviewer a fast read on operational work, overdue follow-up, compliance pressure, document intake, and system traceability.</p></PurposeNote>
 
-            <div class="hero-status">
-                <span class="status-dot"></span>
-                SQLite demo data live
-            </div>
-        </section>
+    <MetricGrid>
+        <MetricCard Title="Open Work Orders" Value="@summary.OpenWorkOrders.ToString()" Detail="@($"{summary.OverdueWorkOrders} overdue")" Icon="📋" Tone="warning" />
+        <MetricCard Title="Overdue Actions" Value="@summary.OverdueCorrectiveActions.ToString()" Detail="@($"{summary.OpenCorrectiveActions} open actions")" Icon="✅" Tone="danger" />
+        <MetricCard Title="Documents Due Soon" Value="@summary.DocumentsDueSoon.ToString()" Detail="@($"{summary.OverdueDocumentReviews} overdue reviews")" Icon="📄" Tone="info" />
+        <MetricCard Title="High / Critical Risks" Value="@summary.HighOrCriticalRisks.ToString()" Detail="@($"{summary.TotalRisks} total risks")" Icon="⚠️" Tone="warning" />
+        <MetricCard Title="Expired Training" Value="@summary.ExpiredTrainingRecords.ToString()" Detail="@($"{summary.TrainingExpiringSoon} expiring soon")" Icon="🎓" Tone="danger" />
+        <MetricCard Title="Training Compliance" Value="@($"{summary.TrainingComplianceRate:0.0}%")" Detail="@($"{summary.TotalTrainingRecords} training records")" Icon="📈" Tone="success" />
+        <MetricCard Title="Document Intake" Value="@summary.OpenDocumentIntakeItems.ToString()" Detail="@($"{summary.OverdueDocumentIntakeItems} overdue")" Icon="📥" Tone="info" />
+    </MetricGrid>
 
-        <section class="kpi-grid">
-            <article class="kpi-card">
-                <div class="kpi-label">Open Work Orders</div>
-                <div class="kpi-value">@summary.OpenWorkOrders</div>
-                <div class="kpi-subtext danger">@summary.OverdueWorkOrders overdue</div>
-            </article>
+    <InfoPanel Title="Core Workflow Modules" Subtitle="Open the main record groups from the dashboard."><ChildContent><div class="of-review-proof-grid"><a class="of-review-proof-card of-click-card" href="/work-orders"><strong>Work Orders</strong><span>Total @summary.TotalWorkOrders • Open @summary.OpenWorkOrders • Overdue @summary.OverdueWorkOrders</span></a><a class="of-review-proof-card of-click-card" href="/corrective-actions"><strong>Corrective Actions</strong><span>Total @summary.TotalCorrectiveActions • Open @summary.OpenCorrectiveActions • Overdue @summary.OverdueCorrectiveActions</span></a><a class="of-review-proof-card of-click-card" href="/documents"><strong>Document Control</strong><span>Total @summary.TotalDocuments • Due Soon @summary.DocumentsDueSoon • Overdue @summary.OverdueDocumentReviews</span></a><a class="of-review-proof-card of-click-card" href="/document-intake"><strong>Document Intake</strong><span>Total @summary.TotalDocumentIntakeItems • Needs Review @summary.DocumentIntakeNeedsReview • Overdue @summary.OverdueDocumentIntakeItems</span></a></div></ChildContent></InfoPanel>
 
-            <article class="kpi-card">
-                <div class="kpi-label">Overdue Actions</div>
-                <div class="kpi-value">@summary.OverdueCorrectiveActions</div>
-                <div class="kpi-subtext">@summary.OpenCorrectiveActions open actions</div>
-            </article>
+    <InfoPanel Title="Compliance / Management Views" Subtitle="Use these pages for review, reporting, follow-up, and evidence."><ChildContent><div class="of-review-proof-grid"><a class="of-review-proof-card of-click-card" href="/risk-register"><strong>Risk Register</strong><span>Total @summary.TotalRisks • High/Critical @summary.HighOrCriticalRisks</span></a><a class="of-review-proof-card of-click-card" href="/training"><strong>Training</strong><span>Expired @summary.ExpiredTrainingRecords • Expiring @summary.TrainingExpiringSoon</span></a><a class="of-review-proof-card of-click-card" href="/reminders"><strong>Reminders</strong><span>Daily review view for overdue and due-soon work.</span></a><a class="of-review-proof-card of-click-card" href="/workload"><strong>Workload</strong><span>Owner pressure and assigned follow-up work.</span></a></div></ChildContent></InfoPanel>
 
-            <article class="kpi-card">
-                <div class="kpi-label">Documents Due Soon</div>
-                <div class="kpi-value">@summary.DocumentsDueSoon</div>
-                <div class="kpi-subtext danger">@summary.OverdueDocumentReviews overdue reviews</div>
-            </article>
+    <TableCard Title="Recent Activity" Subtitle="Latest work order creation, edit, review, and workflow events." IsEmpty="@(recentActivities == null || !recentActivities.Any())" EmptyTitle="No activity yet" EmptyMessage="Create or edit records to generate activity history.">
+        <Actions><a class="of-btn of-btn-secondary" href="/activity-log">View Full Log</a></Actions>
+        <ChildContent><table><thead><tr><th>Date</th><th>Record</th><th>Description</th><th>Module</th><th>Action</th><th>By</th></tr></thead><tbody>@foreach(var item in recentActivities ?? new List<ActivityLog>()){<tr><td>@item.CreatedDate.ToString("dd MMM yyyy HH:mm")</td><td><strong>@item.RecordReference</strong></td><td>@item.Description</td><td>@item.ModuleName</td><td><span class="@GetActionClass(item.ActionType)">@item.ActionType</span></td><td>@item.CreatedBy</td></tr>}</tbody></table></ChildContent>
+    </TableCard>
 
-            <article class="kpi-card">
-                <div class="kpi-label">High / Critical Risks</div>
-                <div class="kpi-value">@summary.HighOrCriticalRisks</div>
-                <div class="kpi-subtext">@summary.TotalRisks total risks</div>
-            </article>
-
-            <article class="kpi-card">
-                <div class="kpi-label">Expired Training</div>
-                <div class="kpi-value">@summary.ExpiredTrainingRecords</div>
-                <div class="kpi-subtext">@summary.TrainingExpiringSoon expiring soon</div>
-            </article>
-
-            <article class="kpi-card highlight-card">
-                <div class="kpi-label">Training Compliance</div>
-                <div class="kpi-value">@summary.TrainingComplianceRate.ToString("0.0")%</div>
-                <div class="kpi-subtext">@summary.TotalTrainingRecords training records</div>
-            </article>
-
-            <article class="kpi-card">
-                <div class="kpi-label">Document Intake</div>
-                <div class="kpi-value">@summary.OpenDocumentIntakeItems</div>
-                <div class="kpi-subtext danger">@summary.OverdueDocumentIntakeItems overdue</div>
-            </article>
-        </section>
-
-        <section class="summary-grid">
-            <article class="summary-panel">
-                <div class="panel-header">
-                    <h2>Work Orders</h2>
-                    <a href="/work-orders">View module</a>
-                </div>
-
-                <p>
-                    Tracks operational work requests across sites, departments, owners,
-                    due dates, priorities, and overdue status.
-                </p>
-
-                <div class="mini-stat-row">
-                    <span>Total</span>
-                    <strong>@summary.TotalWorkOrders</strong>
-                </div>
-
-                <div class="mini-stat-row">
-                    <span>Open</span>
-                    <strong>@summary.OpenWorkOrders</strong>
-                </div>
-
-                <div class="mini-stat-row">
-                    <span>Overdue</span>
-                    <strong class="danger-text">@summary.OverdueWorkOrders</strong>
-                </div>
-            </article>
-
-            <article class="summary-panel">
-                <div class="panel-header">
-                    <h2>Corrective Actions</h2>
-                    <a href="/corrective-actions">View module</a>
-                </div>
-
-                <p>
-                    Tracks actions created from incidents, audits, inspections, risks,
-                    and improvement work.
-                </p>
-
-                <div class="mini-stat-row">
-                    <span>Total</span>
-                    <strong>@summary.TotalCorrectiveActions</strong>
-                </div>
-
-                <div class="mini-stat-row">
-                    <span>Open</span>
-                    <strong>@summary.OpenCorrectiveActions</strong>
-                </div>
-
-                <div class="mini-stat-row">
-                    <span>Overdue</span>
-                    <strong class="danger-text">@summary.OverdueCorrectiveActions</strong>
-                </div>
-            </article>
-
-            <article class="summary-panel">
-                <div class="panel-header">
-                    <h2>Document Control</h2>
-                    <a href="/documents">View module</a>
-                </div>
-
-                <p>
-                    Monitors document review dates, document ownership, status,
-                    versioning, and upcoming compliance review work.
-                </p>
-
-                <div class="mini-stat-row">
-                    <span>Total</span>
-                    <strong>@summary.TotalDocuments</strong>
-                </div>
-
-                <div class="mini-stat-row">
-                    <span>Due Soon</span>
-                    <strong>@summary.DocumentsDueSoon</strong>
-                </div>
-
-                <div class="mini-stat-row">
-                    <span>Overdue Reviews</span>
-                    <strong class="danger-text">@summary.OverdueDocumentReviews</strong>
-                </div>
-            </article>
-
-            <article class="summary-panel">
-                <div class="panel-header">
-                    <h2>Risk & Training</h2>
-                    <a href="/risks">View risks</a>
-                </div>
-
-                <p>
-                    Gives managers a quick view of high-priority operational risk and
-                    training compliance issues.
-                </p>
-
-                <div class="mini-stat-row">
-                    <span>Total Risks</span>
-                    <strong>@summary.TotalRisks</strong>
-                </div>
-
-                <div class="mini-stat-row">
-                    <span>High / Critical</span>
-                    <strong class="warning-text">@summary.HighOrCriticalRisks</strong>
-                </div>
-
-                <div class="mini-stat-row">
-                    <span>Expired Training</span>
-                    <strong class="danger-text">@summary.ExpiredTrainingRecords</strong>
-                </div>
-            </article>
-        </section>
-
-        <article class="summary-panel">
-            <div class="panel-header">
-                <h2>Document Intake</h2>
-                <a href="/document-intake">View module</a>
-            </div>
-
-            <p>
-                Tracks incoming emails, PDFs, supplier documents, job paperwork, and admin
-                processing through review, entry, and completion.
-            </p>
-
-            <div class="mini-stat-row">
-                <span>Total</span>
-                <strong>@summary.TotalDocumentIntakeItems</strong>
-            </div>
-
-            <div class="mini-stat-row">
-                <span>Needs Review</span>
-                <strong class="warning-text">@summary.DocumentIntakeNeedsReview</strong>
-            </div>
-
-            <div class="mini-stat-row">
-                <span>Overdue</span>
-                <strong class="danger-text">@summary.OverdueDocumentIntakeItems</strong>
-            </div>
-        </article>
-
-        <section class="recent-activity-card">
-            <div class="recent-activity-header">
-                <div>
-                    <p class="eyebrow dark">Traceability</p>
-                    <h2>Recent Activity</h2>
-                    <p>
-                        Latest work order creation, edit, review, and workflow events.
-                    </p>
-                </div>
-
-                <a class="primary-link-button" href="/activity-log">
-                    View Full Log
-                </a>
-            </div>
-
-            @if (recentActivities == null)
-            {
-                <div class="empty-state">
-                    Loading recent activity...
-                </div>
-            }
-            else if (!recentActivities.Any())
-            {
-                <div class="empty-state">
-                    No activity has been logged yet. Create or edit a work order to generate activity.
-                </div>
-            }
-            else
-            {
-                <div class="activity-list">
-                    @foreach (var item in recentActivities)
-                    {
-                        <article class="activity-item">
-                            <div class="@GetActivityIconClass(item.ActionType)">
-                                @GetActivityInitial(item.ActionType)
-                            </div>
-
-                            <div class="activity-content">
-                                <div class="activity-topline">
-                                    <strong>@item.RecordReference</strong>
-                                    <span>@item.CreatedDate.ToString("dd MMM yyyy HH:mm")</span>
-                                </div>
-
-                                <p>@item.Description</p>
-
-                                <div class="activity-meta">
-                                    <span>@item.ModuleName</span>
-                                    <span>@item.ActionType</span>
-                                    <span>@item.CreatedBy</span>
-                                </div>
-                            </div>
-                        </article>
-                    }
-                </div>
-            }
-        </section>
-
-    </div>
+    <GuidanceNote Title="Review Notes" Icon="💡" Tone="info"><ul><li>Start here when reviewing the prototype.</li><li>Use the dashboard to jump into record pages, management pages, and evidence pages.</li><li>This is local SQLite demo data; Microsoft 365 sync is a later implementation stage.</li></ul></GuidanceNote>
 }
 
-@code {
-    private DashboardSummary? summary;
-    private List<ActivityLog>? recentActivities;
-
-    protected override async Task OnInitializedAsync()
-    {
-        summary = await DashboardService.GetDashboardSummaryAsync();
-
-        recentActivities = await Db.ActivityLogs
-            .AsNoTracking()
-            .OrderByDescending(x => x.CreatedDate)
-            .Take(6)
-            .ToListAsync();
-    }
-
-    private static string GetActivityIconClass(string? actionType)
-    {
-        return actionType?.ToLower() switch
-        {
-            "created" => "activity-icon activity-created",
-            "updated" => "activity-icon activity-updated",
-            "reviewed" => "activity-icon activity-reviewed",
-            "deleted" => "activity-icon activity-deleted",
-            _ => "activity-icon"
-        };
-    }
-
-    private static string GetActivityInitial(string? actionType)
-    {
-        if (string.IsNullOrWhiteSpace(actionType))
-        {
-            return "A";
-        }
-
-        return actionType.Trim()[0].ToString().ToUpper();
-    }
-}
+@code { private DashboardSummary? summary; private List<ActivityLog>? recentActivities; protected override async Task OnInitializedAsync(){ summary=await DashboardService.GetDashboardSummaryAsync(); recentActivities=await Db.ActivityLogs.AsNoTracking().OrderByDescending(x=>x.CreatedDate).Take(8).ToListAsync(); } private static string GetActionClass(string? actionType)=>actionType?.ToLowerInvariant() switch {"created"=>"badge badge-success","updated"=>"badge badge-info","reviewed"=>"badge badge-muted","deleted"=>"badge badge-danger",_=>"badge badge-warning"}; }

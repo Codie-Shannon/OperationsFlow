@@ -1,534 +1,81 @@
-﻿@page "/integration-overview"
+@page "/integration-overview"
 
 <PageTitle>Integration Overview - OperationsFlow</PageTitle>
 
-<div class="operations-dashboard integration-overview-page">
-    <PageIntro Eyebrow="Production Planning"
-               Title="Microsoft 365 / Integration Overview"
-               Subtitle="A production-aware overview of how OperationsFlow could connect to Microsoft 365, SharePoint, Teams, Outlook, reporting exports, and external business systems.">
-        <a class="btn btn-secondary" href="deployment-overview">Deployment Overview</a>
-        <a class="btn btn-secondary" href="technical-overview">Technical Overview</a>
-        <a class="btn btn-primary" href="portfolio-hub">Portfolio Hub</a>
-    </PageIntro>
+<PageHero
+    Eyebrow="Microsoft 365 Ready"
+    Title="Integration Overview"
+    Subtitle="Explain the intended Microsoft 365 / Power Platform integration direction without claiming production sync exists yet."
+    BadgeText="Week 2"
+    BadgeClass="of-badge-info">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
+        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
+        <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+    </Actions>
+</PageHero>
 
-    <div class="page-purpose-note">
-        <strong>Purpose:</strong> use this page to show the realistic integration path for OperationsFlow. The current prototype is local and self-contained, but the workflow model is designed so records, documents, reminders, reports, and activity history could later connect to Microsoft 365 and other business systems.
-    </div>
+<PurposeNote Title="Purpose" Icon="📌">
+    <p>OperationsFlow is designed so its local records can map into SharePoint Lists, document libraries, Power Automate notifications, Outlook/Teams reminders, and Power BI reporting.</p>
+</PurposeNote>
 
-    <section class="kpi-grid">
-        <div class="kpi-card">
-            <span class="kpi-label">Current State</span>
-            <strong>Local</strong>
-            <span class="kpi-note">Prototype data and demo workflow</span>
-        </div>
+<MetricGrid>
+    <MetricCard Title="Workflow MVP" Value="Week 2" Detail="Create/edit, reminders, workload, reporting, and traceability" Icon="✅" Tone="success" />
+    <MetricCard Title="Prototype" Value="SQLite" Detail="Local demo data, not production deployment" Icon="🧪" Tone="info" />
+    <MetricCard Title="Evidence" Value="Ready" Detail="Supports screenshots, walkthroughs, and review notes" Icon="📦" Tone="success" />
+    <MetricCard Title="Next Stage" Value="M365" Detail="SharePoint, Lists, Power Automate, and Power BI direction" Icon="🔗" Tone="warning" />
+</MetricGrid>
 
-        <div class="kpi-card">
-            <span class="kpi-label">Main Target</span>
-            <strong>M365</strong>
-            <span class="kpi-note">SharePoint / Teams / Outlook</span>
-        </div>
-
-        <div class="kpi-card">
-            <span class="kpi-label">Reporting Path</span>
-            <strong>Exports</strong>
-            <span class="kpi-note">CSV / Excel / Power BI-ready data</span>
-        </div>
-
-        <div class="kpi-card">
-            <span class="kpi-label">Integration Style</span>
-            <strong>Phased</strong>
-            <span class="kpi-note">Start small before full sync</span>
-        </div>
-    </section>
-
-    <section class="summary-grid integration-intro-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Integration Summary</h2>
-                    <p>How the current prototype could connect to real business tools.</p>
-                </div>
+<InfoPanel Title="Review Summary" Subtitle="What this page should communicate to a reviewer.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Business Context</strong>
+                <span>Explains why the workflow exists and what problem it solves.</span>
             </div>
-
-            <p class="integration-copy">
-                OperationsFlow is currently a local Blazor/.NET prototype. In a production version, the same workflow
-                records could connect to Microsoft 365 so documents are stored in SharePoint, reminders are sent through
-                Teams or Outlook, reports can be exported for management review, and activity history can support audit
-                and follow-up conversations.
-            </p>
-
-            <ul class="action-list">
-                <li>Keep OperationsFlow as the workflow and review layer.</li>
-                <li>Use SharePoint for controlled document storage and file links.</li>
-                <li>Use Teams or Outlook for due-soon, overdue, and owner notifications.</li>
-                <li>Export structured data for Excel, Power BI, or management reporting.</li>
-                <li>Add API or scheduled sync only after core workflow rules are stable.</li>
-            </ul>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Prototype Boundary</h2>
-                    <p>What is planned, not currently live.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Technical Context</strong>
+                <span>Connects the local Blazor/SQLite prototype to a realistic implementation path.</span>
             </div>
-
-            <div class="integration-boundary-highlight">
-                <span>Prototype boundary</span>
-                <strong>No live Microsoft 365 integration yet</strong>
-                <p>
-                    The current version demonstrates the workflow model and integration-ready structure. It does not yet
-                    connect to live SharePoint libraries, Teams messages, Outlook emails, Microsoft Lists, Power BI,
-                    accounting systems, or production APIs.
-                </p>
+            <div class="of-review-proof-card">
+                <strong>Portfolio Context</strong>
+                <span>Shows the project as evidence of systems thinking, not just UI layout.</span>
             </div>
-
-            <ol class="action-list">
-                <li>Confirm which workflow should be integrated first.</li>
-                <li>Confirm the real source of truth for each record type.</li>
-                <li>Connect documents before adding automated notifications.</li>
-                <li>Add reporting exports before complex two-way sync.</li>
-            </ol>
-        </div>
-    </section>
-
-    <section class="integration-card-grid">
-        @foreach (var integration in IntegrationTargets)
-        {
-            <article class="integration-card">
-                <div class="integration-card-header">
-                    <span>@integration.Number</span>
-                    <div>
-                        <p class="eyebrow">@integration.Category</p>
-                        <h2>@integration.Title</h2>
-                    </div>
-                </div>
-
-                <p>@integration.Description</p>
-
-                <div class="integration-state-pair">
-                    <div>
-                        <span>Current Prototype</span>
-                        <strong>@integration.CurrentState</strong>
-                    </div>
-
-                    <div>
-                        <span>Production Upgrade</span>
-                        <strong>@integration.ProductionUpgrade</strong>
-                    </div>
-                </div>
-            </article>
-        }
-    </section>
-
-    <section class="report-card">
-        <div class="panel-header">
-            <div>
-                <h2>Integration Readiness Matrix</h2>
-                <p>How each major integration would support the workflow.</p>
+            <div class="of-review-proof-card">
+                <strong>Boundary Context</strong>
+                <span>Keeps the prototype honest about what is and is not production-ready.</span>
             </div>
         </div>
+    </ChildContent>
+</InfoPanel>
 
-        <table class="report-table integration-matrix-table">
-            <thead>
-                <tr>
-                    <th>Integration</th>
-                    <th>Business Purpose</th>
-                    <th>OperationsFlow Use</th>
-                    <th>Recommended Phase</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var row in IntegrationMatrix)
-                {
-                    <tr>
-                        <td><strong>@row.Integration</strong></td>
-                        <td>@row.BusinessPurpose</td>
-                        <td>@row.OperationsFlowUse</td>
-                        <td><span class="@row.BadgeClass">@row.Phase</span></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </section>
+<InfoPanel Title="Key Points" Subtitle="Use these notes when walking through the project.">
+    <ChildContent>
+        <ol class="of-review-steps">
+            <li>OperationsFlow captures work before it disappears into emails, conversations, spreadsheets, or paper notes.</li>
+            <li>Records feed management views such as Reminders, Workload, Reports, Data Quality, and Activity Log.</li>
+            <li>Corrective actions can be source-linked from risks, training, and controlled documents.</li>
+            <li>Activity history provides traceability evidence for create, update, and review workflows.</li>
+            <li>The project is Microsoft 365-ready in design, but still a local SQLite demo prototype.</li>
+        </ol>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Phased Integration Plan</h2>
-                    <p>The safest way to connect a prototype to real business systems.</p>
-                </div>
-            </div>
-
-            <ol class="demo-step-list integration-phase-list">
-                <li>
-                    <strong>Start with exports</strong>
-                    <span>Export reports or CSV files so managers can review data before live system integration.</span>
-                </li>
-
-                <li>
-                    <strong>Add document links</strong>
-                    <span>Connect records to SharePoint document locations without moving the whole workflow into SharePoint immediately.</span>
-                </li>
-
-                <li>
-                    <strong>Add owner notifications</strong>
-                    <span>Send overdue and due-soon notifications through Teams or Outlook after owner/status rules are confirmed.</span>
-                </li>
-
-                <li>
-                    <strong>Add authentication and roles</strong>
-                    <span>Use Microsoft identity or another provider so workflow changes are tied to real users.</span>
-                </li>
-
-                <li>
-                    <strong>Add API or scheduled sync</strong>
-                    <span>Only introduce two-way integration after records, ownership, statuses, and data rules are stable.</span>
-                </li>
-            </ol>
+<InfoPanel Title="Connected Review Links" Subtitle="Open the main evidence pages from here.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <a class="of-review-proof-card of-click-card" href="/reports"><strong>Reports</strong><span>Management reporting and CSV export evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/data-quality"><strong>Data Quality</strong><span>Weak records, overdue work, and review issues.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/activity-log"><strong>Activity Log</strong><span>Global traceability and workflow evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/implementation-plan"><strong>Implementation Plan</strong><span>Week 3/4 hybrid and Microsoft 365 direction.</span></a>
         </div>
+    </ChildContent>
+</InfoPanel>
 
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Integration Risks</h2>
-                    <p>What needs to be controlled before live sync.</p>
-                </div>
-            </div>
-
-            <div class="integration-risk-grid">
-                @foreach (var risk in IntegrationRisks)
-                {
-                    <article>
-                        <span>@risk.Label</span>
-                        <strong>@risk.Title</strong>
-                        <p>@risk.Description</p>
-                    </article>
-                }
-            </div>
-        </div>
-    </section>
-
-    <section class="report-card">
-        <div class="panel-header">
-            <div>
-                <h2>Microsoft 365 Workflow Map</h2>
-                <p>Where Microsoft 365 tools would fit around the OperationsFlow workflow.</p>
-            </div>
-        </div>
-
-        <table class="report-table m365-workflow-table">
-            <thead>
-                <tr>
-                    <th>Workflow Need</th>
-                    <th>Microsoft 365 Tool</th>
-                    <th>Example Use</th>
-                    <th>Review Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var row in Microsoft365Map)
-                {
-                    <tr>
-                        <td><strong>@row.WorkflowNeed</strong></td>
-                        <td><span class="@row.BadgeClass">@row.Tool</span></td>
-                        <td>@row.ExampleUse</td>
-                        <td>@row.ReviewValue</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </section>
-
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Data Flow After Integration</h2>
-                    <p>How information would move through a production version.</p>
-                </div>
-            </div>
-
-            <ol class="demo-step-list integration-data-flow">
-                <li>
-                    <strong>Record is created</strong>
-                    <span>A corrective action, document intake item, risk review, training issue, or work order is entered into OperationsFlow.</span>
-                </li>
-
-                <li>
-                    <strong>Owner and due date are assigned</strong>
-                    <span>The record becomes visible in workload, reminders, reports, data quality, and review pages.</span>
-                </li>
-
-                <li>
-                    <strong>Document link is attached</strong>
-                    <span>If evidence or controlled documents are required, the record links to SharePoint or another approved storage location.</span>
-                </li>
-
-                <li>
-                    <strong>Notification is sent</strong>
-                    <span>Teams or Outlook reminds the owner before due dates or escalates overdue work.</span>
-                </li>
-
-                <li>
-                    <strong>Report or review pack is exported</strong>
-                    <span>Management can review structured outputs without manually rebuilding the same summary in spreadsheets.</span>
-                </li>
-            </ol>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>What This Proves</h2>
-                    <p>The portfolio value of integration thinking.</p>
-                </div>
-            </div>
-
-            <div class="integration-proof-grid">
-                @foreach (var proof in ProofItems)
-                {
-                    <article>
-                        <span>@proof.Label</span>
-                        <strong>@proof.Title</strong>
-                        <p>@proof.Description</p>
-                    </article>
-                }
-            </div>
-        </div>
-    </section>
-
-    <section class="report-card integration-summary-card">
-        <div class="panel-header">
-            <div>
-                <h2>Integration Overview Summary</h2>
-                <p>A short explanation for reviewers.</p>
-            </div>
-        </div>
-
-        <div class="integration-summary-copy">
-            <p>
-                OperationsFlow is not currently connected to live Microsoft 365 services. The current version is a local
-                workflow prototype that demonstrates how business records, ownership, statuses, due dates, notes,
-                reporting views, reminders, and activity history could work before live integrations are added.
-            </p>
-
-            <p>
-                The most realistic production path would be phased: begin with report exports, add SharePoint document
-                links, add Teams or Outlook notifications, connect authentication and roles, then add API or scheduled
-                sync once the workflow rules are stable. This keeps the system low-risk while still showing a clear path
-                from local portfolio prototype to integrated internal business tool.
-            </p>
-        </div>
-    </section>
-</div>
-
-@code {
-    private static readonly IReadOnlyList<IntegrationTarget> IntegrationTargets = new[]
-    {
-        new IntegrationTarget(
-            Number: "01",
-            Category: "Documents",
-            Title: "SharePoint document storage",
-            Description: "Controlled documents, evidence files, photos, and review packs would be stored in approved document libraries.",
-            CurrentState: "Document records and review concepts are shown in-app.",
-            ProductionUpgrade: "Link records to SharePoint files, folders, libraries, and review history."
-        ),
-        new IntegrationTarget(
-            Number: "02",
-            Category: "Notifications",
-            Title: "Teams and Outlook reminders",
-            Description: "Owners need reminders for overdue work, due-soon records, review tasks, and escalation items.",
-            CurrentState: "Reminder and workload concepts are visible in the prototype.",
-            ProductionUpgrade: "Send Teams or Outlook reminders based on owner, status, priority, and due date."
-        ),
-        new IntegrationTarget(
-            Number: "03",
-            Category: "Reporting",
-            Title: "Excel and Power BI-ready exports",
-            Description: "Managers often need structured reporting outputs for meetings, monthly review, or external analysis.",
-            CurrentState: "Reports and management views are shown in-app.",
-            ProductionUpgrade: "Export approved datasets to CSV, Excel, or Power BI-ready reporting tables."
-        ),
-        new IntegrationTarget(
-            Number: "04",
-            Category: "Identity",
-            Title: "Microsoft sign-in and roles",
-            Description: "Production workflow changes should be tied to real users and controlled by role permissions.",
-            CurrentState: "User roles and access model are documented.",
-            ProductionUpgrade: "Use authenticated users, role claims, audit identity, and scoped page/action access."
-        )
-    };
-
-    private static readonly IReadOnlyList<IntegrationMatrixRow> IntegrationMatrix = new[]
-    {
-        new IntegrationMatrixRow(
-            Integration: "SharePoint",
-            BusinessPurpose: "Controlled document storage and file review history.",
-            OperationsFlowUse: "Attach document links, evidence files, review packs, and controlled document references.",
-            Phase: "Phase 1",
-            BadgeClass: "badge badge-success"
-        ),
-        new IntegrationMatrixRow(
-            Integration: "Outlook",
-            BusinessPurpose: "Email reminders, due-date follow-up, and management review messages.",
-            OperationsFlowUse: "Send due-soon, overdue, weekly summary, and owner reminder emails.",
-            Phase: "Phase 2",
-            BadgeClass: "badge badge-info"
-        ),
-        new IntegrationMatrixRow(
-            Integration: "Teams",
-            BusinessPurpose: "Fast internal notifications and review prompts.",
-            OperationsFlowUse: "Notify owners, managers, or review channels about overdue work and review packs.",
-            Phase: "Phase 2",
-            BadgeClass: "badge badge-info"
-        ),
-        new IntegrationMatrixRow(
-            Integration: "Microsoft Lists",
-            BusinessPurpose: "Simple business list storage for smaller workflow datasets.",
-            OperationsFlowUse: "Possible source or sync target for corrective actions, document intake, or risk review lists.",
-            Phase: "Optional",
-            BadgeClass: "badge badge-warning"
-        ),
-        new IntegrationMatrixRow(
-            Integration: "Power BI / Excel",
-            BusinessPurpose: "Management reporting, KPI review, and monthly summaries.",
-            OperationsFlowUse: "Export clean tables for dashboards, safety meetings, workload review, and compliance reporting.",
-            Phase: "Phase 1",
-            BadgeClass: "badge badge-success"
-        ),
-        new IntegrationMatrixRow(
-            Integration: "External APIs",
-            BusinessPurpose: "Connect to ERP, job systems, accounting systems, or asset systems.",
-            OperationsFlowUse: "Sync selected records after workflow rules and ownership rules are stable.",
-            Phase: "Later",
-            BadgeClass: "badge badge-secondary"
-        )
-    };
-
-    private static readonly IReadOnlyList<IntegrationRisk> IntegrationRisks = new[]
-    {
-        new IntegrationRisk(
-            Label: "Data",
-            Title: "Source of truth",
-            Description: "The business must decide which system owns each record before two-way sync is added."
-        ),
-        new IntegrationRisk(
-            Label: "Security",
-            Title: "Permission mismatch",
-            Description: "Users must not gain access to documents, records, reports, or exports they should not see."
-        ),
-        new IntegrationRisk(
-            Label: "Workflow",
-            Title: "Notification noise",
-            Description: "Teams and Outlook reminders should only be added after owner and due-date rules are trusted."
-        ),
-        new IntegrationRisk(
-            Label: "Support",
-            Title: "Failed sync handling",
-            Description: "Production integrations need error logging, retry rules, and visible support ownership."
-        )
-    };
-
-    private static readonly IReadOnlyList<Microsoft365MapRow> Microsoft365Map = new[]
-    {
-        new Microsoft365MapRow(
-            WorkflowNeed: "Store evidence and controlled documents",
-            Tool: "SharePoint",
-            ExampleUse: "Attach a document review record to the current controlled document file.",
-            ReviewValue: "Reviewers can see evidence without searching folders manually.",
-            BadgeClass: "badge badge-info"
-        ),
-        new Microsoft365MapRow(
-            WorkflowNeed: "Notify action owners",
-            Tool: "Teams",
-            ExampleUse: "Post overdue corrective actions to an owner or review channel.",
-            ReviewValue: "Follow-up work becomes visible before it is forgotten.",
-            BadgeClass: "badge badge-success"
-        ),
-        new Microsoft365MapRow(
-            WorkflowNeed: "Send formal follow-up",
-            Tool: "Outlook",
-            ExampleUse: "Email weekly owner summaries or overdue escalation lists.",
-            ReviewValue: "Managers get a clear written follow-up trail.",
-            BadgeClass: "badge badge-warning"
-        ),
-        new Microsoft365MapRow(
-            WorkflowNeed: "Review management data",
-            Tool: "Excel / Power BI",
-            ExampleUse: "Export safety, workload, data quality, and action summaries for management review.",
-            ReviewValue: "Reporting can be reused instead of rebuilt manually.",
-            BadgeClass: "badge badge-primary"
-        ),
-        new Microsoft365MapRow(
-            WorkflowNeed: "Authenticate users",
-            Tool: "Entra ID",
-            ExampleUse: "Tie edits, approvals, exports, and admin changes to signed-in users.",
-            ReviewValue: "Audit history becomes accountable and production-ready.",
-            BadgeClass: "badge badge-secondary"
-        )
-    };
-
-    private static readonly IReadOnlyList<ProofItem> ProofItems = new[]
-    {
-        new ProofItem(
-            Label: "M365",
-            Title: "Microsoft-aware design",
-            Description: "The project maps naturally to SharePoint, Teams, Outlook, identity, and reporting workflows."
-        ),
-        new ProofItem(
-            Label: "Workflow",
-            Title: "Integration is purposeful",
-            Description: "Integrations support follow-up, evidence, reporting, reminders, and accountability rather than being added randomly."
-        ),
-        new ProofItem(
-            Label: "Production",
-            Title: "Low-risk rollout path",
-            Description: "The plan starts with exports and document links before adding live notifications or two-way sync."
-        ),
-        new ProofItem(
-            Label: "Business",
-            Title: "Fits real admin work",
-            Description: "The integration plan matches how small businesses often use email, shared documents, spreadsheets, and Microsoft 365."
-        )
-    };
-
-    private record IntegrationTarget(
-        string Number,
-        string Category,
-        string Title,
-        string Description,
-        string CurrentState,
-        string ProductionUpgrade
-    );
-
-    private record IntegrationMatrixRow(
-        string Integration,
-        string BusinessPurpose,
-        string OperationsFlowUse,
-        string Phase,
-        string BadgeClass
-    );
-
-    private record IntegrationRisk(
-        string Label,
-        string Title,
-        string Description
-    );
-
-    private record Microsoft365MapRow(
-        string WorkflowNeed,
-        string Tool,
-        string ExampleUse,
-        string ReviewValue,
-        string BadgeClass
-    );
-
-    private record ProofItem(
-        string Label,
-        string Title,
-        string Description
-    );
-}
+<GuidanceNote Title="Prototype Boundary" Icon="🚧" Tone="warning">
+    <ul>
+        <li>This page is part of the portfolio review layer.</li>
+        <li>The current app uses local SQLite demo data.</li>
+        <li>Production rollout would need authentication, permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
+    </ul>
+</GuidanceNote>

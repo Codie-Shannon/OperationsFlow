@@ -1,575 +1,81 @@
-﻿@page "/audit-overview"
+@page "/audit-overview"
 
 <PageTitle>Audit Overview - OperationsFlow</PageTitle>
 
-<div class="operations-dashboard audit-overview-page">
-    <PageIntro Eyebrow="Traceability"
-               Title="Audit Overview"
-               Subtitle="A production-aware overview of activity history, record-level traceability, workflow changes, review evidence, and the audit logging OperationsFlow would need in a live business environment.">
-        <a class="btn btn-secondary" href="activity-log">Activity Log</a>
-        <a class="btn btn-secondary" href="user-roles">User Roles</a>
-        <a class="btn btn-primary" href="technical-overview">Technical Overview</a>
-    </PageIntro>
+<PageHero
+    Eyebrow="System Evidence"
+    Title="Audit Overview"
+    Subtitle="Explain how activity history, review events, data quality checks, and exports support audit-style traceability."
+    BadgeText="Week 2"
+    BadgeClass="of-badge-info">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
+        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
+        <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+    </Actions>
+</PageHero>
 
-    <div class="page-purpose-note">
-        <strong>Purpose:</strong> use this page to explain how OperationsFlow supports traceability. The prototype includes activity-history concepts and record-level review evidence, while a production system would add authenticated users, stronger audit events, immutable logs, export history, and admin review controls.
-    </div>
+<PurposeNote Title="Purpose" Icon="📌">
+    <p>The prototype demonstrates audit thinking without pretending to be a full immutable production audit system.</p>
+</PurposeNote>
 
-    <section class="kpi-grid">
-        <div class="kpi-card">
-            <span class="kpi-label">Main Proof</span>
-            <strong>Traceability</strong>
-            <span class="kpi-note">Changes should not be invisible</span>
-        </div>
+<MetricGrid>
+    <MetricCard Title="Workflow MVP" Value="Week 2" Detail="Create/edit, reminders, workload, reporting, and traceability" Icon="✅" Tone="success" />
+    <MetricCard Title="Prototype" Value="SQLite" Detail="Local demo data, not production deployment" Icon="🧪" Tone="info" />
+    <MetricCard Title="Evidence" Value="Ready" Detail="Supports screenshots, walkthroughs, and review notes" Icon="📦" Tone="success" />
+    <MetricCard Title="Next Stage" Value="M365" Detail="SharePoint, Lists, Power Automate, and Power BI direction" Icon="🔗" Tone="warning" />
+</MetricGrid>
 
-        <div class="kpi-card">
-            <span class="kpi-label">Record Level</span>
-            <strong>History</strong>
-            <span class="kpi-note">Created, updated, reviewed</span>
-        </div>
-
-        <div class="kpi-card">
-            <span class="kpi-label">Production Need</span>
-            <strong>Audit Log</strong>
-            <span class="kpi-note">User, time, action, before/after</span>
-        </div>
-
-        <div class="kpi-card">
-            <span class="kpi-label">Review Value</span>
-            <strong>Evidence</strong>
-            <span class="kpi-note">Who changed what and why</span>
-        </div>
-    </section>
-
-    <section class="summary-grid audit-intro-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Audit Model Summary</h2>
-                    <p>Why activity history matters in a workflow system.</p>
-                </div>
+<InfoPanel Title="Review Summary" Subtitle="What this page should communicate to a reviewer.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Business Context</strong>
+                <span>Explains why the workflow exists and what problem it solves.</span>
             </div>
-
-            <p class="audit-copy">
-                OperationsFlow is built around follow-up work, ownership, due dates, status changes, and review evidence.
-                In a real business system, those changes need traceability. A manager or reviewer should be able to see
-                when a record was created, who updated it, what changed, why it changed, and whether the change supports
-                the current workflow state.
-            </p>
-
-            <ul class="action-list">
-                <li>Activity history shows workflow movement over time.</li>
-                <li>Record notes explain current state, blockers, evidence, and next actions.</li>
-                <li>Audit events help reviewers understand what changed before a meeting.</li>
-                <li>Production audit logs would connect changes to authenticated users.</li>
-            </ul>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Prototype Boundary</h2>
-                    <p>What the current build proves versus what production would need.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Technical Context</strong>
+                <span>Connects the local Blazor/SQLite prototype to a realistic implementation path.</span>
             </div>
-
-            <div class="audit-boundary-highlight">
-                <span>Prototype boundary</span>
-                <strong>Traceability concept is shown</strong>
-                <p>
-                    The current version demonstrates activity history and review evidence concepts.
-                    A production version would make audit logging stricter by recording authenticated users,
-                    timestamps, event types, affected records, before/after values, exports, and admin changes.
-                </p>
+            <div class="of-review-proof-card">
+                <strong>Portfolio Context</strong>
+                <span>Shows the project as evidence of systems thinking, not just UI layout.</span>
             </div>
-
-            <ol class="action-list">
-                <li>Track important workflow changes.</li>
-                <li>Show recent activity in review pages.</li>
-                <li>Record who made each production change.</li>
-                <li>Protect logs from casual editing.</li>
-                <li>Make audit history searchable for review.</li>
-            </ol>
-        </div>
-    </section>
-
-    <section class="audit-card-grid">
-        @foreach (var item in AuditConcepts)
-        {
-            <article class="audit-card">
-                <div class="audit-card-header">
-                    <span>@item.Number</span>
-                    <div>
-                        <p class="eyebrow">@item.Category</p>
-                        <h2>@item.Title</h2>
-                    </div>
-                </div>
-
-                <p>@item.Description</p>
-
-                <ul>
-                    @foreach (var bullet in item.Items)
-                    {
-                        <li>@bullet</li>
-                    }
-                </ul>
-            </article>
-        }
-    </section>
-
-    <section class="report-card">
-        <div class="panel-header">
-            <div>
-                <h2>Audit Event Matrix</h2>
-                <p>Examples of workflow changes that should be recorded in a production audit log.</p>
+            <div class="of-review-proof-card">
+                <strong>Boundary Context</strong>
+                <span>Keeps the prototype honest about what is and is not production-ready.</span>
             </div>
         </div>
+    </ChildContent>
+</InfoPanel>
 
-        <table class="report-table audit-event-table">
-            <thead>
-                <tr>
-                    <th>Event Type</th>
-                    <th>Example Trigger</th>
-                    <th>Why It Matters</th>
-                    <th>Production Log Detail</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in AuditEvents)
-                {
-                    <tr>
-                        <td><span class="@item.BadgeClass">@item.EventType</span></td>
-                        <td><strong>@item.Trigger</strong></td>
-                        <td>@item.WhyItMatters</td>
-                        <td>@item.ProductionDetail</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </section>
+<InfoPanel Title="Key Points" Subtitle="Use these notes when walking through the project.">
+    <ChildContent>
+        <ol class="of-review-steps">
+            <li>OperationsFlow captures work before it disappears into emails, conversations, spreadsheets, or paper notes.</li>
+            <li>Records feed management views such as Reminders, Workload, Reports, Data Quality, and Activity Log.</li>
+            <li>Corrective actions can be source-linked from risks, training, and controlled documents.</li>
+            <li>Activity history provides traceability evidence for create, update, and review workflows.</li>
+            <li>The project is Microsoft 365-ready in design, but still a local SQLite demo prototype.</li>
+        </ol>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Activity Flow</h2>
-                    <p>How a change becomes useful review evidence.</p>
-                </div>
-            </div>
-
-            <div class="audit-flow-list">
-                @foreach (var step in ActivityFlow)
-                {
-                    <article>
-                        <span>@step.Number</span>
-                        <div>
-                            <strong>@step.Title</strong>
-                            <p>@step.Description</p>
-                        </div>
-                    </article>
-                }
-            </div>
+<InfoPanel Title="Connected Review Links" Subtitle="Open the main evidence pages from here.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <a class="of-review-proof-card of-click-card" href="/reports"><strong>Reports</strong><span>Management reporting and CSV export evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/data-quality"><strong>Data Quality</strong><span>Weak records, overdue work, and review issues.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/activity-log"><strong>Activity Log</strong><span>Global traceability and workflow evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/implementation-plan"><strong>Implementation Plan</strong><span>Week 3/4 hybrid and Microsoft 365 direction.</span></a>
         </div>
+    </ChildContent>
+</InfoPanel>
 
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>What Reviewers Should Check</h2>
-                    <p>How audit history helps during review.</p>
-                </div>
-            </div>
-
-            <div class="review-check-grid">
-                @foreach (var check in ReviewerChecks)
-                {
-                    <article>
-                        <span>@check.Label</span>
-                        <strong>@check.Title</strong>
-                        <p>@check.Description</p>
-                    </article>
-                }
-            </div>
-        </div>
-    </section>
-
-    <section class="report-card">
-        <div class="panel-header">
-            <div>
-                <h2>Traceability By Module</h2>
-                <p>Where audit and activity history creates value across OperationsFlow.</p>
-            </div>
-        </div>
-
-        <table class="report-table traceability-module-table">
-            <thead>
-                <tr>
-                    <th>Module</th>
-                    <th>Traceability Need</th>
-                    <th>Example Activity</th>
-                    <th>Review Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in ModuleTraceability)
-                {
-                    <tr>
-                        <td><strong>@item.Module</strong></td>
-                        <td>@item.TraceabilityNeed</td>
-                        <td>@item.ExampleActivity</td>
-                        <td>@item.ReviewValue</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </section>
-
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Production Audit Requirements</h2>
-                    <p>What a live business system would need.</p>
-                </div>
-            </div>
-
-            <ol class="demo-step-list audit-requirement-list">
-                <li>
-                    <strong>Authenticated user identity</strong>
-                    <span>Every important action should be tied to the signed-in user who performed it.</span>
-                </li>
-
-                <li>
-                    <strong>Before and after values</strong>
-                    <span>Status, owner, priority, due-date, completed-date, and notes changes should record old and new values.</span>
-                </li>
-
-                <li>
-                    <strong>Immutable audit events</strong>
-                    <span>Normal users should not be able to casually edit or delete audit history.</span>
-                </li>
-
-                <li>
-                    <strong>Export and report logging</strong>
-                    <span>Important exports should record who exported what and when.</span>
-                </li>
-
-                <li>
-                    <strong>Admin action tracking</strong>
-                    <span>Role changes, settings changes, reference-list updates, and configuration changes should be logged.</span>
-                </li>
-            </ol>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>What This Proves</h2>
-                    <p>The portfolio value of audit thinking.</p>
-                </div>
-            </div>
-
-            <div class="audit-proof-grid">
-                @foreach (var proof in ProofItems)
-                {
-                    <article>
-                        <span>@proof.Label</span>
-                        <strong>@proof.Title</strong>
-                        <p>@proof.Description</p>
-                    </article>
-                }
-            </div>
-        </div>
-    </section>
-
-    <section class="report-card audit-summary-card">
-        <div class="panel-header">
-            <div>
-                <h2>Audit Overview Summary</h2>
-                <p>A short explanation for technical or business reviewers.</p>
-            </div>
-        </div>
-
-        <div class="audit-summary-copy">
-            <p>
-                OperationsFlow demonstrates traceability thinking by treating workflow changes, notes, owners, statuses,
-                due dates, and review evidence as important business information. The project shows how activity history
-                can support safety meetings, workload reviews, management reporting, data quality checks, and follow-up accountability.
-            </p>
-
-            <p>
-                A production version would strengthen this with authenticated users, immutable audit events, before/after value tracking,
-                export history, admin change logging, role-based access, retention rules, and searchable audit reports. This makes the project
-                more than a set of screens: it shows awareness of accountability, governance, and real business review needs.
-            </p>
-        </div>
-    </section>
-</div>
-
-@code {
-    private static readonly IReadOnlyList<AuditConcept> AuditConcepts = new[]
-    {
-        new AuditConcept(
-            Number: "01",
-            Category: "Record History",
-            Title: "Created and updated events",
-            Description: "Workflow records should show when they were created, updated, reviewed, or completed.",
-            Items: new[]
-            {
-                "Shows when a record entered the system.",
-                "Shows whether follow-up work is moving.",
-                "Supports management review before meetings.",
-                "Makes stale or untouched records easier to spot."
-            }
-        ),
-        new AuditConcept(
-            Number: "02",
-            Category: "Ownership",
-            Title: "Owner changes",
-            Description: "Owner changes are important because they affect accountability and workload reporting.",
-            Items: new[]
-            {
-                "Shows who used to own the item.",
-                "Shows who owns the item now.",
-                "Explains why responsibility changed.",
-                "Supports workload and escalation review."
-            }
-        ),
-        new AuditConcept(
-            Number: "03",
-            Category: "Workflow",
-            Title: "Status changes",
-            Description: "Status changes explain whether a record is open, in progress, completed, closed, rejected, or needs review.",
-            Items: new[]
-            {
-                "Shows workflow movement.",
-                "Helps confirm that completed work has evidence.",
-                "Identifies records stuck in review.",
-                "Supports data quality and reporting accuracy."
-            }
-        ),
-        new AuditConcept(
-            Number: "04",
-            Category: "Evidence",
-            Title: "Notes and review detail",
-            Description: "Notes should explain the current follow-up state, not just repeat the title.",
-            Items: new[]
-            {
-                "Explains blockers and next steps.",
-                "Provides meeting discussion context.",
-                "Supports audit-style review.",
-                "Makes handover easier between users."
-            }
-        )
-    };
-
-    private static readonly IReadOnlyList<AuditEventItem> AuditEvents = new[]
-    {
-        new AuditEventItem(
-            EventType: "Created",
-            BadgeClass: "badge badge-success",
-            Trigger: "New corrective action or document intake item is created.",
-            WhyItMatters: "Shows when work entered the system and who started it.",
-            ProductionDetail: "Record ID, user ID, created date/time, source, initial status."
-        ),
-        new AuditEventItem(
-            EventType: "Owner Changed",
-            BadgeClass: "badge badge-info",
-            Trigger: "Assigned owner is changed from one person to another.",
-            WhyItMatters: "Ownership changes affect accountability, workload, and reminders.",
-            ProductionDetail: "Old owner, new owner, changed by, changed date/time, reason."
-        ),
-        new AuditEventItem(
-            EventType: "Status Changed",
-            BadgeClass: "badge badge-warning",
-            Trigger: "Record moves from Open to In Progress, Completed, Closed, or Needs Review.",
-            WhyItMatters: "Status changes control reporting, overdue logic, and review focus.",
-            ProductionDetail: "Old status, new status, changed by, changed date/time, notes."
-        ),
-        new AuditEventItem(
-            EventType: "Due Date Changed",
-            BadgeClass: "badge badge-warning",
-            Trigger: "A follow-up date or review date is changed.",
-            WhyItMatters: "Date changes can hide or reveal overdue work.",
-            ProductionDetail: "Old date, new date, changed by, changed date/time, reason."
-        ),
-        new AuditEventItem(
-            EventType: "Completed",
-            BadgeClass: "badge badge-success",
-            Trigger: "A record is marked completed or closed.",
-            WhyItMatters: "Completed work should have evidence or outcome notes.",
-            ProductionDetail: "Completed by, completed date/time, outcome notes, closing status."
-        ),
-        new AuditEventItem(
-            EventType: "Exported",
-            BadgeClass: "badge badge-muted",
-            Trigger: "A report, CSV, or management pack is exported.",
-            WhyItMatters: "Exports can contain sensitive or management-level information.",
-            ProductionDetail: "Export type, user, date/time, filters used, record count."
-        ),
-        new AuditEventItem(
-            EventType: "Admin Changed",
-            BadgeClass: "badge badge-danger",
-            Trigger: "Roles, settings, reference lists, or system configuration are changed.",
-            WhyItMatters: "Admin changes can affect the whole workflow.",
-            ProductionDetail: "Setting changed, old value, new value, admin user, date/time."
-        )
-    };
-
-    private static readonly IReadOnlyList<ActivityFlowStep> ActivityFlow = new[]
-    {
-        new ActivityFlowStep(
-            Number: "01",
-            Title: "A record changes",
-            Description: "A user creates, edits, reviews, completes, reassigns, or exports workflow information."
-        ),
-        new ActivityFlowStep(
-            Number: "02",
-            Title: "The change is captured",
-            Description: "The system records the event type, record reference, date/time, and relevant workflow details."
-        ),
-        new ActivityFlowStep(
-            Number: "03",
-            Title: "The change becomes reviewable",
-            Description: "Activity history can be shown on record detail pages, safety meeting packs, reports, and activity logs."
-        ),
-        new ActivityFlowStep(
-            Number: "04",
-            Title: "Managers can explain movement",
-            Description: "Reviewers can see what changed, who changed it, and whether follow-up is happening."
-        ),
-        new ActivityFlowStep(
-            Number: "05",
-            Title: "Data quality improves",
-            Description: "Weak records, missing evidence, stale items, and unclear ownership become easier to identify."
-        )
-    };
-
-    private static readonly IReadOnlyList<ReviewerCheck> ReviewerChecks = new[]
-    {
-        new ReviewerCheck(
-            Label: "Recent",
-            Title: "What changed recently?",
-            Description: "Recent activity helps reviewers see what moved since the last review."
-        ),
-        new ReviewerCheck(
-            Label: "Owner",
-            Title: "Who owns the next step?",
-            Description: "Owner changes and assigned work help confirm accountability."
-        ),
-        new ReviewerCheck(
-            Label: "Evidence",
-            Title: "Is there enough detail?",
-            Description: "Notes and completed outcomes should explain what was done or what is blocked."
-        ),
-        new ReviewerCheck(
-            Label: "Risk",
-            Title: "Was anything hidden?",
-            Description: "Due-date and status changes should not hide overdue or incomplete work."
-        )
-    };
-
-    private static readonly IReadOnlyList<ModuleTraceabilityItem> ModuleTraceability = new[]
-    {
-        new ModuleTraceabilityItem(
-            Module: "Corrective Actions",
-            TraceabilityNeed: "Track owner, status, due date, completed date, notes, and follow-up changes.",
-            ExampleActivity: "CA-1 status changed from Open to In Progress with updated notes.",
-            ReviewValue: "Shows whether corrective work is actually moving."
-        ),
-        new ModuleTraceabilityItem(
-            Module: "Document Intake",
-            TraceabilityNeed: "Track processing state, assigned owner, target system, due date, and admin notes.",
-            ExampleActivity: "DI-3 moved to Needs Review after missing information was found.",
-            ReviewValue: "Shows where incoming document/admin work is blocked."
-        ),
-        new ModuleTraceabilityItem(
-            Module: "Safety Meeting Pack",
-            TraceabilityNeed: "Show recent changes that matter before a compliance meeting.",
-            ExampleActivity: "Recent corrective action updates and overdue document reviews are surfaced.",
-            ReviewValue: "Helps meetings focus on current issues instead of stale summaries."
-        ),
-        new ModuleTraceabilityItem(
-            Module: "Workload",
-            TraceabilityNeed: "Show owner pressure and recent reassignment or overdue movement.",
-            ExampleActivity: "Sam receives two overdue items and one high-priority follow-up.",
-            ReviewValue: "Helps managers identify workload pressure and escalation needs."
-        ),
-        new ModuleTraceabilityItem(
-            Module: "Reports",
-            TraceabilityNeed: "Support management reporting with records that have review history.",
-            ExampleActivity: "Report shows open actions, overdue items, and recent workflow changes.",
-            ReviewValue: "Makes reporting more trustworthy and easier to explain."
-        ),
-        new ModuleTraceabilityItem(
-            Module: "Data Quality",
-            TraceabilityNeed: "Identify records with weak notes, missing owners, overdue dates, or stale activity.",
-            ExampleActivity: "Record flagged because notes do not explain current blocker or next step.",
-            ReviewValue: "Improves the quality of follow-up and reporting."
-        )
-    };
-
-    private static readonly IReadOnlyList<ProofItem> ProofItems = new[]
-    {
-        new ProofItem(
-            Label: "Audit",
-            Title: "Traceability thinking",
-            Description: "The project shows that workflow changes should be visible and reviewable."
-        ),
-        new ProofItem(
-            Label: "Governance",
-            Title: "Production awareness",
-            Description: "The page identifies what production audit logging would need before real data is used."
-        ),
-        new ProofItem(
-            Label: "Workflow",
-            Title: "Evidence-based follow-up",
-            Description: "Notes, status changes, owners, and due dates are treated as review evidence."
-        ),
-        new ProofItem(
-            Label: "Management",
-            Title: "Better review conversations",
-            Description: "Activity history helps managers see what changed instead of relying on memory or scattered emails."
-        )
-    };
-
-    private record AuditConcept(
-        string Number,
-        string Category,
-        string Title,
-        string Description,
-        IReadOnlyList<string> Items
-    );
-
-    private record AuditEventItem(
-        string EventType,
-        string BadgeClass,
-        string Trigger,
-        string WhyItMatters,
-        string ProductionDetail
-    );
-
-    private record ActivityFlowStep(
-        string Number,
-        string Title,
-        string Description
-    );
-
-    private record ReviewerCheck(
-        string Label,
-        string Title,
-        string Description
-    );
-
-    private record ModuleTraceabilityItem(
-        string Module,
-        string TraceabilityNeed,
-        string ExampleActivity,
-        string ReviewValue
-    );
-
-    private record ProofItem(
-        string Label,
-        string Title,
-        string Description
-    );
-}
+<GuidanceNote Title="Prototype Boundary" Icon="🚧" Tone="warning">
+    <ul>
+        <li>This page is part of the portfolio review layer.</li>
+        <li>The current app uses local SQLite demo data.</li>
+        <li>Production rollout would need authentication, permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
+    </ul>
+</GuidanceNote>

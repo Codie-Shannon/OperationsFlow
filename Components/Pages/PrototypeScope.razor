@@ -1,369 +1,81 @@
-﻿@page "/prototype-scope"
+@page "/prototype-scope"
 
 <PageTitle>Prototype Scope - OperationsFlow</PageTitle>
 
-<div class="operations-dashboard prototype-scope-page">
-    <PageIntro Eyebrow="Portfolio Review"
-               Title="Prototype Scope"
-               Subtitle="A clear explanation of what OperationsFlow is, what it currently proves, what is intentionally prototype-only, and what would be required for a production version.">
-        <a class="btn btn-secondary" href="implementation-plan">Implementation Plan</a>
-        <a class="btn btn-secondary" href="demo-guide">Demo Guide</a>
-        <a class="btn btn-primary" href="reports">Reports</a>
-    </PageIntro>
+<PageHero
+    Eyebrow="Boundary"
+    Title="Prototype Scope"
+    Subtitle="Set honest boundaries around what the local demo does and what production implementation would still require."
+    BadgeText="Week 2"
+    BadgeClass="of-badge-info">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
+        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
+        <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+    </Actions>
+</PageHero>
 
-    <div class="page-purpose-note">
-        <strong>Purpose:</strong> use this page to set expectations. OperationsFlow is a working business workflow prototype, not a finished production SaaS system. This page explains the current scope, evidence, and upgrade path.
-    </div>
+<PurposeNote Title="Purpose" Icon="📌">
+    <p>This is a local portfolio prototype. It proves workflow thinking, not full production identity, retention, permissioning, document storage, or live Microsoft 365 automation.</p>
+</PurposeNote>
 
-    <section class="kpi-grid">
-        <div class="kpi-card">
-            <span class="kpi-label">Project Type</span>
-            <strong>Prototype</strong>
-            <span class="kpi-note">Working portfolio system</span>
-        </div>
+<MetricGrid>
+    <MetricCard Title="Workflow MVP" Value="Week 2" Detail="Create/edit, reminders, workload, reporting, and traceability" Icon="✅" Tone="success" />
+    <MetricCard Title="Prototype" Value="SQLite" Detail="Local demo data, not production deployment" Icon="🧪" Tone="info" />
+    <MetricCard Title="Evidence" Value="Ready" Detail="Supports screenshots, walkthroughs, and review notes" Icon="📦" Tone="success" />
+    <MetricCard Title="Next Stage" Value="M365" Detail="SharePoint, Lists, Power Automate, and Power BI direction" Icon="🔗" Tone="warning" />
+</MetricGrid>
 
-        <div class="kpi-card">
-            <span class="kpi-label">Stack</span>
-            <strong>.NET</strong>
-            <span class="kpi-note">Blazor / EF Core / SQLite</span>
-        </div>
-
-        <div class="kpi-card">
-            <span class="kpi-label">Workflow Area</span>
-            <strong>OSHE</strong>
-            <span class="kpi-note">Safety, compliance, admin</span>
-        </div>
-
-        <div class="kpi-card">
-            <span class="kpi-label">Production Path</span>
-            <strong>M365</strong>
-            <span class="kpi-note">SharePoint / Teams / Outlook</span>
-        </div>
-    </section>
-
-    <section class="summary-grid prototype-scope-summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>What OperationsFlow Is</h2>
-                    <p>The intended scope of the current build.</p>
-                </div>
+<InfoPanel Title="Review Summary" Subtitle="What this page should communicate to a reviewer.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Business Context</strong>
+                <span>Explains why the workflow exists and what problem it solves.</span>
             </div>
-
-            <p class="prototype-scope-copy">
-                OperationsFlow is a working Blazor/.NET business workflow prototype designed to show how
-                operational work, corrective actions, safety/compliance follow-up, risk reviews, training,
-                controlled documents, document intake, reminders, reports, activity logging, workload, and
-                data quality can be connected into one reviewable workflow system.
-            </p>
-
-            <ul class="action-list">
-                <li>A portfolio-ready business systems project.</li>
-                <li>A local working demo with realistic seeded records.</li>
-                <li>A proof of workflow design, CRUD screens, reporting, traceability, and review views.</li>
-                <li>A base that could be expanded into a production internal business system.</li>
-            </ul>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>What It Is Not</h2>
-                    <p>Important limits of the prototype.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Technical Context</strong>
+                <span>Connects the local Blazor/SQLite prototype to a realistic implementation path.</span>
             </div>
-
-            <div class="prototype-warning-card">
-                <span>Prototype boundary</span>
-                <strong>Not production-ready yet</strong>
-                <p>
-                    This version does not yet include real user authentication, production hosting,
-                    Microsoft 365 live integrations, secured document storage, automated tests,
-                    deployment monitoring, or production backup procedures.
-                </p>
+            <div class="of-review-proof-card">
+                <strong>Portfolio Context</strong>
+                <span>Shows the project as evidence of systems thinking, not just UI layout.</span>
             </div>
-
-            <ul class="action-list">
-                <li>Not a deployed live system.</li>
-                <li>Not connected to real company data.</li>
-                <li>Not a replacement for production SharePoint, Teams, Outlook, or ERP controls yet.</li>
-                <li>Not pretending security, hosting, and integration work is already finished.</li>
-            </ul>
-        </div>
-    </section>
-
-    <section class="prototype-scope-grid">
-        @foreach (var scopeCard in ScopeCards)
-        {
-            <article class="prototype-scope-card large">
-                <div class="prototype-scope-card-header">
-                    <span class="@scopeCard.BadgeClass">@scopeCard.Badge</span>
-                    <h2>@scopeCard.Title</h2>
-                </div>
-
-                <p>@scopeCard.Description</p>
-
-                <ul>
-                    @foreach (var item in scopeCard.Items)
-                    {
-                        <li>@item</li>
-                    }
-                </ul>
-            </article>
-        }
-    </section>
-
-    <section class="report-card">
-        <div class="panel-header">
-            <div>
-                <h2>Feature Scope Matrix</h2>
-                <p>What exists now, what is demonstrated, and what would be added for a production system.</p>
+            <div class="of-review-proof-card">
+                <strong>Boundary Context</strong>
+                <span>Keeps the prototype honest about what is and is not production-ready.</span>
             </div>
         </div>
+    </ChildContent>
+</InfoPanel>
 
-        <table class="report-table prototype-scope-table">
-            <thead>
-                <tr>
-                    <th>Area</th>
-                    <th>Current Prototype</th>
-                    <th>What It Proves</th>
-                    <th>Production Upgrade</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in ScopeMatrix)
-                {
-                    <tr>
-                        <td><strong>@item.Area</strong></td>
-                        <td><span class="@item.BadgeClass">@item.CurrentStatus</span></td>
-                        <td>@item.Proof</td>
-                        <td>@item.ProductionUpgrade</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </section>
+<InfoPanel Title="Key Points" Subtitle="Use these notes when walking through the project.">
+    <ChildContent>
+        <ol class="of-review-steps">
+            <li>OperationsFlow captures work before it disappears into emails, conversations, spreadsheets, or paper notes.</li>
+            <li>Records feed management views such as Reminders, Workload, Reports, Data Quality, and Activity Log.</li>
+            <li>Corrective actions can be source-linked from risks, training, and controlled documents.</li>
+            <li>Activity history provides traceability evidence for create, update, and review workflows.</li>
+            <li>The project is Microsoft 365-ready in design, but still a local SQLite demo prototype.</li>
+        </ol>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Reviewer Talking Points</h2>
-                    <p>How to explain the prototype in a demo or interview.</p>
-                </div>
-            </div>
-
-            <ol class="demo-step-list prototype-talking-points">
-                <li>
-                    <strong>This is a workflow prototype, not just a dashboard.</strong>
-                    <span>Records can be created, edited, reviewed, reported on, and traced through activity history.</span>
-                </li>
-
-                <li>
-                    <strong>The value is in connected follow-up.</strong>
-                    <span>Corrective actions, risks, training, documents, intake, workload, reminders, reports, and data quality all support the same review process.</span>
-                </li>
-
-                <li>
-                    <strong>The demo data is intentionally realistic.</strong>
-                    <span>It includes overdue items, high-priority records, owner pressure, document review issues, training expiry, and admin intake examples.</span>
-                </li>
-
-                <li>
-                    <strong>The production path is clear.</strong>
-                    <span>The implementation plan identifies authentication, roles, hosted database, SharePoint storage, Teams/Outlook notifications, tests, deployment, and monitoring.</span>
-                </li>
-            </ol>
+<InfoPanel Title="Connected Review Links" Subtitle="Open the main evidence pages from here.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <a class="of-review-proof-card of-click-card" href="/reports"><strong>Reports</strong><span>Management reporting and CSV export evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/data-quality"><strong>Data Quality</strong><span>Weak records, overdue work, and review issues.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/activity-log"><strong>Activity Log</strong><span>Global traceability and workflow evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/implementation-plan"><strong>Implementation Plan</strong><span>Week 3/4 hybrid and Microsoft 365 direction.</span></a>
         </div>
+    </ChildContent>
+</InfoPanel>
 
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Production Upgrade Path</h2>
-                    <p>What should come after the current portfolio version.</p>
-                </div>
-            </div>
-
-            <div class="production-upgrade-list">
-                @foreach (var upgrade in UpgradePath)
-                {
-                    <article>
-                        <span>@upgrade.Step</span>
-                        <div>
-                            <strong>@upgrade.Title</strong>
-                            <p>@upgrade.Description</p>
-                        </div>
-                    </article>
-                }
-            </div>
-        </div>
-    </section>
-</div>
-
-@code {
-    private static readonly IReadOnlyList<ScopeCard> ScopeCards = new[]
-    {
-        new ScopeCard(
-            Badge: "Included",
-            BadgeClass: "badge badge-success",
-            Title: "Working Workflow Modules",
-            Description: "The current build includes connected modules that demonstrate operational and compliance follow-up from multiple angles.",
-            Items: new[]
-            {
-                "Dashboard and work order tracking.",
-                "Corrective action creation, editing, status guidance, and follow-up notes.",
-                "Safety overview, safety meeting pack, compliance calendar, and reports.",
-                "Document control, risk register, training compliance, and document intake.",
-                "Workload, reminders, activity log, data quality, demo guide, and implementation plan."
-            }
-        ),
-        new ScopeCard(
-            Badge: "Demonstrated",
-            BadgeClass: "badge badge-info",
-            Title: "Business System Capability",
-            Description: "The prototype demonstrates business-systems thinking, not just UI screens.",
-            Items: new[]
-            {
-                "CRUD workflow screens for key records.",
-                "Owner accountability and workload pressure reporting.",
-                "Status, priority, due-date, and completed-date logic.",
-                "Activity history and record-level traceability.",
-                "CSV/reporting concepts for management review."
-            }
-        ),
-        new ScopeCard(
-            Badge: "Prototype Only",
-            BadgeClass: "badge badge-warning",
-            Title: "Current Limits",
-            Description: "The project is honest about what is intentionally not included yet.",
-            Items: new[]
-            {
-                "Local demo database instead of production-hosted storage.",
-                "Seeded demo data instead of live company data.",
-                "No real user authentication or role permissions yet.",
-                "No live SharePoint, Teams, Outlook, ERP, or API integrations yet.",
-                "No automated deployment pipeline or monitoring yet."
-            }
-        ),
-        new ScopeCard(
-            Badge: "Future",
-            BadgeClass: "badge badge-muted",
-            Title: "Production Expansion",
-            Description: "The current structure is designed so production features can be added without changing the core workflow idea.",
-            Items: new[]
-            {
-                "Authentication and role-based access.",
-                "Production SQL Server or Azure SQL database.",
-                "SharePoint document libraries and controlled file links.",
-                "Teams or Outlook notifications for overdue and due-soon work.",
-                "API endpoints, automated tests, deployment, monitoring, and backups."
-            }
-        )
-    };
-
-    private static readonly IReadOnlyList<ScopeMatrixItem> ScopeMatrix = new[]
-    {
-        new ScopeMatrixItem(
-            Area: "Corrective Actions",
-            CurrentStatus: "Working",
-            BadgeClass: "badge badge-success",
-            Proof: "Shows action creation, editing, owner assignment, priority, status, due dates, notes, and activity logging.",
-            ProductionUpgrade: "Add permissions, approval workflow, attachments, notifications, and stronger audit controls."
-        ),
-        new ScopeMatrixItem(
-            Area: "Safety / Compliance Review",
-            CurrentStatus: "Working",
-            BadgeClass: "badge badge-success",
-            Proof: "Shows meeting pack, compliance calendar, overdue review, training issues, document review issues, and risk follow-up.",
-            ProductionUpgrade: "Connect to live safety records, real compliance documents, notifications, and review sign-off."
-        ),
-        new ScopeMatrixItem(
-            Area: "Document Intake",
-            CurrentStatus: "Working",
-            BadgeClass: "badge badge-success",
-            Proof: "Shows admin intake tracking, assigned owner, target system, due dates, status updates, and activity history.",
-            ProductionUpgrade: "Connect to SharePoint libraries, email intake, OCR or metadata capture, and document routing rules."
-        ),
-        new ScopeMatrixItem(
-            Area: "Reporting",
-            CurrentStatus: "Working",
-            BadgeClass: "badge badge-success",
-            Proof: "Shows management summaries, grouped counts, export concepts, and review-ready tables.",
-            ProductionUpgrade: "Add scheduled reports, Power BI dashboards, production exports, and approved KPI definitions."
-        ),
-        new ScopeMatrixItem(
-            Area: "Data Quality",
-            CurrentStatus: "Working",
-            BadgeClass: "badge badge-success",
-            Proof: "Shows missing/weak data, overdue items, expired records, and records needing review.",
-            ProductionUpgrade: "Add configurable data quality rules, owner notifications, and quality score tracking."
-        ),
-        new ScopeMatrixItem(
-            Area: "Authentication",
-            CurrentStatus: "Not Included",
-            BadgeClass: "badge badge-warning",
-            Proof: "Prototype keeps access simple for local review.",
-            ProductionUpgrade: "Add Microsoft identity, user accounts, role permissions, and restricted admin pages."
-        ),
-        new ScopeMatrixItem(
-            Area: "Integrations",
-            CurrentStatus: "Planned",
-            BadgeClass: "badge badge-muted",
-            Proof: "The workflow is structured around integration-ready business records.",
-            ProductionUpgrade: "Add SharePoint storage, Outlook/Teams notifications, API endpoints, and external system sync."
-        ),
-        new ScopeMatrixItem(
-            Area: "Deployment",
-            CurrentStatus: "Local",
-            BadgeClass: "badge badge-warning",
-            Proof: "Runs as a local portfolio demo.",
-            ProductionUpgrade: "Deploy to a controlled hosting environment with backups, monitoring, and release process."
-        )
-    };
-
-    private static readonly IReadOnlyList<UpgradeStep> UpgradePath = new[]
-    {
-        new UpgradeStep(
-            Step: "01",
-            Title: "Secure the system",
-            Description: "Add authentication, role permissions, admin access rules, and production user management."
-        ),
-        new UpgradeStep(
-            Step: "02",
-            Title: "Move data to production storage",
-            Description: "Replace local demo storage with SQL Server, Azure SQL, or an approved database with backups."
-        ),
-        new UpgradeStep(
-            Step: "03",
-            Title: "Connect Microsoft 365",
-            Description: "Add SharePoint document storage, Teams notifications, Outlook reminders, and approved reporting exports."
-        ),
-        new UpgradeStep(
-            Step: "04",
-            Title: "Harden and deploy",
-            Description: "Add tests, deployment process, logging, monitoring, backup checks, and support documentation."
-        )
-    };
-
-    private record ScopeCard(
-        string Badge,
-        string BadgeClass,
-        string Title,
-        string Description,
-        IReadOnlyList<string> Items
-    );
-
-    private record ScopeMatrixItem(
-        string Area,
-        string CurrentStatus,
-        string BadgeClass,
-        string Proof,
-        string ProductionUpgrade
-    );
-
-    private record UpgradeStep(
-        string Step,
-        string Title,
-        string Description
-    );
-}
+<GuidanceNote Title="Prototype Boundary" Icon="🚧" Tone="warning">
+    <ul>
+        <li>This page is part of the portfolio review layer.</li>
+        <li>The current app uses local SQLite demo data.</li>
+        <li>Production rollout would need authentication, permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
+    </ul>
+</GuidanceNote>

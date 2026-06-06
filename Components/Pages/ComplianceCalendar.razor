@@ -1,4 +1,4 @@
-﻿@page "/compliance-calendar"
+@page "/compliance-calendar"
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
@@ -6,327 +6,31 @@
 
 <PageTitle>Compliance Calendar - OperationsFlow</PageTitle>
 
-<div class="operations-dashboard">
-    <PageIntro Eyebrow="Safety / Compliance"
-               Title="Compliance Calendar"
-               Subtitle="A planning view for upcoming corrective action due dates, risk reviews, training expiries, and controlled document reviews.">
-        <a class="btn btn-secondary" href="compliance-dashboard">Safety Overview</a>
-        <a class="btn btn-secondary" href="safety-meeting-pack">Meeting Pack</a>
-        <a class="btn btn-primary" href="reports">Reports</a>
-    </PageIntro>
+<PageHero Eyebrow="Compliance" Title="Compliance Calendar" Subtitle="Plan overdue, due-this-week, next-30-days, and future compliance follow-up before it becomes missed work." BadgeText="@($"{OverdueItems.Count} overdue")" BadgeClass="@(OverdueItems.Any() ? "of-badge-danger" : "of-badge-success")">
+    <Actions><a class="of-btn of-btn-secondary" href="/compliance-dashboard">Safety Overview</a><a class="of-btn of-btn-secondary" href="/safety-meeting-pack">Meeting Pack</a><a class="of-btn of-btn-secondary" href="/reports">Reports</a></Actions>
+</PageHero>
 
-    <div class="page-purpose-note">
-        <strong>Purpose:</strong> use this page to see what is overdue, what is due this week, and what compliance work is coming up before it becomes a missed follow-up.
-        <div class="status-guide">
-            <span class="status-guide-item"><span class="badge badge-danger">Overdue</span> Needs immediate review</span>
-            <span class="status-guide-item"><span class="badge badge-warning">Due Soon</span> Upcoming follow-up</span>
-            <span class="status-guide-item"><span class="badge badge-info">In Progress</span> Active work</span>
-            <span class="status-guide-item"><span class="badge badge-success">Current</span> No immediate issue</span>
-        </div>
-    </div>
+<PurposeNote Title="Purpose" Icon="📅"><p>Use this page to see what is overdue, what is due this week, and what compliance work is coming up across corrective actions, risk reviews, training expiries, and document reviews.</p></PurposeNote>
 
-    <section class="kpi-grid">
-        <div class="kpi-card">
-            <span class="kpi-label">Overdue</span>
-            <strong>@OverdueItems.Count</strong>
-            <span class="kpi-note">Needs immediate review</span>
-        </div>
+<MetricGrid>
+    <MetricCard Title="Overdue" Value="@OverdueItems.Count.ToString()" Detail="Needs immediate review" Icon="🚨" Tone="danger" />
+    <MetricCard Title="Due This Week" Value="@DueThisWeekItems.Count.ToString()" Detail="Next 7 days" Icon="⏰" Tone="warning" />
+    <MetricCard Title="Due Next 30 Days" Value="@DueNext30DaysItems.Count.ToString()" Detail="Upcoming compliance work" Icon="📆" Tone="info" />
+    <MetricCard Title="Future Items" Value="@FutureItems.Count.ToString()" Detail="Later review dates" Icon="✅" Tone="success" />
+</MetricGrid>
 
-        <div class="kpi-card">
-            <span class="kpi-label">Due This Week</span>
-            <strong>@DueThisWeekItems.Count</strong>
-            <span class="kpi-note">Next 7 days</span>
-        </div>
+<InfoPanel Title="How To Use This View" Subtitle="Plan safety/compliance follow-up before items become overdue."><ChildContent><ol class="of-review-steps"><li>Start with overdue items and confirm current progress.</li><li>Review items due this week and assign follow-up owners.</li><li>Check the next 30 days for training, document reviews, risk reviews, and action due dates.</li><li>Use the Safety Meeting Pack for discussion and Reports for exports.</li></ol></ChildContent></InfoPanel>
 
-        <div class="kpi-card">
-            <span class="kpi-label">Due Next 30 Days</span>
-            <strong>@DueNext30DaysItems.Count</strong>
-            <span class="kpi-note">Upcoming compliance work</span>
-        </div>
+<InfoPanel Title="Planning Focus" Subtitle="Current compliance planning pressure based on saved demo data."><ChildContent><ul>@if(OverdueItems.Any()){<li>@OverdueItems.Count overdue item(s) need immediate follow-up.</li>}@if(DueThisWeekItems.Any()){<li>@DueThisWeekItems.Count item(s) are due within the next 7 days.</li>}@if(DueNext30DaysItems.Any()){<li>@DueNext30DaysItems.Count item(s) are due within the next 30 days.</li>}@if(!OverdueItems.Any()&&!DueThisWeekItems.Any()&&!DueNext30DaysItems.Any()){<li>No urgent compliance calendar pressure found. Review future items for planning.</li>}</ul></ChildContent></InfoPanel>
 
-        <div class="kpi-card">
-            <span class="kpi-label">Future Items</span>
-            <strong>@FutureItems.Count</strong>
-            <span class="kpi-note">Later review dates</span>
-        </div>
-    </section>
+<TableCard Title="Compliance Calendar Items" Subtitle="@($"Showing {CalendarItems.Count} compliance planning item(s).")" IsEmpty="@(!CalendarItems.Any())" EmptyTitle="No calendar items" EmptyMessage="No compliance due dates are available yet.">
+    <ChildContent><table><thead><tr><th>Flag</th><th>Type</th><th>Title</th><th>Owner</th><th>Department</th><th>Date</th><th>Priority</th><th>Open</th></tr></thead><tbody>@foreach(var item in CalendarItems.OrderBy(x=>x.Date)){<tr><td><span class="@GetStatusClass(item)">@GetFlagLabel(item)</span></td><td>@item.Type</td><td><strong>@item.Title</strong><div class="of-muted-text">@item.Source</div></td><td>@item.Owner</td><td>@item.Department</td><td>@item.Date.ToString("dd MMM yyyy")</td><td><span class="@GetPriorityClass(item.Priority)">@item.Priority</span></td><td><a class="of-card-link" href="/@item.Url">Open</a></td></tr>}</tbody></table></ChildContent>
+</TableCard>
 
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>How To Use This View</h2>
-                    <p>Use this page to plan safety/compliance follow-up before items become overdue.</p>
-                </div>
-            </div>
+<GuidanceNote Title="Review Notes" Icon="💡" Tone="info"><ul><li>Overdue items should be checked before due-soon work.</li><li>This view combines compliance due dates from multiple modules.</li><li>Production reminders could later be driven by Power Automate, Teams, Outlook, or Microsoft Lists.</li></ul></GuidanceNote>
 
-            <ol class="action-list">
-                <li>Start with overdue items and confirm current progress.</li>
-                <li>Review items due this week and assign follow-up owners.</li>
-                <li>Check the next 30 days for training, document reviews, risk reviews, and action due dates.</li>
-                <li>Use the Safety Meeting Pack for meeting discussion and Reports for exports.</li>
-            </ol>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Planning Focus</h2>
-                    <p>Current compliance planning pressure based on saved demo data.</p>
-                </div>
-            </div>
-
-            <ul class="action-list">
-                @if (OverdueItems.Any())
-                {
-                    <li>@OverdueItems.Count overdue item(s) need immediate follow-up.</li>
-                }
-
-                @if (DueThisWeekItems.Any())
-                {
-                    <li>@DueThisWeekItems.Count item(s) are due within the next 7 days.</li>
-                }
-
-                @if (DueNext30DaysItems.Any())
-                {
-                    <li>@DueNext30DaysItems.Count item(s) are due within the next 30 days.</li>
-                }
-
-                @if (!OverdueItems.Any() && !DueThisWeekItems.Any() && !DueNext30DaysItems.Any())
-                {
-                    <li>No urgent compliance calendar pressure found. Review future items for planning.</li>
-                }
-            </ul>
-        </div>
-    </section>
-
-    <section class="calendar-board">
-        <CalendarSection Title="Overdue"
-                         Subtitle="Items already past their due, review, or expiry date."
-                         Items="OverdueItems"
-                         EmptyMessage="No overdue compliance calendar items found." />
-
-        <CalendarSection Title="Due This Week"
-                         Subtitle="Items due within the next 7 days."
-                         Items="DueThisWeekItems"
-                         EmptyMessage="No compliance items due this week." />
-
-        <CalendarSection Title="Due Next 30 Days"
-                         Subtitle="Upcoming compliance work due soon."
-                         Items="DueNext30DaysItems"
-                         EmptyMessage="No compliance items due in the next 30 days." />
-
-        <CalendarSection Title="Future"
-                         Subtitle="Later review dates and planning items."
-                         Items="FutureItems"
-                         EmptyMessage="No future compliance items found." />
-    </section>
-</div>
-
-@code {
-    private List<CorrectiveAction> correctiveActions = new();
-    private List<RiskItem> risks = new();
-    private List<TrainingRecord> trainingRecords = new();
-    private List<DocumentRecord> documents = new();
-
-    private List<CalendarItem> CalendarItems { get; set; } = new();
-
-    private List<CalendarItem> OverdueItems =>
-        CalendarItems
-            .Where(x => x.Date.Date < DateTime.Today)
-            .OrderBy(x => x.Date)
-            .ThenBy(x => x.Type)
-            .ThenBy(x => x.Title)
-            .ToList();
-
-    private List<CalendarItem> DueThisWeekItems =>
-        CalendarItems
-            .Where(x => x.Date.Date >= DateTime.Today && x.Date.Date <= DateTime.Today.AddDays(7))
-            .OrderBy(x => x.Date)
-            .ThenBy(x => x.Type)
-            .ThenBy(x => x.Title)
-            .ToList();
-
-    private List<CalendarItem> DueNext30DaysItems =>
-        CalendarItems
-            .Where(x => x.Date.Date > DateTime.Today.AddDays(7) && x.Date.Date <= DateTime.Today.AddDays(30))
-            .OrderBy(x => x.Date)
-            .ThenBy(x => x.Type)
-            .ThenBy(x => x.Title)
-            .ToList();
-
-    private List<CalendarItem> FutureItems =>
-        CalendarItems
-            .Where(x => x.Date.Date > DateTime.Today.AddDays(30))
-            .OrderBy(x => x.Date)
-            .ThenBy(x => x.Type)
-            .ThenBy(x => x.Title)
-            .Take(20)
-            .ToList();
-
-    protected override async Task OnInitializedAsync()
-    {
-        correctiveActions = await Db.CorrectiveActions
-            .AsNoTracking()
-            .ToListAsync();
-
-        risks = await Db.RiskItems
-            .AsNoTracking()
-            .ToListAsync();
-
-        trainingRecords = await Db.TrainingRecords
-            .AsNoTracking()
-            .ToListAsync();
-
-        documents = await Db.DocumentRecords
-            .AsNoTracking()
-            .ToListAsync();
-
-        BuildCalendarItems();
-    }
-
-    private void BuildCalendarItems()
-    {
-        var items = new List<CalendarItem>();
-
-        items.AddRange(
-            correctiveActions
-                .Where(x => !IsClosedStatus(x.Status))
-                .Select(x => new CalendarItem
-                {
-                    Type = "Corrective Action",
-                    Title = x.Title,
-                    Owner = SafeText(x.Owner, "Unassigned"),
-                    Department = SafeText(x.Department, x.Site),
-                    Date = x.DueDate,
-                    DateLabel = "Due",
-                    Status = x.IsOverdue ? "Overdue" : SafeText(x.Status, "Open"),
-                    Priority = SafeText(x.Priority, "Unknown"),
-                    Source = SafeText(x.Source, "Manual / Internal"),
-                    Url = "corrective-actions"
-                }));
-
-        items.AddRange(
-            risks
-                .Select(x => new CalendarItem
-                {
-                    Type = "Risk Review",
-                    Title = x.Title,
-                    Owner = SafeText(x.Owner, "Unassigned"),
-                    Department = SafeText(x.Department, x.Site),
-                    Date = x.ReviewDate,
-                    DateLabel = "Review",
-                    Status = x.IsReviewOverdue ? "Overdue" : "Review Scheduled",
-                    Priority = x.RiskLevel,
-                    Source = SafeText(x.Hazard, "Risk Register"),
-                    Url = "risk-register"
-                }));
-
-        items.AddRange(
-            trainingRecords
-                .Where(x => x.IsRequired)
-                .Select(x => new CalendarItem
-                {
-                    Type = "Training",
-                    Title = x.TrainingName,
-                    Owner = SafeText(x.StaffName, "Unknown"),
-                    Department = SafeText(x.Department, x.Site),
-                    Date = x.ExpiryDate,
-                    DateLabel = "Expiry",
-                    Status = x.IsExpired ? "Expired" : x.IsExpiringSoon ? "Expiring Soon" : SafeText(x.Status, "Current"),
-                    Priority = x.IsExpired ? "High" : x.IsExpiringSoon ? "Medium" : "Low",
-                    Source = SafeText(x.Notes, "Training Compliance"),
-                    Url = "training"
-                }));
-
-        items.AddRange(
-            documents
-                .Select(x => new CalendarItem
-                {
-                    Type = "Document Review",
-                    Title = x.Title,
-                    Owner = SafeText(x.Owner, "Unassigned"),
-                    Department = SafeText(x.Department, x.DocumentType),
-                    Date = x.NextReviewDate,
-                    DateLabel = "Review",
-                    Status = x.IsReviewOverdue ? "Overdue" : x.IsDueSoon ? "Due Soon" : SafeText(x.Status, "Current"),
-                    Priority = x.IsReviewOverdue ? "High" : x.IsDueSoon ? "Medium" : "Low",
-                    Source = SafeText(x.DocumentNumber, "Document Control"),
-                    Url = "documents"
-                }));
-
-        CalendarItems = items;
-    }
-
-    private static bool IsClosedStatus(string? status)
-    {
-        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static string SafeText(string? value, string fallback)
-    {
-        return string.IsNullOrWhiteSpace(value) ? fallback : value;
-    }
-
-    public class CalendarItem
-    {
-        public string Type { get; set; } = "";
-        public string Title { get; set; } = "";
-        public string Owner { get; set; } = "";
-        public string Department { get; set; } = "";
-        public DateTime Date { get; set; }
-        public string DateLabel { get; set; } = "";
-        public string Status { get; set; } = "";
-        public string Priority { get; set; } = "";
-        public string Source { get; set; } = "";
-        public string Url { get; set; } = "";
-    }
-
-    public static string GetStatusClass(CalendarItem item)
-    {
-        if (item.Date.Date < DateTime.Today)
-        {
-            return "badge badge-danger";
-        }
-
-        return item.Status.ToLower() switch
-        {
-            "expired" => "badge badge-danger",
-            "overdue" => "badge badge-danger",
-            "critical" => "badge badge-danger",
-            "expiring soon" => "badge badge-warning",
-            "due soon" => "badge badge-warning",
-            "high" => "badge badge-warning",
-            "medium" => "badge badge-info",
-            "current" => "badge badge-success",
-            "completed" => "badge badge-success",
-            "closed" => "badge badge-success",
-            _ => "badge badge-muted"
-        };
-    }
-
-    public static string GetTypeClass(string type)
-    {
-        return type.ToLower() switch
-        {
-            "corrective action" => "calendar-type calendar-type-action",
-            "risk review" => "calendar-type calendar-type-risk",
-            "training" => "calendar-type calendar-type-training",
-            "document review" => "calendar-type calendar-type-document",
-            _ => "calendar-type"
-        };
-    }
-
-    public static string GetPriorityClass(string priority)
-    {
-        return priority.ToLower() switch
-        {
-            "critical" => "badge badge-danger",
-            "high" => "badge badge-warning",
-            "medium" => "badge badge-info",
-            "low" => "badge badge-muted",
-            _ => "badge badge-muted"
-        };
-    }
-}
+@code { private List<CorrectiveAction> correctiveActions=new(); private List<RiskItem> risks=new(); private List<TrainingRecord> trainingRecords=new(); private List<DocumentRecord> documents=new(); private List<CalendarItem> CalendarItems{get;set;}=new();
+private List<CalendarItem> OverdueItems=>CalendarItems.Where(x=>x.Date.Date<DateTime.Today).OrderBy(x=>x.Date).ToList(); private List<CalendarItem> DueThisWeekItems=>CalendarItems.Where(x=>x.Date.Date>=DateTime.Today&&x.Date.Date<=DateTime.Today.AddDays(7)).OrderBy(x=>x.Date).ToList(); private List<CalendarItem> DueNext30DaysItems=>CalendarItems.Where(x=>x.Date.Date>DateTime.Today.AddDays(7)&&x.Date.Date<=DateTime.Today.AddDays(30)).OrderBy(x=>x.Date).ToList(); private List<CalendarItem> FutureItems=>CalendarItems.Where(x=>x.Date.Date>DateTime.Today.AddDays(30)).OrderBy(x=>x.Date).Take(20).ToList();
+protected override async Task OnInitializedAsync(){correctiveActions=await Db.CorrectiveActions.AsNoTracking().ToListAsync();risks=await Db.RiskItems.AsNoTracking().ToListAsync();trainingRecords=await Db.TrainingRecords.AsNoTracking().ToListAsync();documents=await Db.DocumentRecords.AsNoTracking().ToListAsync();BuildCalendarItems();}
+private void BuildCalendarItems(){var items=new List<CalendarItem>(); items.AddRange(correctiveActions.Where(x=>!IsClosedStatus(x.Status)).Select(x=>new CalendarItem("Corrective Action",x.Title,SafeText(x.Owner,"Unassigned"),SafeText(x.Department,x.Site),x.DueDate,"Due",x.IsOverdue?"Overdue":SafeText(x.Status,"Open"),SafeText(x.Priority,"Unknown"),SafeText(x.Source,"Manual / Internal"),"corrective-actions"))); items.AddRange(risks.Select(x=>new CalendarItem("Risk Review",x.Title,SafeText(x.Owner,"Unassigned"),SafeText(x.Department,x.Site),x.ReviewDate,"Review",x.IsReviewOverdue?"Overdue":"Review Scheduled",x.RiskLevel,SafeText(x.Hazard,"Risk Register"),"risk-register"))); items.AddRange(trainingRecords.Where(x=>x.IsRequired).Select(x=>new CalendarItem("Training",x.TrainingName,SafeText(x.StaffName,"Unknown"),SafeText(x.Department,x.Site),x.ExpiryDate,"Expiry",x.IsExpired?"Expired":x.IsExpiringSoon?"Expiring Soon":SafeText(x.Status,"Current"),x.IsExpired?"High":x.IsExpiringSoon?"Medium":"Low",SafeText(x.Notes,"Training Compliance"),"training"))); items.AddRange(documents.Select(x=>new CalendarItem("Document Review",x.Title,SafeText(x.Owner,"Unassigned"),SafeText(x.Department,x.DocumentType),x.NextReviewDate,"Review",x.IsReviewOverdue?"Overdue":x.IsDueSoon?"Due Soon":SafeText(x.Status,"Current"),x.IsReviewOverdue?"High":x.IsDueSoon?"Medium":"Low",SafeText(x.DocumentNumber,"Document Control"),"documents"))); CalendarItems=items;}
+private static bool IsClosedStatus(string? status)=>string.Equals(status,"Completed",StringComparison.OrdinalIgnoreCase)||string.Equals(status,"Closed",StringComparison.OrdinalIgnoreCase)||string.Equals(status,"Rejected",StringComparison.OrdinalIgnoreCase); private static string SafeText(string? value,string fallback)=>string.IsNullOrWhiteSpace(value)?fallback:value; private static string GetFlagLabel(CalendarItem item)=>item.Date.Date<DateTime.Today?"Overdue":item.Date.Date<=DateTime.Today.AddDays(7)?"Due This Week":item.Date.Date<=DateTime.Today.AddDays(30)?"Due Soon":"Future"; private static string GetStatusClass(CalendarItem item)=>item.Date.Date<DateTime.Today?"badge badge-danger":item.Date.Date<=DateTime.Today.AddDays(7)?"badge badge-warning":"badge badge-info"; private static string GetPriorityClass(string? priority)=>priority?.ToLowerInvariant() switch{"critical"=>"badge badge-danger","high"=>"badge badge-warning","medium"=>"badge badge-info","low"=>"badge badge-muted",_=>"badge badge-muted"}; public record CalendarItem(string Type,string Title,string Owner,string Department,DateTime Date,string DateLabel,string Status,string Priority,string Source,string Url); }

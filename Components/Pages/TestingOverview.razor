@@ -1,580 +1,81 @@
-﻿@page "/testing-overview"
+@page "/testing-overview"
 
 <PageTitle>Testing Overview - OperationsFlow</PageTitle>
 
-<div class="operations-dashboard testing-overview-page">
-    <PageIntro Eyebrow="Quality Assurance"
-               Title="Testing Overview"
-               Subtitle="A practical testing and quality assurance overview for reviewing OperationsFlow before demo, handover, or production planning.">
-        <a class="btn btn-secondary" href="reviewer-checklist">Reviewer Checklist</a>
-        <a class="btn btn-secondary" href="deployment-overview">Deployment Overview</a>
-        <a class="btn btn-primary" href="portfolio-hub">Portfolio Hub</a>
-    </PageIntro>
+<PageHero
+    Eyebrow="Quality"
+    Title="Testing Overview"
+    Subtitle="Show how the prototype should be tested manually across workflows, reports, data quality, exports, and history."
+    BadgeText="Week 2"
+    BadgeClass="of-badge-info">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
+        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
+        <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+    </Actions>
+</PageHero>
 
-    <div class="page-purpose-note">
-        <strong>Purpose:</strong> use this page to show how OperationsFlow should be tested before review or production planning. It covers build checks, navigation checks, workflow checks, data quality checks, role/security review, export/report review, and final demo readiness.
-    </div>
+<PurposeNote Title="Purpose" Icon="📌">
+    <p>Testing focuses on business workflow proof: create records, edit records, confirm reminders/workload, validate report rows, check data quality, and confirm activity evidence.</p>
+</PurposeNote>
 
-    <section class="kpi-grid">
-        <div class="kpi-card">
-            <span class="kpi-label">Current Testing</span>
-            <strong>Manual</strong>
-            <span class="kpi-note">Build and click-through checks</span>
-        </div>
+<MetricGrid>
+    <MetricCard Title="Workflow MVP" Value="Week 2" Detail="Create/edit, reminders, workload, reporting, and traceability" Icon="✅" Tone="success" />
+    <MetricCard Title="Prototype" Value="SQLite" Detail="Local demo data, not production deployment" Icon="🧪" Tone="info" />
+    <MetricCard Title="Evidence" Value="Ready" Detail="Supports screenshots, walkthroughs, and review notes" Icon="📦" Tone="success" />
+    <MetricCard Title="Next Stage" Value="M365" Detail="SharePoint, Lists, Power Automate, and Power BI direction" Icon="🔗" Tone="warning" />
+</MetricGrid>
 
-        <div class="kpi-card">
-            <span class="kpi-label">Production Need</span>
-            <strong>Automated</strong>
-            <span class="kpi-note">Regression and workflow tests</span>
-        </div>
-
-        <div class="kpi-card">
-            <span class="kpi-label">Main Risk</span>
-            <strong>Workflow</strong>
-            <span class="kpi-note">Save/edit/report behaviour</span>
-        </div>
-
-        <div class="kpi-card">
-            <span class="kpi-label">Demo Goal</span>
-            <strong>Stable</strong>
-            <span class="kpi-note">No broken pages or links</span>
-        </div>
-    </section>
-
-    <section class="summary-grid testing-intro-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Testing Summary</h2>
-                    <p>How this project should be checked before review.</p>
-                </div>
+<InfoPanel Title="Review Summary" Subtitle="What this page should communicate to a reviewer.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Business Context</strong>
+                <span>Explains why the workflow exists and what problem it solves.</span>
             </div>
-
-            <p class="testing-copy">
-                OperationsFlow should be tested as a workflow prototype, not just as a collection of pages.
-                The important checks are whether pages load, navigation works, records can be created and edited,
-                status and date behaviour is sensible, reports still make sense, activity history is recorded,
-                and reviewer-facing pages explain the project clearly.
-            </p>
-
-            <ul class="action-list">
-                <li>Build the project and confirm there are no compile errors.</li>
-                <li>Click through the main reviewer path from Portfolio Hub.</li>
-                <li>Create and edit representative workflow records.</li>
-                <li>Confirm reports, workload, reminders, and data quality still reflect the records.</li>
-                <li>Check the final demo package works without needing a spoken explanation.</li>
-            </ul>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Prototype Boundary</h2>
-                    <p>What testing exists now versus production testing.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Technical Context</strong>
+                <span>Connects the local Blazor/SQLite prototype to a realistic implementation path.</span>
             </div>
-
-            <div class="testing-boundary-highlight">
-                <span>Current state</span>
-                <strong>Manual QA and demo checks</strong>
-                <p>
-                    The current version is checked manually through build, run, visual review, navigation review,
-                    save/edit tests, and demo flow testing. A production system would add automated regression tests,
-                    security tests, role tests, API tests, database migration tests, and deployment checks.
-                </p>
+            <div class="of-review-proof-card">
+                <strong>Portfolio Context</strong>
+                <span>Shows the project as evidence of systems thinking, not just UI layout.</span>
             </div>
-
-            <ol class="action-list">
-                <li>Manual checks are enough for portfolio review.</li>
-                <li>Automated tests are needed before production use.</li>
-                <li>Role/security testing depends on real authentication.</li>
-                <li>Deployment testing depends on hosted environments.</li>
-            </ol>
-        </div>
-    </section>
-
-    <section class="testing-card-grid">
-        @foreach (var area in TestAreas)
-        {
-            <article class="testing-card">
-                <div class="testing-card-header">
-                    <span>@area.Number</span>
-                    <div>
-                        <p class="eyebrow">@area.Category</p>
-                        <h2>@area.Title</h2>
-                    </div>
-                </div>
-
-                <p>@area.Description</p>
-
-                <ul>
-                    @foreach (var item in area.Items)
-                    {
-                        <li>@item</li>
-                    }
-                </ul>
-            </article>
-        }
-    </section>
-
-    <section class="report-card">
-        <div class="panel-header">
-            <div>
-                <h2>Manual Test Matrix</h2>
-                <p>Core tests to run before sending the project to Vanessa, Lester, or Peter.</p>
+            <div class="of-review-proof-card">
+                <strong>Boundary Context</strong>
+                <span>Keeps the prototype honest about what is and is not production-ready.</span>
             </div>
         </div>
+    </ChildContent>
+</InfoPanel>
 
-        <table class="report-table testing-matrix-table">
-            <thead>
-                <tr>
-                    <th>Test Area</th>
-                    <th>What To Test</th>
-                    <th>Expected Result</th>
-                    <th>Priority</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var test in ManualTests)
-                {
-                    <tr>
-                        <td><strong>@test.Area</strong></td>
-                        <td>@test.WhatToTest</td>
-                        <td>@test.ExpectedResult</td>
-                        <td><span class="@test.BadgeClass">@test.Priority</span></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </section>
+<InfoPanel Title="Key Points" Subtitle="Use these notes when walking through the project.">
+    <ChildContent>
+        <ol class="of-review-steps">
+            <li>OperationsFlow captures work before it disappears into emails, conversations, spreadsheets, or paper notes.</li>
+            <li>Records feed management views such as Reminders, Workload, Reports, Data Quality, and Activity Log.</li>
+            <li>Corrective actions can be source-linked from risks, training, and controlled documents.</li>
+            <li>Activity history provides traceability evidence for create, update, and review workflows.</li>
+            <li>The project is Microsoft 365-ready in design, but still a local SQLite demo prototype.</li>
+        </ol>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Reviewer Click-Through Test</h2>
-                    <p>The no-speaking demo path.</p>
-                </div>
-            </div>
-
-            <ol class="demo-step-list testing-click-path">
-                <li>
-                    <strong>Open Portfolio Hub</strong>
-                    <span>Confirm the page explains the project and links to the main review pages.</span>
-                </li>
-
-                <li>
-                    <strong>Open Reviewer Checklist</strong>
-                    <span>Confirm a reviewer can understand what to click and what evidence to look for.</span>
-                </li>
-
-                <li>
-                    <strong>Open Business Value</strong>
-                    <span>Confirm the business problem and value proposition are clear.</span>
-                </li>
-
-                <li>
-                    <strong>Open Safety Meeting Pack</strong>
-                    <span>Confirm safety/compliance attention items are visible and readable.</span>
-                </li>
-
-                <li>
-                    <strong>Open Workload</strong>
-                    <span>Confirm owner pressure, overdue work, and recommended focus are visible.</span>
-                </li>
-
-                <li>
-                    <strong>Open Corrective Actions and edit one record</strong>
-                    <span>Confirm helper guidance, status flow, notes guidance, save behaviour, and activity history.</span>
-                </li>
-
-                <li>
-                    <strong>Open Technical Overview and Deployment Overview</strong>
-                    <span>Confirm production-awareness is explained clearly.</span>
-                </li>
-            </ol>
+<InfoPanel Title="Connected Review Links" Subtitle="Open the main evidence pages from here.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <a class="of-review-proof-card of-click-card" href="/reports"><strong>Reports</strong><span>Management reporting and CSV export evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/data-quality"><strong>Data Quality</strong><span>Weak records, overdue work, and review issues.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/activity-log"><strong>Activity Log</strong><span>Global traceability and workflow evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/implementation-plan"><strong>Implementation Plan</strong><span>Week 3/4 hybrid and Microsoft 365 direction.</span></a>
         </div>
+    </ChildContent>
+</InfoPanel>
 
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Regression Risks</h2>
-                    <p>What could break when new pages or CSS are added quickly.</p>
-                </div>
-            </div>
-
-            <div class="regression-risk-grid">
-                @foreach (var risk in RegressionRisks)
-                {
-                    <article>
-                        <span>@risk.Label</span>
-                        <strong>@risk.Title</strong>
-                        <p>@risk.Description</p>
-                    </article>
-                }
-            </div>
-        </div>
-    </section>
-
-    <section class="report-card">
-        <div class="panel-header">
-            <div>
-                <h2>Workflow Test Checklist</h2>
-                <p>Tests focused on actual app behaviour rather than static page review.</p>
-            </div>
-        </div>
-
-        <table class="report-table workflow-test-table">
-            <thead>
-                <tr>
-                    <th>Workflow</th>
-                    <th>Steps</th>
-                    <th>Pass Condition</th>
-                    <th>Review Page</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in WorkflowTests)
-                {
-                    <tr>
-                        <td><strong>@item.Workflow</strong></td>
-                        <td>@item.Steps</td>
-                        <td>@item.PassCondition</td>
-                        <td><span class="@item.BadgeClass">@item.ReviewPage</span></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </section>
-
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Production Test Upgrade Path</h2>
-                    <p>What would be added before real business use.</p>
-                </div>
-            </div>
-
-            <ol class="demo-step-list production-test-list">
-                <li>
-                    <strong>Unit tests</strong>
-                    <span>Test workflow rules, status logic, due-date logic, data quality rules, and summary calculations.</span>
-                </li>
-
-                <li>
-                    <strong>Integration tests</strong>
-                    <span>Test database reads/writes, activity logging, report queries, and export routines.</span>
-                </li>
-
-                <li>
-                    <strong>UI regression checks</strong>
-                    <span>Test that important pages load and key workflows still work after changes.</span>
-                </li>
-
-                <li>
-                    <strong>Security and role tests</strong>
-                    <span>Test that users can only view or edit what their role allows.</span>
-                </li>
-
-                <li>
-                    <strong>Deployment tests</strong>
-                    <span>Test staging deployment, production configuration, database migrations, backups, and rollback steps.</span>
-                </li>
-            </ol>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>What This Proves</h2>
-                    <p>The portfolio value of testing and QA thinking.</p>
-                </div>
-            </div>
-
-            <div class="testing-proof-grid">
-                @foreach (var proof in ProofItems)
-                {
-                    <article>
-                        <span>@proof.Label</span>
-                        <strong>@proof.Title</strong>
-                        <p>@proof.Description</p>
-                    </article>
-                }
-            </div>
-        </div>
-    </section>
-
-    <section class="report-card testing-summary-card">
-        <div class="panel-header">
-            <div>
-                <h2>Testing Overview Summary</h2>
-                <p>A short explanation for reviewers.</p>
-            </div>
-        </div>
-
-        <div class="testing-summary-copy">
-            <p>
-                OperationsFlow is currently tested through manual build, run, click-through, visual review, and workflow checks.
-                That is appropriate for a portfolio prototype, but a production system would need automated unit tests,
-                integration tests, UI regression checks, role/security tests, database migration testing, deployment testing,
-                backup/restore testing, and monitoring checks.
-            </p>
-
-            <p>
-                The key test focus is not just whether pages load. The project should be checked as a connected workflow:
-                records should be editable, summaries should remain accurate, activity history should show important changes,
-                reports should stay readable, and reviewer pages should allow someone to understand the system without a spoken demo.
-            </p>
-        </div>
-    </section>
-</div>
-
-@code {
-    private static readonly IReadOnlyList<TestArea> TestAreas = new[]
-    {
-        new TestArea(
-            Number: "01",
-            Category: "Build",
-            Title: "Compile and run",
-            Description: "The first test is whether the project builds and runs cleanly.",
-            Items: new[]
-            {
-                "Run dotnet build.",
-                "Run dotnet run.",
-                "Open the local app.",
-                "Confirm no blocking runtime errors appear."
-            }
-        ),
-        new TestArea(
-            Number: "02",
-            Category: "Navigation",
-            Title: "Click-through stability",
-            Description: "Every page in the nav should open and the main top buttons should work.",
-            Items: new[]
-            {
-                "Click every navigation item.",
-                "Test Portfolio Hub links.",
-                "Test Reviewer Checklist links.",
-                "Check no pages return blank or broken routes."
-            }
-        ),
-        new TestArea(
-            Number: "03",
-            Category: "Workflow",
-            Title: "Create and edit records",
-            Description: "The app should support actual workflow changes, not only static display pages.",
-            Items: new[]
-            {
-                "Create a corrective action.",
-                "Edit a corrective action.",
-                "Edit a document intake record.",
-                "Confirm save returns to the expected page."
-            }
-        ),
-        new TestArea(
-            Number: "04",
-            Category: "Review",
-            Title: "Reports and data quality",
-            Description: "Management and quality pages should still make sense after record changes.",
-            Items: new[]
-            {
-                "Open Safety Meeting Pack.",
-                "Open Workload.",
-                "Open Reports.",
-                "Open Data Quality.",
-                "Confirm summaries are readable and realistic."
-            }
-        )
-    };
-
-    private static readonly IReadOnlyList<ManualTest> ManualTests = new[]
-    {
-        new ManualTest(
-            Area: "Build",
-            WhatToTest: "Run dotnet build after the final changes.",
-            ExpectedResult: "Build completes with zero errors.",
-            Priority: "Critical",
-            BadgeClass: "badge badge-danger"
-        ),
-        new ManualTest(
-            Area: "App startup",
-            WhatToTest: "Run the app locally and open the dashboard.",
-            ExpectedResult: "App starts and dashboard loads.",
-            Priority: "Critical",
-            BadgeClass: "badge badge-danger"
-        ),
-        new ManualTest(
-            Area: "Navigation",
-            WhatToTest: "Click every nav item from top to bottom.",
-            ExpectedResult: "Every page loads without route errors or blank content.",
-            Priority: "Critical",
-            BadgeClass: "badge badge-danger"
-        ),
-        new ManualTest(
-            Area: "Corrective action create",
-            WhatToTest: "Create a new corrective action with title, owner, priority, status, and due date.",
-            ExpectedResult: "Record saves and appears in corrective action list/reporting views.",
-            Priority: "High",
-            BadgeClass: "badge badge-warning"
-        ),
-        new ManualTest(
-            Area: "Corrective action edit",
-            WhatToTest: "Edit owner, priority, status, due date, and notes.",
-            ExpectedResult: "Changes save, completed date behaviour is correct, activity history records update/review.",
-            Priority: "High",
-            BadgeClass: "badge badge-warning"
-        ),
-        new ManualTest(
-            Area: "Document intake edit",
-            WhatToTest: "Edit assigned person, status, target system, due date, and notes.",
-            ExpectedResult: "Changes save and activity history updates.",
-            Priority: "High",
-            BadgeClass: "badge badge-warning"
-        ),
-        new ManualTest(
-            Area: "Portfolio review path",
-            WhatToTest: "Start from Portfolio Hub and follow Reviewer Checklist / Demo Guide.",
-            ExpectedResult: "Reviewer can understand the project without needing a voice explanation.",
-            Priority: "High",
-            BadgeClass: "badge badge-warning"
-        ),
-        new ManualTest(
-            Area: "Visual polish",
-            WhatToTest: "Scan key pages for layout gaps, clipping, overflow, broken tables, and unreadable cards.",
-            ExpectedResult: "Top demo pages look clean enough to send.",
-            Priority: "Medium",
-            BadgeClass: "badge badge-info"
-        )
-    };
-
-    private static readonly IReadOnlyList<RegressionRisk> RegressionRisks = new[]
-    {
-        new RegressionRisk(
-            Label: "CSS",
-            Title: "Style conflicts",
-            Description: "Large CSS files can create duplicate class names or page-specific styles affecting other pages."
-        ),
-        new RegressionRisk(
-            Label: "Nav",
-            Title: "Broken routes",
-            Description: "New pages need matching @page routes and navigation links."
-        ),
-        new RegressionRisk(
-            Label: "Forms",
-            Title: "Save behaviour",
-            Description: "Create/edit pages must continue saving after layout or helper text changes."
-        ),
-        new RegressionRisk(
-            Label: "Data",
-            Title: "Summary mismatch",
-            Description: "Reports, workload, reminders, and data quality should still reflect the same record model."
-        )
-    };
-
-    private static readonly IReadOnlyList<WorkflowTest> WorkflowTests = new[]
-    {
-        new WorkflowTest(
-            Workflow: "Create corrective action",
-            Steps: "Open Corrective Actions → Create → enter required fields → save.",
-            PassCondition: "New action is saved and visible in the list.",
-            ReviewPage: "Corrective Actions",
-            BadgeClass: "badge badge-warning"
-        ),
-        new WorkflowTest(
-            Workflow: "Edit corrective action",
-            Steps: "Open an action → change status/owner/date/notes → save.",
-            PassCondition: "Record saves, helper guidance remains visible, activity is logged.",
-            ReviewPage: "Activity Log",
-            BadgeClass: "badge badge-info"
-        ),
-        new WorkflowTest(
-            Workflow: "Complete corrective action",
-            Steps: "Set status to Completed or Closed → save.",
-            PassCondition: "Completed date is set and record no longer behaves like open work.",
-            ReviewPage: "Reports",
-            BadgeClass: "badge badge-success"
-        ),
-        new WorkflowTest(
-            Workflow: "Edit document intake",
-            Steps: "Open Document Intake → edit item → update status/target/due date/notes → save.",
-            PassCondition: "Record saves and remains visible in workload/reports as expected.",
-            ReviewPage: "Document Intake",
-            BadgeClass: "badge badge-success"
-        ),
-        new WorkflowTest(
-            Workflow: "Review workload",
-            Steps: "Open Workload → search/filter owner/pressure → open linked item.",
-            PassCondition: "Owner cards, filters, and links work.",
-            ReviewPage: "Workload",
-            BadgeClass: "badge badge-info"
-        ),
-        new WorkflowTest(
-            Workflow: "Review data quality",
-            Steps: "Open Data Quality → search/filter issues → read recommended actions.",
-            PassCondition: "Issues are readable and explain what should be fixed.",
-            ReviewPage: "Data Quality",
-            BadgeClass: "badge badge-warning"
-        )
-    };
-
-    private static readonly IReadOnlyList<ProofItem> ProofItems = new[]
-    {
-        new ProofItem(
-            Label: "QA",
-            Title: "Testing awareness",
-            Description: "The project shows how manual and automated checks would support a real workflow system."
-        ),
-        new ProofItem(
-            Label: "Workflow",
-            Title: "Behaviour-focused testing",
-            Description: "Testing is focused on create/edit/save/report behaviour, not just page screenshots."
-        ),
-        new ProofItem(
-            Label: "Production",
-            Title: "Upgrade path",
-            Description: "The page identifies automated tests, security checks, deployment testing, and regression checks as production requirements."
-        ),
-        new ProofItem(
-            Label: "Demo",
-            Title: "Reviewer readiness",
-            Description: "The final review path checks whether the project can be understood without a spoken demo."
-        )
-    };
-
-    private record TestArea(
-        string Number,
-        string Category,
-        string Title,
-        string Description,
-        IReadOnlyList<string> Items
-    );
-
-    private record ManualTest(
-        string Area,
-        string WhatToTest,
-        string ExpectedResult,
-        string Priority,
-        string BadgeClass
-    );
-
-    private record RegressionRisk(
-        string Label,
-        string Title,
-        string Description
-    );
-
-    private record WorkflowTest(
-        string Workflow,
-        string Steps,
-        string PassCondition,
-        string ReviewPage,
-        string BadgeClass
-    );
-
-    private record ProofItem(
-        string Label,
-        string Title,
-        string Description
-    );
-}
+<GuidanceNote Title="Prototype Boundary" Icon="🚧" Tone="warning">
+    <ul>
+        <li>This page is part of the portfolio review layer.</li>
+        <li>The current app uses local SQLite demo data.</li>
+        <li>Production rollout would need authentication, permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
+    </ul>
+</GuidanceNote>

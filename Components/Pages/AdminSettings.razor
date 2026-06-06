@@ -1,354 +1,81 @@
-﻿@page "/admin-settings"
+@page "/admin-settings"
 
 <PageTitle>Admin Settings - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page">
+<PageHero
+    Eyebrow="System"
+    Title="Admin Settings"
+    Subtitle="Prototype settings and configuration notes for future admin, export, retention, reminder, and integration controls."
+    BadgeText="Week 2"
+    BadgeClass="of-badge-info">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
+        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
+        <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+    </Actions>
+</PageHero>
 
-    <section class="module-header">
-        <div>
-            <p class="eyebrow dark">System Configuration</p>
-            <h1>Admin Settings</h1>
-            <p>
-                Starter configuration area for sites, departments, workflow statuses,
-                priorities, target systems, and module option lists.
-            </p>
+<PurposeNote Title="Purpose" Icon="📌">
+    <p>Admin settings are shown as a future-ready configuration surface. The current local prototype keeps settings simple and does not claim production admin enforcement.</p>
+</PurposeNote>
+
+<MetricGrid>
+    <MetricCard Title="Workflow MVP" Value="Week 2" Detail="Create/edit, reminders, workload, reporting, and traceability" Icon="✅" Tone="success" />
+    <MetricCard Title="Prototype" Value="SQLite" Detail="Local demo data, not production deployment" Icon="🧪" Tone="info" />
+    <MetricCard Title="Evidence" Value="Ready" Detail="Supports screenshots, walkthroughs, and review notes" Icon="📦" Tone="success" />
+    <MetricCard Title="Next Stage" Value="M365" Detail="SharePoint, Lists, Power Automate, and Power BI direction" Icon="🔗" Tone="warning" />
+</MetricGrid>
+
+<InfoPanel Title="Review Summary" Subtitle="What this page should communicate to a reviewer.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Business Context</strong>
+                <span>Explains why the workflow exists and what problem it solves.</span>
+            </div>
+            <div class="of-review-proof-card">
+                <strong>Technical Context</strong>
+                <span>Connects the local Blazor/SQLite prototype to a realistic implementation path.</span>
+            </div>
+            <div class="of-review-proof-card">
+                <strong>Portfolio Context</strong>
+                <span>Shows the project as evidence of systems thinking, not just UI layout.</span>
+            </div>
+            <div class="of-review-proof-card">
+                <strong>Boundary Context</strong>
+                <span>Keeps the prototype honest about what is and is not production-ready.</span>
+            </div>
         </div>
+    </ChildContent>
+</InfoPanel>
 
-        <div class="module-header-stat">
-            <span>Config Groups</span>
-            <strong>@ConfigGroups.Count</strong>
+<InfoPanel Title="Key Points" Subtitle="Use these notes when walking through the project.">
+    <ChildContent>
+        <ol class="of-review-steps">
+            <li>OperationsFlow captures work before it disappears into emails, conversations, spreadsheets, or paper notes.</li>
+            <li>Records feed management views such as Reminders, Workload, Reports, Data Quality, and Activity Log.</li>
+            <li>Corrective actions can be source-linked from risks, training, and controlled documents.</li>
+            <li>Activity history provides traceability evidence for create, update, and review workflows.</li>
+            <li>The project is Microsoft 365-ready in design, but still a local SQLite demo prototype.</li>
+        </ol>
+    </ChildContent>
+</InfoPanel>
+
+<InfoPanel Title="Connected Review Links" Subtitle="Open the main evidence pages from here.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <a class="of-review-proof-card of-click-card" href="/reports"><strong>Reports</strong><span>Management reporting and CSV export evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/data-quality"><strong>Data Quality</strong><span>Weak records, overdue work, and review issues.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/activity-log"><strong>Activity Log</strong><span>Global traceability and workflow evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/implementation-plan"><strong>Implementation Plan</strong><span>Week 3/4 hybrid and Microsoft 365 direction.</span></a>
         </div>
-    </section>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="module-summary-grid">
-        <article class="module-summary-card info-card">
-            <span>Sites</span>
-            <strong>@Sites.Count</strong>
-            <small>Operational locations</small>
-        </article>
-
-        <article class="module-summary-card success-card">
-            <span>Departments</span>
-            <strong>@Departments.Count</strong>
-            <small>Business areas</small>
-        </article>
-
-        <article class="module-summary-card warning-card">
-            <span>Target Systems</span>
-            <strong>@TargetSystems.Count</strong>
-            <small>External/admin systems</small>
-        </article>
-
-        <article class="module-summary-card">
-            <span>Workflow Options</span>
-            <strong>@WorkflowOptionCount</strong>
-            <small>Status and priority values</small>
-        </article>
-    </section>
-
-    <section class="settings-note-card">
-        <div>
-            <p class="eyebrow dark">Prototype Note</p>
-            <h2>Configuration Starter</h2>
-            <p>
-                This page shows the configuration values that would become editable in a
-                production version. The current prototype still uses fixed option lists in
-                forms, but this area demonstrates the intended admin/configuration structure.
-            </p>
-        </div>
-
-        <div class="settings-roadmap">
-            <span>Future Upgrade</span>
-            <strong>Make dropdowns database-driven</strong>
-        </div>
-    </section>
-
-    <section class="settings-grid">
-        <article class="settings-card">
-            <div class="settings-card-header">
-                <div>
-                    <h2>Sites</h2>
-                    <p>Operational locations used across work, intake, training, and reporting.</p>
-                </div>
-            </div>
-
-            <div class="settings-chip-list">
-                @foreach (var item in Sites)
-                {
-                    <span class="settings-chip">@item</span>
-                }
-            </div>
-        </article>
-
-        <article class="settings-card">
-            <div class="settings-card-header">
-                <div>
-                    <h2>Departments</h2>
-                    <p>Departments used for ownership, filtering, workload, and reporting.</p>
-                </div>
-            </div>
-
-            <div class="settings-chip-list">
-                @foreach (var item in Departments)
-                {
-                    <span class="settings-chip">@item</span>
-                }
-            </div>
-        </article>
-
-        <article class="settings-card">
-            <div class="settings-card-header">
-                <div>
-                    <h2>Target Systems</h2>
-                    <p>Systems referenced by the Document Intake workflow.</p>
-                </div>
-            </div>
-
-            <div class="settings-chip-list">
-                @foreach (var item in TargetSystems)
-                {
-                    <span class="settings-chip">@item</span>
-                }
-            </div>
-        </article>
-
-        <article class="settings-card">
-            <div class="settings-card-header">
-                <div>
-                    <h2>Priority Levels</h2>
-                    <p>Priority values used across operational and compliance modules.</p>
-                </div>
-            </div>
-
-            <div class="settings-chip-list">
-                @foreach (var item in PriorityLevels)
-                {
-                    <span class="@GetPriorityChipClass(item)">@item</span>
-                }
-            </div>
-        </article>
-    </section>
-
-    <section class="settings-grid">
-        @foreach (var group in ConfigGroups)
-        {
-            <article class="settings-card">
-                <div class="settings-card-header">
-                    <div>
-                        <h2>@group.Name</h2>
-                        <p>@group.Description</p>
-                    </div>
-
-                    <span class="settings-count-badge">@group.Options.Count options</span>
-                </div>
-
-                <table class="report-table">
-                    <thead>
-                        <tr>
-                            <th>Option</th>
-                            <th>Used For</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var option in group.Options)
-                        {
-                            <tr>
-                                <td class="strong-cell">@option.Name</td>
-                                <td>@option.UsedFor</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </article>
-        }
-    </section>
-
-    <section class="settings-note-card">
-        <div>
-            <p class="eyebrow dark">Next Admin Upgrade</p>
-            <h2>Editable Settings Roadmap</h2>
-            <p>
-                The next step would be creating database tables for settings, then replacing
-                hardcoded dropdown lists with values managed from this admin area.
-            </p>
-        </div>
-
-        <div class="settings-roadmap-list">
-            <span>Create settings models</span>
-            <span>Add create/edit settings pages</span>
-            <span>Use settings in forms</span>
-            <span>Add active/inactive option states</span>
-        </div>
-    </section>
-
-</div>
-
-@code {
-    private List<string> Sites = new()
-    {
-        "Main Workshop",
-        "Yard",
-        "Admin Office",
-        "Warehouse",
-        "Dispatch Bay"
-    };
-
-    private List<string> Departments = new()
-    {
-        "Operations",
-        "Health & Safety",
-        "Admin",
-        "Maintenance",
-        "Warehouse",
-        "Dispatch",
-        "Quality"
-    };
-
-    private List<string> TargetSystems = new()
-    {
-        "SharePoint",
-        "Xero",
-        "Cin7",
-        "WorkflowMax",
-        "Email Folder",
-        "Internal System"
-    };
-
-    private List<string> PriorityLevels = new()
-    {
-        "Low",
-        "Medium",
-        "High",
-        "Critical"
-    };
-
-    private int WorkflowOptionCount =>
-        PriorityLevels.Count
-        + WorkOrderStatuses.Count
-        + CorrectiveActionStatuses.Count
-        + DocumentIntakeStatuses.Count;
-
-    private List<string> WorkOrderStatuses = new()
-    {
-        "Open",
-        "In Progress",
-        "Completed",
-        "Closed"
-    };
-
-    private List<string> CorrectiveActionStatuses = new()
-    {
-        "Open",
-        "In Progress",
-        "Completed",
-        "Closed"
-    };
-
-    private List<string> DocumentIntakeStatuses = new()
-    {
-        "Received",
-        "Saved",
-        "Needs Review",
-        "Data Checked",
-        "Entered",
-        "Completed",
-        "Rejected"
-    };
-
-    private List<ConfigGroup> ConfigGroups => new()
-    {
-        new ConfigGroup(
-            Name: "Work Order Statuses",
-            Description: "Status values used to track operational work requests.",
-            Options: WorkOrderStatuses
-                .Select(x => new ConfigOption(x, "Work Orders"))
-                .ToList()
-        ),
-
-        new ConfigGroup(
-            Name: "Corrective Action Statuses",
-            Description: "Status values used to track corrective and improvement actions.",
-            Options: CorrectiveActionStatuses
-                .Select(x => new ConfigOption(x, "Corrective Actions"))
-                .ToList()
-        ),
-
-        new ConfigGroup(
-            Name: "Document Intake Statuses",
-            Description: "Processing stages for incoming documents, emails, PDFs, and paperwork.",
-            Options: DocumentIntakeStatuses
-                .Select(x => new ConfigOption(x, "Document Intake"))
-                .ToList()
-        ),
-
-        new ConfigGroup(
-            Name: "Corrective Action Sources",
-            Description: "Sources that can generate corrective actions.",
-            Options: new List<ConfigOption>
-            {
-                new("Incident", "Corrective Actions"),
-                new("Inspection", "Corrective Actions"),
-                new("Internal Audit", "Corrective Actions"),
-                new("Risk Review", "Risk Register workflow"),
-                new("Document Review", "Document Control workflow"),
-                new("Training Compliance", "Training workflow"),
-                new("Hazard Report", "Corrective Actions"),
-                new("Quality Review", "Corrective Actions"),
-                new("Management Review", "Corrective Actions")
-            }
-        ),
-
-        new ConfigGroup(
-            Name: "Document Types",
-            Description: "Common incoming document types used in the intake workflow.",
-            Options: new List<ConfigOption>
-            {
-                new("Supplier Invoice", "Document Intake"),
-                new("Supplier Statement", "Document Intake"),
-                new("Purchase Order", "Document Intake"),
-                new("Quote Request", "Document Intake"),
-                new("Delivery Docket", "Document Intake"),
-                new("Compliance Document", "Document Intake"),
-                new("Incident Evidence", "Document Intake"),
-                new("Specification", "Document Intake"),
-                new("Training Certificate", "Document Intake"),
-                new("Job Paperwork", "Document Intake")
-            }
-        ),
-
-        new ConfigGroup(
-            Name: "Source Types",
-            Description: "Ways incoming documents can enter the workflow.",
-            Options: new List<ConfigOption>
-            {
-                new("Email", "Document Intake"),
-                new("PDF", "Document Intake"),
-                new("Scanned Document", "Document Intake"),
-                new("Supplier Document", "Document Intake"),
-                new("Customer Request", "Document Intake"),
-                new("Internal Form", "Document Intake")
-            }
-        )
-    };
-
-    private static string GetPriorityChipClass(string priority)
-    {
-        return priority.ToLower() switch
-        {
-            "critical" => "settings-chip settings-chip-danger",
-            "high" => "settings-chip settings-chip-warning",
-            "medium" => "settings-chip settings-chip-info",
-            "low" => "settings-chip settings-chip-muted",
-            _ => "settings-chip"
-        };
-    }
-
-    private record ConfigGroup(
-        string Name,
-        string Description,
-        List<ConfigOption> Options);
-
-    private record ConfigOption(
-        string Name,
-        string UsedFor);
-}
+<GuidanceNote Title="Prototype Boundary" Icon="🚧" Tone="warning">
+    <ul>
+        <li>This page is part of the portfolio review layer.</li>
+        <li>The current app uses local SQLite demo data.</li>
+        <li>Production rollout would need authentication, permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
+    </ul>
+</GuidanceNote>

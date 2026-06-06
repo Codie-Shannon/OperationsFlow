@@ -1,254 +1,81 @@
-﻿@page "/demo-guide"
+@page "/demo-guide"
 
 <PageTitle>Demo Guide - OperationsFlow</PageTitle>
 
-<div class="operations-dashboard demo-guide-page">
-    <PageIntro Eyebrow="Portfolio Review"
-               Title="Demo Guide"
-               Subtitle="Guided walkthroughs for reviewing OperationsFlow as a safety/compliance workflow, admin/document workflow, and technical portfolio project.">
-        <a class="btn btn-secondary" href="safety-meeting-pack">Safety Meeting Pack</a>
-        <a class="btn btn-secondary" href="reports">Reports</a>
-        <a class="btn btn-primary" href="implementation-plan">Implementation Plan</a>
-    </PageIntro>
+<PageHero
+    Eyebrow="Review"
+    Title="Demo Guide"
+    Subtitle="A guided walkthrough for reviewing OperationsFlow as a local SQLite workflow prototype."
+    BadgeText="Week 2"
+    BadgeClass="of-badge-info">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
+        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
+        <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+    </Actions>
+</PageHero>
 
-    <div class="page-purpose-note">
-        <strong>Purpose:</strong> use this page to review OperationsFlow without needing a live explanation. It shows the recommended paths for business users, safety/compliance reviewers, and technical interviewers.
-    </div>
+<PurposeNote Title="Purpose" Icon="📌">
+    <p>Use this page as the reviewer route: start with dashboard visibility, then open workflow pages, create/edit records, check history, review reports, confirm data quality, and finish with prototype boundaries.</p>
+</PurposeNote>
 
-    <section class="kpi-grid">
-        <div class="kpi-card">
-            <span class="kpi-label">Demo Paths</span>
-            <strong>3</strong>
-            <span class="kpi-note">Business, admin, and technical review</span>
-        </div>
+<MetricGrid>
+    <MetricCard Title="Workflow MVP" Value="Week 2" Detail="Create/edit, reminders, workload, reporting, and traceability" Icon="✅" Tone="success" />
+    <MetricCard Title="Prototype" Value="SQLite" Detail="Local demo data, not production deployment" Icon="🧪" Tone="info" />
+    <MetricCard Title="Evidence" Value="Ready" Detail="Supports screenshots, walkthroughs, and review notes" Icon="📦" Tone="success" />
+    <MetricCard Title="Next Stage" Value="M365" Detail="SharePoint, Lists, Power Automate, and Power BI direction" Icon="🔗" Tone="warning" />
+</MetricGrid>
 
-        <div class="kpi-card">
-            <span class="kpi-label">Main Focus</span>
-            <strong>Safety</strong>
-            <span class="kpi-note">Compliance follow-up and reporting</span>
-        </div>
-
-        <div class="kpi-card">
-            <span class="kpi-label">Prototype Type</span>
-            <strong>Blazor</strong>
-            <span class="kpi-note">.NET / EF Core / SQLite</span>
-        </div>
-
-        <div class="kpi-card">
-            <span class="kpi-label">Review Style</span>
-            <strong>Guided</strong>
-            <span class="kpi-note">Click-through portfolio walkthrough</span>
-        </div>
-    </section>
-
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Safety / Compliance Demo Path</h2>
-                    <p>Use this route to show the OSHE-style safety/compliance workflow.</p>
-                </div>
+<InfoPanel Title="Review Summary" Subtitle="What this page should communicate to a reviewer.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Business Context</strong>
+                <span>Explains why the workflow exists and what problem it solves.</span>
             </div>
-
-            <ol class="demo-step-list">
-                <li>
-                    <strong>Start with Safety Overview</strong>
-                    <span>Review attention items, high/critical risks, expired training, overdue document reviews, and recent compliance activity.</span>
-                    <a href="compliance-dashboard">Open Safety Overview</a>
-                </li>
-
-                <li>
-                    <strong>Open Safety Meeting Pack</strong>
-                    <span>Use the meeting-ready summary to review overdue actions, training issues, risks, document reviews, and follow-up points.</span>
-                    <a href="safety-meeting-pack">Open Meeting Pack</a>
-                </li>
-
-                <li>
-                    <strong>Review Compliance Calendar</strong>
-                    <span>Check what is overdue, due this week, due in the next 30 days, and coming later.</span>
-                    <a href="compliance-calendar">Open Calendar</a>
-                </li>
-
-                <li>
-                    <strong>Create follow-up from Risk Register</strong>
-                    <span>Use a high/critical risk to generate a corrective action with prefilled title, owner, priority, and notes.</span>
-                    <a href="risk-register">Open Risk Register</a>
-                </li>
-
-                <li>
-                    <strong>Review Training Compliance</strong>
-                    <span>Check expired or expiring training and generate follow-up corrective actions where needed.</span>
-                    <a href="training">Open Training</a>
-                </li>
-
-                <li>
-                    <strong>Review Document Control</strong>
-                    <span>Check overdue/due-soon document reviews and create corrective actions when follow-up is required.</span>
-                    <a href="documents">Open Documents</a>
-                </li>
-
-                <li>
-                    <strong>Export reports</strong>
-                    <span>Use the Safety / Compliance Export Pack for CSV reporting, meeting notes, or Excel/Power BI-style analysis.</span>
-                    <a href="reports">Open Reports</a>
-                </li>
-
-                <li>
-                    <strong>Check Activity Log</strong>
-                    <span>Confirm record-level traceability for created and updated workflow items.</span>
-                    <a href="activity-log">Open Activity Log</a>
-                </li>
-            </ol>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Admin / Document Workflow Demo Path</h2>
-                    <p>Use this route to show general business workflow and admin process tracking.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Technical Context</strong>
+                <span>Connects the local Blazor/SQLite prototype to a realistic implementation path.</span>
             </div>
-
-            <ol class="demo-step-list">
-                <li>
-                    <strong>Start with Dashboard</strong>
-                    <span>Review the overall operational workload and summary cards.</span>
-                    <a href="">Open Dashboard</a>
-                </li>
-
-                <li>
-                    <strong>Open Document Intake</strong>
-                    <span>Review incoming document records, assigned owners, target systems, statuses, due dates, and notes.</span>
-                    <a href="document-intake">Open Intake</a>
-                </li>
-
-                <li>
-                    <strong>Update an intake item</strong>
-                    <span>Change status or priority to show how incoming work moves through the workflow.</span>
-                    <a href="document-intake">Open Intake</a>
-                </li>
-
-                <li>
-                    <strong>Review Workload</strong>
-                    <span>Show owner-based workload, overdue work, and assigned follow-up responsibility.</span>
-                    <a href="workload">Open Workload</a>
-                </li>
-
-                <li>
-                    <strong>Review Reminders</strong>
-                    <span>Show upcoming and overdue items that need operational or compliance follow-up.</span>
-                    <a href="reminders">Open Reminders</a>
-                </li>
-
-                <li>
-                    <strong>Open Data Quality</strong>
-                    <span>Show missing owners, overdue work, expired training, document review issues, and recommended actions.</span>
-                    <a href="data-quality">Open Data Quality</a>
-                </li>
-
-                <li>
-                    <strong>Export CSVs</strong>
-                    <span>Show how the system supports external reporting and analysis workflows.</span>
-                    <a href="reports">Open Reports</a>
-                </li>
-            </ol>
-        </div>
-    </section>
-
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Technical Interview Demo Path</h2>
-                    <p>Use this route to explain the project as a .NET/business-systems portfolio piece.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Portfolio Context</strong>
+                <span>Shows the project as evidence of systems thinking, not just UI layout.</span>
             </div>
-
-            <ol class="demo-step-list">
-                <li>
-                    <strong>Explain the stack</strong>
-                    <span>Blazor, C#, EF Core, SQLite, Razor components, CSV exports, and local demo data.</span>
-                </li>
-
-                <li>
-                    <strong>Show the workflow model</strong>
-                    <span>Work orders, corrective actions, document control, risk, training, document intake, reports, activity log, and data quality.</span>
-                </li>
-
-                <li>
-                    <strong>Show generated corrective actions</strong>
-                    <span>Risk, training, and document issues can create prefilled corrective actions.</span>
-                    <a href="corrective-actions">Open Corrective Actions</a>
-                </li>
-
-                <li>
-                    <strong>Show reporting/export logic</strong>
-                    <span>CSV exports support Excel/Power BI-style workflows and management reporting.</span>
-                    <a href="reports">Open Reports</a>
-                </li>
-
-                <li>
-                    <strong>Show Data Quality</strong>
-                    <span>Business rules identify overdue work, weak records, and missing accountability.</span>
-                    <a href="data-quality">Open Data Quality</a>
-                </li>
-
-                <li>
-                    <strong>Show Activity Log</strong>
-                    <span>Activity history demonstrates record-level traceability for workflow changes.</span>
-                    <a href="activity-log">Open Activity Log</a>
-                </li>
-
-                <li>
-                    <strong>Explain future upgrade path</strong>
-                    <span>Authentication, roles, production database, Microsoft 365 integrations, file storage, API, tests, and deployment.</span>
-                </li>
-            </ol>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>About This Prototype</h2>
-                    <p>What OperationsFlow is, what it proves, and what it is not pretending to be.</p>
-                </div>
-            </div>
-
-            <div class="prototype-scope-grid">
-                <article class="prototype-scope-card">
-                    <h3>What It Is</h3>
-                    <p>
-                        OperationsFlow is a Blazor/.NET business workflow prototype for tracking work,
-                        corrective actions, safety/compliance issues, document intake, reports, exports,
-                        workload, reminders, activity history, and data quality.
-                    </p>
-                </article>
-
-                <article class="prototype-scope-card">
-                    <h3>What It Demonstrates</h3>
-                    <p>
-                        It demonstrates CRUD workflows, business process modelling, compliance follow-up,
-                        CSV exports, record traceability, data quality rules, and portfolio-ready documentation.
-                    </p>
-                </article>
-
-                <article class="prototype-scope-card">
-                    <h3>Prototype Only</h3>
-                    <p>
-                        This version uses local demo data. It does not yet include production authentication,
-                        live Microsoft 365 integrations, hosted deployment, production backups, or secured file storage.
-                    </p>
-                </article>
-
-                <article class="prototype-scope-card">
-                    <h3>Production Upgrade Path</h3>
-                    <p>
-                        A production version would add user accounts, roles, SQL Server/Azure SQL,
-                        SharePoint document storage, Outlook/Teams notifications, API endpoints,
-                        automated tests, deployment, and monitoring.
-                    </p>
-                </article>
+            <div class="of-review-proof-card">
+                <strong>Boundary Context</strong>
+                <span>Keeps the prototype honest about what is and is not production-ready.</span>
             </div>
         </div>
-    </section>
-</div>
+    </ChildContent>
+</InfoPanel>
+
+<InfoPanel Title="Key Points" Subtitle="Use these notes when walking through the project.">
+    <ChildContent>
+        <ol class="of-review-steps">
+            <li>OperationsFlow captures work before it disappears into emails, conversations, spreadsheets, or paper notes.</li>
+            <li>Records feed management views such as Reminders, Workload, Reports, Data Quality, and Activity Log.</li>
+            <li>Corrective actions can be source-linked from risks, training, and controlled documents.</li>
+            <li>Activity history provides traceability evidence for create, update, and review workflows.</li>
+            <li>The project is Microsoft 365-ready in design, but still a local SQLite demo prototype.</li>
+        </ol>
+    </ChildContent>
+</InfoPanel>
+
+<InfoPanel Title="Connected Review Links" Subtitle="Open the main evidence pages from here.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <a class="of-review-proof-card of-click-card" href="/reports"><strong>Reports</strong><span>Management reporting and CSV export evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/data-quality"><strong>Data Quality</strong><span>Weak records, overdue work, and review issues.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/activity-log"><strong>Activity Log</strong><span>Global traceability and workflow evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/implementation-plan"><strong>Implementation Plan</strong><span>Week 3/4 hybrid and Microsoft 365 direction.</span></a>
+        </div>
+    </ChildContent>
+</InfoPanel>
+
+<GuidanceNote Title="Prototype Boundary" Icon="🚧" Tone="warning">
+    <ul>
+        <li>This page is part of the portfolio review layer.</li>
+        <li>The current app uses local SQLite demo data.</li>
+        <li>Production rollout would need authentication, permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
+    </ul>
+</GuidanceNote>

@@ -1,666 +1,81 @@
-﻿@page "/user-roles"
+@page "/user-roles"
 
 <PageTitle>User Roles - OperationsFlow</PageTitle>
 
-<div class="operations-dashboard user-roles-page">
-    <PageIntro Eyebrow="Production Planning"
-               Title="User Roles"
-               Subtitle="A production-focused overview of the user roles, permission boundaries, access levels, and approval responsibilities OperationsFlow would need before becoming a live business system.">
-        <a class="btn btn-secondary" href="technical-overview">Technical Overview</a>
-        <a class="btn btn-secondary" href="implementation-plan">Implementation Plan</a>
-        <a class="btn btn-primary" href="prototype-scope">Prototype Scope</a>
-    </PageIntro>
+<PageHero
+    Eyebrow="Implementation"
+    Title="User Roles"
+    Subtitle="Describe intended user roles, responsibilities, and permission boundaries for a future production implementation."
+    BadgeText="Week 2"
+    BadgeClass="of-badge-info">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
+        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
+        <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+    </Actions>
+</PageHero>
 
-    <div class="page-purpose-note">
-        <strong>Purpose:</strong> use this page to explain the production permissions model. The current prototype does not include real authentication or role-based access, but this page shows how admins, managers, reviewers, owners, standard users, and read-only viewers would be separated in a production version.
-    </div>
+<PurposeNote Title="Purpose" Icon="📌">
+    <p>The local demo does not enforce production auth yet. This page explains the role model a production Microsoft 365 implementation could apply.</p>
+</PurposeNote>
 
-    <section class="kpi-grid">
-        <div class="kpi-card">
-            <span class="kpi-label">Current State</span>
-            <strong>Prototype</strong>
-            <span class="kpi-note">No live auth yet</span>
-        </div>
+<MetricGrid>
+    <MetricCard Title="Workflow MVP" Value="Week 2" Detail="Create/edit, reminders, workload, reporting, and traceability" Icon="✅" Tone="success" />
+    <MetricCard Title="Prototype" Value="SQLite" Detail="Local demo data, not production deployment" Icon="🧪" Tone="info" />
+    <MetricCard Title="Evidence" Value="Ready" Detail="Supports screenshots, walkthroughs, and review notes" Icon="📦" Tone="success" />
+    <MetricCard Title="Next Stage" Value="M365" Detail="SharePoint, Lists, Power Automate, and Power BI direction" Icon="🔗" Tone="warning" />
+</MetricGrid>
 
-        <div class="kpi-card">
-            <span class="kpi-label">Production Need</span>
-            <strong>RBAC</strong>
-            <span class="kpi-note">Role-based access control</span>
-        </div>
-
-        <div class="kpi-card">
-            <span class="kpi-label">Likely Identity</span>
-            <strong>M365</strong>
-            <span class="kpi-note">Microsoft sign-in / Entra ID</span>
-        </div>
-
-        <div class="kpi-card">
-            <span class="kpi-label">Access Model</span>
-            <strong>Scoped</strong>
-            <span class="kpi-note">Role, department, and module</span>
-        </div>
-    </section>
-
-    <section class="summary-grid user-roles-intro-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Role Model Summary</h2>
-                    <p>How permissions would work in a production version.</p>
-                </div>
+<InfoPanel Title="Review Summary" Subtitle="What this page should communicate to a reviewer.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Business Context</strong>
+                <span>Explains why the workflow exists and what problem it solves.</span>
             </div>
-
-            <p class="user-roles-copy">
-                OperationsFlow would need secure sign-in and role-based access before it could be used with live business data.
-                The production model would separate users by what they are allowed to view, create, edit, approve, export,
-                administer, and audit. This helps keep sensitive records controlled while still allowing owners and reviewers
-                to complete follow-up work.
-            </p>
-
-            <ul class="action-list">
-                <li>Admins manage users, roles, reference lists, and system settings.</li>
-                <li>Managers review workload, reports, overdue items, and business pressure.</li>
-                <li>Safety/compliance reviewers manage safety, risk, training, and document review records.</li>
-                <li>Owners update assigned work and provide follow-up evidence.</li>
-                <li>Read-only viewers can review dashboards and reports without changing records.</li>
-            </ul>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Prototype Boundary</h2>
-                    <p>What is intentionally not built yet.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Technical Context</strong>
+                <span>Connects the local Blazor/SQLite prototype to a realistic implementation path.</span>
             </div>
-
-            <div class="role-boundary-highlight">
-                <span>Prototype boundary</span>
-                <strong>No production authentication yet</strong>
-                <p>
-                    The current local version keeps access simple so the workflow can be reviewed quickly.
-                    A production rollout would add Microsoft identity, user accounts, permissions,
-                    audit logging, access restrictions, and admin-only configuration screens.
-                </p>
+            <div class="of-review-proof-card">
+                <strong>Portfolio Context</strong>
+                <span>Shows the project as evidence of systems thinking, not just UI layout.</span>
             </div>
-
-            <ol class="action-list">
-                <li>Add secure sign-in.</li>
-                <li>Assign roles to users.</li>
-                <li>Restrict sensitive pages and actions.</li>
-                <li>Log important user actions.</li>
-                <li>Review permissions during pilot rollout.</li>
-            </ol>
-        </div>
-    </section>
-
-    <section class="role-card-grid">
-        @foreach (var role in Roles)
-        {
-            <article class="role-card">
-                <div class="role-card-header">
-                    <span>@role.Number</span>
-                    <div>
-                        <p class="eyebrow">@role.Category</p>
-                        <h2>@role.Name</h2>
-                    </div>
-                </div>
-
-                <p>@role.Description</p>
-
-                <div class="role-permission-list">
-                    @foreach (var permission in role.Permissions)
-                    {
-                        <div>
-                            <strong>@permission.Title</strong>
-                            <span>@permission.Description</span>
-                        </div>
-                    }
-                </div>
-
-                <div class="role-access-note">
-                    <strong>Access focus</strong>
-                    <span>@role.AccessFocus</span>
-                </div>
-            </article>
-        }
-    </section>
-
-    <section class="report-card">
-        <div class="panel-header">
-            <div>
-                <h2>Permission Matrix</h2>
-                <p>A simple production-style access model for the main workflow actions.</p>
+            <div class="of-review-proof-card">
+                <strong>Boundary Context</strong>
+                <span>Keeps the prototype honest about what is and is not production-ready.</span>
             </div>
         </div>
+    </ChildContent>
+</InfoPanel>
 
-        <table class="report-table permission-matrix-table">
-            <thead>
-                <tr>
-                    <th>Action</th>
-                    <th>Admin</th>
-                    <th>Manager</th>
-                    <th>Reviewer</th>
-                    <th>Owner</th>
-                    <th>Viewer</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in PermissionMatrix)
-                {
-                    <tr>
-                        <td>
-                            <strong>@item.Action</strong>
-                            <span>@item.Description</span>
-                        </td>
-                        <td><span class="@GetPermissionBadgeClass(item.Admin)">@item.Admin</span></td>
-                        <td><span class="@GetPermissionBadgeClass(item.Manager)">@item.Manager</span></td>
-                        <td><span class="@GetPermissionBadgeClass(item.Reviewer)">@item.Reviewer</span></td>
-                        <td><span class="@GetPermissionBadgeClass(item.Owner)">@item.Owner</span></td>
-                        <td><span class="@GetPermissionBadgeClass(item.Viewer)">@item.Viewer</span></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </section>
+<InfoPanel Title="Key Points" Subtitle="Use these notes when walking through the project.">
+    <ChildContent>
+        <ol class="of-review-steps">
+            <li>OperationsFlow captures work before it disappears into emails, conversations, spreadsheets, or paper notes.</li>
+            <li>Records feed management views such as Reminders, Workload, Reports, Data Quality, and Activity Log.</li>
+            <li>Corrective actions can be source-linked from risks, training, and controlled documents.</li>
+            <li>Activity history provides traceability evidence for create, update, and review workflows.</li>
+            <li>The project is Microsoft 365-ready in design, but still a local SQLite demo prototype.</li>
+        </ol>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Access Flow</h2>
-                    <p>How a production user would move through the system.</p>
-                </div>
-            </div>
-
-            <div class="role-flow-list">
-                @foreach (var step in AccessFlow)
-                {
-                    <article>
-                        <span>@step.Number</span>
-                        <div>
-                            <strong>@step.Title</strong>
-                            <p>@step.Description</p>
-                        </div>
-                    </article>
-                }
-            </div>
+<InfoPanel Title="Connected Review Links" Subtitle="Open the main evidence pages from here.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <a class="of-review-proof-card of-click-card" href="/reports"><strong>Reports</strong><span>Management reporting and CSV export evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/data-quality"><strong>Data Quality</strong><span>Weak records, overdue work, and review issues.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/activity-log"><strong>Activity Log</strong><span>Global traceability and workflow evidence.</span></a>
+            <a class="of-review-proof-card of-click-card" href="/implementation-plan"><strong>Implementation Plan</strong><span>Week 3/4 hybrid and Microsoft 365 direction.</span></a>
         </div>
+    </ChildContent>
+</InfoPanel>
 
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Security / Audit Considerations</h2>
-                    <p>Production controls that would protect the workflow.</p>
-                </div>
-            </div>
-
-            <div class="security-note-grid">
-                @foreach (var note in SecurityNotes)
-                {
-                    <article>
-                        <span>@note.Label</span>
-                        <strong>@note.Title</strong>
-                        <p>@note.Description</p>
-                    </article>
-                }
-            </div>
-        </div>
-    </section>
-
-    <section class="report-card">
-        <div class="panel-header">
-            <div>
-                <h2>Page Access Map</h2>
-                <p>Example role-based page visibility for a live business deployment.</p>
-            </div>
-        </div>
-
-        <table class="report-table page-access-table">
-            <thead>
-                <tr>
-                    <th>Page / Module</th>
-                    <th>Primary Users</th>
-                    <th>Access Rule</th>
-                    <th>Reason</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in PageAccessItems)
-                {
-                    <tr>
-                        <td><strong>@item.Page</strong></td>
-                        <td><span class="@item.BadgeClass">@item.PrimaryUsers</span></td>
-                        <td>@item.AccessRule</td>
-                        <td>@item.Reason</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </section>
-
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Production Role Setup Plan</h2>
-                    <p>How roles could be introduced safely.</p>
-                </div>
-            </div>
-
-            <ol class="demo-step-list role-setup-list">
-                <li>
-                    <strong>Confirm user groups</strong>
-                    <span>Identify admins, managers, safety/compliance reviewers, action owners, document processors, and read-only viewers.</span>
-                </li>
-
-                <li>
-                    <strong>Map pages to roles</strong>
-                    <span>Decide which users can open, create, edit, approve, export, and configure each module.</span>
-                </li>
-
-                <li>
-                    <strong>Start with a small pilot</strong>
-                    <span>Use a limited team and a limited workflow area before expanding to more users.</span>
-                </li>
-
-                <li>
-                    <strong>Add audit logging</strong>
-                    <span>Record important changes such as owner updates, status changes, due-date changes, completion, exports, and admin edits.</span>
-                </li>
-
-                <li>
-                    <strong>Review permissions regularly</strong>
-                    <span>Check access during pilot reviews so users only have what they need.</span>
-                </li>
-            </ol>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>What This Proves</h2>
-                    <p>The portfolio value of this page.</p>
-                </div>
-            </div>
-
-            <div class="role-proof-grid">
-                @foreach (var proof in ProofItems)
-                {
-                    <article>
-                        <span>@proof.Label</span>
-                        <strong>@proof.Title</strong>
-                        <p>@proof.Description</p>
-                    </article>
-                }
-            </div>
-        </div>
-    </section>
-
-    <section class="report-card user-roles-summary-card">
-        <div class="panel-header">
-            <div>
-                <h2>User Roles Summary</h2>
-                <p>A short explanation for reviewers.</p>
-            </div>
-        </div>
-
-        <div class="user-roles-summary-copy">
-            <p>
-                OperationsFlow is currently a local workflow prototype, so it does not yet include production authentication
-                or role-based permissions. A live version would need secure sign-in, assigned user roles, page-level access
-                rules, action-level permissions, audit logging, and admin controls before real company data was used.
-            </p>
-
-            <p>
-                The recommended production model separates administrators, managers, safety/compliance reviewers, action owners,
-                document processors, standard users, and read-only viewers. This would allow the system to support real follow-up
-                work while controlling who can edit records, approve changes, export reports, manage settings, and view sensitive data.
-            </p>
-        </div>
-    </section>
-</div>
-
-@code {
-    private static readonly IReadOnlyList<RoleDefinition> Roles = new[]
-    {
-        new RoleDefinition(
-            Number: "01",
-            Category: "System",
-            Name: "Administrator",
-            Description: "Full system role responsible for configuration, user access, reference lists, and production support.",
-            AccessFocus: "System setup, user management, reference data, configuration, and admin-only actions.",
-            Permissions: new[]
-            {
-                new RolePermission("Manage users", "Assign roles, disable access, and support account changes."),
-                new RolePermission("Configure settings", "Maintain departments, sites, priorities, statuses, and system options."),
-                new RolePermission("View audit data", "Review activity history, exports, and important workflow changes."),
-                new RolePermission("Support deployment", "Help manage backups, monitoring, release checks, and support issues.")
-            }
-        ),
-        new RoleDefinition(
-            Number: "02",
-            Category: "Management",
-            Name: "Manager",
-            Description: "Business review role focused on workload, reports, overdue work, owner pressure, and management follow-up.",
-            AccessFocus: "Dashboards, reports, workload, reminders, meeting packs, and escalation review.",
-            Permissions: new[]
-            {
-                new RolePermission("Review summaries", "View reports, dashboards, workload pressure, and compliance review pages."),
-                new RolePermission("Escalate work", "Identify overdue or high-pressure items needing follow-up."),
-                new RolePermission("Export reports", "Create approved reporting outputs for management review."),
-                new RolePermission("Review owners", "Check who owns open work and who needs support.")
-            }
-        ),
-        new RoleDefinition(
-            Number: "03",
-            Category: "Compliance",
-            Name: "Safety / Compliance Reviewer",
-            Description: "Reviewer role responsible for safety meeting preparation, risk review, training compliance, and document review follow-up.",
-            AccessFocus: "Safety/compliance pages, risk register, training, controlled documents, and corrective action follow-up.",
-            Permissions: new[]
-            {
-                new RolePermission("Review safety items", "Use safety overview, meeting pack, compliance calendar, and data quality pages."),
-                new RolePermission("Manage review records", "Update risk, training, document, and corrective follow-up records."),
-                new RolePermission("Create actions", "Raise corrective actions from reviews, audits, risks, and document issues."),
-                new RolePermission("Prepare meetings", "Use review pages to prepare discussion points and follow-up owners.")
-            }
-        ),
-        new RoleDefinition(
-            Number: "04",
-            Category: "Workflow",
-            Name: "Action Owner",
-            Description: "Assigned owner role responsible for updating their own work, adding notes, and completing follow-up actions.",
-            AccessFocus: "Assigned work, own corrective actions, own document intake items, due dates, notes, and completion evidence.",
-            Permissions: new[]
-            {
-                new RolePermission("View assigned work", "See items assigned to them across modules."),
-                new RolePermission("Update progress", "Change notes, status, blockers, and completion details for their work."),
-                new RolePermission("Add evidence", "Record what was done, what changed, and what remains blocked."),
-                new RolePermission("Close own tasks", "Complete items when the required evidence is supplied.")
-            }
-        ),
-        new RoleDefinition(
-            Number: "05",
-            Category: "Admin Workflow",
-            Name: "Document Processor",
-            Description: "Admin/document workflow role responsible for incoming documents, target systems, processing status, and routing notes.",
-            AccessFocus: "Document intake, processing state, assigned admin work, target systems, due dates, and notes.",
-            Permissions: new[]
-            {
-                new RolePermission("Process documents", "Update incoming document status and processing details."),
-                new RolePermission("Assign target systems", "Choose where documents should be stored or entered."),
-                new RolePermission("Add processing notes", "Explain what was checked, what is blocked, or what was completed."),
-                new RolePermission("Flag issues", "Mark documents as needs review, rejected, or waiting for more information.")
-            }
-        ),
-        new RoleDefinition(
-            Number: "06",
-            Category: "Read Only",
-            Name: "Viewer",
-            Description: "Read-only role for users who need visibility but should not change workflow records.",
-            AccessFocus: "Dashboards, reports, meeting summaries, and read-only review pages.",
-            Permissions: new[]
-            {
-                new RolePermission("View reports", "Open reporting and summary pages."),
-                new RolePermission("View dashboards", "Review workload and compliance visibility."),
-                new RolePermission("Read meeting packs", "Use meeting-ready summaries without changing records."),
-                new RolePermission("No editing", "Cannot change owners, statuses, dates, notes, or settings.")
-            }
-        )
-    };
-
-    private static readonly IReadOnlyList<PermissionMatrixItem> PermissionMatrix = new[]
-    {
-        new PermissionMatrixItem(
-            Action: "View dashboards",
-            Description: "Open dashboards and overview pages.",
-            Admin: "Full",
-            Manager: "Full",
-            Reviewer: "Full",
-            Owner: "Limited",
-            Viewer: "Read"
-        ),
-        new PermissionMatrixItem(
-            Action: "Create corrective actions",
-            Description: "Create new corrective or improvement actions.",
-            Admin: "Full",
-            Manager: "Full",
-            Reviewer: "Full",
-            Owner: "Limited",
-            Viewer: "No"
-        ),
-        new PermissionMatrixItem(
-            Action: "Edit assigned records",
-            Description: "Update owner, status, dates, notes, and workflow progress.",
-            Admin: "Full",
-            Manager: "Full",
-            Reviewer: "Full",
-            Owner: "Own",
-            Viewer: "No"
-        ),
-        new PermissionMatrixItem(
-            Action: "Close completed work",
-            Description: "Mark records completed or closed after evidence is supplied.",
-            Admin: "Full",
-            Manager: "Approve",
-            Reviewer: "Approve",
-            Owner: "Own",
-            Viewer: "No"
-        ),
-        new PermissionMatrixItem(
-            Action: "Export reports",
-            Description: "Export management or compliance reporting outputs.",
-            Admin: "Full",
-            Manager: "Full",
-            Reviewer: "Full",
-            Owner: "No",
-            Viewer: "Read"
-        ),
-        new PermissionMatrixItem(
-            Action: "Manage system settings",
-            Description: "Change reference lists, system options, and admin settings.",
-            Admin: "Full",
-            Manager: "No",
-            Reviewer: "No",
-            Owner: "No",
-            Viewer: "No"
-        ),
-        new PermissionMatrixItem(
-            Action: "View audit history",
-            Description: "Review created, updated, reviewed, and workflow change history.",
-            Admin: "Full",
-            Manager: "Full",
-            Reviewer: "Full",
-            Owner: "Own",
-            Viewer: "Read"
-        )
-    };
-
-    private static readonly IReadOnlyList<AccessFlowStep> AccessFlow = new[]
-    {
-        new AccessFlowStep(
-            Number: "01",
-            Title: "User signs in",
-            Description: "A production version would authenticate users through Microsoft identity or another approved provider."
-        ),
-        new AccessFlowStep(
-            Number: "02",
-            Title: "Role is loaded",
-            Description: "The app checks assigned roles such as admin, manager, reviewer, owner, document processor, or viewer."
-        ),
-        new AccessFlowStep(
-            Number: "03",
-            Title: "Navigation is scoped",
-            Description: "Users only see pages and actions that match their role and business area."
-        ),
-        new AccessFlowStep(
-            Number: "04",
-            Title: "Actions are checked",
-            Description: "Create, edit, close, export, and admin actions are checked before changes are saved."
-        ),
-        new AccessFlowStep(
-            Number: "05",
-            Title: "Important changes are logged",
-            Description: "Owner changes, status changes, due-date changes, completed dates, exports, and admin changes are written to activity history."
-        )
-    };
-
-    private static readonly IReadOnlyList<SecurityNote> SecurityNotes = new[]
-    {
-        new SecurityNote(
-            Label: "Identity",
-            Title: "Secure sign-in",
-            Description: "Use authenticated users instead of anonymous/local access for production data."
-        ),
-        new SecurityNote(
-            Label: "Roles",
-            Title: "Least privilege",
-            Description: "Give users only the access they need to complete their work."
-        ),
-        new SecurityNote(
-            Label: "Audit",
-            Title: "Change history",
-            Description: "Record who changed what, when it changed, and why important workflow changes happened."
-        ),
-        new SecurityNote(
-            Label: "Data",
-            Title: "Sensitive records",
-            Description: "Restrict pages or fields that could expose confidential business, safety, or staff information."
-        )
-    };
-
-    private static readonly IReadOnlyList<PageAccessItem> PageAccessItems = new[]
-    {
-        new PageAccessItem(
-            Page: "Dashboard",
-            PrimaryUsers: "All Roles",
-            BadgeClass: "badge badge-info",
-            AccessRule: "Most users can view summary information, with sensitive values scoped by role or department.",
-            Reason: "Dashboards provide high-level visibility without requiring record editing."
-        ),
-        new PageAccessItem(
-            Page: "Corrective Actions",
-            PrimaryUsers: "Admin / Manager / Reviewer / Owner",
-            BadgeClass: "badge badge-warning",
-            AccessRule: "Reviewers and managers can manage records; owners can update assigned items; viewers are read-only or blocked.",
-            Reason: "Corrective actions often include follow-up responsibility and review evidence."
-        ),
-        new PageAccessItem(
-            Page: "Document Intake",
-            PrimaryUsers: "Admin / Processor / Manager",
-            BadgeClass: "badge badge-success",
-            AccessRule: "Document processors manage intake records; managers can review; standard users only see assigned or relevant items.",
-            Reason: "Incoming documents can contain business-sensitive details."
-        ),
-        new PageAccessItem(
-            Page: "Reports",
-            PrimaryUsers: "Admin / Manager / Reviewer",
-            BadgeClass: "badge badge-info",
-            AccessRule: "Reporting exports are limited to approved roles.",
-            Reason: "Exports can carry sensitive or management-level information."
-        ),
-        new PageAccessItem(
-            Page: "Data Quality",
-            PrimaryUsers: "Admin / Manager / Reviewer",
-            BadgeClass: "badge badge-muted",
-            AccessRule: "Data quality issues are visible to users responsible for fixing or reviewing records.",
-            Reason: "Weak records may expose missing ownership, incomplete evidence, or overdue compliance work."
-        ),
-        new PageAccessItem(
-            Page: "Admin Settings",
-            PrimaryUsers: "Admin Only",
-            BadgeClass: "badge badge-danger",
-            AccessRule: "Only administrators can change system configuration.",
-            Reason: "Settings affect the whole workflow and should be controlled."
-        )
-    };
-
-    private static readonly IReadOnlyList<ProofItem> ProofItems = new[]
-    {
-        new ProofItem(
-            Label: "Security",
-            Title: "Production awareness",
-            Description: "The project clearly identifies that live business data would need authentication and access control."
-        ),
-        new ProofItem(
-            Label: "Design",
-            Title: "Role-based thinking",
-            Description: "The system separates admins, managers, reviewers, owners, processors, and viewers instead of treating every user the same."
-        ),
-        new ProofItem(
-            Label: "Workflow",
-            Title: "Action-level permissions",
-            Description: "The page explains not just who can open pages, but who can create, edit, close, export, and configure."
-        ),
-        new ProofItem(
-            Label: "Audit",
-            Title: "Traceability planning",
-            Description: "The model includes change logging for important workflow and permission-sensitive actions."
-        )
-    };
-
-    private static string GetPermissionBadgeClass(string permission)
-    {
-        return permission.ToLowerInvariant() switch
-        {
-            "full" => "badge badge-success",
-            "approve" => "badge badge-info",
-            "limited" => "badge badge-warning",
-            "own" => "badge badge-info",
-            "read" => "badge badge-muted",
-            "no" => "badge badge-danger",
-            _ => "badge badge-muted"
-        };
-    }
-
-    private record RoleDefinition(
-        string Number,
-        string Category,
-        string Name,
-        string Description,
-        string AccessFocus,
-        IReadOnlyList<RolePermission> Permissions
-    );
-
-    private record RolePermission(
-        string Title,
-        string Description
-    );
-
-    private record PermissionMatrixItem(
-        string Action,
-        string Description,
-        string Admin,
-        string Manager,
-        string Reviewer,
-        string Owner,
-        string Viewer
-    );
-
-    private record AccessFlowStep(
-        string Number,
-        string Title,
-        string Description
-    );
-
-    private record SecurityNote(
-        string Label,
-        string Title,
-        string Description
-    );
-
-    private record PageAccessItem(
-        string Page,
-        string PrimaryUsers,
-        string BadgeClass,
-        string AccessRule,
-        string Reason
-    );
-
-    private record ProofItem(
-        string Label,
-        string Title,
-        string Description
-    );
-}
+<GuidanceNote Title="Prototype Boundary" Icon="🚧" Tone="warning">
+    <ul>
+        <li>This page is part of the portfolio review layer.</li>
+        <li>The current app uses local SQLite demo data.</li>
+        <li>Production rollout would need authentication, permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
+    </ul>
+</GuidanceNote>

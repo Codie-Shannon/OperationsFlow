@@ -1,4 +1,4 @@
-﻿@page "/compliance-dashboard"
+@page "/compliance-dashboard"
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
@@ -6,493 +6,66 @@
 
 <PageTitle>Safety Overview - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page">
+<PageHero Eyebrow="OSHE / Compliance" Title="Safety Overview" Subtitle="A focused health, safety, and compliance view showing corrective actions, high-risk items, training expiries, document review issues, and recent compliance activity." BadgeText="@($"{TotalAttentionItems} attention items")" BadgeClass="@(TotalAttentionItems > 0 ? "of-badge-danger" : "of-badge-success")">
+    <Actions><a class="of-btn of-btn-secondary" href="/safety-meeting-pack">Meeting Pack</a><a class="of-btn of-btn-secondary" href="/compliance-calendar">Compliance Calendar</a><a class="of-btn of-btn-secondary" href="/reports">Reports</a><a class="of-btn of-btn-secondary" href="/activity-log">Activity Log</a></Actions>
+</PageHero>
 
-    <section class="module-header">
-        <div>
-            <p class="eyebrow dark">OSHE / Compliance</p>
-            <h1>Safety Overview</h1>
-            <p>
-                A focused health, safety, and compliance view showing corrective actions,
-                high-risk items, training expiries, document review issues, and recent
-                compliance activity.
-            </p>
-        </div>
+<PurposeNote Title="Purpose" Icon="🦺"><p>Use this page to review safety/compliance pressure in one place before opening detailed workflow records.</p></PurposeNote>
+<MetricGrid>
+    <MetricCard Title="Open Corrective Actions" Value="@OpenCorrectiveActions.Count.ToString()" Detail="@($"{OverdueCorrectiveActions.Count} overdue")" Icon="✅" Tone="warning" />
+    <MetricCard Title="High / Critical Risks" Value="@HighOrCriticalRisks.Count.ToString()" Detail="@($"{OverdueRiskReviews.Count} overdue reviews")" Icon="⚠️" Tone="danger" />
+    <MetricCard Title="Expired Training" Value="@ExpiredTraining.Count.ToString()" Detail="@($"{ExpiringTraining.Count} expiring soon")" Icon="🎓" Tone="warning" />
+    <MetricCard Title="Document Reviews" Value="@OverdueDocuments.Count.ToString()" Detail="@($"{DueSoonDocuments.Count} due soon")" Icon="📄" Tone="info" />
+    <MetricCard Title="Recent Activity" Value="@RecentComplianceActivity.Count.ToString()" Detail="Latest tracked events" Icon="🧾" Tone="success" />
+</MetricGrid>
 
-        <div class="module-header-stat">
-            <span>Attention Items</span>
-            <strong>@TotalAttentionItems</strong>
-        </div>
-    </section>
-
-    <section class="module-summary-grid">
-        <article class="module-summary-card info-card">
-            <span>Open Corrective Actions</span>
-            <strong>@OpenCorrectiveActions.Count</strong>
-            <small>@OverdueCorrectiveActions.Count overdue</small>
-        </article>
-
-        <article class="module-summary-card danger-card">
-            <span>High / Critical Risks</span>
-            <strong>@HighOrCriticalRisks.Count</strong>
-            <small>@OverdueRiskReviews.Count overdue reviews</small>
-        </article>
-
-        <article class="module-summary-card danger-card">
-            <span>Expired Training</span>
-            <strong>@ExpiredTraining.Count</strong>
-            <small>@ExpiringTraining.Count expiring soon</small>
-        </article>
-
-        <article class="module-summary-card warning-card">
-            <span>Document Reviews</span>
-            <strong>@OverdueDocuments.Count</strong>
-            <small>@DueSoonDocuments.Count due soon</small>
-        </article>
-    </section>
-
-    <section class="module-summary-grid">
-        <article class="module-summary-card danger-card">
-            <span>Overdue Corrective Actions</span>
-            <strong>@OverdueCorrectiveActions.Count</strong>
-            <small>Require follow-up</small>
-        </article>
-
-        <article class="module-summary-card warning-card">
-            <span>Training Expiring Soon</span>
-            <strong>@ExpiringTraining.Count</strong>
-            <small>Book renewals</small>
-        </article>
-
-        <article class="module-summary-card warning-card">
-            <span>Documents Due Soon</span>
-            <strong>@DueSoonDocuments.Count</strong>
-            <small>Schedule review</small>
-        </article>
-
-        <article class="module-summary-card success-card">
-            <span>Recent Compliance Activity</span>
-            <strong>@RecentComplianceActivity.Count</strong>
-            <small>Latest tracked events</small>
-        </article>
-    </section>
-
-    <section class="report-grid">
-
-        <article class="report-card">
-            <div class="report-card-header">
-                <div>
-                    <h2>Critical / High Risks</h2>
-                    <p>Risks that require monitoring, control review, or follow-up action.</p>
-                </div>
-
-                <a class="primary-link-button" href="/risk-register">View Risks</a>
-            </div>
-
-            @if (!HighOrCriticalRisks.Any())
-            {
-                <div class="empty-state">No high or critical risks currently require attention.</div>
-            }
-            else
-            {
-                <table class="report-table">
-                    <thead>
-                        <tr>
-                            <th>Risk</th>
-                            <th>Owner</th>
-                            <th>Level</th>
-                            <th>Score</th>
-                            <th>Review Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in HighOrCriticalRisks.Take(8))
-                        {
-                            <tr>
-                                <td class="strong-cell">@item.Title</td>
-                                <td>@item.Owner</td>
-                                <td>
-                                    <span class="@GetRiskClass(item.RiskLevel)">
-                                        @item.RiskLevel
-                                    </span>
-                                </td>
-                                <td class="report-number">@item.RiskScore</td>
-                                <td>@item.ReviewDate.ToString("dd MMM yyyy")</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-        </article>
-
-        <article class="report-card">
-            <div class="report-card-header">
-                <div>
-                    <h2>Overdue Corrective Actions</h2>
-                    <p>Corrective actions that are past due and need progress review.</p>
-                </div>
-
-                <a class="primary-link-button" href="/corrective-actions">View Actions</a>
-            </div>
-
-            @if (!OverdueCorrectiveActions.Any())
-            {
-                <div class="empty-state">No overdue corrective actions.</div>
-            }
-            else
-            {
-                <table class="report-table">
-                    <thead>
-                        <tr>
-                            <th>Action</th>
-                            <th>Owner</th>
-                            <th>Priority</th>
-                            <th>Due Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in OverdueCorrectiveActions.Take(8))
-                        {
-                            <tr>
-                                <td>
-                                    <div class="strong-cell">@item.Title</div>
-                                    <small class="muted-text">@item.Source</small>
-                                </td>
-                                <td>@item.Owner</td>
-                                <td>
-                                    <span class="@GetPriorityClass(item.Priority)">
-                                        @item.Priority
-                                    </span>
-                                </td>
-                                <td>@item.DueDate.ToString("dd MMM yyyy")</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-        </article>
-
-    </section>
-
-    <section class="report-grid">
-
-        <article class="report-card">
-            <div class="report-card-header">
-                <div>
-                    <h2>Expired / Expiring Training</h2>
-                    <p>Training records that are expired or approaching expiry.</p>
-                </div>
-
-                <a class="primary-link-button" href="/training">View Training</a>
-            </div>
-
-            @if (!TrainingAttentionItems.Any())
-            {
-                <div class="empty-state">No expired or expiring training records.</div>
-            }
-            else
-            {
-                <table class="report-table">
-                    <thead>
-                        <tr>
-                            <th>Staff</th>
-                            <th>Training</th>
-                            <th>Department</th>
-                            <th>Expiry</th>
-                            <th>Flag</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in TrainingAttentionItems.Take(8))
-                        {
-                            <tr>
-                                <td class="strong-cell">@item.StaffName</td>
-                                <td>@item.TrainingName</td>
-                                <td>@item.Department</td>
-                                <td>@item.ExpiryDate.ToString("dd MMM yyyy")</td>
-                                <td>
-                                    @if (item.IsExpired)
-                                    {
-                                        <span class="badge badge-danger">Expired</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge badge-warning">Expiring Soon</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-        </article>
-
-        <article class="report-card">
-            <div class="report-card-header">
-                <div>
-                    <h2>Document Review Issues</h2>
-                    <p>Controlled documents that are overdue or due soon for review.</p>
-                </div>
-
-                <a class="primary-link-button" href="/documents">View Documents</a>
-            </div>
-
-            @if (!DocumentReviewAttentionItems.Any())
-            {
-                <div class="empty-state">No document review issues.</div>
-            }
-            else
-            {
-                <table class="report-table">
-                    <thead>
-                        <tr>
-                            <th>Document</th>
-                            <th>Owner</th>
-                            <th>Review Date</th>
-                            <th>Flag</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in DocumentReviewAttentionItems.Take(8))
-                        {
-                            <tr>
-                                <td>
-                                    <div class="strong-cell">@item.Title</div>
-                                    <small class="muted-text">@item.Department</small>
-                                </td>
-                                <td>@item.Owner</td>
-                                <td>@item.NextReviewDate.ToString("dd MMM yyyy")</td>
-                                <td>
-                                    @if (item.IsReviewOverdue)
-                                    {
-                                        <span class="badge badge-danger">Overdue</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge badge-warning">Due Soon</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-        </article>
-
-    </section>
-
-    <section class="report-card">
-        <div class="report-card-header">
-            <div>
-                <h2>Recent Safety / Compliance Activity</h2>
-                <p>
-                    Recent activity from corrective actions, risk, training, and document
-                    control workflows.
-                </p>
-            </div>
-
-            <a class="primary-link-button" href="/activity-log">View Activity Log</a>
-        </div>
-
-        @if (!RecentComplianceActivity.Any())
-        {
-            <div class="empty-state">No recent compliance activity has been recorded.</div>
-        }
-        else
-        {
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Module</th>
-                        <th>Reference</th>
-                        <th>Action</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in RecentComplianceActivity)
-                    {
-                        <tr>
-                            <td>@item.CreatedDate.ToString("dd MMM HH:mm")</td>
-                            <td>@item.ModuleName</td>
-                            <td class="strong-cell">@item.RecordReference</td>
-                            <td>
-                                <span class="@GetActionClass(item.ActionType)">
-                                    @item.ActionType
-                                </span>
-                            </td>
-                            <td>@item.Description</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-    </section>
-
+<div class="of-two-column-grid">
+<TableCard Title="Critical / High Risks" Subtitle="Risks that require monitoring, control review, or follow-up action." IsEmpty="@(!HighOrCriticalRisks.Any())" EmptyTitle="No high or critical risks" EmptyMessage="No high or critical risks currently require attention.">
+    <Actions><a class="of-btn of-btn-secondary" href="/risk-register">View Risks</a></Actions>
+    <ChildContent><table><thead><tr><th>Risk</th><th>Owner</th><th>Level</th><th>Score</th><th>Review Date</th></tr></thead><tbody>@foreach(var item in HighOrCriticalRisks.Take(8)){<tr><td><strong>@item.Title</strong><div class="of-muted-text">@item.Hazard</div></td><td>@item.Owner</td><td><span class="@GetRiskClass(item.RiskLevel)">@item.RiskLevel</span></td><td><strong>@item.RiskScore</strong></td><td>@item.ReviewDate.ToString("dd MMM yyyy")</td></tr>}</tbody></table></ChildContent>
+</TableCard>
+<TableCard Title="Overdue Corrective Actions" Subtitle="Corrective actions that are past due and need progress review." IsEmpty="@(!OverdueCorrectiveActions.Any())" EmptyTitle="No overdue corrective actions" EmptyMessage="There are no overdue corrective actions.">
+    <Actions><a class="of-btn of-btn-secondary" href="/corrective-actions">View Actions</a></Actions>
+    <ChildContent><table><thead><tr><th>Action</th><th>Owner</th><th>Priority</th><th>Due Date</th><th>Open</th></tr></thead><tbody>@foreach(var item in OverdueCorrectiveActions.Take(8)){<tr><td><strong>@item.Title</strong><div class="of-muted-text">@item.Source</div></td><td>@item.Owner</td><td><span class="@GetPriorityClass(item.Priority)">@item.Priority</span></td><td>@item.DueDate.ToString("dd MMM yyyy")</td><td><a class="of-card-link" href="/corrective-actions/edit/@item.Id?returnUrl=/compliance-dashboard">Open</a></td></tr>}</tbody></table></ChildContent>
+</TableCard>
 </div>
 
+<div class="of-two-column-grid">
+<TableCard Title="Expired / Expiring Training" Subtitle="Training records that are expired or approaching expiry." IsEmpty="@(!TrainingAttentionItems.Any())" EmptyTitle="No training issues" EmptyMessage="No expired or expiring training records.">
+    <Actions><a class="of-btn of-btn-secondary" href="/training">View Training</a></Actions>
+    <ChildContent><table><thead><tr><th>Staff</th><th>Training</th><th>Department</th><th>Expiry</th><th>Flag</th></tr></thead><tbody>@foreach(var item in TrainingAttentionItems.Take(8)){<tr><td><strong>@item.StaffName</strong></td><td>@item.TrainingName</td><td>@item.Department</td><td>@item.ExpiryDate.ToString("dd MMM yyyy")</td><td>@if(item.IsExpired){<span class="badge badge-danger">Expired</span>}else{<span class="badge badge-warning">Expiring Soon</span>}</td></tr>}</tbody></table></ChildContent>
+</TableCard>
+<TableCard Title="Document Review Issues" Subtitle="Controlled documents that are overdue or due soon for review." IsEmpty="@(!DocumentReviewAttentionItems.Any())" EmptyTitle="No document review issues" EmptyMessage="No controlled document review issues.">
+    <Actions><a class="of-btn of-btn-secondary" href="/documents">View Documents</a></Actions>
+    <ChildContent><table><thead><tr><th>Document</th><th>Owner</th><th>Review Date</th><th>Flag</th></tr></thead><tbody>@foreach(var item in DocumentReviewAttentionItems.Take(8)){<tr><td><strong>@item.Title</strong><div class="of-muted-text">@item.Department</div></td><td>@item.Owner</td><td>@item.NextReviewDate.ToString("dd MMM yyyy")</td><td>@if(item.IsReviewOverdue){<span class="badge badge-danger">Overdue</span>}else{<span class="badge badge-warning">Due Soon</span>}</td></tr>}</tbody></table></ChildContent>
+</TableCard>
+</div>
+
+<TableCard Title="Recent Safety / Compliance Activity" Subtitle="Recent activity from corrective actions, risk, training, and document control workflows." IsEmpty="@(!RecentComplianceActivity.Any())" EmptyTitle="No recent compliance activity" EmptyMessage="No recent safety/compliance activity has been recorded.">
+    <Actions><a class="of-btn of-btn-secondary" href="/activity-log">View Activity Log</a></Actions>
+    <ChildContent><table><thead><tr><th>Date</th><th>Module</th><th>Reference</th><th>Action</th><th>Description</th></tr></thead><tbody>@foreach(var item in RecentComplianceActivity){<tr><td>@item.CreatedDate.ToString("dd MMM HH:mm")</td><td>@item.ModuleName</td><td><strong>@item.RecordReference</strong></td><td><span class="@GetActionClass(item.ActionType)">@item.ActionType</span></td><td>@item.Description</td></tr>}</tbody></table></ChildContent>
+</TableCard>
+
+<GuidanceNote Title="Review Notes" Icon="💡" Tone="info"><ul><li>Safety Overview should be used before Reports when checking compliance pressure.</li><li>Open overdue corrective actions and expired training first.</li><li>This is local SQLite demo data; production follow-up would include notifications and audit controls.</li></ul></GuidanceNote>
+
 @code {
-    private List<CorrectiveAction> correctiveActions = new();
-    private List<RiskItem> risks = new();
-    private List<TrainingRecord> trainingRecords = new();
-    private List<DocumentRecord> documents = new();
-    private List<ActivityLog> activityLogs = new();
-
-    private List<CorrectiveAction> OpenCorrectiveActions =>
-        correctiveActions
-            .Where(x => !IsClosedStatus(x.Status))
-            .OrderByDescending(x => x.IsOverdue)
-            .ThenBy(x => x.DueDate)
-            .ToList();
-
-    private List<CorrectiveAction> OverdueCorrectiveActions =>
-        correctiveActions
-            .Where(x => x.IsOverdue)
-            .OrderBy(x => x.DueDate)
-            .ToList();
-
-    private List<RiskItem> HighOrCriticalRisks =>
-        risks
-            .Where(x => IsHighOrCriticalRisk(x.RiskLevel))
-            .OrderByDescending(x => x.RiskScore)
-            .ThenBy(x => x.ReviewDate)
-            .ToList();
-
-    private List<RiskItem> OverdueRiskReviews =>
-        risks
-            .Where(x => x.IsReviewOverdue)
-            .OrderBy(x => x.ReviewDate)
-            .ToList();
-
-    private List<TrainingRecord> ExpiredTraining =>
-        trainingRecords
-            .Where(x => x.IsExpired)
-            .OrderBy(x => x.ExpiryDate)
-            .ToList();
-
-    private List<TrainingRecord> ExpiringTraining =>
-        trainingRecords
-            .Where(x => x.IsExpiringSoon && !x.IsExpired)
-            .OrderBy(x => x.ExpiryDate)
-            .ToList();
-
-    private List<TrainingRecord> TrainingAttentionItems =>
-        trainingRecords
-            .Where(x => x.IsExpired || x.IsExpiringSoon)
-            .OrderByDescending(x => x.IsExpired)
-            .ThenBy(x => x.ExpiryDate)
-            .ToList();
-
-    private List<DocumentRecord> OverdueDocuments =>
-        documents
-            .Where(x => x.IsReviewOverdue)
-            .OrderBy(x => x.NextReviewDate)
-            .ToList();
-
-    private List<DocumentRecord> DueSoonDocuments =>
-        documents
-            .Where(x => x.IsDueSoon && !x.IsReviewOverdue)
-            .OrderBy(x => x.NextReviewDate)
-            .ToList();
-
-    private List<DocumentRecord> DocumentReviewAttentionItems =>
-        documents
-            .Where(x => x.IsReviewOverdue || x.IsDueSoon)
-            .OrderByDescending(x => x.IsReviewOverdue)
-            .ThenBy(x => x.NextReviewDate)
-            .ToList();
-
-    private List<ActivityLog> RecentComplianceActivity =>
-        activityLogs
-            .Where(x =>
-                x.ModuleName == "Corrective Actions"
-                || x.ModuleName == "Risk Register"
-                || x.ModuleName == "Training"
-                || x.ModuleName == "Document Control"
-                || x.ModuleName == "Documents")
-            .OrderByDescending(x => x.CreatedDate)
-            .Take(8)
-            .ToList();
-
-    private int TotalAttentionItems =>
-        OverdueCorrectiveActions.Count
-        + HighOrCriticalRisks.Count
-        + ExpiredTraining.Count
-        + ExpiringTraining.Count
-        + OverdueDocuments.Count
-        + DueSoonDocuments.Count;
-
-    protected override async Task OnInitializedAsync()
-    {
-        correctiveActions = await Db.CorrectiveActions
-            .AsNoTracking()
-            .ToListAsync();
-
-        risks = await Db.RiskItems
-            .AsNoTracking()
-            .ToListAsync();
-
-        trainingRecords = await Db.TrainingRecords
-            .AsNoTracking()
-            .ToListAsync();
-
-        documents = await Db.DocumentRecords
-            .AsNoTracking()
-            .ToListAsync();
-
-        activityLogs = await Db.ActivityLogs
-            .AsNoTracking()
-            .ToListAsync();
-    }
-
-    private static bool IsClosedStatus(string? status)
-    {
-        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(status, "Rejected", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static bool IsHighOrCriticalRisk(string? riskLevel)
-    {
-        return string.Equals(riskLevel, "High", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(riskLevel, "Critical", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static string GetRiskClass(string? riskLevel)
-    {
-        return riskLevel?.ToLower() switch
-        {
-            "critical" => "badge badge-danger",
-            "high" => "badge badge-warning",
-            "medium" => "badge badge-info",
-            "low" => "badge badge-success",
-            _ => "badge badge-muted"
-        };
-    }
-
-    private static string GetPriorityClass(string? priority)
-    {
-        return priority?.ToLower() switch
-        {
-            "critical" => "badge badge-danger",
-            "high" => "badge badge-warning",
-            "medium" => "badge badge-info",
-            "low" => "badge badge-muted",
-            _ => "badge badge-muted"
-        };
-    }
-
-    private static string GetActionClass(string? actionType)
-    {
-        return actionType?.ToLower() switch
-        {
-            "created" => "badge badge-success",
-            "updated" => "badge badge-warning",
-            "reviewed" => "badge badge-info",
-            "completed" => "badge badge-success",
-            "closed" => "badge badge-success",
-            _ => "badge badge-muted"
-        };
-    }
+    private List<CorrectiveAction> correctiveActions = new(); private List<RiskItem> risks = new(); private List<TrainingRecord> trainingRecords = new(); private List<DocumentRecord> documents = new(); private List<ActivityLog> activityLogs = new();
+    private List<CorrectiveAction> OpenCorrectiveActions => correctiveActions.Where(x=>!IsClosedStatus(x.Status)).OrderByDescending(x=>x.IsOverdue).ThenBy(x=>x.DueDate).ToList();
+    private List<CorrectiveAction> OverdueCorrectiveActions => correctiveActions.Where(x=>x.IsOverdue).OrderBy(x=>x.DueDate).ToList();
+    private List<RiskItem> HighOrCriticalRisks => risks.Where(x=>IsHighOrCriticalRisk(x.RiskLevel)).OrderByDescending(x=>x.RiskScore).ThenBy(x=>x.ReviewDate).ToList();
+    private List<RiskItem> OverdueRiskReviews => risks.Where(x=>x.IsReviewOverdue).OrderBy(x=>x.ReviewDate).ToList();
+    private List<TrainingRecord> ExpiredTraining => trainingRecords.Where(x=>x.IsExpired).OrderBy(x=>x.ExpiryDate).ToList();
+    private List<TrainingRecord> ExpiringTraining => trainingRecords.Where(x=>x.IsExpiringSoon&&!x.IsExpired).OrderBy(x=>x.ExpiryDate).ToList();
+    private List<TrainingRecord> TrainingAttentionItems => trainingRecords.Where(x=>x.IsExpired||x.IsExpiringSoon).OrderByDescending(x=>x.IsExpired).ThenBy(x=>x.ExpiryDate).ToList();
+    private List<DocumentRecord> OverdueDocuments => documents.Where(x=>x.IsReviewOverdue).OrderBy(x=>x.NextReviewDate).ToList();
+    private List<DocumentRecord> DueSoonDocuments => documents.Where(x=>x.IsDueSoon&&!x.IsReviewOverdue).OrderBy(x=>x.NextReviewDate).ToList();
+    private List<DocumentRecord> DocumentReviewAttentionItems => documents.Where(x=>x.IsReviewOverdue||x.IsDueSoon).OrderByDescending(x=>x.IsReviewOverdue).ThenBy(x=>x.NextReviewDate).ToList();
+    private List<ActivityLog> RecentComplianceActivity => activityLogs.Where(x=>(x.ModuleName??"").Contains("Corrective",StringComparison.OrdinalIgnoreCase)||(x.ModuleName??"").Contains("Risk",StringComparison.OrdinalIgnoreCase)||(x.ModuleName??"").Contains("Training",StringComparison.OrdinalIgnoreCase)||(x.ModuleName??"").Contains("Document",StringComparison.OrdinalIgnoreCase)).OrderByDescending(x=>x.CreatedDate).Take(8).ToList();
+    private int TotalAttentionItems => OverdueCorrectiveActions.Count + HighOrCriticalRisks.Count + ExpiredTraining.Count + ExpiringTraining.Count + OverdueDocuments.Count + DueSoonDocuments.Count;
+    protected override async Task OnInitializedAsync(){ correctiveActions=await Db.CorrectiveActions.AsNoTracking().ToListAsync(); risks=await Db.RiskItems.AsNoTracking().ToListAsync(); trainingRecords=await Db.TrainingRecords.AsNoTracking().ToListAsync(); documents=await Db.DocumentRecords.AsNoTracking().ToListAsync(); activityLogs=await Db.ActivityLogs.AsNoTracking().ToListAsync(); }
+    private static bool IsClosedStatus(string? status)=>string.Equals(status,"Completed",StringComparison.OrdinalIgnoreCase)||string.Equals(status,"Closed",StringComparison.OrdinalIgnoreCase)||string.Equals(status,"Rejected",StringComparison.OrdinalIgnoreCase);
+    private static bool IsHighOrCriticalRisk(string? riskLevel)=>string.Equals(riskLevel,"High",StringComparison.OrdinalIgnoreCase)||string.Equals(riskLevel,"Critical",StringComparison.OrdinalIgnoreCase);
+    private static string GetRiskClass(string? riskLevel)=>riskLevel?.ToLowerInvariant() switch {"critical"=>"badge badge-danger","high"=>"badge badge-warning","medium"=>"badge badge-info","low"=>"badge badge-muted",_=>"badge badge-muted"};
+    private static string GetPriorityClass(string? priority)=>priority?.ToLowerInvariant() switch {"critical"=>"badge badge-danger","high"=>"badge badge-warning","medium"=>"badge badge-info","low"=>"badge badge-muted",_=>"badge badge-muted"};
+    private static string GetActionClass(string? actionType)=>actionType?.ToLowerInvariant() switch {"created"=>"badge badge-success","updated"=>"badge badge-info","reviewed"=>"badge badge-muted",_=>"badge badge-warning"};
 }
