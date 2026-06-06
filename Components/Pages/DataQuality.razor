@@ -1,21 +1,22 @@
 ﻿@page "/data-quality"
+
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
 @using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
+
 @inject OperationsFlowDbContext Db
 
 <PageTitle>Data Quality - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page">
-
+<div class="page-shell module-page data-quality-page">
     <section class="module-header">
         <div>
             <p class="eyebrow dark">System Health</p>
             <h1>Data Quality Report</h1>
             <p>
-                Identify missing owners, weak records, overdue items, expired compliance
-                records, and data issues that need review before management reporting.
+                Identify missing owners, weak records, overdue items, expired compliance records,
+                and data issues that need review before management reporting.
             </p>
         </div>
 
@@ -23,6 +24,11 @@
             <span>Total Issues</span>
             <strong>@TotalIssueCount</strong>
         </div>
+    </section>
+
+    <section class="page-purpose-note">
+        <strong>Purpose:</strong> use this page to find weak or incomplete workflow records and jump directly to the page
+        where each issue can be reviewed, updated, or turned into follow-up work.
     </section>
 
     <section class="module-summary-grid">
@@ -41,19 +47,86 @@
         <article class="module-summary-card info-card">
             <span>Data Gaps</span>
             <strong>@DataGapCount</strong>
-            <small>Missing owner, notes, or controls</small>
+            <small>Missing owner, notes, controls, or dates</small>
         </article>
 
-        <article class="module-summary-card success-card">
+        <article class="module-summary-card">
             <span>Modules Checked</span>
-            <strong>6</strong>
+            <strong>@ModuleOptions.Count</strong>
             <small>Operations and compliance data</small>
         </article>
     </section>
 
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Actionable Data Quality</h2>
+                    <p>Each issue now includes a review link so weak records can be opened directly.</p>
+                </div>
+            </div>
+
+            <div class="review-note-grid">
+                <div class="review-note-card">
+                    <span>WORKFLOW</span>
+                    <strong>Open the record</strong>
+                    <p>Issues link to edit, details, or source module pages where the data can be reviewed.</p>
+                </div>
+
+                <div class="review-note-card">
+                    <span>MANAGEMENT</span>
+                    <strong>Reduce stale work</strong>
+                    <p>Overdue, unassigned, blank-note, and missing-date issues become visible before review meetings.</p>
+                </div>
+
+                <div class="review-note-card">
+                    <span>TRACEABILITY</span>
+                    <strong>Supports follow-up</strong>
+                    <p>Opening and fixing records can create activity history on key workflow pages.</p>
+                </div>
+
+                <div class="review-note-card">
+                    <span>PROTOTYPE BOUNDARY</span>
+                    <strong>Local demo data</strong>
+                    <p>A production version would add permissions, audit rules, and approval checks.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Module Issue Coverage</h2>
+                    <p>Current issue count by module.</p>
+                </div>
+            </div>
+
+            @if (!ModuleIssueCoverage.Any())
+            {
+                <div class="empty-state">
+                    <strong>No data quality issues found.</strong>
+                    <p>All checked records currently pass the prototype data quality rules.</p>
+                </div>
+            }
+            else
+            {
+                <div class="mini-metric-grid">
+                    @foreach (var module in ModuleIssueCoverage)
+                    {
+                        <div class="mini-metric-card">
+                            <span>@module.ModuleName</span>
+                            <strong>@module.Count</strong>
+                            <small>@Pluralise(module.Count, "issue", "issues")</small>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
     <section class="module-toolbar">
         <input class="search-input"
-               placeholder="Search issue, module, owner, or reference..."
+               placeholder="Search issue, module, reference, owner, or action..."
                @bind="searchText"
                @bind:event="oninput" />
 
@@ -74,176 +147,257 @@
     </section>
 
     <section class="table-card">
+        <div class="table-card-header">
+            <div>
+                <h2>Data Quality Issues</h2>
+                <p>Showing @FilteredIssueCount of @TotalIssueCount issues.</p>
+            </div>
+
+            <div class="activity-count-card">
+                <span>Action Links</span>
+                <strong>@ActionableIssueCount</strong>
+            </div>
+        </div>
+
         @if (!FilteredIssues.Any())
         {
-            <div class="empty-state">No data quality issues match the current filters.</div>
+            <div class="empty-state">
+                <strong>No data quality issues match the current filters.</strong>
+                <p>Clear the search or filters to show more records.</p>
+            </div>
         }
         else
         {
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Severity</th>
-                        <th>Module</th>
-                        <th>Reference</th>
-                        <th>Issue</th>
-                        <th>Owner</th>
-                        <th>Recommended Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var issue in FilteredIssues)
-                    {
+            <div class="table-responsive">
+                <table class="data-table data-quality-table">
+                    <thead>
                         <tr>
-                            <td>
-                                <span class="@GetSeverityClass(issue.Severity)">
-                                    @issue.Severity
-                                </span>
-                            </td>
-                            <td>@issue.ModuleName</td>
-                            <td class="strong-cell">@issue.Reference</td>
-                            <td>@issue.Issue</td>
-                            <td>@issue.Owner</td>
-                            <td>@issue.RecommendedAction</td>
+                            <th>Severity</th>
+                            <th>Module</th>
+                            <th>Reference</th>
+                            <th>Issue</th>
+                            <th>Owner</th>
+                            <th>Recommended Action</th>
+                            <th>Review</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var issue in FilteredIssues)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="@GetSeverityClass(issue.Severity)">
+                                        @issue.Severity
+                                    </span>
+                                </td>
+                                <td>@issue.ModuleName</td>
+                                <td class="strong-cell">@issue.Reference</td>
+                                <td>@issue.Issue</td>
+                                <td>@issue.Owner</td>
+                                <td>@issue.RecommendedAction</td>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(issue.ActionUrl))
+                                    {
+                                        <a class="btn btn-small btn-primary" href="@issue.ActionUrl">
+                                            Open
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-muted">Review</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
     </section>
 
-    <section class="data-quality-grid">
-
-        <article class="data-quality-card">
-            <div class="data-quality-card-header">
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
                 <div>
                     <h2>Overdue Operational Work</h2>
                     <p>Open work orders and corrective actions that are past due.</p>
                 </div>
 
-                <span class="settings-count-badge">@OverdueWorkIssues.Count issues</span>
+                <span class="badge badge-danger">@OverdueWorkIssues.Count issues</span>
             </div>
 
             @if (!OverdueWorkIssues.Any())
             {
-                <div class="empty-state">No overdue operational work issues.</div>
+                <div class="empty-state">
+                    <strong>No overdue operational work issues.</strong>
+                    <p>Open work orders and corrective actions currently have no overdue data quality flags.</p>
+                </div>
             }
             else
             {
-                <div class="quality-list">
+                <div class="issue-card-list">
                     @foreach (var issue in OverdueWorkIssues.Take(6))
                     {
-                        <article class="quality-item">
+                        <article class="issue-card">
                             <div>
                                 <strong>@issue.Reference</strong>
                                 <p>@issue.Issue</p>
                                 <small>@issue.ModuleName • @issue.Owner</small>
                             </div>
-                            <span class="@GetSeverityClass(issue.Severity)">@issue.Severity</span>
+
+                            <div class="issue-card-actions">
+                                <span class="@GetSeverityClass(issue.Severity)">
+                                    @issue.Severity
+                                </span>
+
+                                @if (!string.IsNullOrWhiteSpace(issue.ActionUrl))
+                                {
+                                    <a class="btn btn-small btn-primary" href="@issue.ActionUrl">Open</a>
+                                }
+                            </div>
                         </article>
                     }
                 </div>
             }
-        </article>
+        </div>
 
-        <article class="data-quality-card">
-            <div class="data-quality-card-header">
+        <div class="summary-panel">
+            <div class="panel-header">
                 <div>
                     <h2>Compliance Problems</h2>
                     <p>Expired training, overdue document reviews, and high-risk items.</p>
                 </div>
 
-                <span class="settings-count-badge">@ComplianceIssues.Count issues</span>
+                <span class="badge badge-warning">@ComplianceIssues.Count issues</span>
             </div>
 
             @if (!ComplianceIssues.Any())
             {
-                <div class="empty-state">No compliance data quality issues.</div>
+                <div class="empty-state">
+                    <strong>No compliance data quality issues.</strong>
+                    <p>Training, document, and risk records currently have no compliance flags.</p>
+                </div>
             }
             else
             {
-                <div class="quality-list">
+                <div class="issue-card-list">
                     @foreach (var issue in ComplianceIssues.Take(6))
                     {
-                        <article class="quality-item">
+                        <article class="issue-card">
                             <div>
                                 <strong>@issue.Reference</strong>
                                 <p>@issue.Issue</p>
                                 <small>@issue.ModuleName • @issue.Owner</small>
                             </div>
-                            <span class="@GetSeverityClass(issue.Severity)">@issue.Severity</span>
+
+                            <div class="issue-card-actions">
+                                <span class="@GetSeverityClass(issue.Severity)">
+                                    @issue.Severity
+                                </span>
+
+                                @if (!string.IsNullOrWhiteSpace(issue.ActionUrl))
+                                {
+                                    <a class="btn btn-small btn-primary" href="@issue.ActionUrl">Open</a>
+                                }
+                            </div>
                         </article>
                     }
                 </div>
             }
-        </article>
+        </div>
+    </section>
 
-        <article class="data-quality-card">
-            <div class="data-quality-card-header">
+    <section class="summary-grid">
+        <div class="summary-panel">
+            <div class="panel-header">
                 <div>
                     <h2>Missing Information</h2>
                     <p>Records missing owner, notes, controls, or completion details.</p>
                 </div>
 
-                <span class="settings-count-badge">@MissingInformationIssues.Count issues</span>
+                <span class="badge badge-info">@MissingInformationIssues.Count issues</span>
             </div>
 
             @if (!MissingInformationIssues.Any())
             {
-                <div class="empty-state">No missing information issues.</div>
+                <div class="empty-state">
+                    <strong>No missing information issues.</strong>
+                    <p>Checked records currently have the key fields needed for review.</p>
+                </div>
             }
             else
             {
-                <div class="quality-list">
+                <div class="issue-card-list">
                     @foreach (var issue in MissingInformationIssues.Take(6))
                     {
-                        <article class="quality-item">
+                        <article class="issue-card">
                             <div>
                                 <strong>@issue.Reference</strong>
                                 <p>@issue.Issue</p>
                                 <small>@issue.ModuleName • @issue.Owner</small>
                             </div>
-                            <span class="@GetSeverityClass(issue.Severity)">@issue.Severity</span>
+
+                            <div class="issue-card-actions">
+                                <span class="@GetSeverityClass(issue.Severity)">
+                                    @issue.Severity
+                                </span>
+
+                                @if (!string.IsNullOrWhiteSpace(issue.ActionUrl))
+                                {
+                                    <a class="btn btn-small btn-primary" href="@issue.ActionUrl">Open</a>
+                                }
+                            </div>
                         </article>
                     }
                 </div>
             }
-        </article>
+        </div>
 
-        <article class="data-quality-card">
-            <div class="data-quality-card-header">
+        <div class="summary-panel">
+            <div class="panel-header">
                 <div>
                     <h2>Document Intake Issues</h2>
                     <p>Incoming documents overdue, needing review, or missing processing information.</p>
                 </div>
 
-                <span class="settings-count-badge">@DocumentIntakeIssues.Count issues</span>
+                <span class="badge badge-warning">@DocumentIntakeIssues.Count issues</span>
             </div>
 
             @if (!DocumentIntakeIssues.Any())
             {
-                <div class="empty-state">No document intake issues.</div>
+                <div class="empty-state">
+                    <strong>No document intake issues.</strong>
+                    <p>Incoming document processing records currently pass the prototype checks.</p>
+                </div>
             }
             else
             {
-                <div class="quality-list">
+                <div class="issue-card-list">
                     @foreach (var issue in DocumentIntakeIssues.Take(6))
                     {
-                        <article class="quality-item">
+                        <article class="issue-card">
                             <div>
                                 <strong>@issue.Reference</strong>
                                 <p>@issue.Issue</p>
                                 <small>@issue.ModuleName • @issue.Owner</small>
                             </div>
-                            <span class="@GetSeverityClass(issue.Severity)">@issue.Severity</span>
+
+                            <div class="issue-card-actions">
+                                <span class="@GetSeverityClass(issue.Severity)">
+                                    @issue.Severity
+                                </span>
+
+                                @if (!string.IsNullOrWhiteSpace(issue.ActionUrl))
+                                {
+                                    <a class="btn btn-small btn-primary" href="@issue.ActionUrl">Open</a>
+                                }
+                            </div>
                         </article>
                     }
                 </div>
             }
-        </article>
-
+        </div>
     </section>
-
 </div>
 
 @code {
@@ -279,7 +433,7 @@
         }
     }
 
-    private IEnumerable<DataQualityIssue> FilteredIssues
+    private List<DataQualityIssue> FilteredIssues
     {
         get
         {
@@ -297,12 +451,14 @@
 
             if (!string.IsNullOrWhiteSpace(severityFilter))
             {
-                query = query.Where(x => string.Equals(x.Severity, severityFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x =>
+                    string.Equals(x.Severity, severityFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(moduleFilter))
             {
-                query = query.Where(x => string.Equals(x.ModuleName, moduleFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x =>
+                    string.Equals(x.ModuleName, moduleFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             return query.ToList();
@@ -312,24 +468,24 @@
     private List<DataQualityIssue> OverdueWorkIssues =>
         AllIssues
             .Where(x =>
-                (x.ModuleName == "Work Orders" || x.ModuleName == "Corrective Actions")
-                && Contains(x.Issue, "overdue"))
+                (x.ModuleName == "Work Orders" || x.ModuleName == "Corrective Actions") &&
+                Contains(x.Issue, "overdue"))
             .ToList();
 
     private List<DataQualityIssue> ComplianceIssues =>
         AllIssues
             .Where(x =>
-                x.ModuleName == "Document Control"
-                || x.ModuleName == "Risk Register"
-                || x.ModuleName == "Training")
+                x.ModuleName == "Document Control" ||
+                x.ModuleName == "Risk Register" ||
+                x.ModuleName == "Training")
             .ToList();
 
     private List<DataQualityIssue> MissingInformationIssues =>
         AllIssues
             .Where(x =>
-                Contains(x.Issue, "missing")
-                || Contains(x.Issue, "blank")
-                || Contains(x.Issue, "without"))
+                Contains(x.Issue, "missing") ||
+                Contains(x.Issue, "blank") ||
+                Contains(x.Issue, "without"))
             .ToList();
 
     private List<DataQualityIssue> DocumentIntakeIssues =>
@@ -339,20 +495,29 @@
 
     private int TotalIssueCount => AllIssues.Count;
 
-    private int CriticalIssueCount =>
-        AllIssues.Count(x => x.Severity == "Critical");
+    private int FilteredIssueCount => FilteredIssues.Count;
 
-    private int WarningIssueCount =>
-        AllIssues.Count(x => x.Severity == "Warning");
+    private int CriticalIssueCount => AllIssues.Count(x => x.Severity == "Critical");
 
-    private int DataGapCount =>
-        MissingInformationIssues.Count;
+    private int WarningIssueCount => AllIssues.Count(x => x.Severity == "Warning");
+
+    private int DataGapCount => MissingInformationIssues.Count;
+
+    private int ActionableIssueCount => AllIssues.Count(x => !string.IsNullOrWhiteSpace(x.ActionUrl));
 
     private List<string> ModuleOptions =>
         AllIssues
             .Select(x => x.ModuleName)
             .Distinct()
             .OrderBy(x => x)
+            .ToList();
+
+    private List<ModuleIssueSummary> ModuleIssueCoverage =>
+        AllIssues
+            .GroupBy(x => x.ModuleName)
+            .Select(x => new ModuleIssueSummary(x.Key, x.Count()))
+            .OrderByDescending(x => x.Count)
+            .ThenBy(x => x.ModuleName)
             .ToList();
 
     protected override async Task OnInitializedAsync()
@@ -387,6 +552,7 @@
         foreach (var item in workOrders)
         {
             var reference = item.WorkOrderNumber;
+            var actionUrl = $"/work-orders/details/{item.Id}";
 
             if (item.IsOverdue)
             {
@@ -396,7 +562,8 @@
                     Reference: reference,
                     Issue: $"Work order is overdue. Due date was {item.DueDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Review progress, confirm the owner, update the due date/status, or close the work order if completed."
+                    RecommendedAction: "Open the work order, review progress, confirm the owner, update the due date/status, or close it if completed.",
+                    ActionUrl: actionUrl
                 ));
             }
 
@@ -408,7 +575,8 @@
                     Reference: reference,
                     Issue: "Work order is missing an owner.",
                     Owner: "Unassigned",
-                    RecommendedAction: "Assign an owner so responsibility is clear and the item appears correctly in workload reporting."
+                    RecommendedAction: "Open the work order and assign an owner so responsibility is clear and workload reporting is accurate.",
+                    ActionUrl: actionUrl
                 ));
             }
 
@@ -420,7 +588,8 @@
                     Reference: reference,
                     Issue: "Work order has blank notes.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Add notes explaining the current progress, blocker, decision, or expected next action."
+                    RecommendedAction: "Open the work order and add notes explaining the current progress, blocker, decision, or expected next action.",
+                    ActionUrl: actionUrl
                 ));
             }
         }
@@ -431,6 +600,7 @@
         foreach (var item in correctiveActions)
         {
             var reference = $"CA-{item.Id}";
+            var actionUrl = $"/corrective-actions/edit/{item.Id}";
 
             if (item.IsOverdue)
             {
@@ -440,7 +610,8 @@
                     Reference: reference,
                     Issue: $"Corrective action is overdue. Due date was {item.DueDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Review action progress, update the owner/status, adjust the due date if required, or close if completed."
+                    RecommendedAction: "Open the corrective action, review progress, update owner/status, adjust the due date if required, or close if completed.",
+                    ActionUrl: actionUrl
                 ));
             }
 
@@ -452,7 +623,8 @@
                     Reference: reference,
                     Issue: "Corrective action is missing an owner.",
                     Owner: "Unassigned",
-                    RecommendedAction: "Assign an owner so safety/compliance follow-up accountability is clear."
+                    RecommendedAction: "Open the corrective action and assign an owner so follow-up accountability is clear.",
+                    ActionUrl: actionUrl
                 ));
             }
 
@@ -464,7 +636,8 @@
                     Reference: reference,
                     Issue: "Corrective action is completed/closed without a completed date.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Set the completed date for traceability, or reopen the action if follow-up is not actually complete."
+                    RecommendedAction: "Open the corrective action and set the completed date for traceability, or reopen the action if follow-up is not complete.",
+                    ActionUrl: actionUrl
                 ));
             }
 
@@ -476,7 +649,8 @@
                     Reference: reference,
                     Issue: "Corrective action has blank notes.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Add notes explaining the cause, follow-up decision, current blocker, or closure detail."
+                    RecommendedAction: "Open the corrective action and add notes explaining the cause, follow-up decision, current blocker, or closure detail.",
+                    ActionUrl: actionUrl
                 ));
             }
         }
@@ -487,6 +661,7 @@
         foreach (var item in documents)
         {
             var reference = item.DocumentNumber;
+            var actionUrl = "/documents";
 
             if (item.IsReviewOverdue)
             {
@@ -496,7 +671,8 @@
                     Reference: reference,
                     Issue: $"Document review is overdue. Review date was {item.NextReviewDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Review the document, update the version/status, record the review outcome, or create a corrective action if follow-up is required."
+                    RecommendedAction: "Open Documents, review the document, update version/status, record the review outcome, or create a corrective action if follow-up is required.",
+                    ActionUrl: actionUrl
                 ));
             }
             else if (item.IsDueSoon)
@@ -507,7 +683,8 @@
                     Reference: reference,
                     Issue: $"Document review is due soon on {item.NextReviewDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Schedule the document review, confirm the owner, and update the record before it becomes overdue."
+                    RecommendedAction: "Open Documents, schedule the review, confirm the owner, and update the record before it becomes overdue.",
+                    ActionUrl: actionUrl
                 ));
             }
 
@@ -519,7 +696,8 @@
                     Reference: reference,
                     Issue: "Document is missing an owner.",
                     Owner: "Unassigned",
-                    RecommendedAction: "Assign a document owner so future reviews have clear accountability."
+                    RecommendedAction: "Open Documents and assign a document owner so future reviews have clear accountability.",
+                    ActionUrl: actionUrl
                 ));
             }
         }
@@ -530,6 +708,7 @@
         foreach (var item in risks)
         {
             var reference = item.Title;
+            var actionUrl = "/risk-register";
 
             if (item.RiskLevel == "Critical" || item.RiskLevel == "High")
             {
@@ -539,7 +718,8 @@
                     Reference: reference,
                     Issue: $"{item.RiskLevel} risk requires monitoring. Risk score is {item.RiskScore}.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Confirm controls are current, review the risk rating, and create a corrective action if follow-up is needed."
+                    RecommendedAction: "Open the Risk Register, confirm controls are current, review the risk rating, and create a corrective action if follow-up is needed.",
+                    ActionUrl: actionUrl
                 ));
             }
 
@@ -551,7 +731,8 @@
                     Reference: reference,
                     Issue: $"Risk review is overdue. Review date was {item.ReviewDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Review the risk score, confirm controls are still effective, update the review date, and create a corrective action if required."
+                    RecommendedAction: "Open the Risk Register, review the risk score, confirm controls, update the review date, and create a corrective action if required.",
+                    ActionUrl: actionUrl
                 ));
             }
 
@@ -563,7 +744,8 @@
                     Reference: reference,
                     Issue: "Risk item is missing controls.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Add or update controls so the risk treatment is clear and reviewable."
+                    RecommendedAction: "Open the Risk Register and add or update controls so the risk treatment is clear and reviewable.",
+                    ActionUrl: actionUrl
                 ));
             }
         }
@@ -574,6 +756,7 @@
         foreach (var item in trainingRecords)
         {
             var reference = $"{item.StaffName} - {item.TrainingName}";
+            var actionUrl = "/training";
 
             if (item.IsExpired)
             {
@@ -583,7 +766,8 @@
                     Reference: reference,
                     Issue: $"Training record is expired. Expiry date was {item.ExpiryDate:dd MMM yyyy}.",
                     Owner: item.StaffName,
-                    RecommendedAction: "Confirm retraining requirement, book the refresher, and update the compliance status once completed."
+                    RecommendedAction: "Open Training, confirm retraining requirements, book the refresher, or create a corrective action for follow-up.",
+                    ActionUrl: actionUrl
                 ));
             }
             else if (item.IsExpiringSoon)
@@ -594,7 +778,8 @@
                     Reference: reference,
                     Issue: $"Training expires soon on {item.ExpiryDate:dd MMM yyyy}.",
                     Owner: item.StaffName,
-                    RecommendedAction: "Book renewal before expiry and confirm the follow-up owner."
+                    RecommendedAction: "Open Training, book renewal before expiry, and confirm the follow-up owner.",
+                    ActionUrl: actionUrl
                 ));
             }
         }
@@ -605,6 +790,7 @@
         foreach (var item in documentIntakeItems)
         {
             var reference = $"DI-{item.Id}";
+            var actionUrl = $"/document-intake/edit/{item.Id}";
 
             if (item.IsOverdue)
             {
@@ -614,7 +800,8 @@
                     Reference: reference,
                     Issue: $"Document intake item is overdue. Due date was {item.DueDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.AssignedTo),
-                    RecommendedAction: "Review the intake item, confirm the processing owner, update the status, or complete/reject it."
+                    RecommendedAction: "Open the intake item, confirm the processing owner, update status, or complete/reject it.",
+                    ActionUrl: actionUrl
                 ));
             }
 
@@ -626,7 +813,8 @@
                     Reference: reference,
                     Issue: "Document intake item is waiting for manual review.",
                     Owner: SafeOwner(item.AssignedTo),
-                    RecommendedAction: "Check the document, confirm the required processing step, and move it to Data Checked, Entered, Completed, or Rejected."
+                    RecommendedAction: "Open the intake item, check the document, confirm the required processing step, and update the status.",
+                    ActionUrl: actionUrl
                 ));
             }
 
@@ -638,7 +826,8 @@
                     Reference: reference,
                     Issue: "Document intake item is missing an assigned person.",
                     Owner: "Unassigned",
-                    RecommendedAction: "Assign the intake item so responsibility is clear and workload reporting is accurate."
+                    RecommendedAction: "Open the intake item and assign it so responsibility is clear and workload reporting is accurate.",
+                    ActionUrl: actionUrl
                 ));
             }
 
@@ -650,7 +839,8 @@
                     Reference: reference,
                     Issue: "Document intake item is completed/rejected without a completed date.",
                     Owner: SafeOwner(item.AssignedTo),
-                    RecommendedAction: "Set the completed date for traceability, or reopen the item if it was not actually completed."
+                    RecommendedAction: "Open the intake item and set the completed date for traceability, or reopen it if not complete.",
+                    ActionUrl: actionUrl
                 ));
             }
 
@@ -662,7 +852,8 @@
                     Reference: reference,
                     Issue: "Document intake item has blank notes.",
                     Owner: SafeOwner(item.AssignedTo),
-                    RecommendedAction: "Add notes explaining the document source, processing decision, blocker, or next action."
+                    RecommendedAction: "Open the intake item and add notes explaining the document source, processing decision, blocker, or next action.",
+                    ActionUrl: actionUrl
                 ));
             }
         }
@@ -698,7 +889,7 @@
 
     private static string GetSeverityClass(string? severity)
     {
-        return severity?.ToLower() switch
+        return severity?.ToLowerInvariant() switch
         {
             "critical" => "badge badge-danger",
             "warning" => "badge badge-warning",
@@ -707,21 +898,28 @@
         };
     }
 
-    private record DataQualityIssue(
+    private static string Pluralise(int count, string singular, string plural)
+    {
+        return count == 1 ? singular : plural;
+    }
+
+    private sealed record DataQualityIssue(
         string Severity,
         string ModuleName,
         string Reference,
         string Issue,
         string Owner,
-        string RecommendedAction)
+        string RecommendedAction,
+        string ActionUrl)
     {
-        public int SeveritySort =>
-            Severity switch
-            {
-                "Critical" => 3,
-                "Warning" => 2,
-                "Info" => 1,
-                _ => 0
-            };
+        public int SeveritySort => Severity switch
+        {
+            "Critical" => 3,
+            "Warning" => 2,
+            "Info" => 1,
+            _ => 0
+        };
     }
+
+    private sealed record ModuleIssueSummary(string ModuleName, int Count);
 }
