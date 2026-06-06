@@ -5844,3 +5844,81 @@ main {
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================================================
+   Week 1 QA Fix — Corrective Action create/edit form clipping
+   Adds breathing room inside record form panels so first-row
+   labels are not clipped by the card edge.
+   ========================================================= */
+
+.main-content form,
+main form,
+.page-content form,
+.content form {
+    overflow: visible !important;
+}
+
+    .main-content form > *,
+    main form > *,
+    .page-content form > *,
+    .content form > * {
+        overflow: visible !important;
+    }
+
+.main-content .form-grid,
+main .form-grid,
+.page-content .form-grid,
+.content .form-grid {
+    padding: 1rem 1rem 0.5rem 1rem !important;
+    overflow: visible !important;
+}
+
+.main-content label,
+main label,
+.page-content label,
+.content label,
+.form-label,
+.field-label {
+    display: block !important;
+    line-height: 1.35 !important;
+    margin: 0 0 0.45rem 0 !important;
+    padding: 0.15rem 0 0 0.15rem !important;
+    overflow: visible !important;
+}
+
+.main-content input,
+.main-content select,
+.main-content textarea,
+main input,
+main select,
+main textarea {
+    margin-top: 0.05rem;
+}
+
+/* =========================================================
+   Week 1 QA Fix — Create Corrective Action field clipping
+   Page-level wrapper fix for clipped first-row labels.
+   ========================================================= */
+
+.qa-form-padding-fix {
+    padding: 1.25rem 1.25rem 0.75rem 1.25rem !important;
+    overflow: visible !important;
+}
+
+    .qa-form-padding-fix .form-grid,
+    .qa-form-padding-fix .grid,
+    .qa-form-padding-fix .record-form-grid {
+        padding-top: 0.5rem !important;
+        padding-left: 0.25rem !important;
+        overflow: visible !important;
+    }
+
+    .qa-form-padding-fix label,
+    .qa-form-padding-fix .form-label,
+    .qa-form-padding-fix .field-label {
+        display: block !important;
+        line-height: 1.35 !important;
+        margin-bottom: 0.45rem !important;
+        padding-left: 0.1rem !important;
+        overflow: visible !important;
+    }

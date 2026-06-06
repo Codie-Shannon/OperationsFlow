@@ -39,15 +39,15 @@
         <div class="alert alert-danger">@errorMessage</div>
     }
 
-    <section class="table-card">
-        <div class="form-grid">
-            <div class="form-field full-width">
-                <label>Title</label>
+    <section class="table-card corrective-action-create-card" style="padding: 1.35rem; overflow: visible;">
+        <div class="form-grid corrective-action-create-grid" style="padding-top: 0.75rem; padding-left: 0.15rem; overflow: visible;">
+            <div class="form-field full-width" style="overflow: visible;">
+                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Title</label>
                 <input class="form-control" @bind="correctiveAction.Title" />
             </div>
 
-            <div class="form-field">
-                <label>Source</label>
+            <div class="form-field" style="overflow: visible;">
+                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Source</label>
                 <select class="form-select" @bind="correctiveAction.Source">
                     @foreach (var source in SourceOptions)
                     {
@@ -56,8 +56,8 @@
                 </select>
             </div>
 
-            <div class="form-field">
-                <label>Action Type</label>
+            <div class="form-field" style="overflow: visible;">
+                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Action Type</label>
                 <select class="form-select" @bind="correctiveAction.ActionType">
                     @foreach (var actionType in ActionTypeOptions)
                     {
@@ -66,8 +66,8 @@
                 </select>
             </div>
 
-            <div class="form-field">
-                <label>Site</label>
+            <div class="form-field" style="overflow: visible;">
+                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Site</label>
                 <select class="form-select" @bind="correctiveAction.Site">
                     @foreach (var site in SiteOptions)
                     {
@@ -76,8 +76,8 @@
                 </select>
             </div>
 
-            <div class="form-field">
-                <label>Department</label>
+            <div class="form-field" style="overflow: visible;">
+                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Department</label>
                 <select class="form-select" @bind="correctiveAction.Department">
                     @foreach (var department in DepartmentOptions)
                     {
@@ -86,16 +86,16 @@
                 </select>
             </div>
 
-            <div class="form-field">
-                <label>Owner</label>
+            <div class="form-field" style="overflow: visible;">
+                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Owner</label>
                 <input class="form-control" @bind="correctiveAction.Owner" />
 
                 <FormFieldGuide Title="Owner guidance"
                                 Text="Assign one clear owner so follow-up responsibility appears correctly in workload, reminders, reports, and data quality checks." />
             </div>
 
-            <div class="form-field">
-                <label>Priority</label>
+            <div class="form-field" style="overflow: visible;">
+                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Priority</label>
                 <select class="form-select" @bind="correctiveAction.Priority">
                     @foreach (var priority in PriorityOptions)
                     {
@@ -104,8 +104,8 @@
                 </select>
             </div>
 
-            <div class="form-field">
-                <label>Status</label>
+            <div class="form-field" style="overflow: visible;">
+                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Status</label>
                 <select class="form-select" @bind="correctiveAction.Status">
                     @foreach (var status in StatusOptions)
                     {
@@ -119,22 +119,22 @@
                          Description="Use statuses consistently so overdue, completed, and active follow-up work stays clear."
                          Steps="CorrectiveActionStatusSteps" />
 
-        <div class="form-grid form-grid-spaced">
-            <div class="form-field">
-                <label>Created Date</label>
+        <div class="form-grid form-grid-spaced" style="padding-left: 0.15rem; overflow: visible;">
+            <div class="form-field" style="overflow: visible;">
+                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Created Date</label>
                 <input class="form-control" type="date" @bind="correctiveAction.CreatedDate" />
             </div>
 
-            <div class="form-field">
-                <label>Due Date</label>
+            <div class="form-field" style="overflow: visible;">
+                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Due Date</label>
                 <input class="form-control" type="date" @bind="correctiveAction.DueDate" />
 
                 <FormFieldGuide Title="Due date guidance"
                                 Text="Use the next realistic follow-up date. Overdue actions appear in the Safety Meeting Pack, Compliance Calendar, Workload, Reports, and Data Quality." />
             </div>
 
-            <div class="form-field full-width">
-                <label>Notes</label>
+            <div class="form-field full-width" style="overflow: visible;">
+                <label style="display: block; line-height: 1.35; margin-bottom: 0.45rem; overflow: visible;">Notes</label>
                 <textarea class="form-control" rows="8" @bind="correctiveAction.Notes"></textarea>
             </div>
         </div>
