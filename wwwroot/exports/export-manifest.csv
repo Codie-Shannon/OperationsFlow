@@ -1,0 +1,9 @@
+Export File,Module,Primary Purpose,Reviewer Use,Future Microsoft 365 Use
+activity-log.csv,System Tracking,Record-level traceability,Confirm created updated and reviewed events,Audit log or SharePoint/Microsoft Lists history equivalent
+corrective-actions.csv,Corrective Actions,Follow-up action review,Review owner priority status source and due dates,Microsoft Lists corrective action tracker with Power Automate reminders
+work-orders.csv,Work Orders,Operational work review,Review open overdue and assigned work,Microsoft Lists work order tracker with Teams or Outlook notifications
+document-intake.csv,Document Intake,Incoming document workflow review,Review target system owner status and due date,SharePoint intake register with routing automation
+document-reviews.csv,Document Control,Controlled document review planning,Review overdue and due-soon document reviews,SharePoint document library metadata and review reminders
+risk-register.csv,Risk Register,Risk and control review,Review high critical and overdue risk reviews,Microsoft Lists risk register with review workflow
+training.csv,Training Compliance,Training expiry review,Review expired expiring and required training,Microsoft Lists training register with renewal reminders
+README.txt,Export Package Notes,Reviewer guidance,Explain how to review the export package,Implementation handover notes
