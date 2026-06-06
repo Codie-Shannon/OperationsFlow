@@ -1,278 +1,229 @@
 ﻿@page "/document-intake/create"
-
 @using OperationsFlow.Data
 @using OperationsFlow.Services
 @using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
-
 @inject OperationsFlowDbContext Db
 @inject ActivityLogService ActivityLogService
 @inject NavigationManager Navigation
 
 <PageTitle>Create Document Intake - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page document-intake-create-page">
-    <section class="module-header">
-        <div>
-            <p class="eyebrow dark">Admin Workflow</p>
-            <h1>Create Document Intake</h1>
-            <p>
-                Add an incoming document, email, PDF, form, supplier document, compliance record,
-                or job paperwork item for review, entry, storage, and completion tracking.
-            </p>
-        </div>
+<PageHero Eyebrow="Admin Workflow"
+          Title="Create Document Intake"
+          Subtitle="Add an incoming document, email, PDF, form, supplier document, compliance record, or job paperwork item for review, entry, storage, and completion tracking."
+          BadgeText="New Record"
+          BadgeClass="of-badge-info">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/document-intake">Back to Intake</a>
+        <a class="of-btn of-btn-secondary" href="/workload">Workload</a>
+        <a class="of-btn of-btn-secondary" href="/reminders">Reminders</a>
+    </Actions>
+</PageHero>
 
-        <div class="module-header-stat">
-            <span>New Record</span>
-            <strong>DI</strong>
-        </div>
-    </section>
-
-    <section class="page-purpose-note">
-        <strong>Purpose:</strong> use this page to capture incoming admin/document work before it disappears into
-        email, folders, paper piles, or someone’s memory. Once saved, the item appears in Document Intake,
+<PurposeNote Title="Purpose" Icon="📥">
+    <p>
+        Use this page to capture incoming admin/document work before it disappears into email,
+        folders, paper piles, or someone’s memory. Once saved, the item appears in Document Intake,
         Workload, Reminders, Reports, Data Quality, and Activity Log.
-    </section>
+    </p>
+</PurposeNote>
 
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Document Intake Workflow</h2>
-                    <p>What this record is expected to track.</p>
-                </div>
-            </div>
+<MetricGrid>
+    <MetricCard Title="Record Type"
+                Value="DI"
+                Detail="Document intake workflow"
+                Icon="📋" />
 
-            <ul class="review-list">
-                <li>Where the document came from.</li>
-                <li>What type of document or request it is.</li>
-                <li>Who owns the next processing step.</li>
-                <li>Which target system or folder it belongs in.</li>
-                <li>Whether it is received, saved, checked, entered, completed, or rejected.</li>
-            </ul>
-        </div>
+    <MetricCard Title="Default Status"
+                Value="@documentIntake.Status"
+                Detail="New records start as received"
+                Icon="📥"
+                Tone="info" />
 
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Before Saving</h2>
-                    <p>Use this quick check to keep intake records useful later.</p>
-                </div>
-            </div>
+    <MetricCard Title="Default Priority"
+                Value="@documentIntake.Priority"
+                Detail="Adjust if the record is urgent"
+                Icon="⚡"
+                Tone="@GetPriorityTone(documentIntake.Priority)" />
 
-            <ul class="review-list">
-                <li>Use a clear document name that can be recognised later.</li>
-                <li>Assign one owner so workload and reminders stay accurate.</li>
-                <li>Pick the target system so the processing destination is clear.</li>
-                <li>Add notes explaining the current state or next step.</li>
-                <li>Use a realistic due date so overdue work is visible.</li>
-            </ul>
-        </div>
-    </section>
+    <MetricCard Title="Due Date"
+                Value="@documentIntake.DueDate.ToString("dd MMM")"
+                Detail="@documentIntake.DueDate.ToString("yyyy")"
+                Icon="📅"
+                Tone="success" />
+</MetricGrid>
 
-    @if (!string.IsNullOrWhiteSpace(errorMessage))
-    {
-        <div class="alert alert-danger">@errorMessage</div>
-    }
-
-    <section class="table-card document-intake-create-card">
-        <div class="form-grid">
-            <div class="form-field full-width">
-                <label>Document Name</label>
-                <input class="form-control" @bind="documentIntake.DocumentName" />
-
-                <FormFieldGuide Title="Document name guidance"
-                                Text="Use a name that explains the document clearly enough for someone else to recognise it later, such as supplier invoice batch, dispatch docket scan, customer quote request, or training certificate." />
-            </div>
-
-            <div class="form-field">
-                <label>Received Date</label>
-                <input class="form-control" type="date" @bind="documentIntake.ReceivedDate" />
-            </div>
-
-            <div class="form-field">
-                <label>Received From</label>
-                <input class="form-control" @bind="documentIntake.ReceivedFrom" />
-
-                <FormFieldGuide Title="Received-from guidance"
-                                Text="Record the supplier, customer, staff member, department, email source, or system the document came from." />
-            </div>
-
-            <div class="form-field">
-                <label>Source Type</label>
-                <select class="form-select" @bind="documentIntake.SourceType">
-                    @foreach (var sourceType in SourceTypeOptions)
-                    {
-                        <option value="@sourceType">@sourceType</option>
-                    }
-                </select>
-            </div>
-
-            <div class="form-field">
-                <label>Document Type</label>
-                <select class="form-select" @bind="documentIntake.DocumentType">
-                    @foreach (var documentType in DocumentTypeOptions)
-                    {
-                        <option value="@documentType">@documentType</option>
-                    }
-                </select>
-            </div>
-
-            <div class="form-field">
-                <label>Assigned To</label>
-                <input class="form-control" @bind="documentIntake.AssignedTo" />
-
-                <FormFieldGuide Title="Assigned person guidance"
-                                Text="Assign one clear owner so the intake item appears correctly in workload, reminders, reports, and data quality checks." />
-            </div>
-
-            <div class="form-field">
-                <label>Target System</label>
-                <select class="form-select" @bind="documentIntake.TargetSystem">
-                    @foreach (var targetSystem in TargetSystemOptions)
-                    {
-                        <option value="@targetSystem">@targetSystem</option>
-                    }
-                </select>
-
-                <FormFieldGuide Title="Target system guidance"
-                                Text="Use the target system to show where the document or data should end up, such as SharePoint, Xero, Cin7, WorkflowMax, an email folder, or another internal system." />
-            </div>
-
-            <div class="form-field">
-                <label>Priority</label>
-                <select class="form-select" @bind="documentIntake.Priority">
-                    @foreach (var priority in PriorityOptions)
-                    {
-                        <option value="@priority">@priority</option>
-                    }
-                </select>
-            </div>
-
-            <div class="form-field">
-                <label>Status</label>
-                <select class="form-select" @bind="documentIntake.Status">
-                    @foreach (var status in StatusOptions)
-                    {
-                        <option value="@status">@status</option>
-                    }
-                </select>
-            </div>
-        </div>
-
-        <StatusFlowGuide Title="Document intake status flow"
-                         Description="Use statuses consistently so incoming documents move from received work to reviewed, entered, completed, or rejected."
-                         Steps="DocumentIntakeStatusSteps" />
-
-        <div class="form-grid form-grid-spaced">
-            <div class="form-field">
-                <label>Due Date</label>
-                <input class="form-control" type="date" @bind="documentIntake.DueDate" />
-
-                <FormFieldGuide Title="Due date guidance"
-                                Text="Use the next realistic processing or review date. Overdue intake records appear in reminders, workload, reports, and data quality." />
-            </div>
-
-            <div class="form-field">
-                <label>Completed Date</label>
-                <input class="form-control" type="date" @bind="documentIntake.CompletedDate" />
-
-                <FormFieldGuide Title="Completed date guidance"
-                                Text="Completed or rejected records should have a completed date so reporting can separate finished work from active follow-up." />
-            </div>
-
-            <div class="form-field full-width">
-                <label>Notes</label>
-                <textarea class="form-control" rows="8" @bind="documentIntake.Notes"></textarea>
-
-                <div class="guidance-card">
-                    <div>
-                        <strong>Document intake note guidance</strong>
-                        <p>
-                            Good document intake notes should explain the current processing state,
-                            not just repeat the document name.
-                        </p>
-
-                        <ul>
-                            @foreach (var item in DocumentIntakeNoteGuideItems)
-                            {
-                                <li>@item</li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <section class="summary-grid">
-            <div class="summary-panel">
-                <div class="panel-header">
-                    <div>
-                        <h2>After Saving</h2>
-                        <p>This record will become part of the wider workflow.</p>
-                    </div>
-                </div>
-
-                <div class="review-note-grid">
-                    <div class="review-note-card">
-                        <span>DOCUMENT INTAKE</span>
-                        <strong>Appears in intake list</strong>
-                        <p>The saved record can be searched, filtered, edited, and reviewed.</p>
-                    </div>
-
-                    <div class="review-note-card">
-                        <span>WORKLOAD</span>
-                        <strong>Assigned owner appears</strong>
-                        <p>The assigned person receives workload pressure and due-date visibility.</p>
-                    </div>
-
-                    <div class="review-note-card">
-                        <span>REMINDERS</span>
-                        <strong>Due items surface</strong>
-                        <p>Overdue, due-soon, and needs-review records appear in Reminder Centre.</p>
-                    </div>
-
-                    <div class="review-note-card">
-                        <span>TRACEABILITY</span>
-                        <strong>Created event logged</strong>
-                        <p>The Activity Log records that this intake item was created.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary-panel">
-                <div class="panel-header">
-                    <div>
-                        <h2>Prototype Boundary</h2>
-                        <p>What this page does and does not do yet.</p>
-                    </div>
-                </div>
-
-                <ul class="review-list">
-                    <li>This page tracks document workflow metadata.</li>
-                    <li>It does not upload or store the actual document file yet.</li>
-                    <li>It does not currently write to SharePoint, Xero, Cin7, or WorkflowMax.</li>
-                    <li>A production version would add permissions, file storage, integrations, and audit rules.</li>
+<InfoPanel Title="Document Intake Workflow" Subtitle="What this record is expected to track.">
+    <ChildContent>
+        <div class="of-two-column-grid">
+            <GuidanceNote Title="Record should answer" Icon="✅" Tone="success">
+                <ul>
+                    <li>Where did the document come from?</li>
+                    <li>What type of document or request is it?</li>
+                    <li>Who owns the next processing step?</li>
+                    <li>Which target system or folder does it belong in?</li>
+                    <li>Is it received, saved, checked, entered, completed, or rejected?</li>
                 </ul>
-            </div>
-        </section>
+            </GuidanceNote>
 
-        <div class="form-actions">
-            <button class="btn btn-secondary" type="button" @onclick="Cancel">
-                Cancel
-            </button>
-
-            <button class="btn btn-primary" type="button" @onclick="SaveDocumentIntake">
-                Save Intake Record
-            </button>
+            <GuidanceNote Title="Before saving" Icon="💡" Tone="info">
+                <ul>
+                    <li>Use a clear document name that can be recognised later.</li>
+                    <li>Assign one owner so workload and reminders stay accurate.</li>
+                    <li>Pick the target system so the processing destination is clear.</li>
+                    <li>Add notes explaining the current state or next step.</li>
+                    <li>Use a realistic due date so overdue work is visible.</li>
+                </ul>
+            </GuidanceNote>
         </div>
-    </section>
-</div>
+    </ChildContent>
+</InfoPanel>
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <GuidanceNote Title="Save blocked" Icon="⚠️" Tone="danger">
+        <p>@errorMessage</p>
+    </GuidanceNote>
+}
+
+<InfoPanel Title="New Document Intake" Subtitle="Complete the fields below and save the record.">
+    <ChildContent>
+        <EditForm Model="documentIntake" OnSubmit="SaveDocumentIntake">
+            <div class="of-form-grid">
+                <div class="of-form-field of-form-field--wide">
+                    <label for="documentName">Document Name</label>
+                    <InputText id="documentName" class="of-input" @bind-Value="documentIntake.DocumentName" />
+                </div>
+
+                <div class="of-form-field">
+                    <label for="receivedDate">Received Date</label>
+                    <InputDate id="receivedDate" class="of-input" @bind-Value="documentIntake.ReceivedDate" />
+                </div>
+
+                <div class="of-form-field">
+                    <label for="receivedFrom">Received From</label>
+                    <InputText id="receivedFrom" class="of-input" @bind-Value="documentIntake.ReceivedFrom" />
+                </div>
+
+                <div class="of-form-field">
+                    <label for="sourceType">Source Type</label>
+                    <InputSelect id="sourceType" class="of-select" @bind-Value="documentIntake.SourceType">
+                        @foreach (var sourceType in SourceTypeOptions)
+                        {
+                            <option value="@sourceType">@sourceType</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="of-form-field">
+                    <label for="documentType">Document Type</label>
+                    <InputSelect id="documentType" class="of-select" @bind-Value="documentIntake.DocumentType">
+                        @foreach (var documentType in DocumentTypeOptions)
+                        {
+                            <option value="@documentType">@documentType</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="of-form-field">
+                    <label for="assignedTo">Assigned To</label>
+                    <InputText id="assignedTo" class="of-input" @bind-Value="documentIntake.AssignedTo" />
+                </div>
+
+                <div class="of-form-field">
+                    <label for="targetSystem">Target System</label>
+                    <InputSelect id="targetSystem" class="of-select" @bind-Value="documentIntake.TargetSystem">
+                        @foreach (var targetSystem in TargetSystemOptions)
+                        {
+                            <option value="@targetSystem">@targetSystem</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="of-form-field">
+                    <label for="priority">Priority</label>
+                    <InputSelect id="priority" class="of-select" @bind-Value="documentIntake.Priority">
+                        @foreach (var priority in PriorityOptions)
+                        {
+                            <option value="@priority">@priority</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="of-form-field">
+                    <label for="status">Status</label>
+                    <InputSelect id="status" class="of-select" @bind-Value="documentIntake.Status">
+                        @foreach (var status in StatusOptions)
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="of-form-field">
+                    <label for="dueDate">Due Date</label>
+                    <InputDate id="dueDate" class="of-input" @bind-Value="documentIntake.DueDate" />
+                </div>
+
+                <div class="of-form-field">
+                    <label for="completedDate">Completed Date</label>
+                    <InputDate id="completedDate" class="of-input" @bind-Value="documentIntake.CompletedDate" />
+                </div>
+
+                <div class="of-form-field of-form-field--full">
+                    <label for="notes">Notes</label>
+                    <InputTextArea id="notes" class="of-textarea" @bind-Value="documentIntake.Notes" />
+                </div>
+            </div>
+
+            <div class="of-form-actions">
+                <button type="button" class="of-btn of-btn-secondary" @onclick="Cancel">Cancel</button>
+                <button type="submit" class="of-btn of-btn-primary">Save Intake Record</button>
+            </div>
+        </EditForm>
+    </ChildContent>
+</InfoPanel>
+
+<InfoPanel Title="After Saving" Subtitle="This record becomes part of the wider workflow.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Document Intake</strong>
+                <span>The saved record can be searched, filtered, edited, and reviewed.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Workload</strong>
+                <span>The assigned person receives workload pressure and due-date visibility.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Reminders</strong>
+                <span>Overdue, due-soon, and needs-review records appear in Reminder Centre.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Traceability</strong>
+                <span>The Activity Log records that this intake item was created.</span>
+            </div>
+        </div>
+    </ChildContent>
+</InfoPanel>
+
+<GuidanceNote Title="Prototype Boundary" Icon="🧱" Tone="warning">
+    <ul>
+        <li>This page tracks document workflow metadata.</li>
+        <li>It does not upload or store the actual document file yet.</li>
+        <li>It does not currently write to SharePoint, Xero, Cin7, or WorkflowMax.</li>
+        <li>A production version would add permissions, file storage, integrations, and audit rules.</li>
+    </ul>
+</GuidanceNote>
 
 @code {
     private DocumentIntakeModel documentIntake = new();
     private string errorMessage = "";
 
-    private List<string> SourceTypeOptions = new()
+    private readonly List<string> SourceTypeOptions = new()
     {
         "Email",
         "PDF",
@@ -282,7 +233,7 @@
         "Internal Form"
     };
 
-    private List<string> DocumentTypeOptions = new()
+    private readonly List<string> DocumentTypeOptions = new()
     {
         "Supplier Invoice",
         "Supplier Statement",
@@ -296,7 +247,7 @@
         "Job Paperwork"
     };
 
-    private List<string> TargetSystemOptions = new()
+    private readonly List<string> TargetSystemOptions = new()
     {
         "SharePoint",
         "Xero",
@@ -306,7 +257,7 @@
         "Internal System"
     };
 
-    private List<string> PriorityOptions = new()
+    private readonly List<string> PriorityOptions = new()
     {
         "Low",
         "Medium",
@@ -314,7 +265,7 @@
         "Critical"
     };
 
-    private List<string> StatusOptions = new()
+    private readonly List<string> StatusOptions = new()
     {
         "Received",
         "Saved",
@@ -323,26 +274,6 @@
         "Entered",
         "Completed",
         "Rejected"
-    };
-
-    private static readonly IReadOnlyList<string> DocumentIntakeNoteGuideItems = new[]
-    {
-        "Where did the document come from?",
-        "What target system or folder does it belong in?",
-        "What has already been checked or entered?",
-        "What is still blocking completion?",
-        "If completed or rejected, what confirms the outcome?"
-    };
-
-    private static readonly IReadOnlyList<StatusFlowGuide.StatusFlowStep> DocumentIntakeStatusSteps = new[]
-    {
-        new StatusFlowGuide.StatusFlowStep("Received", "Document has arrived but has not yet been saved or reviewed.", "badge badge-muted"),
-        new StatusFlowGuide.StatusFlowStep("Saved", "Document has been stored in the correct location.", "badge badge-info"),
-        new StatusFlowGuide.StatusFlowStep("Needs Review", "Manual check is required before processing can continue.", "badge badge-warning"),
-        new StatusFlowGuide.StatusFlowStep("Data Checked", "Key information has been checked before entry.", "badge badge-info"),
-        new StatusFlowGuide.StatusFlowStep("Entered", "Data has been entered into the target system.", "badge badge-info"),
-        new StatusFlowGuide.StatusFlowStep("Completed", "Processing is finished and should have a completed date.", "badge badge-success"),
-        new StatusFlowGuide.StatusFlowStep("Rejected", "Document will not be processed and should have a completed date/reason.", "badge badge-danger")
     };
 
     protected override void OnInitialized()
@@ -386,7 +317,7 @@
             return;
         }
 
-        if (documentIntake.DueDate < documentIntake.ReceivedDate)
+        if (documentIntake.DueDate.Date < documentIntake.ReceivedDate.Date)
         {
             errorMessage = "Due date cannot be before received date.";
             return;
@@ -415,8 +346,7 @@
             recordId: documentIntake.Id,
             recordReference: $"DI-{documentIntake.Id}",
             actionType: "Created",
-            description: BuildCreatedDescription()
-        );
+            description: BuildCreatedDescription());
 
         Navigation.NavigateTo("/document-intake");
     }
@@ -428,12 +358,12 @@
 
     private string BuildDefaultNotes()
     {
-        return "Initial intake record created." + Environment.NewLine
-            + $"Source type: {documentIntake.SourceType}" + Environment.NewLine
-            + $"Document type: {documentIntake.DocumentType}" + Environment.NewLine
-            + $"Received from: {documentIntake.ReceivedFrom}" + Environment.NewLine
-            + $"Target system: {documentIntake.TargetSystem}" + Environment.NewLine
-            + "Next step: review, save, enter, complete, or reject the document.";
+        return "Initial intake record created."
+            + Environment.NewLine + $"Source type: {documentIntake.SourceType}"
+            + Environment.NewLine + $"Document type: {documentIntake.DocumentType}"
+            + Environment.NewLine + $"Received from: {documentIntake.ReceivedFrom}"
+            + Environment.NewLine + $"Target system: {documentIntake.TargetSystem}"
+            + Environment.NewLine + "Next step: review, save, enter, complete, or reject the document.";
     }
 
     private void Cancel()
@@ -443,7 +373,19 @@
 
     private static bool IsCompletedStatus(string? status)
     {
-        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(status, "Rejected", StringComparison.OrdinalIgnoreCase);
+        return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(status, "Rejected", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetPriorityTone(string? priority)
+    {
+        return priority?.ToLowerInvariant() switch
+        {
+            "critical" => "danger",
+            "high" => "warning",
+            "medium" => "info",
+            "low" => "default",
+            _ => "default"
+        };
     }
 }
