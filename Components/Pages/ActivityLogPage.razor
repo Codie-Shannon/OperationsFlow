@@ -1,141 +1,143 @@
 ﻿@page "/activity-log"
-
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
-
 @inject OperationsFlowDbContext Db
 
 <PageTitle>Activity Log - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page activity-log-page">
-    <section class="module-header">
-        <div>
-            <p class="eyebrow dark">System Tracking</p>
-            <h1>Activity Log</h1>
-            <p>
-                Track record changes across OperationsFlow, including created records,
-                updated workflow items, reviewed records, status changes, and follow-up activity.
-            </p>
-        </div>
+<PageHero Eyebrow="System Evidence"
+          Title="Activity Log"
+          Subtitle="Global traceability view for created, updated, reviewed, and source-linked workflow events across the OperationsFlow prototype."
+          BadgeText="@($"{TotalActivityCount} events")"
+          BadgeClass="@ActivityBadgeClass">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
+        <a class="of-btn of-btn-secondary" href="/data-quality">Data Quality</a>
+        <a class="of-btn of-btn-secondary" href="/workload">Workload</a>
+        <a class="of-btn of-btn-secondary" href="/reminders">Reminders</a>
+    </Actions>
+</PageHero>
 
-        <div class="module-header-stat">
-            <span>Total Events</span>
-            <strong>@TotalCount</strong>
-        </div>
-    </section>
+<PurposeNote Title="Purpose" Icon="🧾">
+    <p>
+        Use this page to review what changed across the prototype. Activity Log proves that create, edit,
+        review, and source-linked follow-up workflows leave visible evidence for management review,
+        screenshots, testing, and portfolio walkthroughs.
+    </p>
+</PurposeNote>
 
-    <section class="page-purpose-note">
-        <strong>Purpose:</strong> use this page to review system-wide activity. Record-level history is also shown
-        inside key workflow pages such as Corrective Actions, Work Orders, and Document Intake.
-    </section>
+<MetricGrid>
+    <MetricCard Title="Total Events"
+                Value="@TotalActivityCount.ToString()"
+                Detail="All recorded activity events"
+                Icon="🧾"
+                Tone="@ActivityTone" />
 
-    <section class="module-summary-grid">
-        <article class="module-summary-card info-card">
-            <span>Total Events</span>
-            <strong>@TotalCount</strong>
-            <small>All logged system activity</small>
-        </article>
+    <MetricCard Title="Created"
+                Value="@CreatedCount.ToString()"
+                Detail="New records and generated follow-ups"
+                Icon="✅"
+                Tone="success" />
 
-        <article class="module-summary-card success-card">
-            <span>Created</span>
-            <strong>@CreatedCount</strong>
-            <small>New records created</small>
-        </article>
+    <MetricCard Title="Updated"
+                Value="@UpdatedCount.ToString()"
+                Detail="Changed workflow records"
+                Icon="✏️"
+                Tone="info" />
 
-        <article class="module-summary-card warning-card">
-            <span>Updated</span>
-            <strong>@UpdatedCount</strong>
-            <small>Existing records changed</small>
-        </article>
+    <MetricCard Title="Reviewed"
+                Value="@ReviewedCount.ToString()"
+                Detail="Review or no-change events"
+                Icon="🔎"
+                Tone="warning" />
 
-        <article class="module-summary-card">
-            <span>Reviewed</span>
-            <strong>@ReviewedCount</strong>
-            <small>Records checked with no tracked changes</small>
-        </article>
+    <MetricCard Title="Modules"
+                Value="@ModuleCount.ToString()"
+                Detail="Modules with activity evidence"
+                Icon="🧩" />
 
-        <article class="module-summary-card">
-            <span>Today</span>
-            <strong>@TodayCount</strong>
-            <small>Activity logged today</small>
-        </article>
-    </section>
+    <MetricCard Title="Today"
+                Value="@TodayCount.ToString()"
+                Detail="Events created today"
+                Icon="📅"
+                Tone="@TodayTone" />
+</MetricGrid>
 
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Activity Coverage</h2>
-                    <p>Modules currently represented in the activity log.</p>
-                </div>
+<InfoPanel Title="Traceability Coverage" Subtitle="What the global activity log proves.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Record Evidence</strong>
+                <span>Record pages can show local activity history, while this page shows the global evidence trail.</span>
             </div>
 
-            @if (!ModuleCoverage.Any())
-            {
-                <div class="empty-state">
-                    <strong>No module activity yet.</strong>
-                    <p>Activity will appear here after workflow records are created or updated.</p>
-                </div>
-            }
-            else
-            {
-                <div class="mini-metric-grid">
-                    @foreach (var module in ModuleCoverage)
-                    {
-                        <div class="mini-metric-card">
-                            <span>@module.ModuleName</span>
-                            <strong>@module.Count</strong>
-                            <small>@Pluralise(module.Count, "event", "events")</small>
+            <div class="of-review-proof-card">
+                <strong>Workflow Proof</strong>
+                <span>Create and edit workflows generate visible events for review and portfolio screenshots.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Source Linking</strong>
+                <span>Corrective actions created from risks, training, or documents can be shown as traceable follow-up work.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Audit Direction</strong>
+                <span>A production version could extend this into immutable audit history, user identity, and retention rules.</span>
+            </div>
+        </div>
+    </ChildContent>
+</InfoPanel>
+
+<InfoPanel Title="Activity Review Order" Subtitle="Recommended order when checking traceability before a demo or review.">
+    <ChildContent>
+        <ol class="of-review-steps">
+            <li>Check latest created events to confirm new records are being logged.</li>
+            <li>Check updated events to confirm edit pages are producing field-change evidence.</li>
+            <li>Check reviewed events to confirm record review actions are captured.</li>
+            <li>Open linked modules from the activity records and confirm record-level history appears.</li>
+            <li>Export activity evidence when building a management pack, testing pack, or portfolio proof set.</li>
+        </ol>
+    </ChildContent>
+</InfoPanel>
+
+<InfoPanel Title="Activity by Module" Subtitle="Shows where traceability evidence currently exists.">
+    <ChildContent>
+        @if (!ActivityByModule.Any())
+        {
+            <EmptyState Title="No module activity yet"
+                        Message="Create, edit, or review workflow records to generate module activity."
+                        Icon="🧾" />
+        }
+        else
+        {
+            <div class="of-review-proof-grid">
+                @foreach (var item in ActivityByModule)
+                {
+                    <div class="of-review-proof-card">
+                        <strong>@item.ModuleName</strong>
+                        <span>@item.Count @Pluralise(item.Count, "event", "events") recorded</span>
+
+                        <div class="of-link-row">
+                            <span class="of-badge of-badge-info">@item.Count</span>
+                            <a class="of-card-link" href="@GetModuleUrl(item.ModuleName)">Open Module</a>
                         </div>
-                    }
-                </div>
-            }
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Review Notes</h2>
-                    <p>What this proves in the Week 2 workflow MVP.</p>
-                </div>
+                    </div>
+                }
             </div>
+        }
+    </ChildContent>
+</InfoPanel>
 
-            <div class="review-note-grid">
-                <div class="review-note-card">
-                    <span>TRACEABILITY</span>
-                    <strong>Changes are visible</strong>
-                    <p>Workflow records leave activity evidence when created, updated, or reviewed.</p>
-                </div>
-
-                <div class="review-note-card">
-                    <span>ACCOUNTABILITY</span>
-                    <strong>Owners and records are clear</strong>
-                    <p>Events include module names, record references, action types, dates, and created-by values.</p>
-                </div>
-
-                <div class="review-note-card">
-                    <span>REVIEW</span>
-                    <strong>Searchable activity</strong>
-                    <p>Reviewers can filter by module, action type, or search for record references and descriptions.</p>
-                </div>
-
-                <div class="review-note-card">
-                    <span>PRODUCTION GAP</span>
-                    <strong>Demo identity only</strong>
-                    <p>A production version would tie events to authenticated users and stronger audit rules.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="module-toolbar">
-        <input class="search-input"
-               placeholder="Search module, record, action, description, or user..."
+<FilterBar Title="Filter Activity Log">
+    <ChildContent>
+        <input class="of-input"
+               placeholder="Search activity..."
                @bind="searchText"
                @bind:event="oninput" />
 
-        <select class="filter-select" @bind="moduleFilter">
+        <select class="of-select" @bind="moduleFilter">
             <option value="">All Modules</option>
             @foreach (var module in ModuleOptions)
             {
@@ -143,94 +145,256 @@
             }
         </select>
 
-        <select class="filter-select" @bind="actionFilter">
+        <select class="of-select" @bind="actionFilter">
             <option value="">All Actions</option>
             @foreach (var action in ActionOptions)
             {
                 <option value="@action">@action</option>
             }
         </select>
-    </section>
+    </ChildContent>
 
-    <section class="table-card">
-        <div class="table-card-header">
-            <div>
-                <h2>Activity Events</h2>
-                <p>
-                    Showing @FilteredCount of @TotalCount logged events.
-                </p>
-            </div>
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/exports/activity-log.csv">Export CSV</a>
+        <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
+        <a class="of-btn of-btn-secondary" href="/data-quality">Data Quality</a>
+    </Actions>
+</FilterBar>
 
-            <div class="activity-count-card">
-                <span>Filtered</span>
-                <strong>@FilteredCount</strong>
-            </div>
-        </div>
+<TableCard Title="Global Activity Events"
+           Subtitle="@($"Showing {FilteredActivity.Count} of {TotalActivityCount} event(s). Latest activity appears first.")"
+           IsEmpty="@(!FilteredActivity.Any())"
+           EmptyTitle="No activity events match the current filters"
+           EmptyMessage="Clear the filters or create/edit records to generate more activity evidence.">
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Action</th>
+                <th>Module</th>
+                <th>Record</th>
+                <th>Description</th>
+                <th>Created By</th>
+                <th>Open</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in FilteredActivity)
+            {
+                <tr>
+                    <td>
+                        <strong>@item.CreatedDate.ToString("dd MMM yyyy")</strong>
+                        <div class="of-muted-text">@item.CreatedDate.ToString("HH:mm")</div>
+                    </td>
+                    <td>
+                        <span class="@GetActionClass(item.ActionType)">
+                            @DisplayText(item.ActionType, "Activity")
+                        </span>
+                    </td>
+                    <td>@DisplayText(item.ModuleName, "Unknown")</td>
+                    <td>
+                        <strong>@DisplayText(item.RecordReference, $"Record {item.RecordId}")</strong>
+                    </td>
+                    <td>@DisplayText(item.Description, "No description recorded.")</td>
+                    <td>@DisplayText(item.CreatedBy, "System")</td>
+                    <td>
+                        <a class="of-card-link" href="@GetRecordUrl(item)">Open</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</TableCard>
 
-        @if (activityLogs == null)
+<div class="of-two-column-grid">
+    <InfoPanel Title="Latest Created Records" Subtitle="Newest records or source-linked follow-up work.">
+        <Actions>
+            <span class="of-badge of-badge-success">@LatestCreated.Count events</span>
+        </Actions>
+
+        <ChildContent>
+            @if (!LatestCreated.Any())
+            {
+                <EmptyState Title="No created events yet"
+                            Message="Create a work order, corrective action, or intake record to generate created activity."
+                            Icon="✅" />
+            }
+            else
+            {
+                <div class="of-mini-list">
+                    @foreach (var item in LatestCreated)
+                    {
+                        <div class="of-mini-list-item">
+                            <div>
+                                <strong>@DisplayText(item.RecordReference, $"Record {item.RecordId}")</strong>
+                                <span>@DisplayText(item.Description, "Created event recorded.")</span>
+                                <span>@item.ModuleName • @item.CreatedDate.ToString("dd MMM yyyy HH:mm")</span>
+                            </div>
+
+                            <div class="of-link-row">
+                                <span class="@GetActionClass(item.ActionType)">
+                                    @item.ActionType
+                                </span>
+                                <a class="of-card-link" href="@GetRecordUrl(item)">Open</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </ChildContent>
+    </InfoPanel>
+
+    <InfoPanel Title="Latest Updated Records" Subtitle="Recent edits that prove fields changed or records were reviewed.">
+        <Actions>
+            <span class="of-badge of-badge-info">@LatestUpdated.Count events</span>
+        </Actions>
+
+        <ChildContent>
+            @if (!LatestUpdated.Any())
+            {
+                <EmptyState Title="No updated events yet"
+                            Message="Edit or review records to generate updated activity."
+                            Icon="✏️" />
+            }
+            else
+            {
+                <div class="of-mini-list">
+                    @foreach (var item in LatestUpdated)
+                    {
+                        <div class="of-mini-list-item">
+                            <div>
+                                <strong>@DisplayText(item.RecordReference, $"Record {item.RecordId}")</strong>
+                                <span>@DisplayText(item.Description, "Updated event recorded.")</span>
+                                <span>@item.ModuleName • @item.CreatedDate.ToString("dd MMM yyyy HH:mm")</span>
+                            </div>
+
+                            <div class="of-link-row">
+                                <span class="@GetActionClass(item.ActionType)">
+                                    @item.ActionType
+                                </span>
+                                <a class="of-card-link" href="@GetRecordUrl(item)">Open</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </ChildContent>
+    </InfoPanel>
+</div>
+
+<InfoPanel Title="Timeline Snapshot" Subtitle="Latest traceability events in card form.">
+    <ChildContent>
+        @if (!LatestTimeline.Any())
         {
-            <div class="empty-state">Loading activity log...</div>
-        }
-        else if (!FilteredActivityLogs.Any())
-        {
-            <div class="empty-state">
-                <strong>No activity log records match the current filters.</strong>
-                <p>Clear the search or filters to show more events.</p>
-            </div>
+            <EmptyState Title="No timeline activity yet"
+                        Message="Create, edit, or review records to generate timeline activity."
+                        Icon="🕒" />
         }
         else
         {
-            <div class="table-responsive">
-                <table class="data-table activity-table">
-                    <thead>
-                        <tr>
-                            <th>Date / Time</th>
-                            <th>Module</th>
-                            <th>Record</th>
-                            <th>Action</th>
-                            <th>Description</th>
-                            <th>Created By</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in FilteredActivityLogs)
-                        {
-                            <tr>
-                                <td class="strong-cell">@item.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
-                                <td>@DisplayText(item.ModuleName)</td>
-                                <td class="strong-cell">@DisplayText(item.RecordReference)</td>
-                                <td>
-                                    <span class="@GetActionClass(item.ActionType)">
-                                        @DisplayText(item.ActionType)
-                                    </span>
-                                </td>
-                                <td>@DisplayText(item.Description)</td>
-                                <td>@DisplayText(item.CreatedBy)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+            <div class="of-review-proof-grid">
+                @foreach (var item in LatestTimeline)
+                {
+                    <div class="of-review-proof-card">
+                        <strong>@DisplayText(item.RecordReference, $"Record {item.RecordId}")</strong>
+                        <span>@DisplayText(item.Description, "Activity event recorded.")</span>
+                        <span>@item.ModuleName • @item.CreatedDate.ToString("dd MMM yyyy HH:mm")</span>
+
+                        <div class="of-link-row">
+                            <span class="@GetActionClass(item.ActionType)">
+                                @DisplayText(item.ActionType, "Activity")
+                            </span>
+                            <a class="of-card-link" href="@GetRecordUrl(item)">Open</a>
+                        </div>
+                    </div>
+                }
             </div>
         }
-    </section>
-</div>
+    </ChildContent>
+</InfoPanel>
+
+<InfoPanel Title="Activity Evidence Package" Subtitle="How this page supports the portfolio/demo review.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Testing</strong>
+                <span>Tester can create/edit records, then return here to confirm the event was recorded.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Reporting</strong>
+                <span>Reports and Data Quality can be backed by visible change history.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Exports</strong>
+                <span>Activity evidence can be downloaded using the CSV export package.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Microsoft 365 Ready</strong>
+                <span>Future version could map this to SharePoint version history, Lists metadata, Teams notifications, or Power BI audit pages.</span>
+            </div>
+        </div>
+    </ChildContent>
+</InfoPanel>
+
+<GuidanceNote Title="Review Notes" Icon="💡" Tone="info">
+    <ul>
+        <li>Activity Log is the global proof layer for the local SQLite workflow prototype.</li>
+        <li>Record pages show local history; this page shows all activity across modules.</li>
+        <li>Use this page after creating or editing records to prove the workflow is traceable.</li>
+        <li>CSV export supports external review, portfolio evidence, and management pack screenshots.</li>
+        <li>A production version would add authenticated users, immutable audit rules, retention settings, and Microsoft 365 audit/history integration.</li>
+    </ul>
+</GuidanceNote>
 
 @code {
-    private List<ActivityLog>? activityLogs;
+    private List<ActivityLog> activityLogs = new();
 
     private string searchText = "";
     private string moduleFilter = "";
     private string actionFilter = "";
 
-    private List<ActivityLog> FilteredActivityLogs
+    private int TotalActivityCount => activityLogs.Count;
+    private int CreatedCount => activityLogs.Count(x => IsActionType(x.ActionType, "Created"));
+    private int UpdatedCount => activityLogs.Count(x => IsActionType(x.ActionType, "Updated"));
+    private int ReviewedCount => activityLogs.Count(x => IsActionType(x.ActionType, "Reviewed"));
+    private int ModuleCount => activityLogs.Select(x => x.ModuleName).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().Count();
+    private int TodayCount => activityLogs.Count(x => x.CreatedDate.Date == DateTime.Today);
+
+    private string ActivityTone => TotalActivityCount > 0 ? "success" : "warning";
+    private string TodayTone => TodayCount > 0 ? "success" : "info";
+    private string ActivityBadgeClass => TotalActivityCount > 0 ? "of-badge-success" : "of-badge-warning";
+
+    private List<string> ModuleOptions =>
+        activityLogs
+            .Select(x => x.ModuleName)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+    private List<string> ActionOptions =>
+        activityLogs
+            .Select(x => x.ActionType)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+    private List<ActivityModuleSummary> ActivityByModule =>
+        activityLogs
+            .GroupBy(x => string.IsNullOrWhiteSpace(x.ModuleName) ? "Unknown" : x.ModuleName)
+            .Select(x => new ActivityModuleSummary(x.Key, x.Count()))
+            .OrderByDescending(x => x.Count)
+            .ThenBy(x => x.ModuleName)
+            .ToList();
+
+    private List<ActivityLog> FilteredActivity
     {
         get
         {
-            if (activityLogs == null)
-            {
-                return new List<ActivityLog>();
-            }
-
             var query = activityLogs.AsEnumerable();
 
             if (!string.IsNullOrWhiteSpace(searchText))
@@ -245,84 +409,137 @@
 
             if (!string.IsNullOrWhiteSpace(moduleFilter))
             {
-                query = query.Where(x =>
-                    string.Equals(x.ModuleName, moduleFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x => string.Equals(x.ModuleName, moduleFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(actionFilter))
             {
-                query = query.Where(x =>
-                    string.Equals(x.ActionType, actionFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x => string.Equals(x.ActionType, actionFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             return query
                 .OrderByDescending(x => x.CreatedDate)
+                .ThenByDescending(x => x.Id)
                 .ToList();
         }
     }
 
-    private int TotalCount => activityLogs?.Count ?? 0;
+    private List<ActivityLog> LatestCreated =>
+        activityLogs
+            .Where(x => IsActionType(x.ActionType, "Created"))
+            .OrderByDescending(x => x.CreatedDate)
+            .ThenByDescending(x => x.Id)
+            .Take(6)
+            .ToList();
 
-    private int FilteredCount => FilteredActivityLogs.Count;
+    private List<ActivityLog> LatestUpdated =>
+        activityLogs
+            .Where(x => IsActionType(x.ActionType, "Updated") || IsActionType(x.ActionType, "Reviewed"))
+            .OrderByDescending(x => x.CreatedDate)
+            .ThenByDescending(x => x.Id)
+            .Take(6)
+            .ToList();
 
-    private int CreatedCount =>
-        activityLogs?.Count(x => string.Equals(x.ActionType, "Created", StringComparison.OrdinalIgnoreCase)) ?? 0;
-
-    private int UpdatedCount =>
-        activityLogs?.Count(x => string.Equals(x.ActionType, "Updated", StringComparison.OrdinalIgnoreCase)) ?? 0;
-
-    private int ReviewedCount =>
-        activityLogs?.Count(x => string.Equals(x.ActionType, "Reviewed", StringComparison.OrdinalIgnoreCase)) ?? 0;
-
-    private int TodayCount =>
-        activityLogs?.Count(x => x.CreatedDate.Date == DateTime.Today) ?? 0;
-
-    private List<string> ModuleOptions =>
-        activityLogs?
-            .Select(x => x.ModuleName)
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Distinct()
-            .OrderBy(x => x)
-            .ToList() ?? new List<string>();
-
-    private List<string> ActionOptions =>
-        activityLogs?
-            .Select(x => x.ActionType)
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Distinct()
-            .OrderBy(x => x)
-            .ToList() ?? new List<string>();
-
-    private List<ModuleActivitySummary> ModuleCoverage =>
-        activityLogs?
-            .Where(x => !string.IsNullOrWhiteSpace(x.ModuleName))
-            .GroupBy(x => x.ModuleName)
-            .Select(x => new ModuleActivitySummary(x.Key, x.Count()))
-            .OrderByDescending(x => x.Count)
-            .ThenBy(x => x.ModuleName)
-            .ToList() ?? new List<ModuleActivitySummary>();
+    private List<ActivityLog> LatestTimeline =>
+        activityLogs
+            .OrderByDescending(x => x.CreatedDate)
+            .ThenByDescending(x => x.Id)
+            .Take(8)
+            .ToList();
 
     protected override async Task OnInitializedAsync()
     {
         activityLogs = await Db.ActivityLogs
             .AsNoTracking()
             .OrderByDescending(x => x.CreatedDate)
+            .ThenByDescending(x => x.Id)
             .ToListAsync();
+    }
+
+    private static bool IsActionType(string? actionType, string expected)
+    {
+        return string.Equals(actionType, expected, StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool Contains(string? source, string search)
     {
-        if (string.IsNullOrWhiteSpace(source))
-        {
-            return false;
-        }
-
-        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+        return !string.IsNullOrWhiteSpace(source) &&
+               source.Contains(search, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static string DisplayText(string? value)
+    private static string DisplayText(string? value, string fallback)
     {
-        return string.IsNullOrWhiteSpace(value) ? "Not recorded" : value;
+        return string.IsNullOrWhiteSpace(value) ? fallback : value;
+    }
+
+    private static string GetActionClass(string? actionType)
+    {
+        return actionType?.ToLowerInvariant() switch
+        {
+            "created" => "badge badge-success",
+            "updated" => "badge badge-info",
+            "reviewed" => "badge badge-muted",
+            "deleted" => "badge badge-danger",
+            _ => "badge badge-warning"
+        };
+    }
+
+    private static string GetModuleUrl(string? moduleName)
+    {
+        return moduleName?.ToLowerInvariant() switch
+        {
+            "work orders" => "/work-orders",
+            "work order" => "/work-orders",
+            "corrective actions" => "/corrective-actions",
+            "corrective action" => "/corrective-actions",
+            "document intake" => "/document-intake",
+            "documents" => "/documents",
+            "document control" => "/documents",
+            "risk register" => "/risk-register",
+            "training" => "/training",
+            "reports" => "/reports",
+            "data quality" => "/data-quality",
+            "workload" => "/workload",
+            "reminders" => "/reminders",
+            _ => "/activity-log"
+        };
+    }
+
+    private static string GetRecordUrl(ActivityLog item)
+    {
+        var module = item.ModuleName?.ToLowerInvariant() ?? "";
+
+        if (module.Contains("work order"))
+        {
+            return $"/work-orders/details/{item.RecordId}";
+        }
+
+        if (module.Contains("corrective"))
+        {
+            return $"/corrective-actions/edit/{item.RecordId}?returnUrl={Uri.EscapeDataString("/activity-log")}";
+        }
+
+        if (module.Contains("document intake"))
+        {
+            return $"/document-intake/edit/{item.RecordId}?returnUrl={Uri.EscapeDataString("/activity-log")}";
+        }
+
+        if (module.Contains("document") || module.Contains("control"))
+        {
+            return "/documents";
+        }
+
+        if (module.Contains("risk"))
+        {
+            return "/risk-register";
+        }
+
+        if (module.Contains("training"))
+        {
+            return "/training";
+        }
+
+        return GetModuleUrl(item.ModuleName);
     }
 
     private static string Pluralise(int count, string singular, string plural)
@@ -330,20 +547,5 @@
         return count == 1 ? singular : plural;
     }
 
-    private static string GetActionClass(string? action)
-    {
-        return action?.ToLowerInvariant() switch
-        {
-            "created" => "badge badge-success",
-            "updated" => "badge badge-info",
-            "reviewed" => "badge badge-secondary",
-            "completed" => "badge badge-success",
-            "closed" => "badge badge-success",
-            "rejected" => "badge badge-danger",
-            "deleted" => "badge badge-danger",
-            _ => "badge badge-muted"
-        };
-    }
-
-    private sealed record ModuleActivitySummary(string ModuleName, int Count);
+    private sealed record ActivityModuleSummary(string ModuleName, int Count);
 }
