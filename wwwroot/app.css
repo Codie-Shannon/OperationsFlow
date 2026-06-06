@@ -6896,3 +6896,98 @@ main textarea {
         flex-direction: column;
     }
 }
+
+/* ============================================================
+   Reviewer checklist page helpers
+   Temporary page-level helpers for first component-system test
+   ============================================================ */
+
+.of-review-steps {
+    color: var(--of-text-muted);
+    line-height: 1.6;
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+    .of-review-steps li {
+        margin-bottom: 0.45rem;
+    }
+
+        .of-review-steps li:last-child {
+            margin-bottom: 0;
+        }
+
+.of-review-proof-grid {
+    display: grid;
+    gap: var(--of-gap-md);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.of-review-proof-card {
+    background: var(--of-surface-soft);
+    border: 1px solid var(--of-border);
+    border-radius: var(--of-radius-md);
+    padding: 1rem;
+}
+
+    .of-review-proof-card strong {
+        color: var(--of-primary);
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.45rem;
+        text-transform: uppercase;
+    }
+
+    .of-review-proof-card span {
+        color: var(--of-text-muted);
+        display: block;
+        line-height: 1.5;
+    }
+
+.of-check-list {
+    color: var(--of-text-muted);
+    line-height: 1.5;
+    margin: 0;
+    padding-left: 1.15rem;
+}
+
+    .of-check-list li {
+        margin-bottom: 0.35rem;
+    }
+
+        .of-check-list li:last-child {
+            margin-bottom: 0;
+        }
+
+.of-link-row {
+    align-items: center;
+    border-top: 1px solid var(--of-border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--of-gap-sm);
+    margin-top: 1rem;
+    padding-top: 1rem;
+}
+
+.of-two-column-grid {
+    display: grid;
+    gap: var(--of-gap-md);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+    .of-two-column-grid .of-guidance-note {
+        margin-bottom: 0;
+    }
+
+@media (max-width: 760px) {
+    .of-link-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+        .of-link-row .of-btn {
+            width: 100%;
+        }
+}
