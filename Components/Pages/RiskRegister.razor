@@ -1,130 +1,111 @@
 ﻿@page "/risks"
 @page "/risk-register"
-
 @using Microsoft.AspNetCore.Components
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
-
 @inject OperationsFlowDbContext Db
 
 <PageTitle>Risk Register - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page risk-register-page">
-    <section class="module-header">
-        <div>
-            <p class="eyebrow dark">Compliance</p>
-            <h1>Risk Register</h1>
-            <p>
-                Track operational hazards, risk scoring, controls, owners, review dates,
-                high-priority risk items, and follow-up corrective actions.
-            </p>
-        </div>
+<PageHero Eyebrow="Compliance"
+          Title="Risk Register"
+          Subtitle="Track operational hazards, risk scoring, controls, owners, review dates, high-priority risk items, and source-linked corrective actions."
+          BadgeText="@($"{HighCriticalCount} high / critical")"
+          BadgeClass="of-badge-warning">
+    <Actions>
+        <a class="of-btn of-btn-primary" href="/corrective-actions/create">+ New Corrective Action</a>
+        <a class="of-btn of-btn-secondary" href="/corrective-actions">Corrective Actions</a>
+        <a class="of-btn of-btn-secondary" href="/reminders">Reminders</a>
+        <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
+    </Actions>
+</PageHero>
 
-        <div class="module-header-stat">
-            <span>High / Critical</span>
-            <strong>@HighCriticalCount</strong>
-        </div>
-    </section>
+<PurposeNote Title="Purpose" Icon="⚠️">
+    <p>
+        Use this page to review workplace risks and turn risk issues into owned corrective actions.
+        Risk actions are pre-filled with source context so the follow-up remains traceable from risk review
+        through action ownership, reminders, reporting, and activity evidence.
+    </p>
+</PurposeNote>
 
-    <section class="page-purpose-note">
-        <strong>Purpose:</strong> use this page to review workplace risks and turn risk issues into owned
-        corrective actions. Risk actions are pre-filled with source context so the follow-up remains traceable.
-    </section>
+<MetricGrid>
+    <MetricCard Title="Total Risks"
+                Value="@TotalCount.ToString()"
+                Detail="All risk register items"
+                Icon="📋" />
 
-    <section class="module-summary-grid">
-        <article class="module-summary-card info-card">
-            <span>Total Risks</span>
-            <strong>@TotalCount</strong>
-            <small>All risk register items</small>
-        </article>
+    <MetricCard Title="High / Critical"
+                Value="@HighCriticalCount.ToString()"
+                Detail="Requires close monitoring"
+                Icon="🚨"
+                Tone="danger" />
 
-        <article class="module-summary-card danger-card">
-            <span>High / Critical</span>
-            <strong>@HighCriticalCount</strong>
-            <small>Requires close monitoring</small>
-        </article>
+    <MetricCard Title="Review Overdue"
+                Value="@OverdueReviewCount.ToString()"
+                Detail="Risk review date has passed"
+                Icon="📅"
+                Tone="warning" />
 
-        <article class="module-summary-card warning-card">
-            <span>Review Overdue</span>
-            <strong>@OverdueReviewCount</strong>
-            <small>Risk review date has passed</small>
-        </article>
+    <MetricCard Title="Controlled"
+                Value="@ControlledCount.ToString()"
+                Detail="Risks currently marked controlled"
+                Icon="✅"
+                Tone="success" />
 
-        <article class="module-summary-card success-card">
-            <span>Controlled</span>
-            <strong>@ControlledCount</strong>
-            <small>Risks currently marked controlled</small>
-        </article>
+    <MetricCard Title="Actionable"
+                Value="@ActionableRiskCount.ToString()"
+                Detail="High, critical, overdue, or weak-control risks"
+                Icon="🔗"
+                Tone="info" />
+</MetricGrid>
 
-        <article class="module-summary-card">
-            <span>Actionable</span>
-            <strong>@ActionableRiskCount</strong>
-            <small>High, critical, or overdue review</small>
-        </article>
-    </section>
+<InfoPanel Title="Risk Follow-Up Focus" Subtitle="Recommended review order for safety/compliance follow-up.">
+    <ChildContent>
+        <ol class="of-review-steps">
+            <li>Review overdue risk reviews first.</li>
+            <li>Check critical and high risks with weak or outdated controls.</li>
+            <li>Create corrective actions for risks needing ownership, controls, or follow-up.</li>
+            <li>Confirm owner, priority, due date, and source context before saving the corrective action.</li>
+            <li>Use Workload, Reminders, Data Quality, and Activity Log to track follow-up after the action is created.</li>
+        </ol>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Risk Follow-Up Focus</h2>
-                    <p>Recommended review order for safety/compliance follow-up.</p>
-                </div>
+<InfoPanel Title="Risk → Corrective Action Link" Subtitle="What the Create Action button does.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Source</strong>
+                <span>The corrective action source is set to Risk Register.</span>
             </div>
 
-            <ol class="review-list">
-                <li>Review overdue risk reviews first.</li>
-                <li>Check critical and high risks with weak or outdated controls.</li>
-                <li>Create corrective actions for risks needing ownership, controls, or follow-up.</li>
-                <li>Confirm owner, priority, due date, and source context before saving the corrective action.</li>
-                <li>Use Workload, Reminders, Data Quality, and Activity Log to track follow-up after the action is created.</li>
-            </ol>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Risk → Corrective Action Link</h2>
-                    <p>What the Action button does.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Context</strong>
+                <span>Hazard, owner, risk level, score, controls, and review date are copied into the notes.</span>
             </div>
 
-            <div class="review-note-grid">
-                <div class="review-note-card">
-                    <span>SOURCE</span>
-                    <strong>Risk Register</strong>
-                    <p>The corrective action source is set to Risk Register.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Return</strong>
+                <span>After saving, the workflow returns back to the Risk Register.</span>
+            </div>
 
-                <div class="review-note-card">
-                    <span>CONTEXT</span>
-                    <strong>Risk details included</strong>
-                    <p>Hazard, owner, risk level, score, controls, and review date are copied into the notes.</p>
-                </div>
-
-                <div class="review-note-card">
-                    <span>RETURN</span>
-                    <strong>Back to Risk Register</strong>
-                    <p>After saving, the workflow returns to this page.</p>
-                </div>
-
-                <div class="review-note-card">
-                    <span>TRACEABILITY</span>
-                    <strong>Activity logged</strong>
-                    <p>The created corrective action is logged as source-linked follow-up work.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Traceability</strong>
+                <span>The created corrective action is logged as source-linked follow-up work.</span>
             </div>
         </div>
-    </section>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="module-toolbar">
-        <input class="search-input"
-               placeholder="Search title, hazard, site, department, owner, controls, status, or risk level..."
+<FilterBar Title="Filter Risk Register">
+    <ChildContent>
+        <input class="of-input"
+               placeholder="Search risks..."
                @bind="searchText"
                @bind:event="oninput" />
 
-        <select class="filter-select" @bind="statusFilter">
+        <select class="of-select" @bind="statusFilter">
             <option value="">All Statuses</option>
             @foreach (var status in StatusOptions)
             {
@@ -132,7 +113,7 @@
             }
         </select>
 
-        <select class="filter-select" @bind="levelFilter">
+        <select class="of-select" @bind="levelFilter">
             <option value="">All Risk Levels</option>
             <option value="Critical">Critical</option>
             <option value="High">High</option>
@@ -140,208 +121,185 @@
             <option value="Low">Low</option>
         </select>
 
-        <select class="filter-select" @bind="departmentFilter">
+        <select class="of-select" @bind="departmentFilter">
             <option value="">All Departments</option>
             @foreach (var department in DepartmentOptions)
             {
                 <option value="@department">@department</option>
             }
         </select>
-    </section>
+    </ChildContent>
 
-    <section class="table-card">
-        <div class="table-card-header">
-            <div>
-                <h2>Risk Actions</h2>
-                <p>
-                    Showing @FilteredRisks.Count() of @TotalCount risk register item(s).
-                </p>
-            </div>
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/data-quality">Data Quality</a>
+        <a class="of-btn of-btn-secondary" href="/activity-log">Activity Log</a>
+    </Actions>
+</FilterBar>
 
-            <div class="activity-count-card">
-                <span>Actionable</span>
-                <strong>@FilteredRisks.Count(IsActionableRisk)</strong>
-            </div>
-        </div>
+@if (risks == null)
+{
+    <InfoPanel Title="Loading Risk Register" Subtitle="Loading risk records from the local SQLite database.">
+        <p class="of-muted-text">Loading risk register...</p>
+    </InfoPanel>
+}
+else
+{
+    <TableCard Title="Risk Register"
+               Subtitle="@($"Showing {FilteredRisks.Count()} of {TotalCount} risk register item(s). {FilteredRisks.Count(IsActionableRisk)} are currently actionable.")"
+               IsEmpty="@(!FilteredRisks.Any())"
+               EmptyTitle="No risks found"
+               EmptyMessage="No risk register items match the current search or filter selection.">
+        <table>
+            <thead>
+                <tr>
+                    <th>Risk</th>
+                    <th>Hazard</th>
+                    <th>Site</th>
+                    <th>Department</th>
+                    <th>Owner</th>
+                    <th>Likely</th>
+                    <th>Conseq.</th>
+                    <th>Score</th>
+                    <th>Level</th>
+                    <th>Status</th>
+                    <th>Review Date</th>
+                    <th>Flag</th>
+                    <th>Follow-Up</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in FilteredRisks)
+                {
+                    <tr>
+                        <td><strong>@item.Title</strong></td>
+                        <td>@item.Hazard</td>
+                        <td>@item.Site</td>
+                        <td>@item.Department</td>
+                        <td>@DisplayText(item.Owner)</td>
+                        <td>@item.Likelihood</td>
+                        <td>@item.Consequence</td>
+                        <td><strong>@item.RiskScore</strong></td>
+                        <td>
+                            <span class="@GetRiskLevelClass(item.RiskLevel)">
+                                @item.RiskLevel
+                            </span>
+                        </td>
+                        <td>
+                            <span class="@GetStatusClass(item.Status)">
+                                @item.Status
+                            </span>
+                        </td>
+                        <td>@item.ReviewDate.ToString("dd MMM yyyy")</td>
+                        <td>
+                            @if (item.IsReviewOverdue)
+                            {
+                                <span class="of-badge of-badge-danger">Review Overdue</span>
+                            }
+                            else if (item.RiskLevel == "Critical" || item.RiskLevel == "High")
+                            {
+                                <span class="of-badge of-badge-warning">Monitor</span>
+                            }
+                            else if (string.IsNullOrWhiteSpace(item.Controls))
+                            {
+                                <span class="of-badge of-badge-warning">Needs Controls</span>
+                            }
+                            else
+                            {
+                                <span class="of-badge of-badge-success">Controlled</span>
+                            }
+                        </td>
+                        <td>
+                            <a class="of-card-link" href="@BuildCorrectiveActionUrlFromRisk(item)">Create Action</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </TableCard>
+}
 
-        @if (risks == null)
+<InfoPanel Title="Priority Risk Follow-Ups"
+           Subtitle="High, critical, overdue, or weak-control risks that should be checked first.">
+    <ChildContent>
+        @if (!PriorityRisks.Any())
         {
-            <div class="empty-state">Loading risk register...</div>
-        }
-        else if (!FilteredRisks.Any())
-        {
-            <div class="empty-state">
-                <strong>No risks match the current filters.</strong>
-                <p>Clear the search or filters to show more risk register items.</p>
-            </div>
+            <EmptyState Title="No priority risk follow-ups"
+                        Message="There are currently no high, critical, overdue, or weak-control risk review flags."
+                        Icon="✅" />
         }
         else
         {
-            <div class="table-responsive">
-                <table class="data-table risk-table">
-                    <thead>
-                        <tr>
-                            <th>Risk</th>
-                            <th>Hazard</th>
-                            <th>Site</th>
-                            <th>Department</th>
-                            <th>Owner</th>
-                            <th>Likely</th>
-                            <th>Conseq.</th>
-                            <th>Score</th>
-                            <th>Level</th>
-                            <th>Status</th>
-                            <th>Review Date</th>
-                            <th>Flag</th>
-                            <th>Follow-Up</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in FilteredRisks)
-                        {
-                            <tr>
-                                <td class="strong-cell">@item.Title</td>
-                                <td>@item.Hazard</td>
-                                <td>@item.Site</td>
-                                <td>@item.Department</td>
-                                <td>@DisplayText(item.Owner)</td>
-                                <td>@item.Likelihood</td>
-                                <td>@item.Consequence</td>
-                                <td class="strong-cell">@item.RiskScore</td>
-                                <td>
-                                    <span class="@GetRiskLevelClass(item.RiskLevel)">
-                                        @item.RiskLevel
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="@GetStatusClass(item.Status)">
-                                        @item.Status
-                                    </span>
-                                </td>
-                                <td>@item.ReviewDate.ToString("dd MMM yyyy")</td>
-                                <td>
-                                    @if (item.IsReviewOverdue)
-                                    {
-                                        <span class="badge badge-danger">Review Overdue</span>
-                                    }
-                                    else if (item.RiskLevel == "Critical" || item.RiskLevel == "High")
-                                    {
-                                        <span class="badge badge-warning">Monitor</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge badge-success">Controlled</span>
-                                    }
-                                </td>
-                                <td>
-                                    <a class="btn btn-small btn-primary" href="@BuildCorrectiveActionUrlFromRisk(item)">
-                                        Create Action
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+            <div class="of-review-proof-grid">
+                @foreach (var item in PriorityRisks.Take(6))
+                {
+                    <div class="of-review-proof-card">
+                        <strong>@item.Title</strong>
+                        <span>@item.Hazard</span>
+                        <span>@item.Site • @item.Department • @DisplayText(item.Owner) • Score @item.RiskScore</span>
+
+                        <div class="of-link-row">
+                            <span class="@GetRiskLevelClass(item.RiskLevel)">
+                                @item.RiskLevel
+                            </span>
+
+                            @if (item.IsReviewOverdue)
+                            {
+                                <span class="of-badge of-badge-danger">Review Overdue</span>
+                            }
+
+                            @if (string.IsNullOrWhiteSpace(item.Controls))
+                            {
+                                <span class="of-badge of-badge-warning">Needs Controls</span>
+                            }
+
+                            <a class="of-card-link" href="@BuildCorrectiveActionUrlFromRisk(item)">Create Action</a>
+                        </div>
+                    </div>
+                }
             </div>
         }
-    </section>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Priority Risk Follow-Ups</h2>
-                    <p>High, critical, or overdue risk reviews that should be checked first.</p>
-                </div>
+<InfoPanel Title="Missing / Weak Control Notes"
+           Subtitle="Risk items that may need better control detail before management review.">
+    <ChildContent>
+        @if (!WeakControlRisks.Any())
+        {
+            <EmptyState Title="No weak control notes found"
+                        Message="All checked risk records currently include control information."
+                        Icon="✅" />
+        }
+        else
+        {
+            <div class="of-review-proof-grid">
+                @foreach (var item in WeakControlRisks.Take(6))
+                {
+                    <div class="of-review-proof-card">
+                        <strong>@item.Title</strong>
+                        <span>@item.Hazard</span>
+                        <span>@item.Site • @item.Department • @DisplayText(item.Owner)</span>
 
-                <span class="badge badge-warning">@PriorityRisks.Count items</span>
+                        <div class="of-link-row">
+                            <span class="of-badge of-badge-warning">Needs Controls</span>
+                            <a class="of-card-link" href="@BuildCorrectiveActionUrlFromRisk(item)">Create Action</a>
+                        </div>
+                    </div>
+                }
             </div>
+        }
+    </ChildContent>
+</InfoPanel>
 
-            @if (!PriorityRisks.Any())
-            {
-                <div class="empty-state">
-                    <strong>No priority risk follow-ups.</strong>
-                    <p>There are currently no high, critical, or overdue risk review flags.</p>
-                </div>
-            }
-            else
-            {
-                <div class="issue-card-list">
-                    @foreach (var item in PriorityRisks.Take(6))
-                    {
-                        <article class="issue-card">
-                            <div>
-                                <strong>@item.Title</strong>
-                                <p>@item.Hazard</p>
-                                <small>
-                                    @item.Site • @item.Department • @DisplayText(item.Owner) • Score @item.RiskScore
-                                </small>
-                            </div>
-
-                            <div class="issue-card-actions">
-                                <span class="@GetRiskLevelClass(item.RiskLevel)">
-                                    @item.RiskLevel
-                                </span>
-
-                                @if (item.IsReviewOverdue)
-                                {
-                                    <span class="badge badge-danger">Review Overdue</span>
-                                }
-
-                                <a class="btn btn-small btn-primary" href="@BuildCorrectiveActionUrlFromRisk(item)">
-                                    Create Action
-                                </a>
-                            </div>
-                        </article>
-                    }
-                </div>
-            }
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Missing / Weak Control Notes</h2>
-                    <p>Risk items that may need better control detail before management review.</p>
-                </div>
-
-                <span class="badge badge-info">@WeakControlRisks.Count items</span>
-            </div>
-
-            @if (!WeakControlRisks.Any())
-            {
-                <div class="empty-state">
-                    <strong>No weak control notes found.</strong>
-                    <p>All checked risk records currently include control information.</p>
-                </div>
-            }
-            else
-            {
-                <div class="issue-card-list">
-                    @foreach (var item in WeakControlRisks.Take(6))
-                    {
-                        <article class="issue-card">
-                            <div>
-                                <strong>@item.Title</strong>
-                                <p>@item.Hazard</p>
-                                <small>
-                                    @item.Site • @item.Department • @DisplayText(item.Owner)
-                                </small>
-                            </div>
-
-                            <div class="issue-card-actions">
-                                <span class="badge badge-info">Needs Controls</span>
-                                <a class="btn btn-small btn-primary" href="@BuildCorrectiveActionUrlFromRisk(item)">
-                                    Create Action
-                                </a>
-                            </div>
-                        </article>
-                    }
-                </div>
-            }
-        </div>
-    </section>
-</div>
+<GuidanceNote Title="Review Notes" Icon="💡" Tone="info">
+    <ul>
+        <li>High, critical, overdue, or weak-control risks should be reviewed first.</li>
+        <li>Create Action links should open a pre-filled corrective action with source set to Risk Register.</li>
+        <li>Risk context should be copied into the corrective action notes for traceability.</li>
+        <li>Follow-up corrective actions should then appear in Corrective Actions, Workload, Reminders, Reports, and Activity Log.</li>
+        <li>This is local SQLite demo data; Microsoft 365 / SharePoint / Power Automate sync is a later stage.</li>
+    </ul>
+</GuidanceNote>
 
 @code {
     private List<RiskItem>? risks;
@@ -377,20 +335,17 @@
 
             if (!string.IsNullOrWhiteSpace(statusFilter))
             {
-                query = query.Where(x =>
-                    string.Equals(x.Status, statusFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x => string.Equals(x.Status, statusFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(levelFilter))
             {
-                query = query.Where(x =>
-                    string.Equals(x.RiskLevel, levelFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x => string.Equals(x.RiskLevel, levelFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(departmentFilter))
             {
-                query = query.Where(x =>
-                    string.Equals(x.Department, departmentFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x => string.Equals(x.Department, departmentFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             return query
@@ -469,57 +424,52 @@
         var actionType = item.IsReviewOverdue
             ? "Process Review"
             : item.RiskLevel is "Critical" or "High"
-                ? "Follow-up"
+                ? "Review"
                 : "Improvement";
 
-        var notes =
-            "Created from Risk Register item." + Environment.NewLine +
-            "Review current controls, confirm owner, and update follow-up status." + Environment.NewLine +
-            Environment.NewLine +
-            $"Risk: {item.Title}" + Environment.NewLine +
-            $"Hazard: {item.Hazard}" + Environment.NewLine +
-            $"Site: {item.Site}" + Environment.NewLine +
-            $"Department: {item.Department}" + Environment.NewLine +
-            $"Current Owner: {item.Owner}" + Environment.NewLine +
-            $"Likelihood: {item.Likelihood}" + Environment.NewLine +
-            $"Consequence: {item.Consequence}" + Environment.NewLine +
-            $"Risk Level: {item.RiskLevel}" + Environment.NewLine +
-            $"Risk Score: {item.RiskScore}" + Environment.NewLine +
-            $"Status: {item.Status}" + Environment.NewLine +
-            $"Controls: {DisplayText(item.Controls)}" + Environment.NewLine +
-            $"Review Date: {item.ReviewDate:dd MMM yyyy}" + Environment.NewLine +
-            $"Review Flag: {(item.IsReviewOverdue ? "Review overdue" : "Review not overdue")}" + Environment.NewLine +
-            Environment.NewLine +
-            "Suggested follow-up: confirm controls are still effective, record any required changes, and close the corrective action once the risk review has been completed.";
+        var notes = "Created from Risk Register item."
+            + Environment.NewLine + "Review current controls, confirm owner, and update follow-up status."
+            + Environment.NewLine
+            + Environment.NewLine + $"Risk: {item.Title}"
+            + Environment.NewLine + $"Hazard: {item.Hazard}"
+            + Environment.NewLine + $"Site: {item.Site}"
+            + Environment.NewLine + $"Department: {item.Department}"
+            + Environment.NewLine + $"Current Owner: {item.Owner}"
+            + Environment.NewLine + $"Likelihood: {item.Likelihood}"
+            + Environment.NewLine + $"Consequence: {item.Consequence}"
+            + Environment.NewLine + $"Risk Level: {item.RiskLevel}"
+            + Environment.NewLine + $"Risk Score: {item.RiskScore}"
+            + Environment.NewLine + $"Status: {item.Status}"
+            + Environment.NewLine + $"Controls: {DisplayText(item.Controls)}"
+            + Environment.NewLine + $"Review Date: {item.ReviewDate:dd MMM yyyy}"
+            + Environment.NewLine + $"Review Flag: {(item.IsReviewOverdue ? "Review overdue" : "Review not overdue")}"
+            + Environment.NewLine
+            + Environment.NewLine + "Suggested follow-up: confirm controls are still effective, record any required changes, and close the corrective action once the risk review has been completed.";
 
-        return "/corrective-actions/create" +
-            $"?source={Uri.EscapeDataString("Risk Register")}" +
-            $"&title={Uri.EscapeDataString(title)}" +
-            $"&site={Uri.EscapeDataString(item.Site)}" +
-            $"&department={Uri.EscapeDataString(item.Department)}" +
-            $"&owner={Uri.EscapeDataString(item.Owner)}" +
-            $"&priority={Uri.EscapeDataString(priority)}" +
-            $"&actionType={Uri.EscapeDataString(actionType)}" +
-            $"&notes={Uri.EscapeDataString(notes)}" +
-            $"&returnUrl={Uri.EscapeDataString("/risk-register")}";
+        return "/corrective-actions/create"
+            + $"?source={Uri.EscapeDataString("Risk Register")}"
+            + $"&title={Uri.EscapeDataString(title)}"
+            + $"&site={Uri.EscapeDataString(item.Site)}"
+            + $"&department={Uri.EscapeDataString(item.Department)}"
+            + $"&owner={Uri.EscapeDataString(item.Owner)}"
+            + $"&priority={Uri.EscapeDataString(priority)}"
+            + $"&actionType={Uri.EscapeDataString(actionType)}"
+            + $"&notes={Uri.EscapeDataString(notes)}"
+            + $"&returnUrl={Uri.EscapeDataString("/risk-register")}";
     }
 
     private static bool IsActionableRisk(RiskItem item)
     {
-        return item.IsReviewOverdue
-            || item.RiskLevel == "Critical"
-            || item.RiskLevel == "High"
-            || string.IsNullOrWhiteSpace(item.Controls);
+        return item.IsReviewOverdue ||
+               item.RiskLevel == "Critical" ||
+               item.RiskLevel == "High" ||
+               string.IsNullOrWhiteSpace(item.Controls);
     }
 
     private static bool Contains(string? source, string search)
     {
-        if (string.IsNullOrWhiteSpace(source))
-        {
-            return false;
-        }
-
-        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+        return !string.IsNullOrWhiteSpace(source) &&
+               source.Contains(search, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string DisplayText(string? value)
