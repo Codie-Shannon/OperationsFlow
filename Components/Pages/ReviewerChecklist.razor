@@ -2,481 +2,346 @@
 
 <PageTitle>Reviewer Checklist - OperationsFlow</PageTitle>
 
-<div class="operations-dashboard reviewer-checklist-page">
-    <PageIntro Eyebrow="Portfolio Review"
-               Title="Reviewer Checklist"
-               Subtitle="A practical checklist for reviewing OperationsFlow as a business workflow, safety/compliance, admin process, and .NET portfolio project.">
-        <a class="btn btn-secondary" href="demo-guide">Demo Guide</a>
-        <a class="btn btn-secondary" href="prototype-scope">Prototype Scope</a>
-        <a class="btn btn-primary" href="business-value">Business Value</a>
-    </PageIntro>
+<div class="page-shell module-page reviewer-checklist-page">
+    <section class="module-header">
+        <div>
+            <p class="eyebrow dark">System Review</p>
+            <h1>Reviewer Checklist</h1>
+            <p>
+                A guided checklist for reviewing the OperationsFlow portfolio prototype,
+                Week 1 review package, and Week 2 workflow MVP.
+            </p>
+        </div>
 
-    <div class="page-purpose-note">
-        <strong>Purpose:</strong> use this page as a guided review checklist. It shows what to click, what to verify, what each area demonstrates, and what evidence proves the project is more than a static dashboard.
-    </div>
+        <div class="module-header-stat">
+            <span>Review Areas</span>
+            <strong>12</strong>
+        </div>
+    </section>
 
-    <section class="kpi-grid">
-        <div class="kpi-card">
-            <span class="kpi-label">Checklist Areas</span>
+    <section class="page-purpose-note">
+        <strong>Purpose:</strong> use this page to review what OperationsFlow proves.
+        The checklist covers dashboard visibility, create/edit workflows, source-linked corrective
+        actions, record history, workload, reminders, reports, data quality, CSV exports,
+        documentation, and prototype boundaries.
+    </section>
+
+    <section class="module-summary-grid">
+        <article class="module-summary-card info-card">
+            <span>Workflow Pages</span>
             <strong>6</strong>
-            <span class="kpi-note">Business, workflow, data, and technical review</span>
-        </div>
+            <small>Work, actions, intake, risk, documents, training</small>
+        </article>
 
-        <div class="kpi-card">
-            <span class="kpi-label">Review Style</span>
-            <strong>Guided</strong>
-            <span class="kpi-note">Click-through verification</span>
-        </div>
+        <article class="module-summary-card success-card">
+            <span>Traceability</span>
+            <strong>Yes</strong>
+            <small>Activity history and activity log</small>
+        </article>
 
-        <div class="kpi-card">
-            <span class="kpi-label">Best Starting Page</span>
-            <strong>Demo Guide</strong>
-            <span class="kpi-note">Recommended walkthrough path</span>
-        </div>
+        <article class="module-summary-card warning-card">
+            <span>Exports</span>
+            <strong>7+</strong>
+            <small>CSV package plus manifest</small>
+        </article>
 
-        <div class="kpi-card">
-            <span class="kpi-label">Main Proof</span>
-            <strong>Workflow</strong>
-            <span class="kpi-note">Records, reports, traceability, and review views</span>
-        </div>
-    </section>
-
-    <section class="summary-grid reviewer-overview-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>How To Review This Project</h2>
-                    <p>A fast path for someone opening the project for the first time.</p>
-                </div>
-            </div>
-
-            <ol class="demo-step-list reviewer-fast-path">
-                <li>
-                    <strong>Start with Demo Guide</strong>
-                    <span>Use the guided paths to understand the business, admin, and technical review routes.</span>
-                </li>
-
-                <li>
-                    <strong>Review the business case</strong>
-                    <span>Open Business Value to understand the problem, value created, and before/after workflow shift.</span>
-                </li>
-
-                <li>
-                    <strong>Check the working workflow</strong>
-                    <span>Open Safety Meeting Pack, Compliance Calendar, Workload, Reports, and Data Quality.</span>
-                </li>
-
-                <li>
-                    <strong>Verify record editing</strong>
-                    <span>Edit a corrective action or document intake record and confirm guidance, saving, and activity history.</span>
-                </li>
-
-                <li>
-                    <strong>Review production thinking</strong>
-                    <span>Open Prototype Scope and Implementation Plan to confirm limits, rollout plan, and upgrade path.</span>
-                </li>
-            </ol>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>What A Reviewer Should Notice</h2>
-                    <p>The key signals that make this a strong portfolio project.</p>
-                </div>
-            </div>
-
-            <div class="reviewer-proof-stack">
-                <article>
-                    <span>01</span>
-                    <strong>It solves a business problem</strong>
-                    <p>Missed follow-up, weak ownership, manual reporting, and poor traceability are made visible.</p>
-                </article>
-
-                <article>
-                    <span>02</span>
-                    <strong>It connects multiple modules</strong>
-                    <p>Work orders, corrective actions, document intake, risk, training, documents, workload, reports, and data quality all support the same review process.</p>
-                </article>
-
-                <article>
-                    <span>03</span>
-                    <strong>It is honest about scope</strong>
-                    <p>The prototype clearly separates what works now from what production would need next.</p>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <section class="review-checklist-grid">
-        @foreach (var section in ChecklistSections)
-        {
-            <article class="review-checklist-card">
-                <div class="review-checklist-card-header">
-                    <span>@section.Number</span>
-                    <div>
-                        <p class="eyebrow">@section.Category</p>
-                        <h2>@section.Title</h2>
-                    </div>
-                </div>
-
-                <p>@section.Description</p>
-
-                <div class="review-checklist-items">
-                    @foreach (var item in section.Items)
-                    {
-                        <div class="review-checklist-item">
-                            <div class="fake-checkbox"></div>
-                            <div>
-                                <strong>@item.Task</strong>
-                                <span>@item.ExpectedEvidence</span>
-                            </div>
-                        </div>
-                    }
-                </div>
-
-                <a class="review-checklist-link" href="@section.Url">@section.LinkText</a>
-            </article>
-        }
-    </section>
-
-    <section class="report-card">
-        <div class="panel-header">
-            <div>
-                <h2>Review Evidence Matrix</h2>
-                <p>Use this table to confirm what each part of the system proves.</p>
-            </div>
-        </div>
-
-        <table class="report-table reviewer-evidence-table">
-            <thead>
-                <tr>
-                    <th>Evidence Area</th>
-                    <th>Where To Check</th>
-                    <th>What It Demonstrates</th>
-                    <th>Reviewer Question</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in EvidenceItems)
-                {
-                    <tr>
-                        <td><strong>@item.Area</strong></td>
-                        <td><span class="@item.BadgeClass">@item.Page</span></td>
-                        <td>@item.Demonstrates</td>
-                        <td>@item.Question</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <article class="module-summary-card">
+            <span>Boundary</span>
+            <strong>Demo</strong>
+            <small>SQLite local prototype</small>
+        </article>
     </section>
 
     <section class="summary-grid">
-        <div class="summary-panel">
+        <article class="summary-panel">
             <div class="panel-header">
                 <div>
-                    <h2>Manual Review Script</h2>
-                    <p>A quick script for walking someone through the project.</p>
+                    <h2>Recommended Review Path</h2>
+                    <p>Use this order when reviewing the app for the first time.</p>
                 </div>
             </div>
 
-            <ol class="demo-step-list reviewer-script-list">
-                <li>
-                    <strong>Open Demo Guide</strong>
-                    <span>Explain that the project has business, admin, and technical review paths.</span>
-                </li>
-
-                <li>
-                    <strong>Open Safety Meeting Pack</strong>
-                    <span>Show how the system identifies actions, risks, training issues, document reviews, and recent activity.</span>
-                </li>
-
-                <li>
-                    <strong>Open Compliance Calendar</strong>
-                    <span>Show how dates are grouped into overdue, due this week, due next 30 days, and future work.</span>
-                </li>
-
-                <li>
-                    <strong>Open Workload</strong>
-                    <span>Show who owns work, who has overdue items, and who needs follow-up first.</span>
-                </li>
-
-                <li>
-                    <strong>Edit a record</strong>
-                    <span>Open a corrective action and show owner, due date, status guidance, notes guidance, saving, and traceability.</span>
-                </li>
-
-                <li>
-                    <strong>Open Reports and Data Quality</strong>
-                    <span>Show management summaries, export concepts, weak records, and system-health checks.</span>
-                </li>
-
-                <li>
-                    <strong>Finish with scope and implementation</strong>
-                    <span>Show what is prototype-only and what would be needed for production rollout.</span>
-                </li>
+            <ol class="review-list">
+                <li>Start on Dashboard to understand the system overview.</li>
+                <li>Open Work Orders and review create, edit, details, and history.</li>
+                <li>Open Corrective Actions and test source-linked follow-up workflows.</li>
+                <li>Open Document Intake and review admin/document workflow tracking.</li>
+                <li>Open Risk Register, Training, and Documents to test Create Action links.</li>
+                <li>Open Workload and Reminders to confirm follow-up visibility.</li>
+                <li>Open Data Quality and Reports to confirm management review visibility.</li>
+                <li>Open Activity Log to confirm record-level traceability.</li>
+                <li>Open CSV exports to confirm external review package support.</li>
+                <li>Read technical and prototype notes before judging production boundaries.</li>
             </ol>
+        </article>
+
+        <article class="summary-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>What Week 2 Proves</h2>
+                    <p>The workflow MVP is no longer just reporting.</p>
+                </div>
+            </div>
+
+            <div class="review-list">
+                <p><strong>CREATE</strong> New workflow records can be created for Work Orders, Corrective Actions, and Document Intake.</p>
+                <p><strong>EDIT</strong> Existing records can be updated and reviewed.</p>
+                <p><strong>LINKED</strong> Risk, training, and document issues can create prefilled corrective actions.</p>
+                <p><strong>TRACEABLE</strong> Created, updated, and reviewed events are visible in record pages and Activity Log.</p>
+            </div>
+        </article>
+    </section>
+
+    <section class="report-action-strip">
+        <a class="btn btn-primary" href="/">Open Dashboard</a>
+        <a class="btn btn-primary" href="/work-orders">Review Work Orders</a>
+        <a class="btn btn-primary" href="/corrective-actions">Review Actions</a>
+        <a class="btn btn-secondary" href="/reports">Open Reports</a>
+    </section>
+
+    <section class="table-card">
+        <div class="table-card-header">
+            <div>
+                <h2>Functional Review Checklist</h2>
+                <p>Use this section to manually verify the main Week 2 workflows.</p>
+            </div>
+
+            <div class="activity-count-card">
+                <span>Checks</span>
+                <strong>32</strong>
+            </div>
         </div>
 
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Review Outcome</h2>
-                    <p>What a reviewer should be able to conclude after walking through the system.</p>
-                </div>
-            </div>
+        <div class="summary-grid">
+            <article class="summary-panel">
+                <h3>Dashboard</h3>
+                <ul>
+                    <li>Dashboard loads without errors.</li>
+                    <li>Summary cards show live demo counts.</li>
+                    <li>Module cards link to major workflow areas.</li>
+                    <li>Dashboard explains SQLite demo data boundary.</li>
+                </ul>
+                <a class="btn btn-small btn-primary" href="/">Open Dashboard</a>
+            </article>
 
-            <div class="review-outcome-grid">
-                @foreach (var outcome in Outcomes)
-                {
-                    <article>
-                        <span>@outcome.Label</span>
-                        <strong>@outcome.Title</strong>
-                        <p>@outcome.Description</p>
-                    </article>
-                }
-            </div>
+            <article class="summary-panel">
+                <h3>Work Orders</h3>
+                <ul>
+                    <li>Work Orders list loads.</li>
+                    <li>Create Work Order validates required fields.</li>
+                    <li>Saved work order appears in list and detail pages.</li>
+                    <li>Edit Work Order records changed fields in history.</li>
+                </ul>
+                <a class="btn btn-small btn-primary" href="/work-orders">Open Work Orders</a>
+            </article>
+
+            <article class="summary-panel">
+                <h3>Corrective Actions</h3>
+                <ul>
+                    <li>Corrective Actions list loads.</li>
+                    <li>Create Corrective Action saves a new action.</li>
+                    <li>Edit Corrective Action records changed fields.</li>
+                    <li>Source-linked actions preserve context in notes.</li>
+                </ul>
+                <a class="btn btn-small btn-primary" href="/corrective-actions">Open Actions</a>
+            </article>
+
+            <article class="summary-panel">
+                <h3>Document Intake</h3>
+                <ul>
+                    <li>Document Intake list loads.</li>
+                    <li>Create Intake saves a new incoming document record.</li>
+                    <li>Edit Intake records changed fields in history.</li>
+                    <li>Due dates and statuses feed reminders/workload/reporting.</li>
+                </ul>
+                <a class="btn btn-small btn-primary" href="/document-intake">Open Intake</a>
+            </article>
+
+            <article class="summary-panel">
+                <h3>Risk Register</h3>
+                <ul>
+                    <li>Risk Register loads risk summary cards.</li>
+                    <li>Risk table/search/filter works.</li>
+                    <li>Create Action button opens prefilled corrective action.</li>
+                    <li>Risk context is copied into corrective action notes.</li>
+                </ul>
+                <a class="btn btn-small btn-primary" href="/risk-register">Open Risks</a>
+            </article>
+
+            <article class="summary-panel">
+                <h3>Training Compliance</h3>
+                <ul>
+                    <li>Training page loads compliance summary.</li>
+                    <li>Expired and expiring records are visible.</li>
+                    <li>Create Action button opens prefilled corrective action.</li>
+                    <li>Training context is copied into corrective action notes.</li>
+                </ul>
+                <a class="btn btn-small btn-primary" href="/training">Open Training</a>
+            </article>
+
+            <article class="summary-panel">
+                <h3>Document Control</h3>
+                <ul>
+                    <li>Documents page loads controlled document summary.</li>
+                    <li>Overdue and due-soon reviews are visible.</li>
+                    <li>Create Action button opens prefilled corrective action.</li>
+                    <li>Document context is copied into corrective action notes.</li>
+                </ul>
+                <a class="btn btn-small btn-primary" href="/documents">Open Documents</a>
+            </article>
+
+            <article class="summary-panel">
+                <h3>Management Views</h3>
+                <ul>
+                    <li>Workload shows owner pressure and assigned work.</li>
+                    <li>Reminders show overdue/due-soon follow-up items.</li>
+                    <li>Reports show management action rows.</li>
+                    <li>Data Quality links to records requiring review.</li>
+                </ul>
+                <a class="btn btn-small btn-primary" href="/workload">Open Workload</a>
+            </article>
         </div>
     </section>
 
-    <section class="report-card reviewer-summary-card">
-        <div class="panel-header">
+    <section class="table-card">
+        <div class="table-card-header">
             <div>
-                <h2>Reviewer Summary</h2>
-                <p>A short summary for anyone assessing the project.</p>
+                <h2>Evidence Package Checklist</h2>
+                <p>Confirm the project has enough review material for GitHub, job applications, and walkthroughs.</p>
+            </div>
+
+            <div class="activity-count-card">
+                <span>Evidence</span>
+                <strong>Ready</strong>
             </div>
         </div>
 
-        <div class="reviewer-summary-copy">
-            <p>
-                OperationsFlow should be reviewed as a working business workflow prototype. The strongest evidence is the way
-                records connect across corrective actions, safety/compliance review, document intake, workload, reminders,
-                reports, activity history, and data quality. It is not just a dashboard; it is a structured workflow model with
-                record editing, ownership, due dates, status handling, reporting views, and production-aware planning.
-            </p>
+        <div class="summary-grid">
+            <article class="summary-panel">
+                <h3>GitHub README</h3>
+                <ul>
+                    <li>README explains the project purpose.</li>
+                    <li>README includes Week 1 and Week 2 workflow evidence.</li>
+                    <li>README links to the walkthrough video.</li>
+                    <li>README explains prototype limitations honestly.</li>
+                </ul>
+                <a class="btn btn-small btn-primary" href="https://github.com/Codie-Shannon/OperationsFlow" target="_blank">Open GitHub</a>
+            </article>
 
-            <p>
-                The project demonstrates practical .NET/Blazor application building, business process thinking, UI layout,
-                workflow modelling, reporting concepts, traceability, and an implementation path for a real Microsoft 365-style
-                internal business system.
-            </p>
+            <article class="summary-panel">
+                <h3>Video Walkthrough</h3>
+                <ul>
+                    <li>Video shows the working prototype.</li>
+                    <li>Video is trimmed enough for a reviewer.</li>
+                    <li>Video focuses on business value, not only UI.</li>
+                    <li>Video link is available from README or portfolio material.</li>
+                </ul>
+                <a class="btn btn-small btn-primary" href="https://youtu.be/Ng0jTAEdqKs" target="_blank">Open Video</a>
+            </article>
+
+            <article class="summary-panel">
+                <h3>CSV Export Package</h3>
+                <ul>
+                    <li>Export README opens in browser.</li>
+                    <li>Export manifest downloads as CSV.</li>
+                    <li>Main module CSV files download correctly.</li>
+                    <li>Exports explain future Microsoft 365 / Power BI direction.</li>
+                </ul>
+                <a class="btn btn-small btn-primary" href="/exports/README.txt">Open Export README</a>
+            </article>
+
+            <article class="summary-panel">
+                <h3>Activity Evidence</h3>
+                <ul>
+                    <li>Activity Log shows created records.</li>
+                    <li>Activity Log shows updated records.</li>
+                    <li>Record detail/edit pages show local history.</li>
+                    <li>CSV activity export is available.</li>
+                </ul>
+                <a class="btn btn-small btn-primary" href="/activity-log">Open Activity Log</a>
+            </article>
+        </div>
+    </section>
+
+    <section class="table-card">
+        <div class="table-card-header">
+            <div>
+                <h2>Prototype Boundary Checklist</h2>
+                <p>Clear boundaries stop reviewers from confusing the portfolio prototype with a full production deployment.</p>
+            </div>
+        </div>
+
+        <div class="summary-grid">
+            <article class="summary-panel">
+                <h3>What this prototype does</h3>
+                <ul>
+                    <li>Runs as a local Blazor/SQLite demo app.</li>
+                    <li>Tracks workflow metadata across multiple modules.</li>
+                    <li>Creates and edits key workflow records.</li>
+                    <li>Shows traceability through activity history and Activity Log.</li>
+                    <li>Exports demo data to CSV files.</li>
+                    <li>Demonstrates Microsoft 365-ready workflow thinking.</li>
+                </ul>
+            </article>
+
+            <article class="summary-panel">
+                <h3>What this prototype does not yet do</h3>
+                <ul>
+                    <li>Does not use live authentication or role-based permissions yet.</li>
+                    <li>Does not sync to Microsoft Lists or SharePoint yet.</li>
+                    <li>Does not send live Teams or Outlook notifications yet.</li>
+                    <li>Does not store real production business documents.</li>
+                    <li>Does not enforce production audit retention rules yet.</li>
+                    <li>Does not replace a full ERP, job management, or safety platform.</li>
+                </ul>
+            </article>
+        </div>
+    </section>
+
+    <section class="table-card">
+        <div class="table-card-header">
+            <div>
+                <h2>Week 3 / Week 4 Forward Path</h2>
+                <p>What the next implementation stage should prove.</p>
+            </div>
+        </div>
+
+        <div class="summary-grid">
+            <article class="summary-panel">
+                <p class="eyebrow dark">Week 3</p>
+                <h3>Hybrid implementation foundation</h3>
+                <p>
+                    Map local prototype data to Microsoft Lists/SharePoint-ready structures
+                    while keeping the app useful without a tenant.
+                </p>
+            </article>
+
+            <article class="summary-panel">
+                <p class="eyebrow dark">Week 4</p>
+                <h3>Microsoft 365 implementation</h3>
+                <p>
+                    Use a test tenant to build live Microsoft Lists, Power Automate flows,
+                    Teams/Outlook notifications, and Power BI-style reporting.
+                </p>
+            </article>
+
+            <article class="summary-panel">
+                <p class="eyebrow dark">Portfolio</p>
+                <h3>Business systems proof</h3>
+                <p>
+                    Show the same thinking used in real-world AIE automation: intake,
+                    routing, ownership, follow-up, reporting, and traceability.
+                </p>
+            </article>
+
+            <article class="summary-panel">
+                <p class="eyebrow dark">Polish</p>
+                <h3>Final cleanup pass</h3>
+                <p>
+                    Clean CSS, spacing, mobile behavior, screenshots, README, and demo flow
+                    once functionality is locked.
+                </p>
+            </article>
         </div>
     </section>
 </div>
-
-@code {
-    private static readonly IReadOnlyList<ChecklistSection> ChecklistSections = new[]
-    {
-        new ChecklistSection(
-            Number: "01",
-            Category: "Business Review",
-            Title: "Confirm the business value",
-            Description: "Check that the project clearly explains the business problem and the value created.",
-            Url: "business-value",
-            LinkText: "Open Business Value",
-            Items: new[]
-            {
-                new ChecklistItem("Identify the business problem", "Missed follow-up, weak ownership, manual reporting, and traceability issues are explained."),
-                new ChecklistItem("Confirm value proposition", "The system shows one place to review what needs attention next."),
-                new ChecklistItem("Check before/after comparison", "Scattered manual follow-up is compared against connected workflow tracking.")
-            }
-        ),
-        new ChecklistSection(
-            Number: "02",
-            Category: "Workflow Review",
-            Title: "Confirm connected workflow",
-            Description: "Check that the app connects multiple workflow areas instead of acting like separate static pages.",
-            Url: "safety-meeting-pack",
-            LinkText: "Open Safety Meeting Pack",
-            Items: new[]
-            {
-                new ChecklistItem("Review attention items", "Open actions, high/critical risks, training issues, and document reviews are summarised."),
-                new ChecklistItem("Check recommended follow-up", "The page explains practical next actions based on current records."),
-                new ChecklistItem("Confirm recent activity visibility", "Recent workflow activity is visible for meeting review.")
-            }
-        ),
-        new ChecklistSection(
-            Number: "03",
-            Category: "Record Review",
-            Title: "Verify editing and traceability",
-            Description: "Check that records can be edited and that the user is guided toward better follow-up data.",
-            Url: "corrective-actions",
-            LinkText: "Open Corrective Actions",
-            Items: new[]
-            {
-                new ChecklistItem("Open an editable record", "Corrective action edit page loads with owner, priority, status, dates, and notes."),
-                new ChecklistItem("Check helper guidance", "Owner, due date, status, and notes guidance help the user enter better data."),
-                new ChecklistItem("Confirm activity history", "Record-level history supports traceability after changes are made.")
-            }
-        ),
-        new ChecklistSection(
-            Number: "04",
-            Category: "Management Review",
-            Title: "Check reporting and workload",
-            Description: "Check whether managers can understand ownership, overdue work, and review pressure.",
-            Url: "workload",
-            LinkText: "Open Workload",
-            Items: new[]
-            {
-                new ChecklistItem("Review owner summary", "Owners are grouped by total assigned work, overdue items, high-priority work, and next due date."),
-                new ChecklistItem("Check pressure indicators", "High-pressure owners and overdue ownership are easy to identify."),
-                new ChecklistItem("Open Reports", "Management summaries and export/report sections support review conversations.")
-            }
-        ),
-        new ChecklistSection(
-            Number: "05",
-            Category: "System Health",
-            Title: "Check data quality",
-            Description: "Check whether the system identifies weak records before they affect reporting.",
-            Url: "data-quality",
-            LinkText: "Open Data Quality",
-            Items: new[]
-            {
-                new ChecklistItem("Review issue totals", "Critical issues, warning issues, data gaps, and modules checked are summarised."),
-                new ChecklistItem("Search and filter issues", "The page supports finding issues by module, owner, reference, or severity."),
-                new ChecklistItem("Confirm recommended action", "Each issue explains what should be reviewed or fixed next.")
-            }
-        ),
-        new ChecklistSection(
-            Number: "06",
-            Category: "Production Thinking",
-            Title: "Review scope and rollout path",
-            Description: "Check that the project is honest about prototype limits and production requirements.",
-            Url: "prototype-scope",
-            LinkText: "Open Prototype Scope",
-            Items: new[]
-            {
-                new ChecklistItem("Confirm prototype boundaries", "The app clearly states what is working and what is not production-ready yet."),
-                new ChecklistItem("Review implementation plan", "Production needs like authentication, roles, hosted database, M365 integrations, tests, deployment, and monitoring are identified."),
-                new ChecklistItem("Check upgrade path", "The project explains how it could move from local demo to real business rollout.")
-            }
-        )
-    };
-
-    private static readonly IReadOnlyList<EvidenceItem> EvidenceItems = new[]
-    {
-        new EvidenceItem(
-            Area: "Business case",
-            Page: "Business Value",
-            BadgeClass: "badge badge-success",
-            Demonstrates: "The project has a clear reason to exist and explains the value of reducing missed follow-up.",
-            Question: "Why would a business care about this?"
-        ),
-        new EvidenceItem(
-            Area: "Workflow connection",
-            Page: "Safety Meeting Pack",
-            BadgeClass: "badge badge-info",
-            Demonstrates: "Multiple record types feed into one safety/compliance review process.",
-            Question: "Does this feel like a connected system or isolated pages?"
-        ),
-        new EvidenceItem(
-            Area: "Planning view",
-            Page: "Compliance Calendar",
-            BadgeClass: "badge badge-info",
-            Demonstrates: "Due dates and review dates are grouped into planning windows.",
-            Question: "Can the reviewer see what is overdue and what is coming next?"
-        ),
-        new EvidenceItem(
-            Area: "Accountability",
-            Page: "Workload",
-            BadgeClass: "badge badge-success",
-            Demonstrates: "Owners, overdue work, high-priority work, and next due dates are visible.",
-            Question: "Can a manager tell who needs follow-up?"
-        ),
-        new EvidenceItem(
-            Area: "Record editing",
-            Page: "Corrective Actions",
-            BadgeClass: "badge badge-warning",
-            Demonstrates: "Records can be edited with owner, status, priority, dates, notes, and helper guidance.",
-            Question: "Does the app support real workflow updates?"
-        ),
-        new EvidenceItem(
-            Area: "Admin workflow",
-            Page: "Document Intake",
-            BadgeClass: "badge badge-success",
-            Demonstrates: "Incoming documents can be tracked through assigned owner, target system, status, due date, and notes.",
-            Question: "Can admin/document work be tracked clearly?"
-        ),
-        new EvidenceItem(
-            Area: "Reporting",
-            Page: "Reports",
-            BadgeClass: "badge badge-info",
-            Demonstrates: "Management summaries, grouped tables, and export concepts are visible.",
-            Question: "Can management review useful information without rebuilding the report manually?"
-        ),
-        new EvidenceItem(
-            Area: "System health",
-            Page: "Data Quality",
-            BadgeClass: "badge badge-warning",
-            Demonstrates: "Weak records, overdue items, expired compliance records, and review issues are surfaced.",
-            Question: "Does the system help find bad data before reporting?"
-        ),
-        new EvidenceItem(
-            Area: "Traceability",
-            Page: "Activity Log",
-            BadgeClass: "badge badge-muted",
-            Demonstrates: "Created, updated, reviewed, and workflow changes are shown in a traceable history.",
-            Question: "Can someone see what changed?"
-        ),
-        new EvidenceItem(
-            Area: "Production awareness",
-            Page: "Prototype Scope",
-            BadgeClass: "badge badge-muted",
-            Demonstrates: "Prototype limits and production upgrade requirements are clearly explained.",
-            Question: "Does the developer understand what production would require?"
-        )
-    };
-
-    private static readonly IReadOnlyList<ReviewOutcome> Outcomes = new[]
-    {
-        new ReviewOutcome(
-            Label: "Business",
-            Title: "Clear value proposition",
-            Description: "The project explains why missed follow-up, ownership, reporting, and compliance review matter."
-        ),
-        new ReviewOutcome(
-            Label: "Workflow",
-            Title: "Connected process model",
-            Description: "Multiple modules support the same follow-up and review process rather than acting as isolated screens."
-        ),
-        new ReviewOutcome(
-            Label: "Technical",
-            Title: "Working Blazor system",
-            Description: "The app demonstrates pages, components, forms, data models, reporting views, seeded data, and local persistence."
-        ),
-        new ReviewOutcome(
-            Label: "Production",
-            Title: "Realistic upgrade path",
-            Description: "The project identifies authentication, database, roles, Microsoft 365 integrations, testing, deployment, and monitoring as production work."
-        )
-    };
-
-    private record ChecklistSection(
-        string Number,
-        string Category,
-        string Title,
-        string Description,
-        string Url,
-        string LinkText,
-        IReadOnlyList<ChecklistItem> Items
-    );
-
-    private record ChecklistItem(
-        string Task,
-        string ExpectedEvidence
-    );
-
-    private record EvidenceItem(
-        string Area,
-        string Page,
-        string BadgeClass,
-        string Demonstrates,
-        string Question
-    );
-
-    private record ReviewOutcome(
-        string Label,
-        string Title,
-        string Description
-    );
-}

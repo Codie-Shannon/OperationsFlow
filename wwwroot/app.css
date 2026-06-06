@@ -5922,3 +5922,182 @@ main textarea {
         padding-left: 0.1rem !important;
         overflow: visible !important;
     }
+
+.checklist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.checklist-card {
+    border: 1px solid #dbe4f0;
+    border-radius: 1rem;
+    background: #ffffff;
+    padding: 1rem;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+}
+
+    .checklist-card h3 {
+        margin: 0 0 0.75rem;
+        font-size: 1.1rem;
+        color: #001b44;
+    }
+
+    .checklist-card ul {
+        margin: 0 0 1rem 1.1rem;
+        padding: 0;
+    }
+
+    .checklist-card li {
+        margin-bottom: 0.35rem;
+        color: #24344d;
+        line-height: 1.45;
+    }
+
+.boundary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.boundary-card {
+    border: 1px solid #dbe4f0;
+    border-radius: 1rem;
+    background: #ffffff;
+    padding: 1.1rem;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+}
+
+    .boundary-card h3 {
+        margin: 0 0 0.75rem;
+        color: #001b44;
+    }
+
+    .boundary-card ul {
+        margin: 0 0 0 1.1rem;
+        padding: 0;
+    }
+
+    .boundary-card li {
+        margin-bottom: 0.4rem;
+        color: #24344d;
+        line-height: 1.45;
+    }
+
+.review-note-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.review-note-card {
+    border: 1px solid #dbe4f0;
+    border-radius: 1rem;
+    background: #ffffff;
+    padding: 1rem;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+}
+
+    .review-note-card span {
+        display: block;
+        margin-bottom: 0.45rem;
+        color: #2563eb;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .review-note-card strong {
+        display: block;
+        margin-bottom: 0.4rem;
+        color: #001b44;
+    }
+
+    .review-note-card p {
+        margin: 0;
+        color: #52627a;
+        line-height: 1.45;
+    }
+
+/* Reviewer Checklist - Week 2 polish */
+.reviewer-checklist-page .checklist-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+    gap: 1rem !important;
+    margin-top: 1rem !important;
+}
+
+.reviewer-checklist-page .checklist-card {
+    border: 1px solid #dbe4f0 !important;
+    border-radius: 1rem !important;
+    background: #ffffff !important;
+    padding: 1rem !important;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04) !important;
+}
+
+    .reviewer-checklist-page .checklist-card h3 {
+        margin: 0 0 0.75rem !important;
+        font-size: 1.1rem !important;
+        color: #001b44 !important;
+    }
+
+    .reviewer-checklist-page .checklist-card ul {
+        margin: 0 0 1rem 1.1rem !important;
+        padding: 0 !important;
+    }
+
+    .reviewer-checklist-page .checklist-card li {
+        margin-bottom: 0.35rem !important;
+        color: #24344d !important;
+        line-height: 1.45 !important;
+    }
+
+.reviewer-checklist-page .boundary-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+    gap: 1rem !important;
+    margin-top: 1rem !important;
+}
+
+.reviewer-checklist-page .boundary-card {
+    border: 1px solid #dbe4f0 !important;
+    border-radius: 1rem !important;
+    background: #ffffff !important;
+    padding: 1.1rem !important;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04) !important;
+}
+
+    .reviewer-checklist-page .boundary-card h3 {
+        margin: 0 0 0.75rem !important;
+        color: #001b44 !important;
+    }
+
+    .reviewer-checklist-page .boundary-card ul {
+        margin: 0 0 0 1.1rem !important;
+        padding: 0 !important;
+    }
+
+    .reviewer-checklist-page .boundary-card li {
+        margin-bottom: 0.4rem !important;
+        color: #24344d !important;
+        line-height: 1.45 !important;
+    }
+
+.reviewer-checklist-page .review-note-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)) !important;
+    gap: 1rem !important;
+    margin-top: 1rem !important;
+}
+
+.reviewer-checklist-page .review-note-card {
+    border: 1px solid #dbe4f0 !important;
+    border-radius: 1rem !important;
+    background: #ffffff !important;
+    padding: 1rem !important;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04) !important;
+}
