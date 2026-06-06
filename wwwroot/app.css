@@ -6991,3 +6991,313 @@ main textarea {
             width: 100%;
         }
 }
+
+/* ============================================================
+   OperationsFlow shared form/action helpers
+   Block 2 - list page cleanup helpers
+   ============================================================ */
+
+.of-input,
+.of-select,
+.of-textarea {
+    background: var(--of-surface);
+    border: 1px solid var(--of-border);
+    border-radius: var(--of-radius-sm);
+    color: var(--of-text);
+    font: inherit;
+    min-height: 2.45rem;
+    padding: 0.6rem 0.75rem;
+}
+
+    .of-input:focus,
+    .of-select:focus,
+    .of-textarea:focus {
+        border-color: var(--of-primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+        outline: none;
+    }
+
+.of-input {
+    min-width: min(320px, 100%);
+}
+
+.of-select {
+    min-width: 170px;
+}
+
+.of-textarea {
+    min-height: 130px;
+    resize: vertical;
+    width: 100%;
+}
+
+.of-muted-text {
+    color: var(--of-text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.of-row-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+    .of-row-actions .of-card-link {
+        margin-top: 0;
+    }
+
+@media (max-width: 760px) {
+    .of-input,
+    .of-select {
+        width: 100%;
+    }
+
+    .of-row-actions {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+}
+
+/* ============================================================
+   OperationsFlow Work Order UI correction pass
+   Fixes form grids, detail grids, notes boxes, and activity panels
+   ============================================================ */
+
+/* ---------- Form layout correction ---------- */
+
+.of-panel__body form {
+    width: 100%;
+}
+
+.of-form-grid {
+    display: grid !important;
+    gap: 1rem !important;
+    grid-template-columns: repeat(2, minmax(260px, 1fr)) !important;
+    width: 100% !important;
+}
+
+.of-form-field {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.35rem !important;
+    min-width: 0 !important;
+}
+
+    .of-form-field label {
+        color: var(--of-text-muted) !important;
+        font-size: 0.82rem !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.03em !important;
+        margin: 0 !important;
+        text-transform: uppercase !important;
+    }
+
+.of-form-field--wide {
+    grid-column: span 1 !important;
+}
+
+.of-form-field--full {
+    grid-column: 1 / -1 !important;
+}
+
+.of-form-field .of-input,
+.of-form-field .of-select,
+.of-form-field .of-textarea,
+.of-form-field input,
+.of-form-field select,
+.of-form-field textarea {
+    max-width: none !important;
+    width: 100% !important;
+}
+
+.of-form-field .of-textarea,
+.of-form-field textarea {
+    min-height: 140px !important;
+}
+
+.of-form-actions {
+    align-items: center !important;
+    border-top: 1px solid var(--of-border) !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.65rem !important;
+    justify-content: flex-end !important;
+    margin-top: 1.25rem !important;
+    padding-top: 1rem !important;
+}
+
+/* ---------- Detail layout correction ---------- */
+
+.of-detail-grid {
+    display: grid !important;
+    gap: 1rem !important;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    width: 100% !important;
+}
+
+.of-detail-item {
+    background: var(--of-surface-soft) !important;
+    border: 1px solid var(--of-border) !important;
+    border-radius: var(--of-radius-md) !important;
+    padding: 0.95rem !important;
+}
+
+    .of-detail-item span {
+        color: var(--of-text-muted) !important;
+        display: block !important;
+        font-size: 0.78rem !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.03em !important;
+        margin-bottom: 0.35rem !important;
+        text-transform: uppercase !important;
+    }
+
+    .of-detail-item strong {
+        color: var(--of-text) !important;
+        display: block !important;
+        font-size: 1rem !important;
+        line-height: 1.35 !important;
+    }
+
+/* ---------- Notes correction ---------- */
+
+.of-notes-box {
+    background: var(--of-surface-soft) !important;
+    border: 1px solid var(--of-border) !important;
+    border-radius: var(--of-radius-md) !important;
+    color: var(--of-text-muted) !important;
+    line-height: 1.6 !important;
+    margin: 0 !important;
+    min-height: 95px !important;
+    padding: 1rem !important;
+    white-space: pre-wrap !important;
+}
+
+/* ---------- Activity history correction ---------- */
+
+.of-activity-history {
+    background: var(--of-surface) !important;
+    border: 1px solid var(--of-border) !important;
+    border-radius: var(--of-radius-md) !important;
+    box-shadow: var(--of-shadow-sm) !important;
+    margin-bottom: var(--of-gap-lg) !important;
+    overflow: hidden !important;
+}
+
+.of-activity-history__header {
+    align-items: flex-start !important;
+    background: var(--of-surface-soft) !important;
+    border-bottom: 1px solid var(--of-border) !important;
+    display: flex !important;
+    gap: var(--of-gap-md) !important;
+    justify-content: space-between !important;
+    padding: 1rem !important;
+}
+
+    .of-activity-history__header h2 {
+        color: var(--of-text) !important;
+        font-size: 1.05rem !important;
+        margin: 0 !important;
+    }
+
+    .of-activity-history__header p {
+        color: var(--of-text-muted) !important;
+        line-height: 1.45 !important;
+        margin: 0.35rem 0 0 !important;
+    }
+
+.of-activity-history__body {
+    overflow-x: auto !important;
+    padding: 1rem !important;
+}
+
+.of-activity-table {
+    border-collapse: collapse !important;
+    min-width: 760px !important;
+    width: 100% !important;
+}
+
+    .of-activity-table th,
+    .of-activity-table td {
+        border-bottom: 1px solid var(--of-border) !important;
+        padding: 0.8rem 1rem !important;
+        text-align: left !important;
+        vertical-align: top !important;
+    }
+
+    .of-activity-table th {
+        background: var(--of-surface-soft) !important;
+        color: var(--of-text-muted) !important;
+        font-size: 0.8rem !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.03em !important;
+        text-transform: uppercase !important;
+    }
+
+    .of-activity-table tr:last-child td {
+        border-bottom: 0 !important;
+    }
+
+/* ---------- Make old/bootstrap badge classes visually match ---------- */
+
+.badge {
+    align-items: center !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    font-size: 0.75rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    padding: 0.35rem 0.6rem !important;
+    white-space: nowrap !important;
+}
+
+.badge-success {
+    background: var(--of-success-soft) !important;
+    border: 1px solid rgba(21, 128, 61, 0.25) !important;
+    color: var(--of-success) !important;
+}
+
+.badge-warning {
+    background: var(--of-warning-soft) !important;
+    border: 1px solid rgba(180, 83, 9, 0.25) !important;
+    color: var(--of-warning) !important;
+}
+
+.badge-danger {
+    background: var(--of-danger-soft) !important;
+    border: 1px solid rgba(185, 28, 28, 0.25) !important;
+    color: var(--of-danger) !important;
+}
+
+.badge-info {
+    background: var(--of-primary-soft) !important;
+    border: 1px solid rgba(37, 99, 235, 0.25) !important;
+    color: var(--of-primary) !important;
+}
+
+.badge-muted,
+.badge-secondary {
+    background: var(--of-surface-strong) !important;
+    border: 1px solid var(--of-border) !important;
+    color: var(--of-text-muted) !important;
+}
+
+/* ---------- Responsive correction ---------- */
+
+@media (max-width: 900px) {
+    .of-form-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .of-form-actions {
+        align-items: stretch !important;
+        flex-direction: column !important;
+    }
+
+        .of-form-actions .of-btn {
+            width: 100% !important;
+        }
+}

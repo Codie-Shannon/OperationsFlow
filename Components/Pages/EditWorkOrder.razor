@@ -1,322 +1,235 @@
 ﻿@page "/work-orders/edit/{Id:int}"
-
 @using Microsoft.AspNetCore.Components
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
 @using OperationsFlow.Services
-
 @inject OperationsFlowDbContext Db
 @inject ActivityLogService ActivityLogService
 @inject NavigationManager Navigation
 
 <PageTitle>Edit Work Order - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page work-order-edit-page">
-    <section class="module-header">
-        <div>
-            <p class="eyebrow dark">Operations</p>
-            <h1>Edit Work Order</h1>
-            <p>
-                Update work order owner, site, department, type, priority, status,
-                due date, and notes.
-            </p>
-        </div>
-
-        <div class="module-header-stat">
-            <span>Editing</span>
-            <strong>@DisplayReference</strong>
-        </div>
-    </section>
-
-    @if (isLoading)
-    {
-        <section class="table-card">
-            <p>Loading work order...</p>
-        </section>
-    }
-    else if (workOrder == null)
-    {
-        <section class="table-card">
-            <h2>Work order could not be found.</h2>
-
-            <button class="btn btn-secondary" type="button" @onclick="BackToReturnPage">
-                Back
-            </button>
-        </section>
-    }
-    else
-    {
-        <section class="page-purpose-note">
-            <strong>Purpose:</strong> use this page to keep operational follow-up current. Changes made here feed
-            Workload, Reminders, Reports, Data Quality, Work Order Details, and Activity Log.
-        </section>
-
-        <section class="summary-grid">
-            <div class="summary-panel">
-                <div class="panel-header">
-                    <div>
-                        <h2>Current Work Order State</h2>
-                        <p>Quick review before saving changes.</p>
-                    </div>
-
-                    <span class="@GetStatusClass(workOrder.Status)">
-                        @workOrder.Status
-                    </span>
-                </div>
-
-                <div class="detail-grid">
-                    <div>
-                        <span>Work Order</span>
-                        <strong>@workOrder.WorkOrderNumber</strong>
-                    </div>
-
-                    <div>
-                        <span>Owner</span>
-                        <strong>@DisplayText(workOrder.Owner)</strong>
-                    </div>
-
-                    <div>
-                        <span>Priority</span>
-                        <strong>
-                            <span class="@GetPriorityClass(workOrder.Priority)">
-                                @workOrder.Priority
-                            </span>
-                        </strong>
-                    </div>
-
-                    <div>
-                        <span>Due Date</span>
-                        <strong>@workOrder.DueDate.ToString("dd MMM yyyy")</strong>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary-panel">
-                <div class="panel-header">
-                    <div>
-                        <h2>Before Saving</h2>
-                        <p>Use this quick check to keep the record useful.</p>
-                    </div>
-                </div>
-
-                <ul class="review-list">
-                    <li>Confirm the owner is still the person responsible for the next action.</li>
-                    <li>Update status if the work has moved forward.</li>
-                    <li>Use the due date to show the next realistic follow-up point.</li>
-                    <li>Add notes explaining progress, blockers, decisions, or closure evidence.</li>
-                    <li>Completed or closed work should have enough notes to explain the outcome.</li>
-                </ul>
-            </div>
-        </section>
-
-        @if (!string.IsNullOrWhiteSpace(errorMessage))
+<PageHero
+    Eyebrow="Operations"
+    Title="Edit Work Order"
+    Subtitle="Update work order owner, site, department, type, priority, status, due date, and notes."
+    BadgeText="@DisplayReference"
+    BadgeClass="of-badge-info">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/work-orders">Back to Work Orders</a>
+        @if (workOrder != null)
         {
-            <div class="alert alert-danger">@errorMessage</div>
+            <a class="of-btn of-btn-secondary" href="@($"/work-orders/details/{workOrder.Id}")">View Details</a>
         }
+    </Actions>
+</PageHero>
 
-        <section class="table-card work-order-edit-card">
-            <div class="form-grid">
-                <div class="form-field">
-                    <label>Work Order Number</label>
-                    <input class="form-control" @bind="workOrder.WorkOrderNumber" />
+@if (isLoading)
+{
+    <InfoPanel Title="Loading Work Order" Subtitle="Retrieving the selected work order record.">
+        <p class="of-muted-text">Loading work order...</p>
+    </InfoPanel>
+}
+else if (workOrder == null)
+{
+    <EmptyState
+        Title="Work order could not be found"
+        Message="The record may have been removed, or the link may be using an invalid ID."
+        Icon="⚠️"
+        ActionText="Back"
+        ActionHref="/work-orders" />
+}
+else
+{
+    <PurposeNote Title="Purpose" Icon="✏️">
+        <p>
+            Use this page to keep operational follow-up current. Changes made here feed Workload,
+            Reminders, Reports, Data Quality, Work Order Details, and Activity Log.
+        </p>
+    </PurposeNote>
 
-                    <FormFieldGuide Title="Work order number guidance"
-                                    Text="Keep the work order number unique so reports, activity history, and links stay clear." />
-                </div>
+    <MetricGrid>
+        <MetricCard
+            Title="Status"
+            Value="@workOrder.Status"
+            Detail="Update if the work has moved forward"
+            Icon="🔄"
+            Tone="@GetStatusTone(workOrder.Status)" />
 
-                <div class="form-field full-width">
-                    <label>Title</label>
-                    <input class="form-control" @bind="workOrder.Title" />
+        <MetricCard
+            Title="Work Order"
+            Value="@workOrder.WorkOrderNumber"
+            Detail="@workOrder.Type"
+            Icon="📋" />
 
-                    <FormFieldGuide Title="Title guidance"
-                                    Text="Use a short clear title that explains the work, such as repair roller door sensor, check spill kit contents, or investigate dispatch scanner issue." />
-                </div>
+        <MetricCard
+            Title="Owner"
+            Value="@DisplayText(workOrder.Owner)"
+            Detail="@workOrder.Department"
+            Icon="👤" />
 
-                <div class="form-field">
-                    <label>Site</label>
-                    <select class="form-select" @bind="workOrder.Site">
-                        @foreach (var site in SiteOptions)
-                        {
-                            <option value="@site">@site</option>
-                        }
-                    </select>
-                </div>
+        <MetricCard
+            Title="Due Date"
+            Value="@workOrder.DueDate.ToString("dd MMM")"
+            Detail="@workOrder.DueDate.ToString("yyyy")"
+            Icon="📅"
+            Tone="info" />
+    </MetricGrid>
 
-                <div class="form-field">
-                    <label>Department</label>
-                    <select class="form-select" @bind="workOrder.Department">
-                        @foreach (var department in DepartmentOptions)
-                        {
-                            <option value="@department">@department</option>
-                        }
-                    </select>
-                </div>
+    <GuidanceNote Title="Before Saving" Icon="💡" Tone="info">
+        <ul>
+            <li>Confirm the owner is still the person responsible for the next action.</li>
+            <li>Update status if the work has moved forward.</li>
+            <li>Use the due date to show the next realistic follow-up point.</li>
+            <li>Add notes explaining progress, blockers, decisions, or closure evidence.</li>
+            <li>Completed or closed work should have enough notes to explain the outcome.</li>
+        </ul>
+    </GuidanceNote>
 
-                <div class="form-field">
-                    <label>Owner</label>
-                    <input class="form-control" @bind="workOrder.Owner" />
-
-                    <FormFieldGuide Title="Owner guidance"
-                                    Text="Assign one clear owner so this work order appears correctly in workload, reminders, reports, and data quality checks." />
-                </div>
-
-                <div class="form-field">
-                    <label>Type</label>
-                    <select class="form-select" @bind="workOrder.Type">
-                        @foreach (var type in TypeOptions)
-                        {
-                            <option value="@type">@type</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="form-field">
-                    <label>Priority</label>
-                    <select class="form-select" @bind="workOrder.Priority">
-                        @foreach (var priority in PriorityOptions)
-                        {
-                            <option value="@priority">@priority</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="form-field">
-                    <label>Status</label>
-                    <select class="form-select" @bind="workOrder.Status">
-                        @foreach (var status in StatusOptions)
-                        {
-                            <option value="@status">@status</option>
-                        }
-                    </select>
-                </div>
-            </div>
-
-            <StatusFlowGuide Title="Work order status flow"
-                             Description="Use statuses consistently so operational work can be tracked through open, active, completed, and closed states."
-                             Steps="WorkOrderStatusSteps" />
-
-            <div class="form-grid form-grid-spaced">
-                <div class="form-field">
-                    <label>Created Date</label>
-                    <input class="form-control" type="date" @bind="workOrder.CreatedDate" />
-                </div>
-
-                <div class="form-field">
-                    <label>Due Date</label>
-                    <input class="form-control" type="date" @bind="workOrder.DueDate" />
-
-                    <FormFieldGuide Title="Due date guidance"
-                                    Text="Use the next realistic follow-up date. Overdue work orders appear in Workload, Reminders, Reports, Data Quality, and management review pages." />
-                </div>
-
-                <div class="form-field full-width">
-                    <label>Notes</label>
-                    <textarea class="form-control" rows="8" @bind="workOrder.Notes"></textarea>
-
-                    <div class="guidance-card">
-                        <div>
-                            <strong>Work order note guidance</strong>
-                            <p>
-                                Good work order notes should explain the current work state,
-                                not just repeat the title.
-                            </p>
-
-                            <ul>
-                                @foreach (var item in WorkOrderNoteGuideItems)
-                                {
-                                    <li>@item</li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <section class="activity-history-panel">
-                <div class="section-heading-row">
-                    <div>
-                        <h2>Activity History</h2>
-                        <p>
-                            Record-level traceability for this work order. This helps reviewers see when the item was
-                            created, updated, reviewed, completed, or changed.
-                        </p>
-                    </div>
-
-                    <div class="activity-count-card">
-                        <span>Events</span>
-                        <strong>@activityHistory.Count</strong>
-                    </div>
-                </div>
-
-                @if (activityHistory.Count == 0)
-                {
-                    <div class="empty-state">
-                        <strong>No activity history yet.</strong>
-                        <p>
-                            Save this work order to create a reviewed or updated activity event.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <div class="table-responsive">
-                        <table class="data-table activity-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Action</th>
-                                    <th>Description</th>
-                                    <th>Created By</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var activity in activityHistory)
-                                {
-                                    <tr>
-                                        <td>@activity.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
-                                        <td>
-                                            <span class="@GetActivityBadgeClass(activity.ActionType)">
-                                                @activity.ActionType
-                                            </span>
-                                        </td>
-                                        <td>@activity.Description</td>
-                                        <td>@activity.CreatedBy</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </section>
-
-            <div class="form-actions">
-                <button class="btn btn-secondary" type="button" @onclick="BackToReturnPage">
-                    Cancel
-                </button>
-
-                <button class="btn btn-secondary" type="button" @onclick="GoToDetails">
-                    View Details
-                </button>
-
-                <button class="btn btn-primary" type="button" @onclick="SaveWorkOrder">
-                    Save Changes
-                </button>
-            </div>
-        </section>
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <GuidanceNote Title="Save blocked" Icon="⚠️" Tone="danger">
+            <p>@errorMessage</p>
+        </GuidanceNote>
     }
-</div>
+
+    <InfoPanel Title="Edit Work Order" Subtitle="Update the fields below and save the changes.">
+        <ChildContent>
+            <EditForm Model="workOrder" OnSubmit="SaveWorkOrder">
+                <div class="of-form-grid">
+                    <div class="of-form-field">
+                        <label for="workOrderNumber">Work Order Number</label>
+                        <InputText id="workOrderNumber" class="of-input" @bind-Value="workOrder.WorkOrderNumber" />
+                    </div>
+
+                    <div class="of-form-field of-form-field--wide">
+                        <label for="title">Title</label>
+                        <InputText id="title" class="of-input" @bind-Value="workOrder.Title" />
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="site">Site</label>
+                        <InputSelect id="site" class="of-select" @bind-Value="workOrder.Site">
+                            @foreach (var site in SiteOptions)
+                            {
+                                <option value="@site">@site</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="department">Department</label>
+                        <InputSelect id="department" class="of-select" @bind-Value="workOrder.Department">
+                            @foreach (var department in DepartmentOptions)
+                            {
+                                <option value="@department">@department</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="owner">Owner</label>
+                        <InputText id="owner" class="of-input" @bind-Value="workOrder.Owner" />
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="type">Type</label>
+                        <InputSelect id="type" class="of-select" @bind-Value="workOrder.Type">
+                            @foreach (var type in TypeOptions)
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="priority">Priority</label>
+                        <InputSelect id="priority" class="of-select" @bind-Value="workOrder.Priority">
+                            @foreach (var priority in PriorityOptions)
+                            {
+                                <option value="@priority">@priority</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="status">Status</label>
+                        <InputSelect id="status" class="of-select" @bind-Value="workOrder.Status">
+                            @foreach (var status in StatusOptions)
+                            {
+                                <option value="@status">@status</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="createdDate">Created Date</label>
+                        <InputDate id="createdDate" class="of-input" @bind-Value="workOrder.CreatedDate" />
+                    </div>
+
+                    <div class="of-form-field">
+                        <label for="dueDate">Due Date</label>
+                        <InputDate id="dueDate" class="of-input" @bind-Value="workOrder.DueDate" />
+                    </div>
+
+                    <div class="of-form-field of-form-field--full">
+                        <label for="notes">Notes</label>
+                        <InputTextArea id="notes" class="of-textarea" @bind-Value="workOrder.Notes" />
+                    </div>
+                </div>
+
+                <div class="of-form-actions">
+                    <button type="button" class="of-btn of-btn-secondary" @onclick="BackToReturnPage">Cancel</button>
+                    <button type="button" class="of-btn of-btn-secondary" @onclick="GoToDetails">View Details</button>
+                    <button type="submit" class="of-btn of-btn-primary">Save Changes</button>
+                </div>
+            </EditForm>
+        </ChildContent>
+    </InfoPanel>
+
+    <OperationsFlow.Components.Shared.Ui.ActivityHistoryPanel
+        Title="Activity History"
+        Subtitle="Record-level traceability for this work order."
+        IsEmpty="@(activityHistory.Count == 0)"
+        EmptyTitle="No activity history yet"
+        EmptyMessage="Save this work order to create a reviewed or updated activity event.">
+        <ChildContent>
+            <table class="of-activity-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>Description</th>
+                        <th>Created By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var activity in activityHistory)
+                    {
+                        <tr>
+                            <td>@activity.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
+                            <td>
+                                <span class="@GetActivityBadgeClass(activity.ActionType)">
+                                    @activity.ActionType
+                                </span>
+                            </td>
+                            <td>@activity.Description</td>
+                            <td>@activity.CreatedBy</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </ChildContent>
+    </OperationsFlow.Components.Shared.Ui.ActivityHistoryPanel>
+}
 
 @code {
-    [Parameter]
-    public int Id { get; set; }
-
-    [SupplyParameterFromQuery]
-    public string? ReturnUrl { get; set; }
+    [Parameter] public int Id { get; set; }
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
 
     private WorkOrder? workOrder;
     private List<ActivityLog> activityHistory = new();
-
     private bool isLoading = true;
     private string errorMessage = "";
 
@@ -334,7 +247,7 @@
 
     private string DisplayReference => workOrder == null ? "WO" : workOrder.WorkOrderNumber;
 
-    private List<string> SiteOptions = new()
+    private readonly List<string> SiteOptions = new()
     {
         "Main Workshop",
         "Yard",
@@ -343,7 +256,7 @@
         "Dispatch Bay"
     };
 
-    private List<string> DepartmentOptions = new()
+    private readonly List<string> DepartmentOptions = new()
     {
         "Operations",
         "Health & Safety",
@@ -354,7 +267,7 @@
         "Quality"
     };
 
-    private List<string> TypeOptions = new()
+    private readonly List<string> TypeOptions = new()
     {
         "Maintenance",
         "Repair",
@@ -367,7 +280,7 @@
         "IT Support"
     };
 
-    private List<string> PriorityOptions = new()
+    private readonly List<string> PriorityOptions = new()
     {
         "Low",
         "Medium",
@@ -375,29 +288,12 @@
         "Critical"
     };
 
-    private List<string> StatusOptions = new()
+    private readonly List<string> StatusOptions = new()
     {
         "Open",
         "In Progress",
         "Completed",
         "Closed"
-    };
-
-    private static readonly IReadOnlyList<string> WorkOrderNoteGuideItems = new[]
-    {
-        "What issue, request, or task created this work order?",
-        "Where is the work located?",
-        "What has already been checked or completed?",
-        "What is still blocking completion?",
-        "If completed or closed, what confirms the outcome?"
-    };
-
-    private static readonly IReadOnlyList<StatusFlowGuide.StatusFlowStep> WorkOrderStatusSteps = new[]
-    {
-        new StatusFlowGuide.StatusFlowStep("Open", "Work has been raised but has not started yet.", "badge badge-warning"),
-        new StatusFlowGuide.StatusFlowStep("In Progress", "Owner is actively working through the task.", "badge badge-info"),
-        new StatusFlowGuide.StatusFlowStep("Completed", "Work is finished and ready for review or closure.", "badge badge-success"),
-        new StatusFlowGuide.StatusFlowStep("Closed", "Final review is complete and no further follow-up is needed.", "badge badge-success")
     };
 
     protected override async Task OnInitializedAsync()
@@ -442,16 +338,14 @@
             return;
         }
 
-        if (workOrder.DueDate < workOrder.CreatedDate)
+        if (workOrder.DueDate.Date < workOrder.CreatedDate.Date)
         {
             errorMessage = "Due date cannot be before created date.";
             return;
         }
 
         var duplicateNumberExists = await Db.WorkOrders
-            .AnyAsync(x =>
-                x.Id != workOrder.Id &&
-                x.WorkOrderNumber == workOrder.WorkOrderNumber);
+            .AnyAsync(x => x.Id != workOrder.Id && x.WorkOrderNumber == workOrder.WorkOrderNumber);
 
         if (duplicateNumberExists)
         {
@@ -475,8 +369,7 @@
                 recordId: workOrder.Id,
                 recordReference: workOrder.WorkOrderNumber,
                 actionType: GetSaveActionType(changeDescriptions),
-                description: $"Updated work order {workOrder.WorkOrderNumber}: {string.Join("; ", changeDescriptions)}."
-            );
+                description: $"Updated work order {workOrder.WorkOrderNumber}: {string.Join("; ", changeDescriptions)}.");
         }
         else
         {
@@ -485,13 +378,11 @@
                 recordId: workOrder.Id,
                 recordReference: workOrder.WorkOrderNumber,
                 actionType: "Reviewed",
-                description: $"Reviewed work order {workOrder.WorkOrderNumber} with no tracked field changes."
-            );
+                description: $"Reviewed work order {workOrder.WorkOrderNumber} with no tracked field changes.");
         }
 
         CaptureOriginalValues();
         await LoadActivityHistory();
-
         BackToReturnPage();
     }
 
@@ -505,9 +396,7 @@
 
         activityHistory = await Db.ActivityLogs
             .AsNoTracking()
-            .Where(x =>
-                x.ModuleName == "Work Orders" &&
-                x.RecordId == workOrder.Id)
+            .Where(x => x.ModuleName == "Work Orders" && x.RecordId == workOrder.Id)
             .OrderByDescending(x => x.CreatedDate)
             .ToListAsync();
     }
@@ -586,12 +475,12 @@
             return "";
         }
 
-        return "Work order reviewed." + Environment.NewLine
-            + $"Site: {workOrder.Site}" + Environment.NewLine
-            + $"Department: {workOrder.Department}" + Environment.NewLine
-            + $"Type: {workOrder.Type}" + Environment.NewLine
-            + $"Owner: {workOrder.Owner}" + Environment.NewLine
-            + "Next step: review, progress, complete, or close the work order.";
+        return "Work order reviewed."
+            + Environment.NewLine + $"Site: {workOrder.Site}"
+            + Environment.NewLine + $"Department: {workOrder.Department}"
+            + Environment.NewLine + $"Type: {workOrder.Type}"
+            + Environment.NewLine + $"Owner: {workOrder.Owner}"
+            + Environment.NewLine + "Next step: review, progress, complete, or close the work order.";
     }
 
     private void CaptureOriginalValues()
@@ -616,7 +505,8 @@
 
     private static string GetSaveActionType(List<string> changes)
     {
-        var statusChange = changes.FirstOrDefault(x => x.StartsWith("status changed", StringComparison.OrdinalIgnoreCase));
+        var statusChange = changes.FirstOrDefault(x =>
+            x.StartsWith("status changed", StringComparison.OrdinalIgnoreCase));
 
         if (statusChange != null &&
             (statusChange.Contains("Completed", StringComparison.OrdinalIgnoreCase) ||
@@ -641,7 +531,7 @@
 
     private void BackToReturnPage()
     {
-        var fallbackUrl = "/work-orders";
+        const string fallbackUrl = "/work-orders";
 
         if (string.IsNullOrWhiteSpace(ReturnUrl))
         {
@@ -663,28 +553,16 @@
         return string.IsNullOrWhiteSpace(value) ? "Not recorded" : value;
     }
 
-    private static string GetPriorityClass(string? priority)
-    {
-        return priority?.ToLowerInvariant() switch
-        {
-            "critical" => "badge badge-danger",
-            "high" => "badge badge-warning",
-            "medium" => "badge badge-info",
-            "low" => "badge badge-muted",
-            _ => "badge badge-muted"
-        };
-    }
-
-    private static string GetStatusClass(string? status)
+    private static string GetStatusTone(string? status)
     {
         return status?.ToLowerInvariant() switch
         {
-            "completed" => "badge badge-success",
-            "closed" => "badge badge-success",
-            "in progress" => "badge badge-info",
-            "open" => "badge badge-warning",
-            "new" => "badge badge-warning",
-            _ => "badge badge-muted"
+            "completed" => "success",
+            "closed" => "success",
+            "in progress" => "info",
+            "open" => "warning",
+            "new" => "warning",
+            _ => "default"
         };
     }
 
