@@ -1,130 +1,109 @@
 ﻿@page "/reminders"
-
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
 @using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
-
 @inject OperationsFlowDbContext Db
 
 <PageTitle>Reminder Centre - OperationsFlow</PageTitle>
 
-<div class="page-shell module-page reminder-centre-page">
-    <section class="module-header">
-        <div>
-            <p class="eyebrow dark">Daily Focus</p>
-            <h1>Reminder Centre</h1>
-            <p>
-                A focused view of overdue work, due-soon items, compliance reminders,
-                training expiries, and document intake records needing attention.
-            </p>
-        </div>
+<PageHero Eyebrow="Daily Focus"
+          Title="Reminder Centre"
+          Subtitle="A focused view of overdue work, due-soon items, compliance reminders, training expiries, and document intake records needing attention."
+          BadgeText="@($"{TotalReminderCount} reminders")"
+          BadgeClass="@ReminderBadgeClass">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/workload">Workload</a>
+        <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
+        <a class="of-btn of-btn-secondary" href="/data-quality">Data Quality</a>
+    </Actions>
+</PageHero>
 
-        <div class="module-header-stat">
-            <span>Total Reminders</span>
-            <strong>@TotalReminderCount</strong>
-        </div>
-    </section>
+<PurposeNote Title="Purpose" Icon="⏰">
+    <p>
+        Use this page to open the exact records that need follow-up. Reminders connect overdue work orders,
+        corrective actions, document reviews, training expiries, and document intake items into one daily review view.
+    </p>
+</PurposeNote>
 
-    <section class="page-purpose-note">
-        <strong>Purpose:</strong> use this page to open the exact records that need follow-up.
-        Reminders now point to work order details, corrective action edit pages, document intake records,
-        and the relevant compliance module pages.
-    </section>
+<MetricGrid>
+    <MetricCard Title="Total Reminders"
+                Value="@TotalReminderCount.ToString()"
+                Detail="All current reminder items"
+                Icon="📋"
+                Tone="@ReminderTone" />
 
-    <section class="module-summary-grid">
-        <article class="module-summary-card danger-card">
-            <span>Overdue Work</span>
-            <strong>@OverdueWorkCount</strong>
-            <small>Work orders and corrective actions</small>
-        </article>
+    <MetricCard Title="Overdue Work"
+                Value="@OverdueWorkCount.ToString()"
+                Detail="Work orders and corrective actions"
+                Icon="🚨"
+                Tone="danger" />
 
-        <article class="module-summary-card warning-card">
-            <span>Document Reviews</span>
-            <strong>@DocumentReminderCount</strong>
-            <small>Overdue or due soon</small>
-        </article>
+    <MetricCard Title="Document Reviews"
+                Value="@DocumentReminderCount.ToString()"
+                Detail="Overdue or due soon"
+                Icon="📄"
+                Tone="warning" />
 
-        <article class="module-summary-card info-card">
-            <span>Training Issues</span>
-            <strong>@TrainingReminderCount</strong>
-            <small>Expired or expiring soon</small>
-        </article>
+    <MetricCard Title="Training Issues"
+                Value="@TrainingReminderCount.ToString()"
+                Detail="Expired or expiring soon"
+                Icon="🎓"
+                Tone="warning" />
 
-        <article class="module-summary-card">
-            <span>Intake Follow-ups</span>
-            <strong>@IntakeReminderCount</strong>
-            <small>Overdue, due soon, or review needed</small>
-        </article>
+    <MetricCard Title="Intake Follow-ups"
+                Value="@IntakeReminderCount.ToString()"
+                Detail="Overdue, due soon, or review needed"
+                Icon="📥"
+                Tone="info" />
+</MetricGrid>
 
-        <article class="module-summary-card">
-            <span>Action Links</span>
-            <strong>@ActionLinkCount</strong>
-            <small>Openable reminder records</small>
-        </article>
-    </section>
+<InfoPanel Title="Recommended Review Order" Subtitle="Use this order when checking daily follow-up work.">
+    <ChildContent>
+        <ol class="of-review-steps">
+            <li>Open overdue work orders and corrective actions first.</li>
+            <li>Check document reviews that are overdue or due soon.</li>
+            <li>Review expired or expiring training records.</li>
+            <li>Process document intake records waiting for review or completion.</li>
+            <li>After updates, check Workload, Data Quality, Reports, and Activity Log.</li>
+        </ol>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Recommended Review Order</h2>
-                    <p>Use this order when checking daily follow-up work.</p>
-                </div>
+<InfoPanel Title="Reminder Coverage" Subtitle="What this page connects together.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Operations</strong>
+                <span>Work orders and corrective actions link directly to their review/edit pages.</span>
             </div>
 
-            <ol class="review-list">
-                <li>Open overdue work orders and corrective actions first.</li>
-                <li>Check document reviews that are overdue or due soon.</li>
-                <li>Review expired or expiring training records.</li>
-                <li>Process document intake records waiting for review or completion.</li>
-                <li>After updates, check Workload, Data Quality, Reports, and Activity Log.</li>
-            </ol>
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Reminder Coverage</h2>
-                    <p>What this page connects together.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Compliance</strong>
+                <span>Documents and training records point back to their compliance modules.</span>
             </div>
 
-            <div class="review-note-grid">
-                <div class="review-note-card">
-                    <span>OPERATIONS</span>
-                    <strong>Overdue work</strong>
-                    <p>Work orders and corrective actions link to their review/edit pages.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Admin</strong>
+                <span>Incoming document reminders open the exact intake record.</span>
+            </div>
 
-                <div class="review-note-card">
-                    <span>COMPLIANCE</span>
-                    <strong>Review cycles</strong>
-                    <p>Documents and training records point back to their compliance modules.</p>
-                </div>
-
-                <div class="review-note-card">
-                    <span>ADMIN</span>
-                    <strong>Document intake</strong>
-                    <p>Incoming document reminders open the exact intake record.</p>
-                </div>
-
-                <div class="review-note-card">
-                    <span>MANAGEMENT</span>
-                    <strong>Follow-up loop</strong>
-                    <p>Reminder actions support workload, reports, data quality, and traceability.</p>
-                </div>
+            <div class="of-review-proof-card">
+                <strong>Management</strong>
+                <span>Reminder actions support workload, reports, data quality, and traceability.</span>
             </div>
         </div>
-    </section>
+    </ChildContent>
+</InfoPanel>
 
-    <section class="module-toolbar">
-        <input class="search-input"
-               placeholder="Search reminder, owner, module, reference, status, or action..."
+<FilterBar Title="Filter Reminders">
+    <ChildContent>
+        <input class="of-input"
+               placeholder="Search reminders..."
                @bind="searchText"
                @bind:event="oninput" />
 
-        <select class="filter-select" @bind="categoryFilter">
+        <select class="of-select" @bind="categoryFilter">
             <option value="">All Categories</option>
             @foreach (var category in CategoryOptions)
             {
@@ -132,337 +111,292 @@
             }
         </select>
 
-        <select class="filter-select" @bind="urgencyFilter">
+        <select class="of-select" @bind="urgencyFilter">
             <option value="">All Urgency</option>
             <option value="Overdue">Overdue</option>
-            <option value="Due Soon">Due Soon</option>
-            <option value="Needs Review">Needs Review</option>
             <option value="Expired">Expired</option>
+            <option value="Needs Review">Needs Review</option>
+            <option value="Due Soon">Due Soon</option>
             <option value="Expiring Soon">Expiring Soon</option>
         </select>
-    </section>
+    </ChildContent>
 
-    <section class="table-card">
-        <div class="table-card-header">
-            <div>
-                <h2>Reminder Action List</h2>
-                <p>Showing @FilteredReminderItems.Count of @AllReminderItems.Count reminders.</p>
-            </div>
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/activity-log">Activity Log</a>
+        <a class="of-btn of-btn-secondary" href="/corrective-actions">Actions</a>
+    </Actions>
+</FilterBar>
 
-            <div class="activity-count-card">
-                <span>Open Links</span>
-                <strong>@FilteredReminderItems.Count(x => !string.IsNullOrWhiteSpace(x.ActionUrl))</strong>
-            </div>
-        </div>
+<TableCard Title="Reminder Action List"
+           Subtitle="@($"Showing {FilteredReminderItems.Count} of {AllReminderItems.Count} reminder item(s). {FilteredReminderItems.Count(x => !string.IsNullOrWhiteSpace(x.ActionUrl))} have direct open links.")"
+           IsEmpty="@(!FilteredReminderItems.Any())"
+           EmptyTitle="No reminders found"
+           EmptyMessage="No reminders match the current search or filter selection.">
+    <table>
+        <thead>
+            <tr>
+                <th>Urgency</th>
+                <th>Category</th>
+                <th>Reference</th>
+                <th>Reminder</th>
+                <th>Owner</th>
+                <th>Due / Review</th>
+                <th>Recommended Action</th>
+                <th>Open</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in FilteredReminderItems)
+            {
+                <tr>
+                    <td>
+                        <span class="@GetUrgencyClass(item.Urgency)">
+                            @item.Urgency
+                        </span>
+                    </td>
+                    <td>@item.Category</td>
+                    <td><strong>@item.Reference</strong></td>
+                    <td>
+                        <strong>@item.Title</strong>
+                        <div class="of-muted-text">@item.ModuleDetail</div>
+                    </td>
+                    <td>@item.Owner</td>
+                    <td>
+                        @item.DueDate.ToString("dd MMM yyyy")
+                        <div class="of-muted-text">@GetDueTimingText(item.DueDate)</div>
+                    </td>
+                    <td>@item.RecommendedAction</td>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(item.ActionUrl))
+                        {
+                            <a class="of-card-link" href="@item.ActionUrl">Open</a>
+                        }
+                        else
+                        {
+                            <span class="of-muted-text">Review</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</TableCard>
 
-        @if (!FilteredReminderItems.Any())
+<InfoPanel Title="Overdue Work Orders" Subtitle="Operational work requests past their due date.">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/work-orders">View Work Orders</a>
+    </Actions>
+    <ChildContent>
+        @if (!OverdueWorkOrders.Any())
         {
-            <div class="empty-state">
-                <strong>No reminders match the current filters.</strong>
-                <p>Clear the search or filters to show more reminder records.</p>
-            </div>
+            <EmptyState Title="No overdue work orders"
+                        Message="Open work orders currently have no overdue reminder flags."
+                        Icon="✅" />
         }
         else
         {
-            <div class="table-responsive">
-                <table class="data-table reminder-table">
-                    <thead>
-                        <tr>
-                            <th>Urgency</th>
-                            <th>Category</th>
-                            <th>Reference</th>
-                            <th>Reminder</th>
-                            <th>Owner</th>
-                            <th>Due / Review Date</th>
-                            <th>Recommended Action</th>
-                            <th>Open</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in FilteredReminderItems)
+            <div class="of-review-proof-grid">
+                @foreach (var item in OverdueWorkOrders.Take(6))
+                {
+                    <div class="of-review-proof-card">
+                        <strong>@item.WorkOrderNumber — @item.Title</strong>
+                        <span>@DisplayText(item.Owner) • @item.Department • Due @item.DueDate.ToString("dd MMM yyyy")</span>
+
+                        <div class="of-link-row">
+                            <span class="of-badge of-badge-danger">Overdue</span>
+                            <a class="of-card-link" href="@($"/work-orders/details/{item.Id}")">Open</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </ChildContent>
+</InfoPanel>
+
+<InfoPanel Title="Overdue Corrective Actions" Subtitle="Corrective or improvement actions past their due date.">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/corrective-actions">View Actions</a>
+    </Actions>
+    <ChildContent>
+        @if (!OverdueCorrectiveActions.Any())
+        {
+            <EmptyState Title="No overdue corrective actions"
+                        Message="Open corrective actions currently have no overdue reminder flags."
+                        Icon="✅" />
+        }
+        else
+        {
+            <div class="of-review-proof-grid">
+                @foreach (var item in OverdueCorrectiveActions.Take(6))
+                {
+                    <div class="of-review-proof-card">
+                        <strong>CA-@item.Id — @item.Title</strong>
+                        <span>@DisplayText(item.Owner) • @item.Source • Due @item.DueDate.ToString("dd MMM yyyy")</span>
+
+                        <div class="of-link-row">
+                            <span class="of-badge of-badge-danger">Overdue</span>
+                            <a class="of-card-link" href="@($"/corrective-actions/edit/{item.Id}?returnUrl={Uri.EscapeDataString("/reminders")}")">Open</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </ChildContent>
+</InfoPanel>
+
+<InfoPanel Title="Compliance Reminders" Subtitle="Document reviews and training records requiring follow-up.">
+    <ChildContent>
+        <div class="of-two-column-grid">
+            <div>
+                <h3 class="of-section-mini-title">Document Reviews</h3>
+
+                @if (!DocumentReviewReminders.Any())
+                {
+                    <EmptyState Title="No document review reminders"
+                                Message="Controlled documents currently have no overdue or due-soon review flags."
+                                Icon="✅" />
+                }
+                else
+                {
+                    <div class="of-mini-list">
+                        @foreach (var item in DocumentReviewReminders.Take(6))
                         {
-                            <tr>
-                                <td>
-                                    <span class="@GetUrgencyClass(item.Urgency)">
-                                        @item.Urgency
-                                    </span>
-                                </td>
-                                <td>@item.Category</td>
-                                <td class="strong-cell">@item.Reference</td>
-                                <td>
-                                    <strong>@item.Title</strong>
-                                    <small>@item.ModuleDetail</small>
-                                </td>
-                                <td>@item.Owner</td>
-                                <td>
-                                    <strong>@item.DueDate.ToString("dd MMM yyyy")</strong>
-                                    <small>@GetDueTimingText(item.DueDate)</small>
-                                </td>
-                                <td>@item.RecommendedAction</td>
-                                <td>
-                                    @if (!string.IsNullOrWhiteSpace(item.ActionUrl))
+                            <div class="of-mini-list-item">
+                                <div>
+                                    <strong>@item.DocumentNumber — @item.Title</strong>
+                                    <span>@DisplayText(item.Owner) • @item.Department • Review @item.NextReviewDate.ToString("dd MMM yyyy")</span>
+                                </div>
+
+                                <div class="of-link-row">
+                                    @if (item.IsReviewOverdue)
                                     {
-                                        <a class="btn btn-small btn-primary" href="@item.ActionUrl">
-                                            Open
-                                        </a>
+                                        <span class="of-badge of-badge-danger">Overdue</span>
                                     }
                                     else
                                     {
-                                        <span class="badge badge-muted">Review</span>
+                                        <span class="of-badge of-badge-warning">Due Soon</span>
                                     }
-                                </td>
-                            </tr>
+
+                                    <a class="of-card-link" href="/documents">Open</a>
+                                </div>
+                            </div>
                         }
-                    </tbody>
-                </table>
-            </div>
-        }
-    </section>
-
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Overdue Work Orders</h2>
-                    <p>Operational work requests past their due date.</p>
-                </div>
-
-                <a class="btn btn-small btn-primary" href="/work-orders">View Work Orders</a>
+                    </div>
+                }
             </div>
 
-            @if (!OverdueWorkOrders.Any())
-            {
-                <div class="empty-state">
-                    <strong>No overdue work orders.</strong>
-                    <p>Open work orders currently have no overdue reminder flags.</p>
-                </div>
-            }
-            else
-            {
-                <div class="issue-card-list">
-                    @foreach (var item in OverdueWorkOrders.Take(6))
-                    {
-                        <article class="issue-card">
-                            <div>
-                                <strong>@item.WorkOrderNumber — @item.Title</strong>
-                                <p>@item.Owner • @item.Department • Due @item.DueDate.ToString("dd MMM yyyy")</p>
-                                <span class="badge badge-danger">Overdue</span>
-                            </div>
-
-                            <div class="issue-card-actions">
-                                <a class="btn btn-small btn-primary" href="/work-orders/details/@item.Id">Open</a>
-                            </div>
-                        </article>
-                    }
-                </div>
-            }
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Overdue Corrective Actions</h2>
-                    <p>Corrective or improvement actions past their due date.</p>
-                </div>
-
-                <a class="btn btn-small btn-primary" href="/corrective-actions">View Actions</a>
-            </div>
-
-            @if (!OverdueCorrectiveActions.Any())
-            {
-                <div class="empty-state">
-                    <strong>No overdue corrective actions.</strong>
-                    <p>Open corrective actions currently have no overdue reminder flags.</p>
-                </div>
-            }
-            else
-            {
-                <div class="issue-card-list">
-                    @foreach (var item in OverdueCorrectiveActions.Take(6))
-                    {
-                        <article class="issue-card">
-                            <div>
-                                <strong>CA-@item.Id — @item.Title</strong>
-                                <p>@item.Owner • @item.Source • Due @item.DueDate.ToString("dd MMM yyyy")</p>
-                                <span class="badge badge-danger">Overdue</span>
-                            </div>
-
-                            <div class="issue-card-actions">
-                                <a class="btn btn-small btn-primary" href="/corrective-actions/edit/@item.Id">Open</a>
-                            </div>
-                        </article>
-                    }
-                </div>
-            }
-        </div>
-    </section>
-
-    <section class="summary-grid">
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Document Reviews</h2>
-                    <p>Controlled documents overdue for review or due soon.</p>
-                </div>
-
-                <a class="btn btn-small btn-primary" href="/documents">View Documents</a>
-            </div>
-
-            @if (!DocumentReviewReminders.Any())
-            {
-                <div class="empty-state">
-                    <strong>No document review reminders.</strong>
-                    <p>Controlled documents currently have no overdue or due-soon review flags.</p>
-                </div>
-            }
-            else
-            {
-                <div class="issue-card-list">
-                    @foreach (var item in DocumentReviewReminders.Take(6))
-                    {
-                        <article class="issue-card">
-                            <div>
-                                <strong>@item.DocumentNumber — @item.Title</strong>
-                                <p>@item.Owner • @item.Department • Review @item.NextReviewDate.ToString("dd MMM yyyy")</p>
-
-                                @if (item.IsReviewOverdue)
-                                {
-                                    <span class="badge badge-danger">Overdue</span>
-                                }
-                                else
-                                {
-                                    <span class="badge badge-warning">Due Soon</span>
-                                }
-                            </div>
-
-                            <div class="issue-card-actions">
-                                <a class="btn btn-small btn-primary" href="/documents">Open</a>
-                            </div>
-                        </article>
-                    }
-                </div>
-            }
-        </div>
-
-        <div class="summary-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Training Compliance</h2>
-                    <p>Expired or soon-to-expire training records.</p>
-                </div>
-
-                <a class="btn btn-small btn-primary" href="/training">View Training</a>
-            </div>
-
-            @if (!TrainingReminders.Any())
-            {
-                <div class="empty-state">
-                    <strong>No training reminders.</strong>
-                    <p>Training records currently have no expired or expiring-soon reminder flags.</p>
-                </div>
-            }
-            else
-            {
-                <div class="issue-card-list">
-                    @foreach (var item in TrainingReminders.Take(6))
-                    {
-                        <article class="issue-card">
-                            <div>
-                                <strong>@item.StaffName — @item.TrainingName</strong>
-                                <p>@item.Department • Expires @item.ExpiryDate.ToString("dd MMM yyyy")</p>
-
-                                @if (item.IsExpired)
-                                {
-                                    <span class="badge badge-danger">Expired</span>
-                                }
-                                else
-                                {
-                                    <span class="badge badge-warning">Expiring Soon</span>
-                                }
-                            </div>
-
-                            <div class="issue-card-actions">
-                                <a class="btn btn-small btn-primary" href="/training">Open</a>
-                            </div>
-                        </article>
-                    }
-                </div>
-            }
-        </div>
-    </section>
-
-    <section class="table-card">
-        <div class="table-card-header">
             <div>
-                <h2>Document Intake Follow-ups</h2>
-                <p>Incoming documents that are overdue, due soon, or waiting for manual review.</p>
+                <h3 class="of-section-mini-title">Training Compliance</h3>
+
+                @if (!TrainingReminders.Any())
+                {
+                    <EmptyState Title="No training reminders"
+                                Message="Training records currently have no expired or expiring-soon reminder flags."
+                                Icon="✅" />
+                }
+                else
+                {
+                    <div class="of-mini-list">
+                        @foreach (var item in TrainingReminders.Take(6))
+                        {
+                            <div class="of-mini-list-item">
+                                <div>
+                                    <strong>@item.StaffName — @item.TrainingName</strong>
+                                    <span>@item.Department • Expires @item.ExpiryDate.ToString("dd MMM yyyy")</span>
+                                </div>
+
+                                <div class="of-link-row">
+                                    @if (item.IsExpired)
+                                    {
+                                        <span class="of-badge of-badge-danger">Expired</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="of-badge of-badge-warning">Expiring Soon</span>
+                                    }
+
+                                    <a class="of-card-link" href="/training">Open</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
             </div>
-
-            <a class="btn btn-small btn-primary" href="/document-intake">View Intake</a>
         </div>
+    </ChildContent>
+</InfoPanel>
 
+<InfoPanel Title="Document Intake Follow-ups" Subtitle="Incoming documents that are overdue, due soon, or waiting for manual review.">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/document-intake">View Intake</a>
+    </Actions>
+    <ChildContent>
         @if (!IntakeReminders.Any())
         {
-            <div class="empty-state">
-                <strong>No document intake reminders.</strong>
-                <p>Incoming document records currently have no reminder flags.</p>
-            </div>
+            <EmptyState Title="No document intake reminders"
+                        Message="Incoming document records currently have no reminder flags."
+                        Icon="✅" />
         }
         else
         {
-            <div class="table-responsive">
-                <table class="data-table">
-                    <thead>
+            <table class="of-activity-table">
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Assigned To</th>
+                        <th>Target System</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                        <th>Flag</th>
+                        <th>Open</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in IntakeReminders)
+                    {
                         <tr>
-                            <th>Document</th>
-                            <th>Assigned To</th>
-                            <th>Target System</th>
-                            <th>Status</th>
-                            <th>Due Date</th>
-                            <th>Flag</th>
-                            <th>Open</th>
+                            <td><strong>@item.DocumentName</strong></td>
+                            <td>@DisplayText(item.AssignedTo)</td>
+                            <td>@DisplayText(item.TargetSystem)</td>
+                            <td>
+                                <span class="@GetIntakeStatusClass(item.Status)">
+                                    @DisplayText(item.Status)
+                                </span>
+                            </td>
+                            <td>@item.DueDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (item.IsOverdue)
+                                {
+                                    <span class="of-badge of-badge-danger">Overdue</span>
+                                }
+                                else if (item.NeedsReview)
+                                {
+                                    <span class="of-badge of-badge-warning">Needs Review</span>
+                                }
+                                else
+                                {
+                                    <span class="of-badge of-badge-info">Due Soon</span>
+                                }
+                            </td>
+                            <td>
+                                <a class="of-card-link" href="@($"/document-intake/edit/{item.Id}?returnUrl={Uri.EscapeDataString("/reminders")}")">Open</a>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in IntakeReminders)
-                        {
-                            <tr>
-                                <td class="strong-cell">@item.DocumentName</td>
-                                <td>@item.AssignedTo</td>
-                                <td>@item.TargetSystem</td>
-                                <td>
-                                    <span class="@GetIntakeStatusClass(item.Status)">
-                                        @item.Status
-                                    </span>
-                                </td>
-                                <td>@item.DueDate.ToString("dd MMM yyyy")</td>
-                                <td>
-                                    @if (item.IsOverdue)
-                                    {
-                                        <span class="badge badge-danger">Overdue</span>
-                                    }
-                                    else if (item.NeedsReview)
-                                    {
-                                        <span class="badge badge-warning">Needs Review</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge badge-info">Due Soon</span>
-                                    }
-                                </td>
-                                <td>
-                                    <a class="btn btn-small btn-primary" href="/document-intake/edit/@item.Id">
-                                        Open
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
         }
-    </section>
-</div>
+    </ChildContent>
+</InfoPanel>
+
+<GuidanceNote Title="Review Notes" Icon="💡" Tone="info">
+    <ul>
+        <li>Overdue operational work should be reviewed before due-soon compliance reminders.</li>
+        <li>Every reminder should either open the exact record or the source module where the follow-up can be created.</li>
+        <li>After updating records, confirm Workload, Reports, Data Quality, and Activity Log reflect the changes.</li>
+        <li>This page is local SQLite demo logic; production reminders could later trigger Teams/Outlook/Power Automate notifications.</li>
+    </ul>
+</GuidanceNote>
 
 @code {
     private List<WorkOrder> workOrders = new();
@@ -514,16 +448,20 @@
             .ToList();
 
     private int OverdueWorkCount => OverdueWorkOrders.Count + OverdueCorrectiveActions.Count;
-
     private int DocumentReminderCount => DocumentReviewReminders.Count;
-
     private int TrainingReminderCount => TrainingReminders.Count;
-
     private int IntakeReminderCount => IntakeReminders.Count;
-
     private int TotalReminderCount => AllReminderItems.Count;
 
-    private int ActionLinkCount => AllReminderItems.Count(x => !string.IsNullOrWhiteSpace(x.ActionUrl));
+    private string ReminderTone =>
+        TotalReminderCount == 0 ? "success" :
+        OverdueWorkCount > 0 ? "danger" :
+        "warning";
+
+    private string ReminderBadgeClass =>
+        TotalReminderCount == 0 ? "of-badge-success" :
+        OverdueWorkCount > 0 ? "of-badge-danger" :
+        "of-badge-warning";
 
     private List<string> CategoryOptions =>
         AllReminderItems
@@ -543,70 +481,65 @@
                     Category: "Work Orders",
                     Reference: x.WorkOrderNumber,
                     Title: x.Title,
-                    Owner: SafeText(x.Owner),
+                    Owner: DisplayText(x.Owner),
                     DueDate: x.DueDate,
                     Urgency: "Overdue",
                     ModuleDetail: $"{x.Department} • {x.Type}",
                     RecommendedAction: "Open the work order, review progress, update owner/status/due date, or close if completed.",
                     ActionUrl: $"/work-orders/details/{x.Id}"
-                ))
-            );
+                )));
 
             items.AddRange(
                 OverdueCorrectiveActions.Select(x => new ReminderItem(
                     Category: "Corrective Actions",
                     Reference: $"CA-{x.Id}",
                     Title: x.Title,
-                    Owner: SafeText(x.Owner),
+                    Owner: DisplayText(x.Owner),
                     DueDate: x.DueDate,
                     Urgency: "Overdue",
                     ModuleDetail: $"{x.Source} • {x.Priority}",
                     RecommendedAction: "Open the corrective action, review progress, update owner/status/due date, or close if completed.",
-                    ActionUrl: $"/corrective-actions/edit/{x.Id}"
-                ))
-            );
+                    ActionUrl: $"/corrective-actions/edit/{x.Id}?returnUrl={Uri.EscapeDataString("/reminders")}"
+                )));
 
             items.AddRange(
                 DocumentReviewReminders.Select(x => new ReminderItem(
                     Category: "Document Reviews",
                     Reference: x.DocumentNumber,
                     Title: x.Title,
-                    Owner: SafeText(x.Owner),
+                    Owner: DisplayText(x.Owner),
                     DueDate: x.NextReviewDate,
                     Urgency: x.IsReviewOverdue ? "Overdue" : "Due Soon",
                     ModuleDetail: $"{x.Department} • {x.Status}",
                     RecommendedAction: "Open Documents, review the controlled document, update version/status, or create follow-up work.",
                     ActionUrl: "/documents"
-                ))
-            );
+                )));
 
             items.AddRange(
                 TrainingReminders.Select(x => new ReminderItem(
                     Category: "Training",
                     Reference: x.StaffName,
                     Title: x.TrainingName,
-                    Owner: SafeText(x.StaffName),
+                    Owner: DisplayText(x.StaffName),
                     DueDate: x.ExpiryDate,
                     Urgency: x.IsExpired ? "Expired" : "Expiring Soon",
                     ModuleDetail: $"{x.Department} • {x.Status}",
                     RecommendedAction: "Open Training, confirm refresher requirements, book renewal, or create follow-up work.",
                     ActionUrl: "/training"
-                ))
-            );
+                )));
 
             items.AddRange(
                 IntakeReminders.Select(x => new ReminderItem(
                     Category: "Document Intake",
                     Reference: $"DI-{x.Id}",
                     Title: x.DocumentName,
-                    Owner: SafeText(x.AssignedTo),
+                    Owner: DisplayText(x.AssignedTo),
                     DueDate: x.DueDate,
                     Urgency: x.IsOverdue ? "Overdue" : x.NeedsReview ? "Needs Review" : "Due Soon",
                     ModuleDetail: $"{x.TargetSystem} • {x.Status}",
                     RecommendedAction: "Open the intake record, confirm owner/status, process the document, or complete/reject it.",
-                    ActionUrl: $"/document-intake/edit/{x.Id}"
-                ))
-            );
+                    ActionUrl: $"/document-intake/edit/{x.Id}?returnUrl={Uri.EscapeDataString("/reminders")}"
+                )));
 
             return items
                 .OrderByDescending(x => GetUrgencySort(x.Urgency))
@@ -637,14 +570,12 @@
 
             if (!string.IsNullOrWhiteSpace(categoryFilter))
             {
-                query = query.Where(x =>
-                    string.Equals(x.Category, categoryFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x => string.Equals(x.Category, categoryFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(urgencyFilter))
             {
-                query = query.Where(x =>
-                    string.Equals(x.Urgency, urgencyFilter, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(x => string.Equals(x.Urgency, urgencyFilter, StringComparison.OrdinalIgnoreCase));
             }
 
             return query.ToList();
@@ -653,25 +584,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        workOrders = await Db.WorkOrders
-            .AsNoTracking()
-            .ToListAsync();
-
-        correctiveActions = await Db.CorrectiveActions
-            .AsNoTracking()
-            .ToListAsync();
-
-        documents = await Db.DocumentRecords
-            .AsNoTracking()
-            .ToListAsync();
-
-        trainingRecords = await Db.TrainingRecords
-            .AsNoTracking()
-            .ToListAsync();
-
-        documentIntakeItems = await Db.DocumentIntakeItems
-            .AsNoTracking()
-            .ToListAsync();
+        workOrders = await Db.WorkOrders.AsNoTracking().ToListAsync();
+        correctiveActions = await Db.CorrectiveActions.AsNoTracking().ToListAsync();
+        documents = await Db.DocumentRecords.AsNoTracking().ToListAsync();
+        trainingRecords = await Db.TrainingRecords.AsNoTracking().ToListAsync();
+        documentIntakeItems = await Db.DocumentIntakeItems.AsNoTracking().ToListAsync();
     }
 
     private static string GetIntakeStatusClass(string? status)
@@ -739,15 +656,11 @@
 
     private static bool Contains(string? source, string search)
     {
-        if (string.IsNullOrWhiteSpace(source))
-        {
-            return false;
-        }
-
-        return source.Contains(search, StringComparison.OrdinalIgnoreCase);
+        return !string.IsNullOrWhiteSpace(source) &&
+               source.Contains(search, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static string SafeText(string? value)
+    private static string DisplayText(string? value)
     {
         return string.IsNullOrWhiteSpace(value) ? "Unassigned" : value;
     }
