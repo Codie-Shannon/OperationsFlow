@@ -1,5 +1,5 @@
-﻿<article class="of-metric-card @ToneClass @Class">
-    <div class="of-metric-card__top">
+﻿<div class="@ComputedCardClass">
+    <div class="of-metric-card__header">
         @if (!string.IsNullOrWhiteSpace(Icon))
         {
             <span class="of-metric-card__icon">@Icon</span>
@@ -10,34 +10,73 @@
 
     <div class="of-metric-card__value">@Value</div>
 
-    @if (!string.IsNullOrWhiteSpace(Detail))
+    @if (!string.IsNullOrWhiteSpace(DisplayDetail))
     {
-        <div class="of-metric-card__detail">@Detail</div>
+        <div class="of-metric-card__detail">@DisplayDetail</div>
     }
 
     @if (!string.IsNullOrWhiteSpace(LinkHref) && !string.IsNullOrWhiteSpace(LinkText))
     {
-        <a class="of-card-link" href="@LinkHref">@LinkText</a>
+        <a class="of-metric-card__link" href="@LinkHref">@LinkText</a>
     }
 
     @if (ChildContent is not null)
     {
-        <div class="of-metric-card__extra">
+        <div class="of-metric-card__content">
             @ChildContent
         </div>
     }
-</article>
+</div>
 
 @code {
     [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+
     [Parameter, EditorRequired] public string Value { get; set; } = string.Empty;
+
     [Parameter] public string? Detail { get; set; }
+
+    [Parameter] public string? Subtitle { get; set; }
+
     [Parameter] public string? Icon { get; set; }
+
     [Parameter] public string? LinkHref { get; set; }
+
     [Parameter] public string? LinkText { get; set; }
+
     [Parameter] public string Tone { get; set; } = "default";
+
     [Parameter] public string Class { get; set; } = string.Empty;
+
+    [Parameter] public string CardClass { get; set; } = string.Empty;
+
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    private string ToneClass => $"of-metric-card--{Tone}";
+    private string DisplayDetail =>
+        !string.IsNullOrWhiteSpace(Subtitle)
+            ? Subtitle!
+            : Detail ?? string.Empty;
+
+    private string ComputedCardClass
+    {
+        get
+        {
+            var classes = new List<string>
+            {
+                "of-metric-card",
+                $"of-metric-card--{Tone}"
+            };
+
+            if (!string.IsNullOrWhiteSpace(Class))
+            {
+                classes.Add(Class);
+            }
+
+            if (!string.IsNullOrWhiteSpace(CardClass))
+            {
+                classes.Add(CardClass);
+            }
+
+            return string.Join(" ", classes);
+        }
+    }
 }

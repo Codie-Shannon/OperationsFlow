@@ -64,6 +64,9 @@ using (var scope = app.Services.CreateScope())
         .GetRequiredService<IOptions<OperationsFlowOptions>>()
         .Value;
 
+    db.Database.EnsureCreated();
+    EnsureDocumentAttachmentsTable(db);
+
     if (operationsFlowOptions.EnableDemoDataSeeding)
     {
         DemoDataSeeder.Seed(db);
@@ -152,5 +155,58 @@ app.MapGet("/exports/document-intake.csv", async (CsvExportService csvExportServ
         "text/csv",
         "operationsflow-document-intake.csv");
 });
+
+static void EnsureDocumentAttachmentsTable(OperationsFlowDbContext db)
+{
+    db.Database.ExecuteSqlRaw("""
+        CREATE TABLE IF NOT EXISTS "DocumentAttachments" (
+            "Id" INTEGER NOT NULL CONSTRAINT "PK_DocumentAttachments" PRIMARY KEY AUTOINCREMENT,
+            "ModuleName" TEXT NOT NULL,
+            "RecordId" INTEGER NULL,
+            "RecordReference" TEXT NOT NULL,
+            "OriginalFileName" TEXT NOT NULL,
+            "StoredFileName" TEXT NOT NULL,
+            "StoredRelativePath" TEXT NOT NULL,
+            "PublicUrl" TEXT NOT NULL,
+            "ContentType" TEXT NOT NULL,
+            "FileSizeBytes" INTEGER NOT NULL,
+            "StorageProvider" TEXT NOT NULL,
+            "UploadedBy" TEXT NOT NULL,
+            "UploadedDate" TEXT NOT NULL,
+            "Notes" TEXT NOT NULL,
+            "Status" TEXT NOT NULL,
+            "IsEvidence" INTEGER NOT NULL,
+            "IsControlledDocument" INTEGER NOT NULL,
+            "IsDeleted" INTEGER NOT NULL,
+            "DeletedDate" TEXT NULL,
+            "DeletedBy" TEXT NOT NULL
+        );
+    """);
+
+    db.Database.ExecuteSqlRaw("""
+        CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_ModuleName"
+        ON "DocumentAttachments" ("ModuleName");
+    """);
+
+    db.Database.ExecuteSqlRaw("""
+        CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_RecordId"
+        ON "DocumentAttachments" ("RecordId");
+    """);
+
+    db.Database.ExecuteSqlRaw("""
+        CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_ModuleName_RecordId"
+        ON "DocumentAttachments" ("ModuleName", "RecordId");
+    """);
+
+    db.Database.ExecuteSqlRaw("""
+        CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_UploadedDate"
+        ON "DocumentAttachments" ("UploadedDate");
+    """);
+
+    db.Database.ExecuteSqlRaw("""
+        CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_IsDeleted"
+        ON "DocumentAttachments" ("IsDeleted");
+    """);
+}
 
 app.Run();

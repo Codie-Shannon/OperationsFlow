@@ -23,6 +23,8 @@ public class DocumentAttachmentService
 
     public async Task<List<DocumentAttachment>> GetAllActiveAsync()
     {
+        await EnsureDocumentAttachmentsTableAsync();
+
         return await db.DocumentAttachments
             .AsNoTracking()
             .Where(x => !x.IsDeleted)
@@ -33,6 +35,8 @@ public class DocumentAttachmentService
 
     public async Task<List<DocumentAttachment>> GetForRecordAsync(string moduleName, int recordId)
     {
+        await EnsureDocumentAttachmentsTableAsync();
+
         return await db.DocumentAttachments
             .AsNoTracking()
             .Where(x =>
@@ -46,6 +50,8 @@ public class DocumentAttachmentService
 
     public async Task<DocumentAttachment?> GetByIdAsync(int id)
     {
+        await EnsureDocumentAttachmentsTableAsync();
+
         return await db.DocumentAttachments
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
@@ -61,6 +67,8 @@ public class DocumentAttachmentService
         bool isEvidence,
         bool isControlledDocument)
     {
+        await EnsureDocumentAttachmentsTableAsync();
+
         if (!storageResult.Success)
         {
             return DocumentAttachmentCreateResult.Failed(storageResult.ErrorMessage);
@@ -102,6 +110,8 @@ public class DocumentAttachmentService
 
     public async Task<bool> SoftDeleteAsync(int id, string deletedBy)
     {
+        await EnsureDocumentAttachmentsTableAsync();
+
         var attachment = await db.DocumentAttachments
             .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
 
@@ -140,6 +150,59 @@ public class DocumentAttachmentService
         }
 
         return fileStorageService.GetPublicUrl(attachment.StoredRelativePath);
+    }
+
+    private async Task EnsureDocumentAttachmentsTableAsync()
+    {
+        await db.Database.ExecuteSqlRawAsync("""
+            CREATE TABLE IF NOT EXISTS "DocumentAttachments" (
+                "Id" INTEGER NOT NULL CONSTRAINT "PK_DocumentAttachments" PRIMARY KEY AUTOINCREMENT,
+                "ModuleName" TEXT NOT NULL,
+                "RecordId" INTEGER NULL,
+                "RecordReference" TEXT NOT NULL,
+                "OriginalFileName" TEXT NOT NULL,
+                "StoredFileName" TEXT NOT NULL,
+                "StoredRelativePath" TEXT NOT NULL,
+                "PublicUrl" TEXT NOT NULL,
+                "ContentType" TEXT NOT NULL,
+                "FileSizeBytes" INTEGER NOT NULL,
+                "StorageProvider" TEXT NOT NULL,
+                "UploadedBy" TEXT NOT NULL,
+                "UploadedDate" TEXT NOT NULL,
+                "Notes" TEXT NOT NULL,
+                "Status" TEXT NOT NULL,
+                "IsEvidence" INTEGER NOT NULL,
+                "IsControlledDocument" INTEGER NOT NULL,
+                "IsDeleted" INTEGER NOT NULL,
+                "DeletedDate" TEXT NULL,
+                "DeletedBy" TEXT NOT NULL
+            );
+        """);
+
+        await db.Database.ExecuteSqlRawAsync("""
+            CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_ModuleName"
+            ON "DocumentAttachments" ("ModuleName");
+        """);
+
+        await db.Database.ExecuteSqlRawAsync("""
+            CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_RecordId"
+            ON "DocumentAttachments" ("RecordId");
+        """);
+
+        await db.Database.ExecuteSqlRawAsync("""
+            CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_ModuleName_RecordId"
+            ON "DocumentAttachments" ("ModuleName", "RecordId");
+        """);
+
+        await db.Database.ExecuteSqlRawAsync("""
+            CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_UploadedDate"
+            ON "DocumentAttachments" ("UploadedDate");
+        """);
+
+        await db.Database.ExecuteSqlRawAsync("""
+            CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_IsDeleted"
+            ON "DocumentAttachments" ("IsDeleted");
+        """);
     }
 }
 

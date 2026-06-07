@@ -1,0 +1,616 @@
+﻿@page "/document-library"
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.Options
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@using OperationsFlow.Options
+@using OperationsFlow.Services
+@using OperationsFlow.Services.Storage
+@inject OperationsFlowDbContext Db
+@inject IFileStorageService FileStorageService
+@inject DocumentAttachmentService AttachmentService
+@inject IOptions<FileStorageOptions> FileStorageSettings
+
+<PageTitle>Document Library - OperationsFlow</PageTitle>
+
+<div class="of-page">
+    <PageHero Title="Document Library"
+              Eyebrow="Production Foundation"
+              Subtitle="Upload, store, review, and trace local evidence files before Week 4 SharePoint storage is connected."
+              BadgeText="@($"{attachments.Count(x => !x.IsDeleted)} files")"
+              BadgeClass="badge badge-info">
+        <Actions>
+            <a class="btn btn-secondary" href="/document-intake">Document Intake</a>
+            <a class="btn btn-secondary" href="/reports">Reports</a>
+            <a class="btn btn-secondary" href="/activity-log">Activity Log</a>
+        </Actions>
+    </PageHero>
+
+    <PurposeNote Icon="📎">
+        Document Library stores local file evidence through the Week 3 file storage abstraction.
+        The same page shape can later swap from local storage to SharePoint storage without changing the workflow pages.
+    </PurposeNote>
+
+    <div class="of-metric-grid">
+        <MetricCard Title="Total Files"
+                    Value="@TotalFiles.ToString()"
+                    Subtitle="Active attachment records"
+                    Icon="📁" />
+
+        <MetricCard Title="Evidence Files"
+                    Value="@EvidenceFiles.ToString()"
+                    Subtitle="Marked as supporting evidence"
+                    Icon="✅" />
+
+        <MetricCard Title="Controlled Docs"
+                    Value="@ControlledDocuments.ToString()"
+                    Subtitle="Marked as controlled documents"
+                    Icon="📄" />
+
+        <MetricCard Title="Storage Provider"
+                    Value="@FileStorageService.ProviderName"
+                    Subtitle="@StorageSubtitle"
+                    Icon="🗄️" />
+
+        <MetricCard Title="Max File Size"
+                    Value="@($"{StorageOptions.MaxFileSizeMb} MB")"
+                    Subtitle="Configured upload limit"
+                    Icon="📦" />
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(statusMessage))
+    {
+        <div class="@statusMessageClass">
+            @statusMessage
+        </div>
+    }
+
+    <InfoPanel Title="Upload Document"
+               Subtitle="Save a local file and create a traceable attachment record.">
+        <ChildContent>
+            <div class="of-form-grid">
+                <div class="form-group">
+                    <label>File</label>
+                    <InputFile OnChange="HandleFileSelected" />
+                    @if (selectedFile is not null)
+                    {
+                        <div class="helper-text">
+                            Selected: @selectedFile.Name (@FormatBytes(selectedFile.Size))
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="helper-text">
+                            Allowed: @AllowedExtensionsDisplay
+                        </div>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label>Module</label>
+                    <select class="form-control" @bind="uploadModel.ModuleName">
+                        @foreach (var module in ModuleOptions)
+                        {
+                            <option value="@module">@module</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Record ID</label>
+                    <input class="form-control"
+                           type="number"
+                           min="1"
+                           @bind="uploadModel.RecordId" />
+                </div>
+
+                <div class="form-group">
+                    <label>Record Reference</label>
+                    <input class="form-control"
+                           placeholder="Example: WO-1001, CA-5, DI-1"
+                           @bind="uploadModel.RecordReference" />
+                </div>
+
+                <div class="form-group">
+                    <label>Uploaded By</label>
+                    <input class="form-control"
+                           @bind="uploadModel.UploadedBy" />
+                </div>
+
+                <div class="form-group">
+                    <label>Attachment Type</label>
+                    <div class="checkbox-stack">
+                        <label class="checkbox-line">
+                            <input type="checkbox" @bind="uploadModel.IsEvidence" />
+                            Evidence file
+                        </label>
+
+                        <label class="checkbox-line">
+                            <input type="checkbox" @bind="uploadModel.IsControlledDocument" />
+                            Controlled document
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea class="form-control"
+                          rows="4"
+                          placeholder="Describe what this file proves, where it came from, or how it should be reviewed."
+                          @bind="uploadModel.Notes"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary"
+                        disabled="@isUploading"
+                        @onclick="UploadFileAsync">
+                    @if (isUploading)
+                    {
+                        <span>Uploading...</span>
+                    }
+                    else
+                    {
+                        <span>Upload Document</span>
+                    }
+                </button>
+
+                <button class="btn btn-secondary"
+                        type="button"
+                        disabled="@isUploading"
+                        @onclick="ResetUploadForm">
+                    Reset
+                </button>
+            </div>
+        </ChildContent>
+    </InfoPanel>
+
+    <FilterBar>
+        <ChildContent>
+            <input class="form-control"
+                   placeholder="Search document library..."
+                   @bind="searchText"
+                   @bind:event="oninput" />
+
+            <select class="form-control" @bind="moduleFilter">
+                <option value="">All Modules</option>
+                @foreach (var module in AvailableModules)
+                {
+                    <option value="@module">@module</option>
+                }
+            </select>
+
+            <select class="form-control" @bind="typeFilter">
+                <option value="">All Types</option>
+                <option value="Evidence">Evidence</option>
+                <option value="Controlled Document">Controlled Document</option>
+                <option value="General">General</option>
+            </select>
+        </ChildContent>
+
+        <Actions>
+            <a class="btn btn-secondary" href="/activity-log">Activity Log</a>
+        </Actions>
+    </FilterBar>
+
+    <TableCard Title="Stored Documents"
+               Subtitle="@($"Showing {FilteredAttachments.Count()} of {TotalFiles} active attachment record(s).")">
+        <ChildContent>
+            @if (isLoading)
+            {
+                <EmptyState Icon="⏳"
+                            Title="Loading document library..."
+                            Message="Attachment records are being loaded." />
+            }
+            else if (!FilteredAttachments.Any())
+            {
+                <EmptyState Icon="📁"
+                            Title="No documents found"
+                            Message="Upload a document or adjust the current filters." />
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="of-table">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Module</th>
+                                <th>Record</th>
+                                <th>Type</th>
+                                <th>Uploaded</th>
+                                <th>Size</th>
+                                <th>Provider</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var attachment in FilteredAttachments)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@attachment.OriginalFileName</strong>
+                                        @if (!string.IsNullOrWhiteSpace(attachment.Notes))
+                                        {
+                                            <div class="helper-text">@attachment.Notes</div>
+                                        }
+                                    </td>
+                                    <td>@attachment.DisplayModuleName</td>
+                                    <td>@attachment.DisplayRecordReference</td>
+                                    <td>
+                                        @if (attachment.IsEvidence)
+                                        {
+                                            <span class="badge badge-success">Evidence</span>
+                                        }
+
+                                        @if (attachment.IsControlledDocument)
+                                        {
+                                            <span class="badge badge-info">Controlled</span>
+                                        }
+
+                                        @if (!attachment.IsEvidence && !attachment.IsControlledDocument)
+                                        {
+                                            <span class="badge badge-muted">General</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @attachment.UploadedDate.ToString("dd MMM yyyy")
+                                        <div class="helper-text">@attachment.UploadedBy</div>
+                                    </td>
+                                    <td>@attachment.FileSizeDisplay</td>
+                                    <td>
+                                        <span class="badge badge-muted">@attachment.StorageProvider</span>
+                                    </td>
+                                    <td>
+                                        <div class="table-actions">
+                                            @if (!string.IsNullOrWhiteSpace(GetOpenUrl(attachment)))
+                                            {
+                                                <a class="link-action"
+                                                   href="@GetOpenUrl(attachment)"
+                                                   target="_blank">
+                                                    Open
+                                                </a>
+
+                                                <a class="link-action"
+                                                   href="@GetOpenUrl(attachment)"
+                                                   download="@attachment.OriginalFileName">
+                                                    Download
+                                                </a>
+                                            }
+
+                                            <button class="link-action danger-link"
+                                                    type="button"
+                                                    @onclick="() => SoftDeleteAsync(attachment.Id)">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </ChildContent>
+    </TableCard>
+
+    <InfoPanel Title="Production Storage Path"
+               Subtitle="How this Week 3 local feature maps to Week 4 production.">
+        <ChildContent>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>Local Provider</h4>
+                    <p>Files are saved under the configured local upload path and exposed through static files.</p>
+                </div>
+
+                <div class="info-card">
+                    <h4>Metadata</h4>
+                    <p>Each file stores module, record ID, record reference, storage provider, notes, and upload details.</p>
+                </div>
+
+                <div class="info-card">
+                    <h4>SharePoint Swap</h4>
+                    <p>Week 4 replaces the provider with SharePoint storage while keeping the same attachment records.</p>
+                </div>
+
+                <div class="info-card">
+                    <h4>Traceability</h4>
+                    <p>Uploads and deletes are logged so file evidence can be reviewed through Activity Log.</p>
+                </div>
+            </div>
+        </ChildContent>
+    </InfoPanel>
+
+    <GuidanceNote Title="Review Notes">
+        <ul>
+            <li>Upload files here first before attaching them directly to workflow records in Block 5.</li>
+            <li>Use module and record reference fields so evidence is traceable.</li>
+            <li>Local storage is for Week 3 proof; SharePoint storage is the Week 4 production provider.</li>
+            <li>Deleted files are soft-deleted in metadata so the record can remain auditable.</li>
+        </ul>
+    </GuidanceNote>
+</div>
+
+@code {
+    private readonly DocumentLibraryUploadModel uploadModel = new();
+
+    private List<DocumentAttachment> attachments = new();
+
+    private IBrowserFile? selectedFile;
+
+    private bool isLoading = true;
+    private bool isUploading = false;
+
+    private string searchText = "";
+    private string moduleFilter = "";
+    private string typeFilter = "";
+    private string statusMessage = "";
+    private string statusMessageClass = "alert alert-info";
+
+    private FileStorageOptions StorageOptions => FileStorageSettings.Value;
+
+    private string StorageSubtitle =>
+        FileStorageService.ProviderName.Equals("Local", StringComparison.OrdinalIgnoreCase)
+            ? StorageOptions.LocalRootPath
+            : "Production provider";
+
+    private string AllowedExtensionsDisplay =>
+        string.Join(", ", StorageOptions.AllowedExtensions);
+
+    private int TotalFiles => attachments.Count(x => !x.IsDeleted);
+
+    private int EvidenceFiles => attachments.Count(x => !x.IsDeleted && x.IsEvidence);
+
+    private int ControlledDocuments => attachments.Count(x => !x.IsDeleted && x.IsControlledDocument);
+
+    private List<string> ModuleOptions { get; } = new()
+    {
+        "General",
+        "Work Orders",
+        "Corrective Actions",
+        "Document Intake",
+        "Document Control",
+        "Risk Register",
+        "Training",
+        "Reports",
+        "Data Quality"
+    };
+
+    private List<string> AvailableModules =>
+        attachments
+            .Where(x => !x.IsDeleted)
+            .Select(x => x.ModuleName)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+    private IEnumerable<DocumentAttachment> FilteredAttachments
+    {
+        get
+        {
+            var query = attachments
+                .Where(x => !x.IsDeleted)
+                .AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(x =>
+                    Contains(x.OriginalFileName, searchText) ||
+                    Contains(x.ModuleName, searchText) ||
+                    Contains(x.RecordReference, searchText) ||
+                    Contains(x.UploadedBy, searchText) ||
+                    Contains(x.Notes, searchText) ||
+                    Contains(x.ContentType, searchText) ||
+                    Contains(x.StorageProvider, searchText));
+            }
+
+            if (!string.IsNullOrWhiteSpace(moduleFilter))
+            {
+                query = query.Where(x =>
+                    string.Equals(x.ModuleName, moduleFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(typeFilter))
+            {
+                query = typeFilter switch
+                {
+                    "Evidence" => query.Where(x => x.IsEvidence),
+                    "Controlled Document" => query.Where(x => x.IsControlledDocument),
+                    "General" => query.Where(x => !x.IsEvidence && !x.IsControlledDocument),
+                    _ => query
+                };
+            }
+
+            return query
+                .OrderByDescending(x => x.UploadedDate)
+                .ThenByDescending(x => x.Id)
+                .ToList();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAttachmentsAsync();
+        isLoading = false;
+    }
+
+    private async Task LoadAttachmentsAsync()
+    {
+        attachments = await AttachmentService.GetAllActiveAsync();
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        statusMessage = "";
+
+        if (selectedFile is null)
+        {
+            return;
+        }
+
+        if (!FileStorageService.IsAllowedFile(selectedFile.Name, selectedFile.Size, out var validationMessage))
+        {
+            statusMessage = validationMessage;
+            statusMessageClass = "alert alert-warning";
+        }
+    }
+
+    private async Task UploadFileAsync()
+    {
+        statusMessage = "";
+        statusMessageClass = "alert alert-info";
+
+        if (selectedFile is null)
+        {
+            statusMessage = "Choose a file before uploading.";
+            statusMessageClass = "alert alert-warning";
+            return;
+        }
+
+        if (!FileStorageService.IsAllowedFile(selectedFile.Name, selectedFile.Size, out var validationMessage))
+        {
+            statusMessage = validationMessage;
+            statusMessageClass = "alert alert-warning";
+            return;
+        }
+
+        isUploading = true;
+
+        try
+        {
+            var maxBytes = StorageOptions.MaxFileSizeMb * 1024L * 1024L;
+
+            await using var stream = selectedFile.OpenReadStream(maxAllowedSize: maxBytes);
+
+            var storageResult = await FileStorageService.SaveAsync(new FileStorageSaveRequest
+            {
+                FileStream = stream,
+                OriginalFileName = selectedFile.Name,
+                ContentType = selectedFile.ContentType,
+                FileSizeBytes = selectedFile.Size,
+                ModuleName = uploadModel.ModuleName,
+                RecordId = uploadModel.RecordId,
+                UploadedBy = uploadModel.UploadedBy
+            });
+
+            if (!storageResult.Success)
+            {
+                statusMessage = storageResult.ErrorMessage;
+                statusMessageClass = "alert alert-warning";
+                return;
+            }
+
+            var createResult = await AttachmentService.CreateFromStorageResultAsync(
+                storageResult: storageResult,
+                moduleName: uploadModel.ModuleName,
+                recordId: uploadModel.RecordId,
+                recordReference: uploadModel.RecordReference,
+                uploadedBy: uploadModel.UploadedBy,
+                notes: uploadModel.Notes,
+                isEvidence: uploadModel.IsEvidence,
+                isControlledDocument: uploadModel.IsControlledDocument);
+
+            if (!createResult.IsSuccessful)
+            {
+                statusMessage = createResult.ErrorMessage;
+                statusMessageClass = "alert alert-warning";
+                return;
+            }
+
+            statusMessage = $"Uploaded '{selectedFile.Name}' successfully.";
+            statusMessageClass = "alert alert-success";
+
+            ResetUploadForm();
+            await LoadAttachmentsAsync();
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Upload failed: {ex.Message}";
+            statusMessageClass = "alert alert-danger";
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+
+    private async Task SoftDeleteAsync(int id)
+    {
+        var deleted = await AttachmentService.SoftDeleteAsync(id, "Demo User");
+
+        if (deleted)
+        {
+            statusMessage = "Attachment deleted from the active document library.";
+            statusMessageClass = "alert alert-success";
+            await LoadAttachmentsAsync();
+        }
+        else
+        {
+            statusMessage = "Attachment could not be deleted.";
+            statusMessageClass = "alert alert-warning";
+        }
+    }
+
+    private void ResetUploadForm()
+    {
+        selectedFile = null;
+        uploadModel.ModuleName = "General";
+        uploadModel.RecordId = null;
+        uploadModel.RecordReference = "";
+        uploadModel.UploadedBy = "Demo User";
+        uploadModel.Notes = "";
+        uploadModel.IsEvidence = false;
+        uploadModel.IsControlledDocument = false;
+    }
+
+    private string GetOpenUrl(DocumentAttachment attachment)
+    {
+        if (!string.IsNullOrWhiteSpace(attachment.PublicUrl))
+        {
+            return attachment.PublicUrl;
+        }
+
+        return AttachmentService.GetPublicUrl(attachment);
+    }
+
+    private static bool Contains(string? source, string search)
+    {
+        return !string.IsNullOrWhiteSpace(source) &&
+               source.Contains(search, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string FormatBytes(long bytes)
+    {
+        if (bytes < 1024)
+        {
+            return $"{bytes} B";
+        }
+
+        if (bytes < 1024 * 1024)
+        {
+            return $"{bytes / 1024.0:0.0} KB";
+        }
+
+        return $"{bytes / 1024.0 / 1024.0:0.0} MB";
+    }
+
+    private class DocumentLibraryUploadModel
+    {
+        public string ModuleName { get; set; } = "General";
+
+        public int? RecordId { get; set; }
+
+        public string RecordReference { get; set; } = "";
+
+        public string UploadedBy { get; set; } = "Demo User";
+
+        public string Notes { get; set; } = "";
+
+        public bool IsEvidence { get; set; }
+
+        public bool IsControlledDocument { get; set; }
+    }
+}

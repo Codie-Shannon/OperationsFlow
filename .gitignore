@@ -16,12 +16,10 @@ obj/
 .vscode/
 
 # Local database files
+wwwroot/uploads/
 *.db
 *.db-shm
 *.db-wal
-operationsflow.db
-operationsflow.db-shm
-operationsflow.db-wal
 
 # Logs
 *.log
