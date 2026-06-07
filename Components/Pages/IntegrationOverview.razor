@@ -2,80 +2,253 @@
 
 <PageTitle>Integration Overview - OperationsFlow</PageTitle>
 
-<PageHero
-    Eyebrow="Microsoft 365 Ready"
-    Title="Integration Overview"
-    Subtitle="Explain the intended Microsoft 365 / Power Platform integration direction without claiming production sync exists yet."
-    BadgeText="Week 2"
-    BadgeClass="of-badge-info">
+<PageHero Eyebrow="OPERATIONSFLOW / MICROSOFT 365 DIRECTION"
+          Title="Integration Overview"
+          Subtitle="OperationsFlow is currently local, but the Week 3 evidence system is shaped so the same workflow can move toward Microsoft 365, SharePoint document libraries, Microsoft Graph, Entra ID, Teams/Outlook notifications, and Power BI reporting."
+          BadgeText="Integration Ready"
+          BadgeClass="of-badge of-badge-info">
     <Actions>
-        <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
-        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
-        <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+        <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
+        <a class="of-btn of-btn-secondary" href="/implementation-plan">Implementation Plan</a>
+        <a class="of-btn of-btn-secondary" href="/prototype-scope">Prototype Scope</a>
+        <a class="of-btn of-btn-primary" href="/admin-settings">Admin Settings</a>
     </Actions>
 </PageHero>
 
-<PurposeNote Title="Purpose" Icon="📌">
-    <p>OperationsFlow is designed so its local records can map into SharePoint Lists, document libraries, Power Automate notifications, Outlook/Teams reminders, and Power BI reporting.</p>
+<PurposeNote Title="Purpose" Icon="🔗">
+    <p>
+        This page explains how the local OperationsFlow workflow maps to a production Microsoft 365 implementation.
+        Week 3 proves the local business workflow. Week 4 should replace the provider/authentication layer without redesigning the whole app.
+    </p>
 </PurposeNote>
 
 <MetricGrid>
-    <MetricCard Title="Workflow MVP" Value="Week 2" Detail="Create/edit, reminders, workload, reporting, and traceability" Icon="✅" Tone="success" />
-    <MetricCard Title="Prototype" Value="SQLite" Detail="Local demo data, not production deployment" Icon="🧪" Tone="info" />
-    <MetricCard Title="Evidence" Value="Ready" Detail="Supports screenshots, walkthroughs, and review notes" Icon="📦" Tone="success" />
-    <MetricCard Title="Next Stage" Value="M365" Detail="SharePoint, Lists, Power Automate, and Power BI direction" Icon="🔗" Tone="warning" />
+    <MetricCard Title="Current Mode"
+                Value="Local"
+                Detail="SQLite records, local evidence storage, and local Activity Log."
+                Icon="💻"
+                Tone="info" />
+
+    <MetricCard Title="Storage Target"
+                Value="SharePoint"
+                Detail="Document library storage through Microsoft Graph."
+                Icon="☁️"
+                Tone="success" />
+
+    <MetricCard Title="Auth Target"
+                Value="Entra ID"
+                Detail="Production login and role-aware access control."
+                Icon="🔐"
+                Tone="warning" />
+
+    <MetricCard Title="Reporting Target"
+                Value="Power BI"
+                Detail="Reusable management reporting and evidence coverage review."
+                Icon="📊"
+                Tone="default" />
 </MetricGrid>
 
-<InfoPanel Title="Review Summary" Subtitle="What this page should communicate to a reviewer.">
-    <ChildContent>
-        <div class="of-review-proof-grid">
-            <div class="of-review-proof-card">
-                <strong>Business Context</strong>
-                <span>Explains why the workflow exists and what problem it solves.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Technical Context</strong>
-                <span>Connects the local Blazor/SQLite prototype to a realistic implementation path.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Portfolio Context</strong>
-                <span>Shows the project as evidence of systems thinking, not just UI layout.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Boundary Context</strong>
-                <span>Keeps the prototype honest about what is and is not production-ready.</span>
-            </div>
+<InfoPanel Title="Integration direction"
+           Subtitle="The Week 3 local system now maps cleanly to a Microsoft 365 production implementation."
+           Tone="default">
+
+    <div class="of-review-proof-grid">
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-info">Records</span>
+            <h3>Workflow data</h3>
+            <p>
+                Work Orders, Corrective Actions, Document Intake, Risk, Training, and supporting modules currently run locally through the app database.
+            </p>
         </div>
-    </ChildContent>
-</InfoPanel>
 
-<InfoPanel Title="Key Points" Subtitle="Use these notes when walking through the project.">
-    <ChildContent>
-        <ol class="of-review-steps">
-            <li>OperationsFlow captures work before it disappears into emails, conversations, spreadsheets, or paper notes.</li>
-            <li>Records feed management views such as Reminders, Workload, Reports, Data Quality, and Activity Log.</li>
-            <li>Corrective actions can be source-linked from risks, training, and controlled documents.</li>
-            <li>Activity history provides traceability evidence for create, update, and review workflows.</li>
-            <li>The project is Microsoft 365-ready in design, but still a local SQLite demo prototype.</li>
-        </ol>
-    </ChildContent>
-</InfoPanel>
-
-<InfoPanel Title="Connected Review Links" Subtitle="Open the main evidence pages from here.">
-    <ChildContent>
-        <div class="of-review-proof-grid">
-            <a class="of-review-proof-card of-click-card" href="/reports"><strong>Reports</strong><span>Management reporting and CSV export evidence.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/data-quality"><strong>Data Quality</strong><span>Weak records, overdue work, and review issues.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/activity-log"><strong>Activity Log</strong><span>Global traceability and workflow evidence.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/implementation-plan"><strong>Implementation Plan</strong><span>Week 3/4 hybrid and Microsoft 365 direction.</span></a>
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-success">Evidence</span>
+            <h3>SharePoint-ready files</h3>
+            <p>
+                Attachments are already linked through metadata and a storage service shape, making SharePoint a provider swap instead of a page rebuild.
+            </p>
         </div>
-    </ChildContent>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-warning">Identity</span>
+            <h3>Entra ID path</h3>
+            <p>
+                Week 4 can add Microsoft Entra ID authentication and map users into Admin, Manager, Reviewer, Worker, and ReadOnly roles.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-muted">Automation</span>
+            <h3>Teams / Outlook / Power Automate</h3>
+            <p>
+                Reminders, overdue actions, management review prompts, and document follow-up can move into production notification workflows.
+            </p>
+        </div>
+    </div>
 </InfoPanel>
 
-<GuidanceNote Title="Prototype Boundary" Icon="🚧" Tone="warning">
-    <ul>
-        <li>This page is part of the portfolio review layer.</li>
-        <li>The current app uses local SQLite demo data.</li>
-        <li>Production rollout would need authentication, permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
-    </ul>
+<TableCard Title="Integration map"
+           Subtitle="The current local implementation and the Microsoft 365 production target line up cleanly.">
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>OperationsFlow feature</th>
+                <th>Current local implementation</th>
+                <th>Microsoft 365 / production target</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="of-badge of-badge-info">Workflow records</span></td>
+                <td>SQLite tables and EF Core services</td>
+                <td>SQL database, Microsoft Lists, Dataverse, or hybrid integration depending on client size and requirements.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Evidence files</span></td>
+                <td>Local provider under wwwroot/uploads</td>
+                <td>SharePoint document library via Microsoft Graph.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-warning">Attachment metadata</span></td>
+                <td>DocumentAttachment rows in SQLite</td>
+                <td>Application metadata plus SharePoint drive item ids, web URLs, eTags, and library paths.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-muted">Authentication</span></td>
+                <td>No enforced local auth</td>
+                <td>Microsoft Entra ID authentication.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-info">Roles</span></td>
+                <td>Documented readiness model only</td>
+                <td>Entra groups, app roles, policy-based authorization, and SharePoint permissions alignment.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Notifications</span></td>
+                <td>Local reminders and reports</td>
+                <td>Power Automate, Outlook email, Teams alerts, and scheduled review reminders.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-warning">Reporting</span></td>
+                <td>In-app reports and CSV exports</td>
+                <td>Power BI model using app exports, database views, SharePoint/List data, or a reporting dataset.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-muted">Audit trail</span></td>
+                <td>Activity Log table</td>
+                <td>Application audit log plus Microsoft 365 audit/compliance records where available.</td>
+            </tr>
+        </tbody>
+    </table>
+</TableCard>
+
+<div class="of-two-column-grid">
+    <InfoPanel Title="SharePoint / Graph configuration needed"
+               Subtitle="Week 4 needs real tenant and app registration details before the provider can be implemented."
+               Tone="info">
+
+        <ul class="of-mini-list">
+            <li class="of-mini-list-item">
+                <strong>Tenant id:</strong>
+                <span>Connects the app to the correct Microsoft 365 tenant.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Client id:</strong>
+                <span>Identifies the app registration used for Microsoft Graph access.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Secret/certificate:</strong>
+                <span>Allows secure server-side Graph authentication.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Site id:</strong>
+                <span>Points OperationsFlow to the correct SharePoint site.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Drive/library id:</strong>
+                <span>Controls where evidence files are uploaded.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Permission scopes:</strong>
+                <span>Controls upload, read, download, and delete/archive behaviour.</span>
+            </li>
+        </ul>
+    </InfoPanel>
+
+    <InfoPanel Title="Suggested SharePoint folder convention"
+               Subtitle="Evidence should stay understandable even when viewed directly in SharePoint."
+               Tone="success">
+
+        <ul class="of-mini-list">
+            <li class="of-mini-list-item">
+                <strong>Root:</strong>
+                <span>OperationsFlow Evidence</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Work Orders:</strong>
+                <span>OperationsFlow Evidence / WorkOrders / WO-1001</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Corrective Actions:</strong>
+                <span>OperationsFlow Evidence / CorrectiveActions / CA-1</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Document Intake:</strong>
+                <span>OperationsFlow Evidence / DocumentIntake / DI-7</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Metadata:</strong>
+                <span>Application still stores structured DocumentAttachment records.</span>
+            </li>
+        </ul>
+    </InfoPanel>
+</div>
+
+<TableCard Title="Week 4 provider behaviour"
+           Subtitle="The production provider should match the local workflow but use SharePoint behind the storage service.">
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Local behaviour today</th>
+                <th>SharePoint behaviour in Week 4</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="of-badge of-badge-success">Upload</span></td>
+                <td>Save file to wwwroot/uploads and create metadata row.</td>
+                <td>Upload file to SharePoint drive/library folder and store drive item metadata.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-info">Open/download</span></td>
+                <td>Open local static file path.</td>
+                <td>Use Graph download URL, SharePoint web URL, or controlled app download endpoint.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-warning">Soft delete</span></td>
+                <td>Mark attachment inactive/deleted in metadata and keep traceability.</td>
+                <td>Mark attachment inactive and either archive, recycle, or retention-handle the SharePoint file.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-muted">Audit</span></td>
+                <td>Write Activity Log entry.</td>
+                <td>Write app Activity Log entry and rely on Microsoft 365 audit/compliance where configured.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-danger">Permissions</span></td>
+                <td>No enforced production auth.</td>
+                <td>Enforce Entra ID role policy and align SharePoint access with application permissions.</td>
+            </tr>
+        </tbody>
+    </table>
+</TableCard>
+
+<GuidanceNote Title="Integration rule" Icon="✅" Tone="info">
+    <p>
+        Week 4 should not rebuild Work Orders, Corrective Actions, Document Intake, Document Library, Data Quality, Reports, or Activity Log.
+        The production implementation should keep the same workflow shape and replace the provider/authentication layer underneath it.
+    </p>
 </GuidanceNote>

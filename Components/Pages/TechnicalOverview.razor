@@ -2,80 +2,295 @@
 
 <PageTitle>Technical Overview - OperationsFlow</PageTitle>
 
-<PageHero
-    Eyebrow="Technical"
-    Title="Technical Overview"
-    Subtitle="Explain the local Blazor/.NET 8, SQLite, EF Core, component-based UI, and Microsoft 365-ready direction."
-    BadgeText="Week 2"
-    BadgeClass="of-badge-info">
+<PageHero Eyebrow="OPERATIONSFLOW / WEEK 3 PRODUCTION FOUNDATION"
+          Title="Technical Overview"
+          Subtitle="OperationsFlow is a Blazor and SQLite business workflow prototype with a provider-independent evidence layer. Week 3 proves the local storage workflow, while Week 4 swaps the storage and authentication layer toward Microsoft 365 and SharePoint."
+          BadgeText="Storage Ready"
+          BadgeClass="of-badge of-badge-info">
     <Actions>
-        <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
-        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
-        <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+        <a class="of-btn of-btn-secondary" href="/portfolio">Portfolio Hub</a>
+        <a class="of-btn of-btn-secondary" href="/integration-overview">Integration Overview</a>
+        <a class="of-btn of-btn-secondary" href="/implementation-plan">Implementation Plan</a>
+        <a class="of-btn of-btn-primary" href="/document-library">Document Library</a>
     </Actions>
 </PageHero>
 
-<PurposeNote Title="Purpose" Icon="📌">
-    <p>The app is a local demo prototype, but the structure maps cleanly to Microsoft Lists, SharePoint, Power Automate, Teams/Outlook notifications, and Power BI reporting.</p>
+<PurposeNote Title="Purpose" Icon="🧩">
+    <p>
+        This page explains how the Week 3 local evidence system is structured and why it is ready to become SharePoint-backed in Week 4.
+        The goal is not to fake Microsoft Graph early. The goal is to prove the workflow shape locally and keep the storage layer replaceable.
+    </p>
 </PurposeNote>
 
 <MetricGrid>
-    <MetricCard Title="Workflow MVP" Value="Week 2" Detail="Create/edit, reminders, workload, reporting, and traceability" Icon="✅" Tone="success" />
-    <MetricCard Title="Prototype" Value="SQLite" Detail="Local demo data, not production deployment" Icon="🧪" Tone="info" />
-    <MetricCard Title="Evidence" Value="Ready" Detail="Supports screenshots, walkthroughs, and review notes" Icon="📦" Tone="success" />
-    <MetricCard Title="Next Stage" Value="M365" Detail="SharePoint, Lists, Power Automate, and Power BI direction" Icon="🔗" Tone="warning" />
+    <MetricCard Title="Frontend"
+                Value="Blazor"
+                Detail="Reusable Razor pages and shared workflow components."
+                Icon="🖥️"
+                Tone="info" />
+
+    <MetricCard Title="Persistence"
+                Value="SQLite"
+                Detail="Local workflow records, activity logs, and attachment metadata."
+                Icon="🗄️"
+                Tone="success" />
+
+    <MetricCard Title="Evidence Layer"
+                Value="DocumentAttachment"
+                Detail="Provider-independent metadata linked to records."
+                Icon="📎"
+                Tone="warning" />
+
+    <MetricCard Title="Week 4 Target"
+                Value="SharePoint"
+                Detail="Microsoft Graph provider behind the same workflow."
+                Icon="☁️"
+                Tone="default" />
 </MetricGrid>
 
-<InfoPanel Title="Review Summary" Subtitle="What this page should communicate to a reviewer.">
-    <ChildContent>
-        <div class="of-review-proof-grid">
-            <div class="of-review-proof-card">
-                <strong>Business Context</strong>
-                <span>Explains why the workflow exists and what problem it solves.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Technical Context</strong>
-                <span>Connects the local Blazor/SQLite prototype to a realistic implementation path.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Portfolio Context</strong>
-                <span>Shows the project as evidence of systems thinking, not just UI layout.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Boundary Context</strong>
-                <span>Keeps the prototype honest about what is and is not production-ready.</span>
-            </div>
+<InfoPanel Title="Current Week 3 architecture"
+           Subtitle="Week 3 proves the full local evidence workflow. Records, supporting files, document visibility, quality checks, reports, and traceability now work together."
+           Tone="default">
+
+    <div class="of-review-proof-grid">
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-info">UI</span>
+            <h3>Shared Blazor pages</h3>
+            <p>
+                Registers, detail pages, reports, data quality, document library, activity log, and reviewer pages use the same internal dashboard style.
+            </p>
         </div>
-    </ChildContent>
-</InfoPanel>
 
-<InfoPanel Title="Key Points" Subtitle="Use these notes when walking through the project.">
-    <ChildContent>
-        <ol class="of-review-steps">
-            <li>OperationsFlow captures work before it disappears into emails, conversations, spreadsheets, or paper notes.</li>
-            <li>Records feed management views such as Reminders, Workload, Reports, Data Quality, and Activity Log.</li>
-            <li>Corrective actions can be source-linked from risks, training, and controlled documents.</li>
-            <li>Activity history provides traceability evidence for create, update, and review workflows.</li>
-            <li>The project is Microsoft 365-ready in design, but still a local SQLite demo prototype.</li>
-        </ol>
-    </ChildContent>
-</InfoPanel>
-
-<InfoPanel Title="Connected Review Links" Subtitle="Open the main evidence pages from here.">
-    <ChildContent>
-        <div class="of-review-proof-grid">
-            <a class="of-review-proof-card of-click-card" href="/reports"><strong>Reports</strong><span>Management reporting and CSV export evidence.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/data-quality"><strong>Data Quality</strong><span>Weak records, overdue work, and review issues.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/activity-log"><strong>Activity Log</strong><span>Global traceability and workflow evidence.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/implementation-plan"><strong>Implementation Plan</strong><span>Week 3/4 hybrid and Microsoft 365 direction.</span></a>
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-success">Evidence</span>
+            <h3>RecordAttachments</h3>
+            <p>
+                Work Orders, Corrective Actions, and Document Intake use a shared attachment panel instead of one-off upload logic.
+            </p>
         </div>
-    </ChildContent>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-warning">Storage</span>
+            <h3>Local provider</h3>
+            <p>
+                Files are stored under <strong>wwwroot/uploads</strong> for local proof while metadata stays structured in the app database.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-muted">Traceability</span>
+            <h3>Activity Log</h3>
+            <p>
+                Upload and delete actions are recorded so reviewers can see what changed and where supporting evidence was added.
+            </p>
+        </div>
+    </div>
 </InfoPanel>
 
-<GuidanceNote Title="Prototype Boundary" Icon="🚧" Tone="warning">
-    <ul>
-        <li>This page is part of the portfolio review layer.</li>
-        <li>The current app uses local SQLite demo data.</li>
-        <li>Production rollout would need authentication, permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
-    </ul>
+<TableCard Title="Architecture layers"
+           Subtitle="The current local implementation maps directly to the Week 4 SharePoint/Microsoft 365 production path.">
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Layer</th>
+                <th>Current implementation</th>
+                <th>Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="of-badge of-badge-info">UI</span></td>
+                <td>Blazor Razor pages and shared workflow components</td>
+                <td>Registers, detail pages, dashboards, reports, data quality, and portfolio review pages.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Record evidence</span></td>
+                <td>RecordAttachments component</td>
+                <td>Reusable upload, view, download, and soft-delete panel for module record details.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-warning">Metadata</span></td>
+                <td>DocumentAttachment model and service layer</td>
+                <td>Stores provider, record type, record id, file name, content type, path/key, upload date, deletion state, and audit metadata.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-muted">Physical files</span></td>
+                <td>Local upload provider</td>
+                <td>Stores demo files under wwwroot/uploads for local proof only.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-info">Library</span></td>
+                <td>Document Library page</td>
+                <td>Shows active attachment metadata across Work Orders, Corrective Actions, and Document Intake.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Traceability</span></td>
+                <td>Activity Log</td>
+                <td>Records upload/delete actions and workflow changes for reviewer and audit evidence.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-danger">Quality</span></td>
+                <td>Data Quality evidence checks</td>
+                <td>Flags important records that need evidence but have no attached files.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-warning">Reporting</span></td>
+                <td>Reports evidence coverage</td>
+                <td>Summarises attached files, missing evidence, and module-level evidence coverage.</td>
+            </tr>
+        </tbody>
+    </table>
+</TableCard>
+
+<div class="of-two-column-grid">
+    <InfoPanel Title="Local provider behaviour"
+               Subtitle="The current provider proves the workflow without needing a Microsoft 365 tenant."
+               Tone="default">
+
+        <ul class="of-mini-list">
+            <li class="of-mini-list-item">
+                <strong>Provider:</strong>
+                <span>Local</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Upload path:</strong>
+                <span>wwwroot/uploads</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Metadata:</strong>
+                <span>DocumentAttachment rows remain in SQLite.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Library:</strong>
+                <span>Document Library reads active attachment metadata across modules.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Delete behaviour:</strong>
+                <span>Soft delete hides files from active views while preserving traceability.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Git safety:</strong>
+                <span>Uploads and database files must not be committed.</span>
+            </li>
+        </ul>
+    </InfoPanel>
+
+    <InfoPanel Title="SharePoint provider target"
+               Subtitle="Week 4 should replace the storage provider behind the same workflow shape."
+               Tone="info">
+
+        <ul class="of-mini-list">
+            <li class="of-mini-list-item">
+                <strong>Provider:</strong>
+                <span>SharePoint</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Transport:</strong>
+                <span>Microsoft Graph</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Target:</strong>
+                <span>SharePoint site document library or drive.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Folder convention:</strong>
+                <span>Module and record id based evidence folders.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Metadata:</strong>
+                <span>DocumentAttachment keeps the same business workflow shape.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Production layer:</strong>
+                <span>Identity, permissions, audit expectations, and tenant configuration.</span>
+            </li>
+        </ul>
+    </InfoPanel>
+</div>
+
+<InfoPanel Title="Provider-independent workflow"
+           Subtitle="This is the key Week 3 architecture win: the business workflow does not need to be rebuilt for SharePoint."
+           Tone="success">
+
+    <div class="of-link-row">
+        <span class="of-badge of-badge-info">Record detail page</span>
+        <span>→</span>
+        <span class="of-badge of-badge-success">RecordAttachments</span>
+        <span>→</span>
+        <span class="of-badge of-badge-warning">DocumentAttachmentService</span>
+        <span>→</span>
+        <span class="of-badge of-badge-muted">IFileStorageService</span>
+        <span>→</span>
+        <span class="of-badge of-badge-info">Local today / SharePoint Week 4</span>
+    </div>
+
+    <p class="of-muted-text">
+        Work Orders, Corrective Actions, Document Intake, Document Library, Data Quality, Reports, and Activity Log should not be rebuilt for SharePoint.
+        Week 4 should swap the provider and add real authentication, authorization, configuration, and production deployment readiness.
+    </p>
+</InfoPanel>
+
+<TableCard Title="Week 4 SharePoint readiness checklist"
+           Subtitle="These are the configuration and production items needed before the storage provider becomes real.">
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Requirement</th>
+                <th>Needed for</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Tenant id</td>
+                <td>Connecting the app to the correct Microsoft 365 tenant.</td>
+                <td><span class="of-badge of-badge-warning">Week 4</span></td>
+            </tr>
+            <tr>
+                <td>App registration / client id</td>
+                <td>Allowing OperationsFlow to call Microsoft Graph.</td>
+                <td><span class="of-badge of-badge-warning">Week 4</span></td>
+            </tr>
+            <tr>
+                <td>Secret or certificate</td>
+                <td>Server-side authentication for Graph access.</td>
+                <td><span class="of-badge of-badge-warning">Week 4</span></td>
+            </tr>
+            <tr>
+                <td>SharePoint site id</td>
+                <td>Finding the production evidence site.</td>
+                <td><span class="of-badge of-badge-warning">Week 4</span></td>
+            </tr>
+            <tr>
+                <td>Drive/library id</td>
+                <td>Uploading files to the correct SharePoint document library.</td>
+                <td><span class="of-badge of-badge-warning">Week 4</span></td>
+            </tr>
+            <tr>
+                <td>Folder convention</td>
+                <td>Keeping evidence understandable outside the app.</td>
+                <td><span class="of-badge of-badge-info">Designed</span></td>
+            </tr>
+            <tr>
+                <td>Permission scopes</td>
+                <td>Upload, read, download, and delete/archive behaviour.</td>
+                <td><span class="of-badge of-badge-warning">Week 4</span></td>
+            </tr>
+            <tr>
+                <td>Retention/audit rules</td>
+                <td>Production document governance and traceability.</td>
+                <td><span class="of-badge of-badge-warning">Week 4</span></td>
+            </tr>
+        </tbody>
+    </table>
+</TableCard>
+
+<GuidanceNote Title="Production boundary" Icon="⚠️" Tone="warning">
+    <p>
+        This page documents readiness, not a completed Microsoft Graph implementation.
+        The current app still runs as a local Blazor/SQLite prototype. Real Microsoft 365 storage, Entra authentication,
+        role enforcement, backup policy, retention policy, and tenant deployment are Week 4 production tasks.
+    </p>
 </GuidanceNote>

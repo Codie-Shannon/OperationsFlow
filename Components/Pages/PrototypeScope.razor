@@ -2,80 +2,188 @@
 
 <PageTitle>Prototype Scope - OperationsFlow</PageTitle>
 
-<PageHero
-    Eyebrow="Boundary"
-    Title="Prototype Scope"
-    Subtitle="Set honest boundaries around what the local demo does and what production implementation would still require."
-    BadgeText="Week 2"
-    BadgeClass="of-badge-info">
+<PageHero Eyebrow="OPERATIONSFLOW / SCOPE BOUNDARY"
+          Title="Prototype Scope"
+          Subtitle="OperationsFlow is a local portfolio prototype with a production-shaped workflow foundation. It proves business workflow design, evidence traceability, reporting, and Microsoft 365 readiness without pretending the local demo is already a production deployment."
+          BadgeText="Scope Defined"
+          BadgeClass="of-badge of-badge-warning">
     <Actions>
-        <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
+        <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
+        <a class="of-btn of-btn-secondary" href="/integration-overview">Integration Overview</a>
         <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
-        <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+        <a class="of-btn of-btn-primary" href="/business-value">Business Value</a>
     </Actions>
 </PageHero>
 
-<PurposeNote Title="Purpose" Icon="📌">
-    <p>This is a local portfolio prototype. It proves workflow thinking, not full production identity, retention, permissioning, document storage, or live Microsoft 365 automation.</p>
+<PurposeNote Title="Purpose" Icon="🎯">
+    <p>
+        This page draws the line between what the Week 3 prototype proves locally and what still belongs to Week 4 production implementation.
+        That makes the portfolio stronger because it is honest about the boundary instead of overclaiming.
+    </p>
 </PurposeNote>
 
 <MetricGrid>
-    <MetricCard Title="Workflow MVP" Value="Week 2" Detail="Create/edit, reminders, workload, reporting, and traceability" Icon="✅" Tone="success" />
-    <MetricCard Title="Prototype" Value="SQLite" Detail="Local demo data, not production deployment" Icon="🧪" Tone="info" />
-    <MetricCard Title="Evidence" Value="Ready" Detail="Supports screenshots, walkthroughs, and review notes" Icon="📦" Tone="success" />
-    <MetricCard Title="Next Stage" Value="M365" Detail="SharePoint, Lists, Power Automate, and Power BI direction" Icon="🔗" Tone="warning" />
+    <MetricCard Title="Week 3 Scope"
+                Value="Local Foundation"
+                Detail="Evidence workflow, document library, quality checks, reports, and activity traceability."
+                Icon="✅"
+                Tone="success" />
+
+    <MetricCard Title="Week 4 Scope"
+                Value="Production Layer"
+                Detail="SharePoint, Entra ID, provider swap, permissions, and deployment readiness."
+                Icon="🚀"
+                Tone="warning" />
+
+    <MetricCard Title="Current Storage"
+                Value="Local"
+                Detail="Files under wwwroot/uploads with metadata stored in SQLite."
+                Icon="📁"
+                Tone="info" />
+
+    <MetricCard Title="Production Claim"
+                Value="Not Yet"
+                Detail="No fake claims about live Graph, tenant auth, or production deployment."
+                Icon="⚠️"
+                Tone="default" />
 </MetricGrid>
 
-<InfoPanel Title="Review Summary" Subtitle="What this page should communicate to a reviewer.">
-    <ChildContent>
-        <div class="of-review-proof-grid">
-            <div class="of-review-proof-card">
-                <strong>Business Context</strong>
-                <span>Explains why the workflow exists and what problem it solves.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Technical Context</strong>
-                <span>Connects the local Blazor/SQLite prototype to a realistic implementation path.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Portfolio Context</strong>
-                <span>Shows the project as evidence of systems thinking, not just UI layout.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Boundary Context</strong>
-                <span>Keeps the prototype honest about what is and is not production-ready.</span>
-            </div>
+<InfoPanel Title="Scope summary"
+           Subtitle="The current prototype is valuable because it proves the workflow before production infrastructure is added."
+           Tone="default">
+
+    <div class="of-review-proof-grid">
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-success">In Scope</span>
+            <h3>Week 3 local foundation</h3>
+            <p>
+                Local workflow capture, evidence uploads, document library, activity traceability, data quality, and reporting.
+            </p>
         </div>
-    </ChildContent>
-</InfoPanel>
 
-<InfoPanel Title="Key Points" Subtitle="Use these notes when walking through the project.">
-    <ChildContent>
-        <ol class="of-review-steps">
-            <li>OperationsFlow captures work before it disappears into emails, conversations, spreadsheets, or paper notes.</li>
-            <li>Records feed management views such as Reminders, Workload, Reports, Data Quality, and Activity Log.</li>
-            <li>Corrective actions can be source-linked from risks, training, and controlled documents.</li>
-            <li>Activity history provides traceability evidence for create, update, and review workflows.</li>
-            <li>The project is Microsoft 365-ready in design, but still a local SQLite demo prototype.</li>
-        </ol>
-    </ChildContent>
-</InfoPanel>
-
-<InfoPanel Title="Connected Review Links" Subtitle="Open the main evidence pages from here.">
-    <ChildContent>
-        <div class="of-review-proof-grid">
-            <a class="of-review-proof-card of-click-card" href="/reports"><strong>Reports</strong><span>Management reporting and CSV export evidence.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/data-quality"><strong>Data Quality</strong><span>Weak records, overdue work, and review issues.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/activity-log"><strong>Activity Log</strong><span>Global traceability and workflow evidence.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/implementation-plan"><strong>Implementation Plan</strong><span>Week 3/4 hybrid and Microsoft 365 direction.</span></a>
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-warning">Planned</span>
+            <h3>Week 4 production layer</h3>
+            <p>
+                SharePoint storage, Entra authentication, role enforcement, tenant configuration, and deployment readiness.
+            </p>
         </div>
-    </ChildContent>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-danger">Not claimed</span>
+            <h3>Live production deployment</h3>
+            <p>
+                The current app is not yet a live production system with real users, production backups, retention, or compliance sign-off.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-info">Portfolio value</span>
+            <h3>Production-shaped prototype</h3>
+            <p>
+                The project demonstrates how a local proof can be designed with a realistic Microsoft 365 production path.
+            </p>
+        </div>
+    </div>
 </InfoPanel>
 
-<GuidanceNote Title="Prototype Boundary" Icon="🚧" Tone="warning">
-    <ul>
-        <li>This page is part of the portfolio review layer.</li>
-        <li>The current app uses local SQLite demo data.</li>
-        <li>Production rollout would need authentication, permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
-    </ul>
+<TableCard Title="What the prototype currently proves"
+           Subtitle="OperationsFlow proves more than CRUD screens. It shows an operational workflow loop with evidence and review.">
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Area</th>
+                <th>Current proof</th>
+                <th>Why it matters</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="of-badge of-badge-info">Workflow capture</span></td>
+                <td>Work Orders, Corrective Actions, Document Intake, Risk, Training, Controlled Documents, and compliance pages.</td>
+                <td>Shows how scattered operational work can be structured into reviewable records.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Ownership</span></td>
+                <td>Owners, statuses, priorities, due dates, workload views, reminders, and management reports.</td>
+                <td>Shows practical follow-up control instead of relying on memory, inboxes, or spreadsheets.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-warning">Evidence</span></td>
+                <td>Record-level attachment panels across Work Orders, Corrective Actions, and Document Intake.</td>
+                <td>Shows how proof, supporting documents, screenshots, PDFs, photos, and admin files can be linked to work records.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-info">Document visibility</span></td>
+                <td>Document Library reads active attachment metadata across modules.</td>
+                <td>Gives reviewers a central place to see evidence instead of opening every individual record.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-muted">Traceability</span></td>
+                <td>Activity Log records workflow and evidence actions.</td>
+                <td>Shows who did what, what changed, and where review evidence exists.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-danger">Data quality</span></td>
+                <td>Missing evidence checks for important overdue/high/needs-review records.</td>
+                <td>Shows the system can identify weak records, not just display dashboards.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-warning">Reporting</span></td>
+                <td>Evidence coverage and missing evidence reporting.</td>
+                <td>Gives managers a clear review surface for operational completeness.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Production direction</span></td>
+                <td>Technical, integration, role, audit, deployment, testing, and implementation overview pages.</td>
+                <td>Shows the project has a realistic path from prototype to Microsoft 365 production implementation.</td>
+            </tr>
+        </tbody>
+    </table>
+</TableCard>
+
+<div class="of-two-column-grid">
+    <InfoPanel Title="Explicitly in scope for Week 3"
+               Subtitle="These pieces are part of the local production foundation."
+               Tone="success">
+
+        <ul class="of-mini-list">
+            <li class="of-mini-list-item"><strong>Persistence:</strong><span>Local SQLite foundation and migrations.</span></li>
+            <li class="of-mini-list-item"><strong>Metadata:</strong><span>DocumentAttachment model and service layer.</span></li>
+            <li class="of-mini-list-item"><strong>Storage:</strong><span>Local file upload provider.</span></li>
+            <li class="of-mini-list-item"><strong>Attachments:</strong><span>RecordAttachments component.</span></li>
+            <li class="of-mini-list-item"><strong>Records:</strong><span>Attachment panels on Work Orders, Corrective Actions, and Document Intake.</span></li>
+            <li class="of-mini-list-item"><strong>Library:</strong><span>Document Library across modules.</span></li>
+            <li class="of-mini-list-item"><strong>Registers:</strong><span>File counts on workflow register pages.</span></li>
+            <li class="of-mini-list-item"><strong>Traceability:</strong><span>Activity Log upload/delete events.</span></li>
+            <li class="of-mini-list-item"><strong>Quality:</strong><span>Data Quality missing evidence checks.</span></li>
+            <li class="of-mini-list-item"><strong>Reports:</strong><span>Evidence coverage and missing evidence reports.</span></li>
+        </ul>
+    </InfoPanel>
+
+    <InfoPanel Title="Explicitly out of scope until Week 4"
+               Subtitle="These are production implementation tasks, not Week 3 local proof tasks."
+               Tone="warning">
+
+        <ul class="of-mini-list">
+            <li class="of-mini-list-item"><strong>Graph upload:</strong><span>Real Microsoft Graph file upload.</span></li>
+            <li class="of-mini-list-item"><strong>SharePoint:</strong><span>Real SharePoint document library storage.</span></li>
+            <li class="of-mini-list-item"><strong>Login:</strong><span>Microsoft Entra ID authentication.</span></li>
+            <li class="of-mini-list-item"><strong>Authorization:</strong><span>Role-based policy enforcement.</span></li>
+            <li class="of-mini-list-item"><strong>Tenant:</strong><span>Production tenant setup.</span></li>
+            <li class="of-mini-list-item"><strong>Secrets:</strong><span>Production secrets or certificate management.</span></li>
+            <li class="of-mini-list-item"><strong>Compliance:</strong><span>Retention policy and compliance sign-off.</span></li>
+            <li class="of-mini-list-item"><strong>Deployment:</strong><span>Hosted deployment with backup/restore plan.</span></li>
+            <li class="of-mini-list-item"><strong>Notifications:</strong><span>Live Teams/Outlook notification workflows.</span></li>
+            <li class="of-mini-list-item"><strong>Power BI:</strong><span>Production dataset/report deployment.</span></li>
+        </ul>
+    </InfoPanel>
+</div>
+
+<GuidanceNote Title="Honest boundary" Icon="⚠️" Tone="warning">
+    <p>
+        Week 3 is not pretending to be final production. It proves the workflow and architecture foundation locally.
+        Week 4 is where the production provider, identity, permissions, configuration, and deployment readiness should be added.
+    </p>
 </GuidanceNote>

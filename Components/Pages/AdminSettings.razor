@@ -2,80 +2,226 @@
 
 <PageTitle>Admin Settings - OperationsFlow</PageTitle>
 
-<PageHero
-    Eyebrow="System"
-    Title="Admin Settings"
-    Subtitle="Prototype settings and configuration notes for future admin, export, retention, reminder, and integration controls."
-    BadgeText="Week 2"
-    BadgeClass="of-badge-info">
+<PageHero Eyebrow="OPERATIONSFLOW / ADMINISTRATION"
+          Title="Admin Settings"
+          Subtitle="Admin Settings shows the configuration surface OperationsFlow would need before production rollout. The current app runs in local demo mode, but Week 3 now documents the storage provider path and Week 4 will add production authentication and permissions."
+          BadgeText="Readiness Surface"
+          BadgeClass="of-badge of-badge-info">
     <Actions>
-        <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
-        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
-        <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+        <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
+        <a class="of-btn of-btn-secondary" href="/integration-overview">Integration Overview</a>
+        <a class="of-btn of-btn-secondary" href="/user-roles">User Roles</a>
+        <a class="of-btn of-btn-primary" href="/document-library">Document Library</a>
     </Actions>
 </PageHero>
 
-<PurposeNote Title="Purpose" Icon="📌">
-    <p>Admin settings are shown as a future-ready configuration surface. The current local prototype keeps settings simple and does not claim production admin enforcement.</p>
+<PurposeNote Title="Purpose" Icon="⚙️">
+    <p>
+        This page documents the current local configuration and the production settings OperationsFlow will need for SharePoint storage,
+        Microsoft Entra ID authentication, role enforcement, audit behaviour, notifications, and reporting.
+    </p>
 </PurposeNote>
 
 <MetricGrid>
-    <MetricCard Title="Workflow MVP" Value="Week 2" Detail="Create/edit, reminders, workload, reporting, and traceability" Icon="✅" Tone="success" />
-    <MetricCard Title="Prototype" Value="SQLite" Detail="Local demo data, not production deployment" Icon="🧪" Tone="info" />
-    <MetricCard Title="Evidence" Value="Ready" Detail="Supports screenshots, walkthroughs, and review notes" Icon="📦" Tone="success" />
-    <MetricCard Title="Next Stage" Value="M365" Detail="SharePoint, Lists, Power Automate, and Power BI direction" Icon="🔗" Tone="warning" />
+    <MetricCard Title="Current Mode"
+                Value="Local Demo"
+                Detail="No production authentication or role enforcement active yet."
+                Icon="💻"
+                Tone="info" />
+
+    <MetricCard Title="Storage Provider"
+                Value="Local"
+                Detail="Files are stored under wwwroot/uploads for development proof only."
+                Icon="📁"
+                Tone="success" />
+
+    <MetricCard Title="Future Auth"
+                Value="Entra ID"
+                Detail="Week 4 target for login and role-aware access control."
+                Icon="🔐"
+                Tone="warning" />
+
+    <MetricCard Title="Future Files"
+                Value="SharePoint"
+                Detail="Week 4 target for production document library storage."
+                Icon="☁️"
+                Tone="default" />
 </MetricGrid>
 
-<InfoPanel Title="Review Summary" Subtitle="What this page should communicate to a reviewer.">
-    <ChildContent>
-        <div class="of-review-proof-grid">
-            <div class="of-review-proof-card">
-                <strong>Business Context</strong>
-                <span>Explains why the workflow exists and what problem it solves.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Technical Context</strong>
-                <span>Connects the local Blazor/SQLite prototype to a realistic implementation path.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Portfolio Context</strong>
-                <span>Shows the project as evidence of systems thinking, not just UI layout.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Boundary Context</strong>
-                <span>Keeps the prototype honest about what is and is not production-ready.</span>
-            </div>
+<GuidanceNote Title="Current boundary" Icon="⚠️" Tone="warning">
+    <p>
+        These settings are a readiness surface. The current local app does not enforce production authentication,
+        production role permissions, SharePoint storage, retention policies, or tenant-level security.
+    </p>
+</GuidanceNote>
+
+<TableCard Title="Current local evidence settings"
+           Subtitle="These settings describe the working Week 3 local foundation.">
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Setting</th>
+                <th>Current value</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="of-badge of-badge-info">Application mode</span></td>
+                <td>Local demo / portfolio prototype</td>
+                <td>Used to prove workflow, not production security.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Database</span></td>
+                <td>SQLite</td>
+                <td>Stores workflow records, activity logs, and attachment metadata.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-warning">File storage provider</span></td>
+                <td>Local</td>
+                <td>Files are stored locally under wwwroot/uploads.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-info">Attachment metadata</span></td>
+                <td>DocumentAttachment records</td>
+                <td>Links files to module, record id, provider, file name, path/key, and status.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-muted">File delete behaviour</span></td>
+                <td>Soft delete metadata</td>
+                <td>Deleted files are hidden from active library views and logged for traceability.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Activity audit</span></td>
+                <td>Activity Log</td>
+                <td>Upload/delete events are recorded for reviewer evidence.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-danger">Git safety</span></td>
+                <td>Do not commit uploads or database files</td>
+                <td>wwwroot/uploads, *.db, *.db-shm, and *.db-wal must stay out of commits.</td>
+            </tr>
+        </tbody>
+    </table>
+</TableCard>
+
+<div class="of-two-column-grid">
+    <InfoPanel Title="Week 4 storage settings needed"
+               Subtitle="These settings will be needed before the SharePoint provider can replace the local provider."
+               Tone="info">
+
+        <ul class="of-mini-list">
+            <li class="of-mini-list-item"><strong>Provider selector:</strong><span>Local or SharePoint.</span></li>
+            <li class="of-mini-list-item"><strong>Tenant id:</strong><span>Microsoft 365 tenant identifier.</span></li>
+            <li class="of-mini-list-item"><strong>Client id:</strong><span>App registration id.</span></li>
+            <li class="of-mini-list-item"><strong>Secret/certificate:</strong><span>Secure Graph authentication credential.</span></li>
+            <li class="of-mini-list-item"><strong>SharePoint site:</strong><span>Host/site path or site id.</span></li>
+            <li class="of-mini-list-item"><strong>Drive/library:</strong><span>Drive id, library id, or document library name.</span></li>
+            <li class="of-mini-list-item"><strong>Base folder:</strong><span>Root folder path for OperationsFlow evidence.</span></li>
+            <li class="of-mini-list-item"><strong>Folder convention:</strong><span>Module and record id based evidence folders.</span></li>
+            <li class="of-mini-list-item"><strong>Upload controls:</strong><span>Allowed file types and size limits.</span></li>
+            <li class="of-mini-list-item"><strong>Retention:</strong><span>Archive, recycle, or retention-aligned delete behaviour.</span></li>
+        </ul>
+    </InfoPanel>
+
+    <InfoPanel Title="Week 4 auth/role settings needed"
+               Subtitle="These settings support the move from local demo to production access control."
+               Tone="warning">
+
+        <ul class="of-mini-list">
+            <li class="of-mini-list-item"><strong>Auth provider:</strong><span>Microsoft Entra ID.</span></li>
+            <li class="of-mini-list-item"><strong>Role source:</strong><span>Entra groups, app roles, or local config mapping.</span></li>
+            <li class="of-mini-list-item"><strong>Admin:</strong><span>System configuration, provider setup, and role management.</span></li>
+            <li class="of-mini-list-item"><strong>Manager:</strong><span>Workflow oversight, reports, data quality, and follow-up review.</span></li>
+            <li class="of-mini-list-item"><strong>Reviewer:</strong><span>Evidence, reports, quality checks, and audit review.</span></li>
+            <li class="of-mini-list-item"><strong>Worker:</strong><span>Assigned work updates and evidence uploads.</span></li>
+            <li class="of-mini-list-item"><strong>ReadOnly:</strong><span>View-only access for review and demonstration.</span></li>
+            <li class="of-mini-list-item"><strong>Policy mapping:</strong><span>Upload, delete, export, settings, and role management permissions.</span></li>
+            <li class="of-mini-list-item"><strong>Dev fallback:</strong><span>Safe local testing mode if needed.</span></li>
+        </ul>
+    </InfoPanel>
+</div>
+
+<TableCard Title="Production setting groups"
+           Subtitle="These are the major configuration groups needed for a production-ready OperationsFlow deployment.">
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Group</th>
+                <th>Examples</th>
+                <th>Production concern</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="of-badge of-badge-info">Storage</span></td>
+                <td>Provider, site id, drive id, folder convention, file limits</td>
+                <td>Files must be stored somewhere supportable, permissioned, and backed up.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-warning">Identity</span></td>
+                <td>Tenant id, authority, client id, login policy</td>
+                <td>Users should authenticate through Microsoft Entra ID, not local demo assumptions.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Authorization</span></td>
+                <td>Roles, groups, app policies, permissions</td>
+                <td>Not every user should delete files, change settings, export data, or manage roles.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-muted">Audit</span></td>
+                <td>Activity Log retention, upload/delete events, record changes</td>
+                <td>Operational systems need traceability for review and accountability.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-info">Notifications</span></td>
+                <td>Teams/Outlook alerts, Power Automate flows, reminder schedules</td>
+                <td>Production systems should push important follow-up work to the right people.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-warning">Reporting</span></td>
+                <td>CSV exports, Power BI dataset, scheduled reporting</td>
+                <td>Managers need repeatable review outputs, not manual screenshot hunting.</td>
+            </tr>
+        </tbody>
+    </table>
+</TableCard>
+
+<InfoPanel Title="Week 4 admin implementation path"
+           Subtitle="Admin Settings should move from a readiness page into real configurable production behaviour."
+           Tone="success">
+
+    <div class="of-review-proof-grid">
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-info">Step 1</span>
+            <h3>Provider config</h3>
+            <p>Add appsettings/user-secrets/environment variable support for Local vs SharePoint storage configuration.</p>
         </div>
-    </ChildContent>
-</InfoPanel>
 
-<InfoPanel Title="Key Points" Subtitle="Use these notes when walking through the project.">
-    <ChildContent>
-        <ol class="of-review-steps">
-            <li>OperationsFlow captures work before it disappears into emails, conversations, spreadsheets, or paper notes.</li>
-            <li>Records feed management views such as Reminders, Workload, Reports, Data Quality, and Activity Log.</li>
-            <li>Corrective actions can be source-linked from risks, training, and controlled documents.</li>
-            <li>Activity history provides traceability evidence for create, update, and review workflows.</li>
-            <li>The project is Microsoft 365-ready in design, but still a local SQLite demo prototype.</li>
-        </ol>
-    </ChildContent>
-</InfoPanel>
-
-<InfoPanel Title="Connected Review Links" Subtitle="Open the main evidence pages from here.">
-    <ChildContent>
-        <div class="of-review-proof-grid">
-            <a class="of-review-proof-card of-click-card" href="/reports"><strong>Reports</strong><span>Management reporting and CSV export evidence.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/data-quality"><strong>Data Quality</strong><span>Weak records, overdue work, and review issues.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/activity-log"><strong>Activity Log</strong><span>Global traceability and workflow evidence.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/implementation-plan"><strong>Implementation Plan</strong><span>Week 3/4 hybrid and Microsoft 365 direction.</span></a>
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-warning">Step 2</span>
+            <h3>Auth config</h3>
+            <p>Add Microsoft Entra ID settings and login setup without breaking local development testing.</p>
         </div>
-    </ChildContent>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-success">Step 3</span>
+            <h3>Role policy config</h3>
+            <p>Map Admin, Manager, Reviewer, Worker, and ReadOnly roles to actual authorization policies.</p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-muted">Step 4</span>
+            <h3>Deployment notes</h3>
+            <p>Document the production values required before a real organisation could safely run the app.</p>
+        </div>
+    </div>
 </InfoPanel>
 
-<GuidanceNote Title="Prototype Boundary" Icon="🚧" Tone="warning">
-    <ul>
-        <li>This page is part of the portfolio review layer.</li>
-        <li>The current app uses local SQLite demo data.</li>
-        <li>Production rollout would need authentication, permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
-    </ul>
+<GuidanceNote Title="Block 8 outcome" Icon="✅" Tone="info">
+    <p>
+        Admin Settings now clearly describes the current local provider and the configuration needed for the Week 4 SharePoint/Microsoft 365 production provider.
+    </p>
 </GuidanceNote>

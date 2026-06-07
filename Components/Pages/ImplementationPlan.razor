@@ -2,80 +2,202 @@
 
 <PageTitle>Implementation Plan - OperationsFlow</PageTitle>
 
-<PageHero
-    Eyebrow="Roadmap"
-    Title="Implementation Plan"
-    Subtitle="Outline the staged path from local prototype to hybrid Microsoft 365 implementation and full production-style workflow."
-    BadgeText="Week 2"
-    BadgeClass="of-badge-info">
+<PageHero Eyebrow="OPERATIONSFLOW / ROADMAP"
+          Title="Implementation Plan"
+          Subtitle="The implementation plan separates the local production foundation from the full Microsoft 365 production layer. Week 3 proves the evidence workflow locally. Week 4 replaces local proof with SharePoint storage, Entra authentication, permissions, and deployment readiness."
+          BadgeText="Week 3 Final Pass"
+          BadgeClass="of-badge of-badge-success">
     <Actions>
-        <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
-        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
-        <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+        <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
+        <a class="of-btn of-btn-secondary" href="/integration-overview">Integration Overview</a>
+        <a class="of-btn of-btn-secondary" href="/prototype-scope">Prototype Scope</a>
+        <a class="of-btn of-btn-primary" href="/user-roles">User Roles</a>
     </Actions>
 </PageHero>
 
-<PurposeNote Title="Purpose" Icon="📌">
-    <p>The next stages are hybrid mapping, Microsoft 365 test tenant implementation, Power Automate notifications, Power BI reporting, and production hardening.</p>
+<PurposeNote Title="Purpose" Icon="🗺️">
+    <p>
+        This page explains where OperationsFlow is now, what Week 3 completed, and how Week 4 should be implemented without throwing away the local workflow foundation.
+    </p>
 </PurposeNote>
 
 <MetricGrid>
-    <MetricCard Title="Workflow MVP" Value="Week 2" Detail="Create/edit, reminders, workload, reporting, and traceability" Icon="✅" Tone="success" />
-    <MetricCard Title="Prototype" Value="SQLite" Detail="Local demo data, not production deployment" Icon="🧪" Tone="info" />
-    <MetricCard Title="Evidence" Value="Ready" Detail="Supports screenshots, walkthroughs, and review notes" Icon="📦" Tone="success" />
-    <MetricCard Title="Next Stage" Value="M365" Detail="SharePoint, Lists, Power Automate, and Power BI direction" Icon="🔗" Tone="warning" />
+    <MetricCard Title="Week 1"
+                Value="Complete"
+                Detail="MVP workflow shape, dashboard, seeded data, and core module layout."
+                Icon="1️⃣"
+                Tone="success" />
+
+    <MetricCard Title="Week 2"
+                Value="Complete"
+                Detail="UI polish, reusable layout system, reports, quality, and portfolio pages."
+                Icon="2️⃣"
+                Tone="success" />
+
+    <MetricCard Title="Week 3"
+                Value="Final Pass"
+                Detail="SQLite foundation, evidence layer, reports, quality checks, and storage readiness."
+                Icon="3️⃣"
+                Tone="info" />
+
+    <MetricCard Title="Week 4"
+                Value="Next"
+                Detail="Microsoft 365, SharePoint, Entra ID, permissions, and deployment readiness."
+                Icon="4️⃣"
+                Tone="warning" />
 </MetricGrid>
 
-<InfoPanel Title="Review Summary" Subtitle="What this page should communicate to a reviewer.">
-    <ChildContent>
-        <div class="of-review-proof-grid">
-            <div class="of-review-proof-card">
-                <strong>Business Context</strong>
-                <span>Explains why the workflow exists and what problem it solves.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Technical Context</strong>
-                <span>Connects the local Blazor/SQLite prototype to a realistic implementation path.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Portfolio Context</strong>
-                <span>Shows the project as evidence of systems thinking, not just UI layout.</span>
-            </div>
-            <div class="of-review-proof-card">
-                <strong>Boundary Context</strong>
-                <span>Keeps the prototype honest about what is and is not production-ready.</span>
-            </div>
+<TableCard Title="Current implementation status"
+           Subtitle="Week 3 is nearly complete. Week 4 is the production hardening and Microsoft 365 integration layer.">
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Stage</th>
+                <th>Status</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Week 1</td>
+                <td><span class="of-badge of-badge-success">Complete</span></td>
+                <td>MVP workflow shape, dashboard, seeded data, and core module layout.</td>
+            </tr>
+            <tr>
+                <td>Week 2</td>
+                <td><span class="of-badge of-badge-success">Complete</span></td>
+                <td>UI polish, reusable page layout, workflow pages, reports, data quality, activity, and portfolio review layer.</td>
+            </tr>
+            <tr>
+                <td>Week 3</td>
+                <td><span class="of-badge of-badge-info">Final pass</span></td>
+                <td>SQLite production foundation, local evidence storage, document library, attachment panels, evidence checks, reporting, and storage readiness.</td>
+            </tr>
+            <tr>
+                <td>Week 4</td>
+                <td><span class="of-badge of-badge-warning">Next</span></td>
+                <td>Microsoft 365 / SharePoint production layer, Entra ID, permissions, provider swap, deployment readiness, and production documentation.</td>
+            </tr>
+        </tbody>
+    </table>
+</TableCard>
+
+<div class="of-two-column-grid">
+    <InfoPanel Title="Week 3 completed foundation"
+               Subtitle="The local workflow now proves the business system loop end-to-end."
+               Tone="success">
+
+        <ul class="of-mini-list">
+            <li class="of-mini-list-item"><strong>Persistence:</strong><span>SQLite persistence and local migrations.</span></li>
+            <li class="of-mini-list-item"><strong>Traceability:</strong><span>ActivityLogs table and evidence activity trail.</span></li>
+            <li class="of-mini-list-item"><strong>Metadata:</strong><span>DocumentAttachment model/service/storage layer.</span></li>
+            <li class="of-mini-list-item"><strong>Storage:</strong><span>Local file provider under wwwroot/uploads.</span></li>
+            <li class="of-mini-list-item"><strong>Library:</strong><span>Document Library for files across modules.</span></li>
+            <li class="of-mini-list-item"><strong>Component:</strong><span>Reusable RecordAttachments component.</span></li>
+            <li class="of-mini-list-item"><strong>Work Orders:</strong><span>Record attachment panel and file counts.</span></li>
+            <li class="of-mini-list-item"><strong>Corrective Actions:</strong><span>Record attachment panel and file counts.</span></li>
+            <li class="of-mini-list-item"><strong>Document Intake:</strong><span>Details page, attachments, file counts, and library connection.</span></li>
+            <li class="of-mini-list-item"><strong>Data Quality:</strong><span>Missing evidence checks for important records.</span></li>
+            <li class="of-mini-list-item"><strong>Reports:</strong><span>Evidence coverage and missing evidence report sections.</span></li>
+            <li class="of-mini-list-item"><strong>Portfolio docs:</strong><span>Reviewer, demo, and business value pages updated.</span></li>
+        </ul>
+    </InfoPanel>
+
+    <InfoPanel Title="Week 4 production target"
+               Subtitle="The next sprint should add real production integration and permission boundaries."
+               Tone="warning">
+
+        <ul class="of-mini-list">
+            <li class="of-mini-list-item"><strong>Authentication:</strong><span>Microsoft Entra ID login.</span></li>
+            <li class="of-mini-list-item"><strong>Authorization:</strong><span>Role and permission enforcement.</span></li>
+            <li class="of-mini-list-item"><strong>Storage:</strong><span>SharePoint file storage provider via Microsoft Graph.</span></li>
+            <li class="of-mini-list-item"><strong>Configuration:</strong><span>Tenant id, client id, site id, drive/library id, and provider settings.</span></li>
+            <li class="of-mini-list-item"><strong>Provider swap:</strong><span>Upload/download/delete mapping to SharePoint behaviour.</span></li>
+            <li class="of-mini-list-item"><strong>Roles:</strong><span>Admin, Manager, Reviewer, Worker, and ReadOnly policy model.</span></li>
+            <li class="of-mini-list-item"><strong>Deployment:</strong><span>Local/test/production environment notes.</span></li>
+            <li class="of-mini-list-item"><strong>Governance:</strong><span>Audit, backup, retention, and support expectations.</span></li>
+            <li class="of-mini-list-item"><strong>Automation:</strong><span>Optional Power Automate notifications.</span></li>
+            <li class="of-mini-list-item"><strong>Reporting:</strong><span>Optional Power BI production reporting path.</span></li>
+        </ul>
+    </InfoPanel>
+</div>
+
+<InfoPanel Title="Week 4 implementation order"
+           Subtitle="This order keeps Week 4 focused on production hardening instead of random new pages."
+           Tone="default">
+
+    <div class="of-review-proof-grid">
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-info">Step 1</span>
+            <h3>Configuration foundation</h3>
+            <p>Add appsettings structure for storage provider, Graph/SharePoint settings, auth settings, and environment boundaries.</p>
         </div>
-    </ChildContent>
-</InfoPanel>
 
-<InfoPanel Title="Key Points" Subtitle="Use these notes when walking through the project.">
-    <ChildContent>
-        <ol class="of-review-steps">
-            <li>OperationsFlow captures work before it disappears into emails, conversations, spreadsheets, or paper notes.</li>
-            <li>Records feed management views such as Reminders, Workload, Reports, Data Quality, and Activity Log.</li>
-            <li>Corrective actions can be source-linked from risks, training, and controlled documents.</li>
-            <li>Activity history provides traceability evidence for create, update, and review workflows.</li>
-            <li>The project is Microsoft 365-ready in design, but still a local SQLite demo prototype.</li>
-        </ol>
-    </ChildContent>
-</InfoPanel>
-
-<InfoPanel Title="Connected Review Links" Subtitle="Open the main evidence pages from here.">
-    <ChildContent>
-        <div class="of-review-proof-grid">
-            <a class="of-review-proof-card of-click-card" href="/reports"><strong>Reports</strong><span>Management reporting and CSV export evidence.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/data-quality"><strong>Data Quality</strong><span>Weak records, overdue work, and review issues.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/activity-log"><strong>Activity Log</strong><span>Global traceability and workflow evidence.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/implementation-plan"><strong>Implementation Plan</strong><span>Week 3/4 hybrid and Microsoft 365 direction.</span></a>
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-warning">Step 2</span>
+            <h3>Authentication foundation</h3>
+            <p>Add Microsoft Entra ID authentication and safe local development fallback rules if needed.</p>
         </div>
-    </ChildContent>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-success">Step 3</span>
+            <h3>Role policy foundation</h3>
+            <p>Implement Admin, Manager, Reviewer, Worker, and ReadOnly policies without overcomplicating the UI.</p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-info">Step 4</span>
+            <h3>SharePoint storage provider</h3>
+            <p>Implement the provider behind the existing file storage abstraction using Microsoft Graph.</p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-muted">Step 5</span>
+            <h3>Provider swap testing</h3>
+            <p>Upload evidence from Work Orders, Corrective Actions, and Document Intake without rebuilding those pages.</p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-warning">Step 6</span>
+            <h3>Production readiness docs</h3>
+            <p>Document tenant setup, app registration, permission scopes, site/library setup, folder convention, and deployment boundaries.</p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-success">Step 7</span>
+            <h3>Final release packaging</h3>
+            <p>Update README, screenshots, test checklist, release notes, known limitations, and portfolio walkthrough path.</p>
+        </div>
+    </div>
 </InfoPanel>
 
-<GuidanceNote Title="Prototype Boundary" Icon="🚧" Tone="warning">
-    <ul>
-        <li>This page is part of the portfolio review layer.</li>
-        <li>The current app uses local SQLite demo data.</li>
-        <li>Production rollout would need authentication, permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
-    </ul>
+<InfoPanel Title="Critical implementation rule"
+           Subtitle="Week 4 should keep the Week 3 business workflow and replace the infrastructure underneath it."
+           Tone="success">
+
+    <div class="of-link-row">
+        <span class="of-badge of-badge-info">Record details</span>
+        <span>→</span>
+        <span class="of-badge of-badge-success">Upload evidence</span>
+        <span>→</span>
+        <span class="of-badge of-badge-warning">Document Library</span>
+        <span>→</span>
+        <span class="of-badge of-badge-danger">Data Quality</span>
+        <span>→</span>
+        <span class="of-badge of-badge-info">Reports</span>
+        <span>→</span>
+        <span class="of-badge of-badge-muted">Activity Log</span>
+    </div>
+
+    <p class="of-muted-text">
+        Work Orders, Corrective Actions, Document Intake, Document Library, Data Quality, Reports, and Activity Log should not be rebuilt for SharePoint.
+        The production implementation should replace the provider behind that workflow, then add real authentication, authorization, storage configuration, and deployment readiness.
+    </p>
+</InfoPanel>
+
+<GuidanceNote Title="Current sprint decision" Icon="🏁" Tone="info">
+    <p>
+        Finish Week 3 with storage readiness, role readiness, documentation, release notes, screenshots, and clean Git status before starting Week 4.
+    </p>
 </GuidanceNote>
