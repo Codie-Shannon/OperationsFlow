@@ -5,6 +5,7 @@ using OperationsFlow.Data;
 using OperationsFlow.Options;
 using OperationsFlow.SeedData;
 using OperationsFlow.Services;
+using OperationsFlow.Services.Storage;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,23 @@ builder.Services.AddDbContext<OperationsFlowDbContext>(options =>
 builder.Services.AddScoped<ActivityLogService>();
 builder.Services.AddScoped<CsvExportService>();
 builder.Services.AddScoped<DashboardService>();
+
+builder.Services.AddScoped<LocalFileStorageService>();
+builder.Services.AddScoped<SharePointFileStorageService>();
+
+builder.Services.AddScoped<IFileStorageService>(serviceProvider =>
+{
+    var options = serviceProvider
+        .GetRequiredService<IOptions<FileStorageOptions>>()
+        .Value;
+
+    if (options.IsSharePointProvider)
+    {
+        return serviceProvider.GetRequiredService<SharePointFileStorageService>();
+    }
+
+    return serviceProvider.GetRequiredService<LocalFileStorageService>();
+});
 
 var app = builder.Build();
 
