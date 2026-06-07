@@ -36,6 +36,7 @@ builder.Services.AddDbContext<OperationsFlowDbContext>(options =>
 builder.Services.AddScoped<ActivityLogService>();
 builder.Services.AddScoped<CsvExportService>();
 builder.Services.AddScoped<DashboardService>();
+builder.Services.AddScoped<DocumentAttachmentService>();
 
 builder.Services.AddScoped<LocalFileStorageService>();
 builder.Services.AddScoped<SharePointFileStorageService>();
