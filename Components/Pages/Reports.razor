@@ -1,23 +1,27 @@
 ﻿@page "/reports"
+
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+@using OperationsFlow.Services
 @using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
+
 @inject OperationsFlowDbContext Db
+@inject DocumentAttachmentService AttachmentService
 
 <PageTitle>Reports - OperationsFlow</PageTitle>
 
-<PageHero
-    Eyebrow="Management"
-    Title="Reports"
-    Subtitle="Management-level reporting across work orders, corrective actions, risk, document control, training compliance, document intake, exports, and activity evidence."
-    BadgeText="@($"{OpenIssueCount} open issues")"
-    BadgeClass="@OpenIssueBadgeClass">
+<PageHero Eyebrow="Management"
+          Title="Reports"
+          Subtitle="Review management-level workflow pressure, evidence coverage, compliance flags, document intake pressure, and export-ready reporting data."
+          BadgeText="@($"{ReportActionCount} actions")"
+          BadgeClass="@OpenIssueBadgeClass">
     <Actions>
         <a class="of-btn of-btn-secondary" href="/work-orders">Work Orders</a>
         <a class="of-btn of-btn-secondary" href="/corrective-actions">Corrective Actions</a>
         <a class="of-btn of-btn-secondary" href="/data-quality">Data Quality</a>
         <a class="of-btn of-btn-secondary" href="/activity-log">Activity Log</a>
+        <a class="of-btn of-btn-secondary" href="/document-library">Document Library</a>
     </Actions>
 </PageHero>
 
@@ -25,67 +29,75 @@
     <p>
         Use this page to review management-level workflow pressure and open the exact records that need action.
         Reports connect back to Work Orders, Corrective Actions, Document Intake, Documents, Risk Register,
-        Training, Data Quality, Activity Log, and CSV export evidence.
+        Training, Data Quality, Activity Log, Document Library, and CSV export evidence.
     </p>
 </PurposeNote>
 
 <MetricGrid>
-    <MetricCard
-        Title="Total Work Orders"
-        Value="@WorkOrdersTotal.ToString()"
-        Detail="@($"{WorkOrdersOpen} open work orders")"
-        Icon="📋" />
+    <MetricCard Title="Open Work Orders"
+                Value="@WorkOrdersOpen.ToString()"
+                Detail="@($"{WorkOrdersTotal} total work order records")"
+                Icon="🛠️"
+                Tone="info" />
 
-    <MetricCard
-        Title="Open Actions"
-        Value="@CorrectiveActionsOpen.ToString()"
-        Detail="@($"{CorrectiveActionsOverdue} overdue actions")"
-        Icon="✅"
-        Tone="@ActionTone" />
+    <MetricCard Title="Open Actions"
+                Value="@CorrectiveActionsOpen.ToString()"
+                Detail="@($"{CorrectiveActionsOverdue} overdue corrective actions")"
+                Icon="✅"
+                Tone="@ActionTone" />
 
-    <MetricCard
-        Title="High / Critical Risks"
-        Value="@HighCriticalRisks.ToString()"
-        Detail="@($"{RisksTotal} total risk items")"
-        Icon="🚨"
-        Tone="warning" />
+    <MetricCard Title="High/Critical Risks"
+                Value="@HighCriticalRisks.ToString()"
+                Detail="@($"{RisksTotal} total risk records")"
+                Icon="⚠️"
+                Tone="warning" />
 
-    <MetricCard
-        Title="Training Compliance"
-        Value="@($"{TrainingComplianceRate:0.0}%")"
-        Detail="@($"{ExpiredTraining} expired records")"
-        Icon="🎓"
-        Tone="@TrainingTone" />
+    <MetricCard Title="Training Compliance"
+                Value="@($"{TrainingComplianceRate:0.0}%")"
+                Detail="@($"{ExpiredTraining} expired required records")"
+                Icon="🎓"
+                Tone="@TrainingTone" />
 
-    <MetricCard
-        Title="Document Intake"
-        Value="@DocumentIntakeOpen.ToString()"
-        Detail="@($"{DocumentIntakeNeedsReview} needs review")"
-        Icon="📥"
-        Tone="@DocumentIntakeTone" />
+    <MetricCard Title="Document Intake"
+                Value="@DocumentIntakeOpen.ToString()"
+                Detail="@($"{DocumentIntakeNeedsReview} need review, {DocumentIntakeOverdue} overdue")"
+                Icon="📥"
+                Tone="@DocumentIntakeTone" />
 
-    <MetricCard
-        Title="Report Actions"
-        Value="@ReportActionCount.ToString()"
-        Detail="Openable report rows"
-        Icon="🔗"
-        Tone="info" />
+    <MetricCard Title="Report Actions"
+                Value="@ReportActionCount.ToString()"
+                Detail="Rows needing review"
+                Icon="🔎"
+                Tone="warning" />
+
+    <MetricCard Title="Attached Files"
+                Value="@AttachmentTotal.ToString()"
+                Detail="Active evidence/library files"
+                Icon="📎"
+                Tone="info" />
+
+    <MetricCard Title="Missing Evidence"
+                Value="@MissingEvidenceReportRows.Count.ToString()"
+                Detail="Priority records without files"
+                Icon="🧪"
+                Tone="@EvidenceTone" />
 </MetricGrid>
 
-<InfoPanel Title="Management Review Order" Subtitle="Recommended order for weekly reporting or safety/compliance review.">
+<InfoPanel Title="Report Review Flow" Subtitle="Recommended management review order.">
     <ChildContent>
-        <ol class="of-review-steps">
+        <ol>
             <li>Review overdue work orders and corrective actions first.</li>
             <li>Check owner workload pressure and unclosed high-priority work.</li>
             <li>Review high/critical risks and overdue document reviews.</li>
             <li>Confirm expired or expiring training records have follow-up owners.</li>
             <li>Check document intake items that are overdue, due soon, or waiting for review.</li>
+            <li>Review Missing Evidence before management screenshots or review meetings.</li>
             <li>Use Activity Log after updates to prove what changed.</li>
         </ol>
     </ChildContent>
 </InfoPanel>
 
-<InfoPanel Title="Report Workflow Visibility" Subtitle="What this page proves in the Week 2 workflow MVP.">
+<InfoPanel Title="Report Value" Subtitle="What this page proves.">
     <ChildContent>
         <div class="of-review-proof-grid">
             <div class="of-review-proof-card">
@@ -95,12 +107,12 @@
 
             <div class="of-review-proof-card">
                 <strong>Connected</strong>
-                <span>Work, actions, risks, documents, training, and intake are reviewed together.</span>
+                <span>Work, actions, risks, documents, training, intake, and evidence are reviewed together.</span>
             </div>
 
             <div class="of-review-proof-card">
                 <strong>Traceable</strong>
-                <span>After updates, reviewers can confirm created, reviewed, and changed events.</span>
+                <span>After updates, reviewers can confirm created, reviewed, uploaded, and changed events.</span>
             </div>
 
             <div class="of-review-proof-card">
@@ -111,75 +123,153 @@
     </ChildContent>
 </InfoPanel>
 
-<ActionStrip>
-    <a class="of-btn of-btn-primary" href="/work-orders">View Work Orders</a>
-    <a class="of-btn of-btn-secondary" href="/corrective-actions">View Corrective Actions</a>
-    <a class="of-btn of-btn-secondary" href="/data-quality">Open Data Quality</a>
-    <a class="of-btn of-btn-secondary" href="/activity-log">Open Activity Log</a>
-</ActionStrip>
-
-<InfoPanel Title="CSV Exports" Subtitle="Download report data for Excel, Power BI, email follow-ups, or management meetings.">
+<InfoPanel Title="CSV Exports" Subtitle="Download operational, compliance, evidence, and admin workflow data.">
     <Actions>
-        <span class="of-badge of-badge-info">Exports 7</span>
+        <span class="of-badge of-badge-info">7 exports</span>
     </Actions>
 
     <ChildContent>
         <div class="of-review-proof-grid">
-            <a class="of-review-proof-card of-click-card" href="/exports/work-orders.csv">
+            <a class="of-review-proof-card" href="/exports/work-orders.csv">
                 <strong>Work Orders CSV</strong>
                 <span>Operational requests, owners, priorities, statuses, and due dates.</span>
             </a>
 
-            <a class="of-review-proof-card of-click-card" href="/exports/corrective-actions.csv">
+            <a class="of-review-proof-card" href="/exports/corrective-actions.csv">
                 <strong>Corrective Actions CSV</strong>
                 <span>Open, overdue, priority, owner, source, and follow-up notes.</span>
             </a>
 
-            <a class="of-review-proof-card of-click-card" href="/exports/risk-register.csv">
+            <a class="of-review-proof-card" href="/exports/risk-register.csv">
                 <strong>Risk Register CSV</strong>
                 <span>Risk ratings, controls, owners, review dates, and overdue reviews.</span>
             </a>
 
-            <a class="of-review-proof-card of-click-card" href="/exports/training.csv">
+            <a class="of-review-proof-card" href="/exports/training.csv">
                 <strong>Training CSV</strong>
                 <span>Training status, expiry dates, required records, and compliance flags.</span>
             </a>
 
-            <a class="of-review-proof-card of-click-card" href="/exports/document-reviews.csv">
+            <a class="of-review-proof-card" href="/exports/document-reviews.csv">
                 <strong>Document Reviews CSV</strong>
                 <span>Controlled document owners, review dates, statuses, and due flags.</span>
             </a>
 
-            <a class="of-review-proof-card of-click-card" href="/exports/document-intake.csv">
+            <a class="of-review-proof-card" href="/exports/document-intake.csv">
                 <strong>Document Intake CSV</strong>
                 <span>Incoming document workflow items, target systems, owners, and due dates.</span>
             </a>
 
-            <a class="of-review-proof-card of-click-card" href="/exports/activity-log.csv">
+            <a class="of-review-proof-card" href="/exports/activity-log.csv">
                 <strong>Activity Log CSV</strong>
-                <span>Record-level traceability for created, updated, and reviewed items.</span>
+                <span>Record-level traceability for created, updated, uploaded, and reviewed items.</span>
             </a>
         </div>
     </ChildContent>
 </InfoPanel>
 
+<InfoPanel Title="Evidence Coverage Report" Subtitle="Shows which workflow modules have attached files and which priority records still need evidence.">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/document-library">Open Document Library</a>
+        <a class="of-btn of-btn-secondary" href="/data-quality">Open Data Quality</a>
+    </Actions>
+
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            @foreach (var row in EvidenceCoverageRows)
+            {
+                <div class="of-review-proof-card">
+                    <strong>@row.ModuleName</strong>
+                    <span>@row.AttachedRecordCount of @row.CheckedRecordCount checked records have files.</span>
+                    <span>@row.AttachmentCount active attachment(s).</span>
+
+                    <div class="of-link-row">
+                        <span class="@GetEvidenceCoverageClass(row)">
+                            @row.CoveragePercent.ToString("0.0")%
+                        </span>
+
+                        @if (row.MissingEvidenceCount > 0)
+                        {
+                            <span class="of-badge of-badge-warning">
+                                @row.MissingEvidenceCount missing
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="of-badge of-badge-success">
+                                covered
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </ChildContent>
+</InfoPanel>
+
+<TableCard Title="Missing Evidence Report"
+           Subtitle="Priority, overdue, closed, or review-needed records that should have at least one supporting file."
+           IsEmpty="@(!MissingEvidenceReportRows.Any())"
+           EmptyTitle="No missing evidence report rows"
+           EmptyMessage="All checked priority records currently have supporting files attached.">
+    <Actions>
+        <span class="of-badge of-badge-warning">@MissingEvidenceReportRows.Count rows</span>
+    </Actions>
+
+    <ChildContent>
+        @if (MissingEvidenceReportRows.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Severity</th>
+                        <th>Module</th>
+                        <th>Reference</th>
+                        <th>Reason</th>
+                        <th>Owner</th>
+                        <th>Recommended Action</th>
+                        <th>Open</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in MissingEvidenceReportRows)
+                    {
+                        <tr>
+                            <td>
+                                <span class="@row.SeverityClass">
+                                    @row.Severity
+                                </span>
+                            </td>
+                            <td>@row.Module</td>
+                            <td><strong>@row.Reference</strong></td>
+                            <td>@row.Reason</td>
+                            <td>@row.Owner</td>
+                            <td>@row.RecommendedAction</td>
+                            <td>
+                                <a class="of-card-link" href="@row.Url">Open</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </ChildContent>
+</TableCard>
+
 <div class="of-two-column-grid">
-    <InfoPanel Title="Work Orders by Status" Subtitle="Current operational workload grouped by status.">
+    <TableCard Title="Work Orders by Status"
+               Subtitle="Current operational workload status."
+               IsEmpty="@(!WorkOrdersByStatus.Any())"
+               EmptyTitle="No work order data"
+               EmptyMessage="No work orders are available for reporting.">
         <Actions>
-            <a class="of-btn of-btn-secondary" href="/work-orders">Open Work Orders</a>
+            <a class="of-card-link" href="/work-orders">Open Work Orders</a>
         </Actions>
 
         <ChildContent>
-            @if (!WorkOrdersByStatus.Any())
+            @if (WorkOrdersByStatus.Any())
             {
-                <EmptyState
-                    Title="No work order data available"
-                    Message="No work order status groups are available yet."
-                    Icon="📋" />
-            }
-            else
-            {
-                <table class="of-activity-table">
+                <table>
                     <thead>
                         <tr>
                             <th>Status</th>
@@ -202,24 +292,21 @@
                 </table>
             }
         </ChildContent>
-    </InfoPanel>
+    </TableCard>
 
-    <InfoPanel Title="Corrective Actions by Priority" Subtitle="Action workload grouped by priority level.">
+    <TableCard Title="Corrective Actions by Priority"
+               Subtitle="Action pressure by priority level."
+               IsEmpty="@(!CorrectiveActionsByPriority.Any())"
+               EmptyTitle="No corrective action data"
+               EmptyMessage="No corrective actions are available for reporting.">
         <Actions>
-            <a class="of-btn of-btn-secondary" href="/corrective-actions">Open Actions</a>
+            <a class="of-card-link" href="/corrective-actions">Open Actions</a>
         </Actions>
 
         <ChildContent>
-            @if (!CorrectiveActionsByPriority.Any())
+            @if (CorrectiveActionsByPriority.Any())
             {
-                <EmptyState
-                    Title="No corrective action data available"
-                    Message="No corrective action priority groups are available yet."
-                    Icon="✅" />
-            }
-            else
-            {
-                <table class="of-activity-table">
+                <table>
                     <thead>
                         <tr>
                             <th>Priority</th>
@@ -242,26 +329,23 @@
                 </table>
             }
         </ChildContent>
-    </InfoPanel>
+    </TableCard>
 </div>
 
 <div class="of-two-column-grid">
-    <InfoPanel Title="Risks by Level" Subtitle="Risk register items grouped by calculated risk level.">
+    <TableCard Title="Risk Register by Risk Level"
+               Subtitle="Risk profile by current risk level."
+               IsEmpty="@(!RisksByLevel.Any())"
+               EmptyTitle="No risk data"
+               EmptyMessage="No risk records are available for reporting.">
         <Actions>
-            <a class="of-btn of-btn-secondary" href="/risk-register">Open Risks</a>
+            <a class="of-card-link" href="/risk-register">Open Risks</a>
         </Actions>
 
         <ChildContent>
-            @if (!RisksByLevel.Any())
+            @if (RisksByLevel.Any())
             {
-                <EmptyState
-                    Title="No risk data available"
-                    Message="No risk level groups are available yet."
-                    Icon="⚠️" />
-            }
-            else
-            {
-                <table class="of-activity-table">
+                <table>
                     <thead>
                         <tr>
                             <th>Risk Level</th>
@@ -284,24 +368,21 @@
                 </table>
             }
         </ChildContent>
-    </InfoPanel>
+    </TableCard>
 
-    <InfoPanel Title="Document Intake by Target System" Subtitle="Tracks where incoming document data needs to be saved or entered.">
+    <TableCard Title="Document Intake by Target System"
+               Subtitle="Incoming document workflow pressure by destination."
+               IsEmpty="@(!DocumentIntakeByTargetSystem.Any())"
+               EmptyTitle="No document intake data"
+               EmptyMessage="No intake records are available for reporting.">
         <Actions>
-            <a class="of-btn of-btn-secondary" href="/document-intake">Open Intake</a>
+            <a class="of-card-link" href="/document-intake">Open Intake</a>
         </Actions>
 
         <ChildContent>
-            @if (!DocumentIntakeByTargetSystem.Any())
+            @if (DocumentIntakeByTargetSystem.Any())
             {
-                <EmptyState
-                    Title="No target system data available"
-                    Message="No document intake target system groups are available yet."
-                    Icon="📥" />
-            }
-            else
-            {
-                <table class="of-activity-table">
+                <table>
                     <thead>
                         <tr>
                             <th>Target System</th>
@@ -320,74 +401,70 @@
                 </table>
             }
         </ChildContent>
-    </InfoPanel>
+    </TableCard>
 </div>
 
-<TableCard Title="Management Action List"
-           Subtitle="Highest-priority open workflow items across operations, compliance, and admin workflow."
+<TableCard Title="Management Action Report"
+           Subtitle="@($"{ManagementActionRows.Count} highest-priority management action row(s).")"
            IsEmpty="@(!ManagementActionRows.Any())"
            EmptyTitle="No management action rows"
-           EmptyMessage="No overdue, high-priority, due-soon, or review-needed records are currently flagged.">
-    <Actions>
-        <span class="of-badge of-badge-info">Rows @ManagementActionRows.Count</span>
-    </Actions>
-
+           EmptyMessage="No overdue, high-priority, or compliance review rows currently need attention.">
     <ChildContent>
-        <table>
-            <thead>
-                <tr>
-                    <th>Severity</th>
-                    <th>Module</th>
-                    <th>Reference</th>
-                    <th>Issue</th>
-                    <th>Owner</th>
-                    <th>Due / Review</th>
-                    <th>Recommended Action</th>
-                    <th>Open</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var row in ManagementActionRows)
-                {
+        @if (ManagementActionRows.Any())
+        {
+            <table>
+                <thead>
                     <tr>
-                        <td>
-                            <span class="@row.SeverityClass">
-                                @row.Severity
-                            </span>
-                        </td>
-                        <td>@row.Module</td>
-                        <td><strong>@row.Reference</strong></td>
-                        <td>@row.Issue</td>
-                        <td>@row.Owner</td>
-                        <td>@row.DueText</td>
-                        <td>@row.RecommendedAction</td>
-                        <td>
-                            <a class="of-card-link" href="@row.Url">Open</a>
-                        </td>
+                        <th>Severity</th>
+                        <th>Module</th>
+                        <th>Reference</th>
+                        <th>Issue</th>
+                        <th>Owner</th>
+                        <th>Due / Review</th>
+                        <th>Recommended Action</th>
+                        <th>Open</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var row in ManagementActionRows)
+                    {
+                        <tr>
+                            <td>
+                                <span class="@row.SeverityClass">
+                                    @row.Severity
+                                </span>
+                            </td>
+                            <td>@row.Module</td>
+                            <td><strong>@row.Reference</strong></td>
+                            <td>@row.Issue</td>
+                            <td>@row.Owner</td>
+                            <td>@row.DueText</td>
+                            <td>@row.RecommendedAction</td>
+                            <td>
+                                <a class="of-card-link" href="@row.Url">Open</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
     </ChildContent>
 </TableCard>
 
 <div class="of-two-column-grid">
-    <InfoPanel Title="Training by Department" Subtitle="Required training compliance grouped by department.">
+    <TableCard Title="Training Compliance by Department"
+               Subtitle="Required training completion by department."
+               IsEmpty="@(!TrainingByDepartment.Any())"
+               EmptyTitle="No required training data"
+               EmptyMessage="No required training records are available for reporting.">
         <Actions>
-            <a class="of-btn of-btn-secondary" href="/training">Open Training</a>
+            <a class="of-card-link" href="/training">Open Training</a>
         </Actions>
 
         <ChildContent>
-            @if (!TrainingByDepartment.Any())
+            @if (TrainingByDepartment.Any())
             {
-                <EmptyState
-                    Title="No training data available"
-                    Message="No required training records are available yet."
-                    Icon="🎓" />
-            }
-            else
-            {
-                <table class="of-activity-table">
+                <table>
                     <thead>
                         <tr>
                             <th>Department</th>
@@ -400,7 +477,7 @@
                         @foreach (var row in TrainingByDepartment)
                         {
                             <tr>
-                                <td><strong>@row.Department</strong></td>
+                                <td>@row.Department</td>
                                 <td>@row.RequiredCount</td>
                                 <td>@row.CurrentCount</td>
                                 <td>
@@ -414,24 +491,21 @@
                 </table>
             }
         </ChildContent>
-    </InfoPanel>
+    </TableCard>
 
-    <InfoPanel Title="Overdue Items by Owner" Subtitle="Work orders and corrective actions currently overdue, grouped by owner.">
+    <TableCard Title="Overdue Work by Owner"
+               Subtitle="Owners with overdue work orders or corrective actions."
+               IsEmpty="@(!OverdueItemsByOwner.Any())"
+               EmptyTitle="No overdue owner pressure"
+               EmptyMessage="No owners currently have overdue work order or corrective action pressure.">
         <Actions>
-            <a class="of-btn of-btn-secondary" href="/workload">Open Workload</a>
+            <a class="of-card-link" href="/workload">Open Workload</a>
         </Actions>
 
         <ChildContent>
-            @if (!OverdueItemsByOwner.Any())
+            @if (OverdueItemsByOwner.Any())
             {
-                <EmptyState
-                    Title="No overdue owner data available"
-                    Message="No overdue work orders or corrective actions are currently grouped by owner."
-                    Icon="✅" />
-            }
-            else
-            {
-                <table class="of-activity-table">
+                <table>
                     <thead>
                         <tr>
                             <th>Owner</th>
@@ -448,7 +522,7 @@
                                 <td>@row.OverdueWorkOrders</td>
                                 <td>@row.OverdueCorrectiveActions</td>
                                 <td>
-                                    <span class="of-badge of-badge-danger">
+                                    <span class="badge badge-danger">
                                         @row.TotalOverdue
                                     </span>
                                 </td>
@@ -458,25 +532,22 @@
                 </table>
             }
         </ChildContent>
-    </InfoPanel>
+    </TableCard>
 </div>
 
-<InfoPanel Title="Document Review Report" Subtitle="Controlled documents that are overdue for review or due soon.">
+<TableCard Title="Document Review Report"
+           Subtitle="Controlled documents that are overdue or due soon for review."
+           IsEmpty="@(!DocumentReviewRows.Any())"
+           EmptyTitle="No document reviews need attention"
+           EmptyMessage="No controlled document reviews are overdue or due soon.">
     <Actions>
-        <a class="of-btn of-btn-secondary" href="/documents">View Documents</a>
+        <a class="of-card-link" href="/documents">View Documents</a>
     </Actions>
 
     <ChildContent>
-        @if (!DocumentReviewRows.Any())
+        @if (DocumentReviewRows.Any())
         {
-            <EmptyState
-                Title="No document review items require attention"
-                Message="Controlled documents currently have no overdue or due-soon report flags."
-                Icon="✅" />
-        }
-        else
-        {
-            <table class="of-activity-table">
+            <table>
                 <thead>
                     <tr>
                         <th>Document #</th>
@@ -500,11 +571,11 @@
                             <td>
                                 @if (item.IsReviewOverdue)
                                 {
-                                    <span class="of-badge of-badge-danger">Overdue</span>
+                                    <span class="badge badge-danger">Overdue</span>
                                 }
                                 else
                                 {
-                                    <span class="of-badge of-badge-warning">Due Soon</span>
+                                    <span class="badge badge-warning">Due Soon</span>
                                 }
                             </td>
                             <td>
@@ -516,24 +587,21 @@
             </table>
         }
     </ChildContent>
-</InfoPanel>
+</TableCard>
 
-<InfoPanel Title="Document Intake Attention Report" Subtitle="Incoming documents that are overdue, due soon, or waiting for manual review.">
+<TableCard Title="Document Intake Attention Report"
+           Subtitle="Incoming documents that are overdue, due soon, or waiting for review."
+           IsEmpty="@(!DocumentIntakeAttentionRows.Any())"
+           EmptyTitle="No document intake rows need attention"
+           EmptyMessage="No intake records are overdue, due soon, or waiting for manual review.">
     <Actions>
-        <a class="of-btn of-btn-secondary" href="/document-intake">View Intake</a>
+        <a class="of-card-link" href="/document-intake">View Intake</a>
     </Actions>
 
     <ChildContent>
-        @if (!DocumentIntakeAttentionRows.Any())
+        @if (DocumentIntakeAttentionRows.Any())
         {
-            <EmptyState
-                Title="No document intake items require attention"
-                Message="Incoming document processing records currently have no attention flags."
-                Icon="✅" />
-        }
-        else
-        {
-            <table class="of-activity-table">
+            <table>
                 <thead>
                     <tr>
                         <th>Document</th>
@@ -561,19 +629,19 @@
                             <td>
                                 @if (item.IsOverdue)
                                 {
-                                    <span class="of-badge of-badge-danger">Overdue</span>
+                                    <span class="badge badge-danger">Overdue</span>
                                 }
                                 else if (item.NeedsReview)
                                 {
-                                    <span class="of-badge of-badge-warning">Needs Review</span>
+                                    <span class="badge badge-warning">Needs Review</span>
                                 }
                                 else
                                 {
-                                    <span class="of-badge of-badge-info">Due Soon</span>
+                                    <span class="badge badge-info">Due Soon</span>
                                 }
                             </td>
                             <td>
-                                <a class="of-card-link" href="@BuildDocumentIntakeEditUrl(item.Id)">Open</a>
+                                <a class="of-card-link" href="@BuildDocumentIntakeDetailsUrl(item.Id)">Open</a>
                             </td>
                         </tr>
                     }
@@ -581,12 +649,13 @@
             </table>
         }
     </ChildContent>
-</InfoPanel>
+</TableCard>
 
 <GuidanceNote Title="Review Notes" Icon="💡" Tone="info">
     <ul>
-        <li>Reports should show workflow pressure across operations, compliance, admin workflow, and system evidence.</li>
+        <li>Reports should show workflow pressure across operations, compliance, admin workflow, system evidence, and document traceability.</li>
         <li>Management rows should open the relevant record or source module for review.</li>
+        <li>Missing Evidence rows show priority records that need supporting files before review.</li>
         <li>CSV exports support Excel, Power BI-style review, email follow-ups, and management packs.</li>
         <li>This is local SQLite demo reporting; production reporting could connect to Microsoft Lists, SharePoint, Power BI, and Power Automate.</li>
     </ul>
@@ -599,21 +668,29 @@
     private List<RiskItem> risks = new();
     private List<TrainingRecord> trainingRecords = new();
     private List<DocumentIntakeModel> documentIntakeItems = new();
+    private List<DocumentAttachment> attachments = new();
 
     private int WorkOrdersTotal => workOrders.Count;
+
     private int WorkOrdersOpen => workOrders.Count(x => !IsClosedStatus(x.Status));
 
     private int CorrectiveActionsOpen => correctiveActions.Count(x => !IsClosedStatus(x.Status));
+
     private int CorrectiveActionsOverdue => correctiveActions.Count(x => x.IsOverdue);
 
     private int RisksTotal => risks.Count;
+
     private int HighCriticalRisks => risks.Count(x => x.RiskLevel == "High" || x.RiskLevel == "Critical");
 
     private int ExpiredTraining => trainingRecords.Count(x => x.IsRequired && x.IsExpired);
 
     private int DocumentIntakeOpen => documentIntakeItems.Count(x => !x.IsCompleted);
+
     private int DocumentIntakeNeedsReview => documentIntakeItems.Count(x => x.NeedsReview);
+
     private int DocumentIntakeOverdue => documentIntakeItems.Count(x => x.IsOverdue);
+
+    private int AttachmentTotal => attachments.Count(x => !x.IsDeleted);
 
     private int OpenIssueCount =>
         WorkOrdersOpen +
@@ -621,21 +698,35 @@
         HighCriticalRisks +
         ExpiredTraining +
         DocumentIntakeNeedsReview +
-        DocumentIntakeOverdue;
+        DocumentIntakeOverdue +
+        MissingEvidenceReportRows.Count;
 
     private int ReportActionCount =>
         ManagementActionRows.Count +
         DocumentReviewRows.Count +
-        DocumentIntakeAttentionRows.Count;
+        DocumentIntakeAttentionRows.Count +
+        MissingEvidenceReportRows.Count;
 
     private string OpenIssueBadgeClass =>
-        OpenIssueCount == 0 ? "of-badge-success" :
-        CorrectiveActionsOverdue > 0 || DocumentIntakeOverdue > 0 ? "of-badge-danger" :
-        "of-badge-warning";
+        OpenIssueCount == 0
+            ? "of-badge-success"
+            : CorrectiveActionsOverdue > 0 || DocumentIntakeOverdue > 0 || MissingEvidenceReportRows.Any(x => x.Severity == "Critical")
+                ? "of-badge-danger"
+                : "of-badge-warning";
 
-    private string ActionTone => CorrectiveActionsOverdue > 0 ? "danger" : "warning";
-    private string TrainingTone => ExpiredTraining > 0 ? "danger" : "success";
-    private string DocumentIntakeTone => DocumentIntakeOverdue > 0 ? "danger" : DocumentIntakeNeedsReview > 0 ? "warning" : "success";
+    private string ActionTone =>
+        CorrectiveActionsOverdue > 0 ? "danger" : "warning";
+
+    private string TrainingTone =>
+        ExpiredTraining > 0 ? "danger" : "success";
+
+    private string DocumentIntakeTone =>
+        DocumentIntakeOverdue > 0 ? "danger" :
+        DocumentIntakeNeedsReview > 0 ? "warning" :
+        "success";
+
+    private string EvidenceTone =>
+        MissingEvidenceReportRows.Any() ? "warning" : "success";
 
     private decimal TrainingComplianceRate
     {
@@ -651,6 +742,7 @@
             }
 
             var current = required.Count(x => !x.IsExpired);
+
             return (decimal)current / required.Count * 100;
         }
     }
@@ -698,7 +790,9 @@
                 {
                     var requiredCount = group.Count();
                     var currentCount = group.Count(x => !x.IsExpired);
-                    var compliance = requiredCount == 0 ? 0 : (decimal)currentCount / requiredCount * 100;
+                    var compliance = requiredCount == 0
+                        ? 0
+                        : (decimal)currentCount / requiredCount * 100;
 
                     return new TrainingDepartmentReportRow(
                         Department: group.Key,
@@ -764,6 +858,98 @@
             .ThenBy(x => x.DueDate)
             .ToList();
 
+    private List<EvidenceCoverageRow> EvidenceCoverageRows
+    {
+        get
+        {
+            return new List<EvidenceCoverageRow>
+            {
+                BuildEvidenceCoverageRow(
+                    moduleName: "Work Orders",
+                    checkedRecordCount: workOrders.Count,
+                    attachedRecordCount: CountRecordsWithAttachments("Work Orders"),
+                    attachmentCount: CountAttachments("Work Orders"),
+                    missingEvidenceCount: MissingEvidenceReportRows.Count(x => x.Module == "Work Orders")),
+
+                BuildEvidenceCoverageRow(
+                    moduleName: "Corrective Actions",
+                    checkedRecordCount: correctiveActions.Count,
+                    attachedRecordCount: CountRecordsWithAttachments("Corrective Actions"),
+                    attachmentCount: CountAttachments("Corrective Actions"),
+                    missingEvidenceCount: MissingEvidenceReportRows.Count(x => x.Module == "Corrective Actions")),
+
+                BuildEvidenceCoverageRow(
+                    moduleName: "Document Intake",
+                    checkedRecordCount: documentIntakeItems.Count,
+                    attachedRecordCount: CountRecordsWithAttachments("Document Intake"),
+                    attachmentCount: CountAttachments("Document Intake"),
+                    missingEvidenceCount: MissingEvidenceReportRows.Count(x => x.Module == "Document Intake"))
+            };
+        }
+    }
+
+    private List<MissingEvidenceReportRow> MissingEvidenceReportRows
+    {
+        get
+        {
+            var rows = new List<MissingEvidenceReportRow>();
+
+            rows.AddRange(workOrders
+                .Where(x =>
+                    (x.IsOverdue || IsHighPriority(x.Priority)) &&
+                    !HasAttachment("Work Orders", x.Id))
+                .Select(x => new MissingEvidenceReportRow(
+                    Severity: x.IsOverdue ? "Critical" : "Warning",
+                    SeverityClass: x.IsOverdue ? "badge badge-danger" : "badge badge-warning",
+                    Module: "Work Orders",
+                    Reference: x.WorkOrderNumber,
+                    Reason: x.IsOverdue
+                        ? $"Overdue work order has no attached evidence: {x.Title}."
+                        : $"High-priority work order has no attached evidence: {x.Title}.",
+                    Owner: DisplayText(x.Owner),
+                    RecommendedAction: "Open the work order and upload photos, notes, forms, or supporting evidence.",
+                    Url: $"/work-orders/details/{x.Id}")));
+
+            rows.AddRange(correctiveActions
+                .Where(x =>
+                    (x.IsOverdue || IsHighPriority(x.Priority) || IsClosedStatus(x.Status)) &&
+                    !HasAttachment("Corrective Actions", x.Id))
+                .Select(x => new MissingEvidenceReportRow(
+                    Severity: x.IsOverdue ? "Critical" : "Warning",
+                    SeverityClass: x.IsOverdue ? "badge badge-danger" : "badge badge-warning",
+                    Module: "Corrective Actions",
+                    Reference: $"CA-{x.Id}",
+                    Reason: x.IsOverdue
+                        ? $"Overdue corrective action has no close-out evidence: {x.Title}."
+                        : $"Priority or closed corrective action has no attached evidence: {x.Title}.",
+                    Owner: DisplayText(x.Owner),
+                    RecommendedAction: "Open the corrective action and upload close-out evidence, photos, review notes, or supporting files.",
+                    Url: $"/corrective-actions/details/{x.Id}")));
+
+            rows.AddRange(documentIntakeItems
+                .Where(x =>
+                    (x.IsOverdue || x.NeedsReview || IsHighPriority(x.Priority)) &&
+                    !HasAttachment("Document Intake", x.Id))
+                .Select(x => new MissingEvidenceReportRow(
+                    Severity: x.IsOverdue ? "Critical" : "Warning",
+                    SeverityClass: x.IsOverdue ? "badge badge-danger" : "badge badge-warning",
+                    Module: "Document Intake",
+                    Reference: $"DI-{x.Id}",
+                    Reason: x.IsOverdue
+                        ? $"Overdue intake record has no source file attached: {x.DocumentName}."
+                        : $"Review-needed intake record has no source file attached: {x.DocumentName}.",
+                    Owner: DisplayText(x.AssignedTo),
+                    RecommendedAction: "Open the intake record and attach the source document, scan, email export, PDF, or processing evidence.",
+                    Url: $"/document-intake/details/{x.Id}")));
+
+            return rows
+                .OrderBy(x => GetSeveritySortOrder(x.Severity))
+                .ThenBy(x => x.Module)
+                .ThenBy(x => x.Reference)
+                .ToList();
+        }
+    }
+
     private List<ManagementActionRow> ManagementActionRows
     {
         get
@@ -785,7 +971,7 @@
                         : $"High-priority work order: {x.Title}.",
                     Owner: DisplayText(x.Owner),
                     DueText: x.DueDate.ToString("dd MMM yyyy"),
-                    RecommendedAction: "Open the work order, review progress, update owner/status/due date, or close if completed.",
+                    RecommendedAction: "Open the work order, review progress, update owner/status/due date, attach evidence, or close if completed.",
                     Url: $"/work-orders/details/{x.Id}")));
 
             rows.AddRange(correctiveActions
@@ -803,8 +989,8 @@
                         : $"High-priority corrective action: {x.Title}.",
                     Owner: DisplayText(x.Owner),
                     DueText: x.DueDate.ToString("dd MMM yyyy"),
-                    RecommendedAction: "Open the corrective action, review progress, update owner/status/due date, or close if completed.",
-                    Url: $"/corrective-actions/edit/{x.Id}?returnUrl={Uri.EscapeDataString("/reports")}")));
+                    RecommendedAction: "Open the corrective action, review progress, update owner/status/due date, attach evidence, or close if completed.",
+                    Url: $"/corrective-actions/details/{x.Id}")));
 
             rows.AddRange(risks
                 .Where(x => x.IsReviewOverdue || x.RiskLevel == "Critical" || x.RiskLevel == "High")
@@ -859,8 +1045,8 @@
                         : $"Document intake needs review or is due soon: {x.DocumentName}.",
                     Owner: DisplayText(x.AssignedTo),
                     DueText: x.DueDate.ToString("dd MMM yyyy"),
-                    RecommendedAction: "Open the intake record, confirm owner/status, process the document, or complete/reject it.",
-                    Url: BuildDocumentIntakeEditUrl(x.Id))));
+                    RecommendedAction: "Open the intake record, confirm owner/status, attach the source document, process it, or complete/reject it.",
+                    Url: BuildDocumentIntakeDetailsUrl(x.Id))));
 
             return rows
                 .OrderBy(x => GetSeveritySortOrder(x.Severity))
@@ -896,11 +1082,75 @@
         documentIntakeItems = await Db.DocumentIntakeItems
             .AsNoTracking()
             .ToListAsync();
+
+        attachments = await AttachmentService.GetAllActiveAsync();
     }
 
-    private static string BuildDocumentIntakeEditUrl(int id)
+    private bool HasAttachment(string moduleName, int recordId)
     {
-        return $"/document-intake/edit/{id}?returnUrl={Uri.EscapeDataString("/reports")}";
+        return attachments.Any(x =>
+            !x.IsDeleted &&
+            x.RecordId == recordId &&
+            string.Equals(x.ModuleName, moduleName, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private int CountAttachments(string moduleName)
+    {
+        return attachments.Count(x =>
+            !x.IsDeleted &&
+            string.Equals(x.ModuleName, moduleName, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private int CountRecordsWithAttachments(string moduleName)
+    {
+        return attachments
+            .Where(x =>
+                !x.IsDeleted &&
+                x.RecordId.HasValue &&
+                string.Equals(x.ModuleName, moduleName, StringComparison.OrdinalIgnoreCase))
+            .Select(x => x.RecordId!.Value)
+            .Distinct()
+            .Count();
+    }
+
+    private static EvidenceCoverageRow BuildEvidenceCoverageRow(
+        string moduleName,
+        int checkedRecordCount,
+        int attachedRecordCount,
+        int attachmentCount,
+        int missingEvidenceCount)
+    {
+        var coveragePercent = checkedRecordCount == 0
+            ? 0
+            : (decimal)attachedRecordCount / checkedRecordCount * 100;
+
+        return new EvidenceCoverageRow(
+            ModuleName: moduleName,
+            CheckedRecordCount: checkedRecordCount,
+            AttachedRecordCount: attachedRecordCount,
+            AttachmentCount: attachmentCount,
+            MissingEvidenceCount: missingEvidenceCount,
+            CoveragePercent: coveragePercent);
+    }
+
+    private static string GetEvidenceCoverageClass(EvidenceCoverageRow row)
+    {
+        if (row.MissingEvidenceCount == 0 && row.AttachedRecordCount > 0)
+        {
+            return "of-badge of-badge-success";
+        }
+
+        if (row.MissingEvidenceCount > 0)
+        {
+            return "of-badge of-badge-warning";
+        }
+
+        return "of-badge of-badge-info";
+    }
+
+    private static string BuildDocumentIntakeDetailsUrl(int id)
+    {
+        return $"/document-intake/details/{id}";
     }
 
     private static bool IsClosedStatus(string? status)
@@ -908,6 +1158,12 @@
         return string.Equals(status, "Completed", StringComparison.OrdinalIgnoreCase) ||
                string.Equals(status, "Closed", StringComparison.OrdinalIgnoreCase) ||
                string.Equals(status, "Rejected", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsHighPriority(string? priority)
+    {
+        return string.Equals(priority, "High", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(priority, "Critical", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string DisplayText(string? value)
@@ -1052,6 +1308,24 @@
         string Issue,
         string Owner,
         string DueText,
+        string RecommendedAction,
+        string Url);
+
+    public record EvidenceCoverageRow(
+        string ModuleName,
+        int CheckedRecordCount,
+        int AttachedRecordCount,
+        int AttachmentCount,
+        int MissingEvidenceCount,
+        decimal CoveragePercent);
+
+    public record MissingEvidenceReportRow(
+        string Severity,
+        string SeverityClass,
+        string Module,
+        string Reference,
+        string Reason,
+        string Owner,
         string RecommendedAction,
         string Url);
 }
