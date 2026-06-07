@@ -11,7 +11,10 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents(options =>
+    {
+        options.DetailedErrors = true;
+    });
 
 builder.Services.Configure<OperationsFlowOptions>(
     builder.Configuration.GetSection(OperationsFlowOptions.SectionName));
@@ -25,12 +28,24 @@ builder.Services.Configure<Microsoft365Options>(
 builder.Services.Configure<NotificationOptions>(
     builder.Configuration.GetSection(NotificationOptions.SectionName));
 
+var databaseProvider = builder.Configuration["DatabaseProvider"] ?? "Sqlite";
+
 builder.Services.AddDbContext<OperationsFlowDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("OperationsFlowDatabase")
-        ?? "Data Source=operationsflow.db";
+    if (databaseProvider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase))
+    {
+        var sqlServerConnectionString = builder.Configuration.GetConnectionString("OperationsFlowSqlServer")
+            ?? "Server=(localdb)\\ProjectModels;Database=OperationsFlowWeek3Auth;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true";
 
-    options.UseSqlite(connectionString);
+        options.UseSqlServer(sqlServerConnectionString);
+    }
+    else
+    {
+        var sqliteConnectionString = builder.Configuration.GetConnectionString("OperationsFlowDatabase")
+            ?? "Data Source=operationsflow.db";
+
+        options.UseSqlite(sqliteConnectionString);
+    }
 });
 
 builder.Services.AddScoped<ActivityLogService>();
@@ -40,6 +55,11 @@ builder.Services.AddScoped<DocumentAttachmentService>();
 
 builder.Services.AddScoped<LocalFileStorageService>();
 builder.Services.AddScoped<SharePointFileStorageService>();
+
+builder.Services.AddScoped<DatabaseSchemaService>();
+builder.Services.AddScoped<LocalIdentityService>();
+builder.Services.AddScoped<LocalCurrentUserService>();
+builder.Services.AddScoped<LocalAuthService>();
 
 builder.Services.AddScoped<IFileStorageService>(serviceProvider =>
 {
@@ -64,13 +84,19 @@ using (var scope = app.Services.CreateScope())
         .GetRequiredService<IOptions<OperationsFlowOptions>>()
         .Value;
 
+    var databaseSchemaService = scope.ServiceProvider.GetRequiredService<DatabaseSchemaService>();
+    var localIdentityService = scope.ServiceProvider.GetRequiredService<LocalIdentityService>();
+
     db.Database.EnsureCreated();
-    EnsureDocumentAttachmentsTable(db);
+
+    await databaseSchemaService.EnsureDocumentAttachmentsTableAsync();
 
     if (operationsFlowOptions.EnableDemoDataSeeding)
     {
         DemoDataSeeder.Seed(db);
     }
+
+    await localIdentityService.EnsureSeedDataAsync();
 }
 
 if (!app.Environment.IsDevelopment())
@@ -155,58 +181,5 @@ app.MapGet("/exports/document-intake.csv", async (CsvExportService csvExportServ
         "text/csv",
         "operationsflow-document-intake.csv");
 });
-
-static void EnsureDocumentAttachmentsTable(OperationsFlowDbContext db)
-{
-    db.Database.ExecuteSqlRaw("""
-        CREATE TABLE IF NOT EXISTS "DocumentAttachments" (
-            "Id" INTEGER NOT NULL CONSTRAINT "PK_DocumentAttachments" PRIMARY KEY AUTOINCREMENT,
-            "ModuleName" TEXT NOT NULL,
-            "RecordId" INTEGER NULL,
-            "RecordReference" TEXT NOT NULL,
-            "OriginalFileName" TEXT NOT NULL,
-            "StoredFileName" TEXT NOT NULL,
-            "StoredRelativePath" TEXT NOT NULL,
-            "PublicUrl" TEXT NOT NULL,
-            "ContentType" TEXT NOT NULL,
-            "FileSizeBytes" INTEGER NOT NULL,
-            "StorageProvider" TEXT NOT NULL,
-            "UploadedBy" TEXT NOT NULL,
-            "UploadedDate" TEXT NOT NULL,
-            "Notes" TEXT NOT NULL,
-            "Status" TEXT NOT NULL,
-            "IsEvidence" INTEGER NOT NULL,
-            "IsControlledDocument" INTEGER NOT NULL,
-            "IsDeleted" INTEGER NOT NULL,
-            "DeletedDate" TEXT NULL,
-            "DeletedBy" TEXT NOT NULL
-        );
-    """);
-
-    db.Database.ExecuteSqlRaw("""
-        CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_ModuleName"
-        ON "DocumentAttachments" ("ModuleName");
-    """);
-
-    db.Database.ExecuteSqlRaw("""
-        CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_RecordId"
-        ON "DocumentAttachments" ("RecordId");
-    """);
-
-    db.Database.ExecuteSqlRaw("""
-        CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_ModuleName_RecordId"
-        ON "DocumentAttachments" ("ModuleName", "RecordId");
-    """);
-
-    db.Database.ExecuteSqlRaw("""
-        CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_UploadedDate"
-        ON "DocumentAttachments" ("UploadedDate");
-    """);
-
-    db.Database.ExecuteSqlRaw("""
-        CREATE INDEX IF NOT EXISTS "IX_DocumentAttachments_IsDeleted"
-        ON "DocumentAttachments" ("IsDeleted");
-    """);
-}
 
 app.Run();

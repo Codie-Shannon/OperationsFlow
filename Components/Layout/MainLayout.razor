@@ -1,9 +1,15 @@
-﻿@inherits LayoutComponentBase
+﻿@using OperationsFlow.Services
+@inherits LayoutComponentBase
+@inject LocalCurrentUserService CurrentUserService
+@implements IDisposable
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    @if (CurrentUserService.IsSignedIn)
+    {
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    }
 
     <main>
         <div class="top-row px-4">
@@ -21,3 +27,21 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+
+@code {
+    protected override void OnInitialized()
+    {
+        CurrentUserService.CurrentUserChanged += OnCurrentUserChanged;
+    }
+
+    private void OnCurrentUserChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        CurrentUserService.CurrentUserChanged -= OnCurrentUserChanged;
+    }
+}

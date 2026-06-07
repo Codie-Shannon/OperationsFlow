@@ -1,0 +1,196 @@
+﻿@page "/"
+@page "/login"
+@rendermode InteractiveServer
+@using OperationsFlow.Services
+@inject LocalAuthService LocalAuthService
+@inject LocalCurrentUserService CurrentUserService
+@inject NavigationManager Navigation
+
+<PageTitle>Login - OperationsFlow</PageTitle>
+
+<PageHero Eyebrow="OPERATIONSFLOW / LOCAL LOGIN"
+          Title="Local Login"
+          Subtitle="Week 3 local/free mode uses SQL-backed users, password login, local roles, and local permissions. Week 4 will add Microsoft OAuth2 linking to these local accounts."
+          BadgeText="Local Auth"
+          BadgeClass="of-badge of-badge-info">
+    <Actions>
+        <a class="of-btn of-btn-secondary" href="/user-roles">User Roles</a>
+        <a class="of-btn of-btn-secondary" href="/admin-settings">Admin Settings</a>
+    </Actions>
+</PageHero>
+
+<PurposeNote Title="Purpose" Icon="🔐">
+    <p>
+        Sign in with a local SQL-backed OperationsFlow account. This proves the free/local version of the auth model before Week 4 adds Microsoft OAuth2 account linking.
+    </p>
+</PurposeNote>
+
+<div class="of-two-column-grid">
+    <InfoPanel Title="Sign in"
+               Subtitle="Use a seeded local demo account or a SQL-backed account added later."
+               Tone="default">
+
+        @if (CurrentUserService.IsSignedIn && CurrentUserService.CurrentUser is not null)
+        {
+            <div class="of-review-proof-card">
+                <span class="of-badge of-badge-success">Signed in</span>
+                <h3>@CurrentUserService.CurrentUser.DisplayName</h3>
+                <p class="of-muted-text">@CurrentUserService.CurrentUser.Email</p>
+
+                <div class="of-link-row">
+                    @foreach (var role in CurrentUserService.CurrentUser.Roles)
+                    {
+                        <span class="of-badge of-badge-info">@role</span>
+                    }
+                </div>
+
+                <div class="of-link-row">
+                    <a class="of-btn of-btn-primary" href="/dashboard">Go to dashboard</a>
+                    <button class="of-btn of-btn-secondary" @onclick="Logout">Logout</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="mb-3">
+                <label class="form-label">Username or email</label>
+                <input class="of-input" @bind="UserNameOrEmail" autocomplete="username" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input class="of-input" type="password" @bind="Password" autocomplete="current-password" />
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(StatusMessage))
+            {
+                <div class="@StatusCssClass">
+                    @StatusMessage
+                </div>
+            }
+
+            <div class="of-link-row">
+                <button class="of-btn of-btn-primary" @onclick="LoginAsync" disabled="@IsBusy">
+                    @(IsBusy ? "Signing in..." : "Sign in")
+                </button>
+                <a class="of-btn of-btn-secondary" href="/user-roles">View roles</a>
+            </div>
+        }
+    </InfoPanel>
+
+    <InfoPanel Title="Demo accounts"
+               Subtitle="Local portfolio credentials only. Do not use these in real production."
+               Tone="info">
+
+        <ul class="of-mini-list">
+            <li class="of-mini-list-item">
+                <strong>Admin:</strong>
+                <span>admin / Admin123!</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Manager:</strong>
+                <span>manager / Manager123!</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Reviewer:</strong>
+                <span>reviewer / Reviewer123!</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Worker:</strong>
+                <span>worker / Worker123!</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Viewer:</strong>
+                <span>viewer / Viewer123!</span>
+            </li>
+        </ul>
+    </InfoPanel>
+</div>
+
+<InfoPanel Title="Week 3 / Week 4 auth split"
+           Subtitle="This keeps the local free version and the Microsoft 365 production version cleanly separated."
+           Tone="success">
+
+    <div class="of-review-proof-grid">
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-success">Week 3</span>
+            <h3>Local/free version</h3>
+            <p>
+                SQL-backed users, hashed passwords, local roles, local permissions, local file storage, and local evidence workflow.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-warning">Week 4</span>
+            <h3>Licensed/live version</h3>
+            <p>
+                Microsoft OAuth2 login, Microsoft account linking, SharePoint/Graph storage, production permissions, and Microsoft 365 deployment.
+            </p>
+        </div>
+    </div>
+</InfoPanel>
+
+<GuidanceNote Title="Security boundary" Icon="⚠️" Tone="warning">
+    <p>
+        Passwords are hashed, not stored as plain text. These seeded demo credentials are only for local portfolio testing.
+        A real deployment should require password changes, secure hosting, HTTPS, audit retention, and production account management.
+    </p>
+</GuidanceNote>
+
+@code {
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+    
+    private string UserNameOrEmail { get; set; } = "admin";
+
+    private string Password { get; set; } = "Admin123!";
+
+    private string StatusMessage { get; set; } = string.Empty;
+
+    private string StatusCssClass { get; set; } = "alert alert-info";
+
+    private bool IsBusy { get; set; }
+
+    private async Task LoginAsync()
+    {
+        IsBusy = true;
+        StatusMessage = string.Empty;
+
+        try
+        {
+            var result = await LocalAuthService.LoginAsync(UserNameOrEmail, Password);
+
+            if (result.Succeeded)
+            {
+                StatusCssClass = "alert alert-success";
+                StatusMessage = $"Signed in as {result.User?.DisplayName}.";
+                var targetUrl = string.IsNullOrWhiteSpace(ReturnUrl)
+                    ? "/dashboard"
+                    : ReturnUrl;
+
+                Navigation.NavigateTo(targetUrl, replace: true);
+            }
+            else
+            {
+                StatusCssClass = "alert alert-danger";
+                StatusMessage = result.Message;
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusCssClass = "alert alert-danger";
+            StatusMessage = $"Login failed: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private void Logout()
+    {
+        LocalAuthService.Logout();
+        StatusCssClass = "alert alert-info";
+        StatusMessage = "Signed out.";
+    }
+}

@@ -20,7 +20,8 @@ wwwroot/uploads/
 *.db
 *.db-shm
 *.db-wal
-
+*.mdf
+*.ldf
 # Logs
 *.log
 logs/

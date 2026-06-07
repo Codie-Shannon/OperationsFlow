@@ -1,0 +1,53 @@
+﻿@using Microsoft.AspNetCore.Components
+@using System.Reflection
+@using OperationsFlow.Services
+@inject LocalCurrentUserService CurrentUserService
+
+@if (IsAllowed)
+{
+    <RouteView RouteData="@RouteData" DefaultLayout="@DefaultLayout" />
+}
+else
+{
+    <LayoutView Layout="@DefaultLayout">
+        <div class="p-4">
+            <div class="of-badge of-badge-warning">Login required</div>
+            <h1 class="mt-3">Login required</h1>
+            <p class="of-muted-text">
+                You need to sign in before accessing OperationsFlow pages.
+            </p>
+            <a class="of-btn of-btn-primary" href="/login">Go to login</a>
+        </div>
+    </LayoutView>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public RouteData RouteData { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Type DefaultLayout { get; set; } = default!;
+
+    private bool IsPublicPage { get; set; }
+
+    private bool IsAllowed => IsPublicPage || CurrentUserService.IsSignedIn;
+
+    protected override void OnParametersSet()
+    {
+        IsPublicPage = RouteData.PageType
+            .GetCustomAttributes<RouteAttribute>(inherit: false)
+            .Any(route => IsPublicRoute(route.Template));
+    }
+
+    private static bool IsPublicRoute(string routeTemplate)
+    {
+        var route = routeTemplate
+            .Trim()
+            .Trim('/')
+            .ToLowerInvariant();
+
+        return route == string.Empty ||
+               route == "login" ||
+               route == "logout";
+    }
+}
