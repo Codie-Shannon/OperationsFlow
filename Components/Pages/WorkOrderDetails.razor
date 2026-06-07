@@ -155,6 +155,13 @@ else
         </ChildContent>
     </InfoPanel>
 
+    <RecordAttachments ModuleName="Work Orders"
+                       RecordId="@workOrder.Id"
+                       RecordReference="@workOrder.WorkOrderNumber"
+                       Title="Work Order Attachments"
+                       Subtitle="Upload photos, forms, evidence, or supporting files linked to this work order."
+                       DefaultUploadedBy="@DisplayText(workOrder.Owner)" />
+
     <ActivityHistoryPanel Title="Activity History"
                           Subtitle="Record-level traceability for this work order."
                           IsEmpty="@(!HasActivityHistory)"

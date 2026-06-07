@@ -1,0 +1,444 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Options
+@using OperationsFlow.Models
+@using OperationsFlow.Options
+@using OperationsFlow.Services
+@using OperationsFlow.Services.Storage
+@inject DocumentAttachmentService AttachmentService
+@inject IFileStorageService FileStorageService
+@inject IOptions<FileStorageOptions> FileStorageSettings
+
+<InfoPanel Title="@Title" Subtitle="@Subtitle">
+    <ChildContent>
+        @if (!string.IsNullOrWhiteSpace(statusMessage))
+        {
+            <div class="@statusMessageClass">
+                @statusMessage
+            </div>
+        }
+
+        <div class="of-metric-grid">
+            <MetricCard Title="Attached Files"
+                        Value="@attachments.Count.ToString()"
+                        Detail="Active files linked to this record"
+                        Icon="📎"
+                        Tone="info" />
+
+            <MetricCard Title="Evidence"
+                        Value="@attachments.Count(x => x.IsEvidence).ToString()"
+                        Detail="Supporting evidence files"
+                        Icon="✅"
+                        Tone="success" />
+
+            <MetricCard Title="Controlled"
+                        Value="@attachments.Count(x => x.IsControlledDocument).ToString()"
+                        Detail="Controlled document files"
+                        Icon="📄"
+                        Tone="default" />
+
+            <MetricCard Title="Storage"
+                        Value="@FileStorageService.ProviderName"
+                        Detail="@StorageDetail"
+                        Icon="🗄️"
+                        Tone="default" />
+        </div>
+
+        @if (AllowUpload)
+        {
+            <div class="of-section-card">
+                <div class="of-section-card__header">
+                    <div>
+                        <h3>Upload Attachment</h3>
+                        <p>Add a file directly against this record.</p>
+                    </div>
+                </div>
+
+                <div class="of-section-card__body">
+                    <div class="of-form-grid">
+                        <div class="form-group">
+                            <label>File</label>
+                            <InputFile OnChange="HandleFileSelected" />
+
+                            @if (selectedFile is not null)
+                            {
+                                <div class="helper-text">
+                                    Selected: @selectedFile.Name (@FormatBytes(selectedFile.Size))
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="helper-text">
+                                    Allowed: @AllowedExtensionsDisplay
+                                </div>
+                            }
+                        </div>
+
+                        <div class="form-group">
+                            <label>Uploaded By</label>
+                            <input class="form-control"
+                                   @bind="uploadedBy" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Attachment Type</label>
+                            <div class="checkbox-stack">
+                                <label class="checkbox-line">
+                                    <input type="checkbox" @bind="isEvidence" />
+                                    Evidence file
+                                </label>
+
+                                <label class="checkbox-line">
+                                    <input type="checkbox" @bind="isControlledDocument" />
+                                    Controlled document
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea class="form-control"
+                                  rows="3"
+                                  placeholder="Describe what this file proves or why it is attached to this record."
+                                  @bind="notes"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary"
+                                type="button"
+                                disabled="@isUploading"
+                                @onclick="UploadAsync">
+                            @if (isUploading)
+                            {
+                                <span>Uploading...</span>
+                            }
+                            else
+                            {
+                                <span>Upload Attachment</span>
+                            }
+                        </button>
+
+                        <button class="btn btn-secondary"
+                                type="button"
+                                disabled="@isUploading"
+                                @onclick="ResetUploadForm">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <TableCard Title="Record Files"
+                   Subtitle="@($"Showing {attachments.Count} active attachment record(s) for {ModuleName} / {RecordReference}.")">
+            <ChildContent>
+                @if (isLoading)
+                {
+                    <EmptyState Icon="⏳"
+                                Title="Loading attachments..."
+                                Message="Linked files are being loaded." />
+                }
+                else if (!attachments.Any())
+                {
+                    <EmptyState Icon="📎"
+                                Title="No files attached"
+                                Message="Upload evidence, photos, PDFs, forms, or supporting documents for this record." />
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="of-table">
+                            <thead>
+                                <tr>
+                                    <th>File</th>
+                                    <th>Type</th>
+                                    <th>Uploaded</th>
+                                    <th>Size</th>
+                                    <th>Provider</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var attachment in attachments)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@attachment.OriginalFileName</strong>
+
+                                            @if (!string.IsNullOrWhiteSpace(attachment.Notes))
+                                            {
+                                                <div class="helper-text">@attachment.Notes</div>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (attachment.IsEvidence)
+                                            {
+                                                <span class="badge badge-success">Evidence</span>
+                                            }
+
+                                            @if (attachment.IsControlledDocument)
+                                            {
+                                                <span class="badge badge-info">Controlled</span>
+                                            }
+
+                                            @if (!attachment.IsEvidence && !attachment.IsControlledDocument)
+                                            {
+                                                <span class="badge badge-muted">General</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @attachment.UploadedDate.ToString("dd MMM yyyy")
+                                            <div class="helper-text">@attachment.UploadedBy</div>
+                                        </td>
+                                        <td>@attachment.FileSizeDisplay</td>
+                                        <td>
+                                            <span class="badge badge-muted">@attachment.StorageProvider</span>
+                                        </td>
+                                        <td>
+                                            <div class="table-actions">
+                                                @if (!string.IsNullOrWhiteSpace(GetOpenUrl(attachment)))
+                                                {
+                                                    <a class="link-action"
+                                                       href="@GetOpenUrl(attachment)"
+                                                       target="_blank">
+                                                        Open
+                                                    </a>
+
+                                                    <a class="link-action"
+                                                       href="@GetOpenUrl(attachment)"
+                                                       download="@attachment.OriginalFileName">
+                                                        Download
+                                                    </a>
+                                                }
+
+                                                <button class="link-action danger-link"
+                                                        type="button"
+                                                        @onclick="() => SoftDeleteAsync(attachment.Id)">
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </ChildContent>
+        </TableCard>
+    </ChildContent>
+</InfoPanel>
+
+@code {
+    [Parameter, EditorRequired] public string ModuleName { get; set; } = "";
+
+    [Parameter, EditorRequired] public int RecordId { get; set; }
+
+    [Parameter, EditorRequired] public string RecordReference { get; set; } = "";
+
+    [Parameter] public string Title { get; set; } = "Attachments";
+
+    [Parameter] public string Subtitle { get; set; } = "Upload and review files linked to this record.";
+
+    [Parameter] public string DefaultUploadedBy { get; set; } = "Demo User";
+
+    [Parameter] public bool AllowUpload { get; set; } = true;
+
+    private readonly List<DocumentAttachment> attachments = new();
+
+    private IBrowserFile? selectedFile;
+
+    private bool isLoading = true;
+    private bool isUploading;
+
+    private string uploadedBy = "Demo User";
+    private string notes = "";
+    private string statusMessage = "";
+    private string statusMessageClass = "alert alert-info";
+
+    private bool isEvidence = true;
+    private bool isControlledDocument;
+
+    private FileStorageOptions StorageOptions => FileStorageSettings.Value;
+
+    private string StorageDetail =>
+        FileStorageService.ProviderName.Equals("Local", StringComparison.OrdinalIgnoreCase)
+            ? StorageOptions.LocalRootPath
+            : "Production provider";
+
+    private string AllowedExtensionsDisplay =>
+        string.Join(", ", StorageOptions.AllowedExtensions);
+
+    protected override async Task OnInitializedAsync()
+    {
+        uploadedBy = string.IsNullOrWhiteSpace(DefaultUploadedBy)
+            ? "Demo User"
+            : DefaultUploadedBy;
+
+        await LoadAttachmentsAsync();
+        isLoading = false;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!isLoading)
+        {
+            await LoadAttachmentsAsync();
+        }
+    }
+
+    private async Task LoadAttachmentsAsync()
+    {
+        attachments.Clear();
+
+        var loadedAttachments = await AttachmentService.GetForRecordAsync(ModuleName, RecordId);
+
+        attachments.AddRange(loadedAttachments);
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        statusMessage = "";
+
+        if (selectedFile is null)
+        {
+            return;
+        }
+
+        if (!FileStorageService.IsAllowedFile(selectedFile.Name, selectedFile.Size, out var validationMessage))
+        {
+            statusMessage = validationMessage;
+            statusMessageClass = "alert alert-warning";
+        }
+    }
+
+    private async Task UploadAsync()
+    {
+        statusMessage = "";
+        statusMessageClass = "alert alert-info";
+
+        if (selectedFile is null)
+        {
+            statusMessage = "Choose a file before uploading.";
+            statusMessageClass = "alert alert-warning";
+            return;
+        }
+
+        if (!FileStorageService.IsAllowedFile(selectedFile.Name, selectedFile.Size, out var validationMessage))
+        {
+            statusMessage = validationMessage;
+            statusMessageClass = "alert alert-warning";
+            return;
+        }
+
+        isUploading = true;
+
+        try
+        {
+            var maxBytes = StorageOptions.MaxFileSizeMb * 1024L * 1024L;
+
+            await using var stream = selectedFile.OpenReadStream(maxAllowedSize: maxBytes);
+
+            var storageResult = await FileStorageService.SaveAsync(new FileStorageSaveRequest
+            {
+                FileStream = stream,
+                OriginalFileName = selectedFile.Name,
+                ContentType = selectedFile.ContentType,
+                FileSizeBytes = selectedFile.Size,
+                ModuleName = ModuleName,
+                RecordId = RecordId,
+                UploadedBy = uploadedBy
+            });
+
+            if (!storageResult.Success)
+            {
+                statusMessage = storageResult.ErrorMessage;
+                statusMessageClass = "alert alert-warning";
+                return;
+            }
+
+            var createResult = await AttachmentService.CreateFromStorageResultAsync(
+                storageResult: storageResult,
+                moduleName: ModuleName,
+                recordId: RecordId,
+                recordReference: RecordReference,
+                uploadedBy: uploadedBy,
+                notes: notes,
+                isEvidence: isEvidence,
+                isControlledDocument: isControlledDocument);
+
+            if (!createResult.IsSuccessful)
+            {
+                statusMessage = createResult.ErrorMessage;
+                statusMessageClass = "alert alert-warning";
+                return;
+            }
+
+            statusMessage = $"Uploaded '{selectedFile.Name}' to {ModuleName} / {RecordReference}.";
+            statusMessageClass = "alert alert-success";
+
+            ResetUploadForm();
+            await LoadAttachmentsAsync();
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Upload failed: {ex.Message}";
+            statusMessageClass = "alert alert-danger";
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+
+    private async Task SoftDeleteAsync(int id)
+    {
+        var deleted = await AttachmentService.SoftDeleteAsync(id, uploadedBy);
+
+        if (deleted)
+        {
+            statusMessage = "Attachment deleted from this record.";
+            statusMessageClass = "alert alert-success";
+            await LoadAttachmentsAsync();
+        }
+        else
+        {
+            statusMessage = "Attachment could not be deleted.";
+            statusMessageClass = "alert alert-warning";
+        }
+    }
+
+    private void ResetUploadForm()
+    {
+        selectedFile = null;
+        notes = "";
+        isEvidence = true;
+        isControlledDocument = false;
+    }
+
+    private string GetOpenUrl(DocumentAttachment attachment)
+    {
+        if (!string.IsNullOrWhiteSpace(attachment.PublicUrl))
+        {
+            return attachment.PublicUrl;
+        }
+
+        return AttachmentService.GetPublicUrl(attachment);
+    }
+
+    private static string FormatBytes(long bytes)
+    {
+        if (bytes < 1024)
+        {
+            return $"{bytes} B";
+        }
+
+        if (bytes < 1024 * 1024)
+        {
+            return $"{bytes / 1024.0:0.0} KB";
+        }
+
+        return $"{bytes / 1024.0 / 1024.0:0.0} MB";
+    }
+}

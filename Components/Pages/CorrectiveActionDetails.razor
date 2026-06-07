@@ -158,6 +158,13 @@ else
         </ChildContent>
     </InfoPanel>
 
+    <RecordAttachments ModuleName="Corrective Actions"
+                       RecordId="@correctiveAction.Id"
+                       RecordReference="@($"CA-{correctiveAction.Id}")"
+                       Title="Corrective Action Attachments"
+                       Subtitle="Upload close-out evidence, photos, documents, or review notes linked to this corrective action."
+                       DefaultUploadedBy="@DisplayText(correctiveAction.Owner)" />
+
     <ActivityHistoryPanel Title="Activity History"
                           Subtitle="Record-level traceability for this corrective action."
                           IsEmpty="@(!HasActivityHistory)"
