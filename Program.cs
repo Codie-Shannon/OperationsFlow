@@ -60,6 +60,7 @@ builder.Services.AddScoped<DatabaseSchemaService>();
 builder.Services.AddScoped<LocalIdentityService>();
 builder.Services.AddScoped<LocalCurrentUserService>();
 builder.Services.AddScoped<LocalAuthService>();
+builder.Services.AddScoped<LocalSessionStorageService>();
 
 builder.Services.AddScoped<IFileStorageService>(serviceProvider =>
 {

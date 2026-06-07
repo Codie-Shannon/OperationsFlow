@@ -141,19 +141,25 @@ public class LocalIdentityService
     {
         await EnsureSeedDataAsync();
 
-        var users = await _db.LocalUsers.ToListAsync();
+        var users = await _db.LocalUsers
+            .AsNoTracking()
+            .ToListAsync();
 
-        return await _db.ExternalLoginLinks
+        var links = await _db.ExternalLoginLinks
+            .AsNoTracking()
             .OrderBy(link => link.Provider)
             .ThenBy(link => link.ProviderEmail)
-            .Select(link => new ExternalLoginLinkSummary
+            .ToListAsync();
+
+        return links.Select(link =>
+        {
+            var user = users.FirstOrDefault(item => item.Id == link.LocalUserId);
+
+            return new ExternalLoginLinkSummary
             {
                 Id = link.Id,
                 LocalUserId = link.LocalUserId,
-                LocalUserDisplayName = users
-                    .Where(user => user.Id == link.LocalUserId)
-                    .Select(user => user.DisplayName)
-                    .FirstOrDefault() ?? "Unknown user",
+                LocalUserDisplayName = user?.DisplayName ?? "Unknown user",
                 Provider = link.Provider,
                 ProviderUserId = link.ProviderUserId,
                 ProviderEmail = link.ProviderEmail,
@@ -162,8 +168,8 @@ public class LocalIdentityService
                 LinkedAt = link.LinkedAt,
                 LastLoginAt = link.LastLoginAt,
                 Notes = link.Notes
-            })
-            .ToListAsync();
+            };
+        }).ToList();
     }
 
     public string GetBadgeClassForAccess(string accessLevel)

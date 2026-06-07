@@ -4,52 +4,52 @@
 
 <PageHero Eyebrow="OPERATIONSFLOW / WEEK 3 PRODUCTION FOUNDATION"
           Title="Technical Overview"
-          Subtitle="OperationsFlow is a Blazor and SQLite business workflow prototype with a provider-independent evidence layer. Week 3 proves the local storage workflow, while Week 4 swaps the storage and authentication layer toward Microsoft 365 and SharePoint."
-          BadgeText="Storage Ready"
-          BadgeClass="of-badge of-badge-info">
+          Subtitle="OperationsFlow is a Blazor business workflow prototype with SQL-backed local authentication, provider-independent evidence storage, document traceability, data quality checks, and a Week 4 path toward Microsoft OAuth2 and Microsoft 365 integration."
+          BadgeText="Auth + Storage Ready"
+          BadgeClass="of-badge of-badge-success">
     <Actions>
         <a class="of-btn of-btn-secondary" href="/portfolio">Portfolio Hub</a>
         <a class="of-btn of-btn-secondary" href="/integration-overview">Integration Overview</a>
         <a class="of-btn of-btn-secondary" href="/implementation-plan">Implementation Plan</a>
-        <a class="of-btn of-btn-primary" href="/document-library">Document Library</a>
+        <a class="of-btn of-btn-primary" href="/user-roles">User Roles</a>
     </Actions>
 </PageHero>
 
 <PurposeNote Title="Purpose" Icon="🧩">
     <p>
-        This page explains how the Week 3 local evidence system is structured and why it is ready to become SharePoint-backed in Week 4.
-        The goal is not to fake Microsoft Graph early. The goal is to prove the workflow shape locally and keep the storage layer replaceable.
+        This page explains the current Week 3 architecture. The app now proves both a local/free deployment path and a Microsoft 365 production path:
+        local SQL users/roles/password login for traditional internal business apps, and provider-ready storage/auth design for Week 4 Microsoft integration.
     </p>
 </PurposeNote>
 
 <MetricGrid>
     <MetricCard Title="Frontend"
                 Value="Blazor"
-                Detail="Reusable Razor pages and shared workflow components."
-                Icon="🖥️"
+                Detail="Razor pages, reusable components, route guard, and protected navigation."
+                Icon="💻"
                 Tone="info" />
 
-    <MetricCard Title="Persistence"
-                Value="SQLite"
-                Detail="Local workflow records, activity logs, and attachment metadata."
+    <MetricCard Title="Database"
+                Value="SQL-backed"
+                Detail="Workflow records, users, roles, permissions, logs, and attachment metadata."
                 Icon="🗄️"
                 Tone="success" />
 
-    <MetricCard Title="Evidence Layer"
-                Value="DocumentAttachment"
-                Detail="Provider-independent metadata linked to records."
-                Icon="📎"
-                Tone="warning" />
+    <MetricCard Title="Auth Layer"
+                Value="Local Login"
+                Detail="Password login with persistent local session and role reload."
+                Icon="🔐"
+                Tone="success" />
 
     <MetricCard Title="Week 4 Target"
-                Value="SharePoint"
-                Detail="Microsoft Graph provider behind the same workflow."
+                Value="OAuth2 + SharePoint"
+                Detail="Microsoft login and Graph-backed evidence storage."
                 Icon="☁️"
-                Tone="default" />
+                Tone="warning" />
 </MetricGrid>
 
 <InfoPanel Title="Current Week 3 architecture"
-           Subtitle="Week 3 proves the full local evidence workflow. Records, supporting files, document visibility, quality checks, reports, and traceability now work together."
+           Subtitle="The local/free version now works as a more complete business-system foundation."
            Tone="default">
 
     <div class="of-review-proof-grid">
@@ -62,18 +62,18 @@
         </div>
 
         <div class="of-review-proof-card">
-            <span class="of-badge of-badge-success">Evidence</span>
-            <h3>RecordAttachments</h3>
+            <span class="of-badge of-badge-success">Identity</span>
+            <h3>Local SQL authentication</h3>
             <p>
-                Work Orders, Corrective Actions, and Document Intake use a shared attachment panel instead of one-off upload logic.
+                LocalUsers, LocalRoles, LocalUserRoles, LocalPermissions, and LocalRolePermissions support the Week 3 local login model.
             </p>
         </div>
 
         <div class="of-review-proof-card">
-            <span class="of-badge of-badge-warning">Storage</span>
-            <h3>Local provider</h3>
+            <span class="of-badge of-badge-warning">Evidence</span>
+            <h3>Provider-ready attachments</h3>
             <p>
-                Files are stored under <strong>wwwroot/uploads</strong> for local proof while metadata stays structured in the app database.
+                RecordAttachments uses metadata and a storage provider interface so local storage can become SharePoint later.
             </p>
         </div>
 
@@ -81,20 +81,20 @@
             <span class="of-badge of-badge-muted">Traceability</span>
             <h3>Activity Log</h3>
             <p>
-                Upload and delete actions are recorded so reviewers can see what changed and where supporting evidence was added.
+                Workflow events and evidence actions are recorded for reviewer/audit visibility.
             </p>
         </div>
     </div>
 </InfoPanel>
 
 <TableCard Title="Architecture layers"
-           Subtitle="The current local implementation maps directly to the Week 4 SharePoint/Microsoft 365 production path.">
+           Subtitle="The current local implementation maps directly to the Week 4 production path.">
 
     <table class="table">
         <thead>
             <tr>
                 <th>Layer</th>
-                <th>Current implementation</th>
+                <th>Current Implementation</th>
                 <th>Purpose</th>
             </tr>
         </thead>
@@ -102,7 +102,27 @@
             <tr>
                 <td><span class="of-badge of-badge-info">UI</span></td>
                 <td>Blazor Razor pages and shared workflow components</td>
-                <td>Registers, detail pages, dashboards, reports, data quality, and portfolio review pages.</td>
+                <td>Registers, detail pages, dashboards, reports, data quality, login, and portfolio review pages.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Authentication</span></td>
+                <td>Local SQL users and password login</td>
+                <td>Allows the Week 3 local/free app to require login without Microsoft licensing.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Authorization</span></td>
+                <td>Local roles and permission matrix</td>
+                <td>Defines Admin, Manager, Reviewer, Worker, and ReadOnly app permissions.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-info">Session</span></td>
+                <td>Saved local user id with SQL reload</td>
+                <td>Refresh keeps the user signed in while roles/permissions remain database-backed.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-warning">External login prep</span></td>
+                <td>ExternalLoginLinks table</td>
+                <td>Prepares Week 4 Microsoft OAuth2 account linking to LocalUser records.</td>
             </tr>
             <tr>
                 <td><span class="of-badge of-badge-success">Record evidence</span></td>
@@ -110,12 +130,12 @@
                 <td>Reusable upload, view, download, and soft-delete panel for module record details.</td>
             </tr>
             <tr>
-                <td><span class="of-badge of-badge-warning">Metadata</span></td>
+                <td><span class="of-badge of-badge-warning">Attachment metadata</span></td>
                 <td>DocumentAttachment model and service layer</td>
-                <td>Stores provider, record type, record id, file name, content type, path/key, upload date, deletion state, and audit metadata.</td>
+                <td>Stores provider, record type, record id, file name, path/key, upload date, deletion state, and audit metadata.</td>
             </tr>
             <tr>
-                <td><span class="of-badge of-badge-muted">Physical files</span></td>
+                <td><span class="of-badge of-badge-muted">Physical file storage</span></td>
                 <td>Local upload provider</td>
                 <td>Stores demo files under wwwroot/uploads for local proof only.</td>
             </tr>
@@ -144,153 +164,92 @@
 </TableCard>
 
 <div class="of-two-column-grid">
-    <InfoPanel Title="Local provider behaviour"
-               Subtitle="The current provider proves the workflow without needing a Microsoft 365 tenant."
-               Tone="default">
+    <InfoPanel Title="Local/free provider behaviour"
+               Subtitle="The current provider proves the workflow without Microsoft licensing."
+               Tone="success">
 
         <ul class="of-mini-list">
             <li class="of-mini-list-item">
-                <strong>Provider:</strong>
-                <span>Local</span>
+                <strong>Login provider:</strong>
+                <span>Local SQL username/password.</span>
             </li>
             <li class="of-mini-list-item">
-                <strong>Upload path:</strong>
-                <span>wwwroot/uploads</span>
+                <strong>Authorization:</strong>
+                <span>Local SQL roles and permissions.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Session:</strong>
+                <span>Persistent local user id, then SQL role reload.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>File provider:</strong>
+                <span>Local storage under wwwroot/uploads.</span>
             </li>
             <li class="of-mini-list-item">
                 <strong>Metadata:</strong>
-                <span>DocumentAttachment rows remain in SQLite.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Library:</strong>
-                <span>Document Library reads active attachment metadata across modules.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Delete behaviour:</strong>
-                <span>Soft delete hides files from active views while preserving traceability.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Git safety:</strong>
-                <span>Uploads and database files must not be committed.</span>
+                <span>DocumentAttachment rows remain structured in the app database.</span>
             </li>
         </ul>
     </InfoPanel>
 
-    <InfoPanel Title="SharePoint provider target"
-               Subtitle="Week 4 should replace the storage provider behind the same workflow shape."
-               Tone="info">
+    <InfoPanel Title="Week 4 production target"
+               Subtitle="The production version should replace providers, not rebuild workflow pages."
+               Tone="warning">
 
         <ul class="of-mini-list">
             <li class="of-mini-list-item">
-                <strong>Provider:</strong>
-                <span>SharePoint</span>
+                <strong>Login provider:</strong>
+                <span>Microsoft OAuth2 / Entra ID.</span>
             </li>
             <li class="of-mini-list-item">
-                <strong>Transport:</strong>
-                <span>Microsoft Graph</span>
+                <strong>Account mapping:</strong>
+                <span>Microsoft account links to LocalUser through ExternalLoginLinks.</span>
             </li>
             <li class="of-mini-list-item">
-                <strong>Target:</strong>
-                <span>SharePoint site document library or drive.</span>
+                <strong>Authorization:</strong>
+                <span>Local SQL roles remain the app permission source.</span>
             </li>
             <li class="of-mini-list-item">
-                <strong>Folder convention:</strong>
-                <span>Module and record id based evidence folders.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Metadata:</strong>
-                <span>DocumentAttachment keeps the same business workflow shape.</span>
+                <strong>File provider:</strong>
+                <span>SharePoint document library through Microsoft Graph.</span>
             </li>
             <li class="of-mini-list-item">
                 <strong>Production layer:</strong>
-                <span>Identity, permissions, audit expectations, and tenant configuration.</span>
+                <span>Tenant config, secrets, HTTPS, deployment, backup, and retention.</span>
             </li>
         </ul>
     </InfoPanel>
 </div>
 
 <InfoPanel Title="Provider-independent workflow"
-           Subtitle="This is the key Week 3 architecture win: the business workflow does not need to be rebuilt for SharePoint."
-           Tone="success">
+           Subtitle="This is the key Week 3 architecture win: the business workflow does not need to be rebuilt for Week 4."
+           Tone="info">
 
     <div class="of-link-row">
+        <span class="of-badge of-badge-info">Login</span>
+        <span>→</span>
+        <span class="of-badge of-badge-success">LocalUser</span>
+        <span>→</span>
+        <span class="of-badge of-badge-warning">Roles/Permissions</span>
+        <span>→</span>
         <span class="of-badge of-badge-info">Record detail page</span>
         <span>→</span>
         <span class="of-badge of-badge-success">RecordAttachments</span>
         <span>→</span>
-        <span class="of-badge of-badge-warning">DocumentAttachmentService</span>
+        <span class="of-badge of-badge-warning">Storage provider</span>
         <span>→</span>
-        <span class="of-badge of-badge-muted">IFileStorageService</span>
-        <span>→</span>
-        <span class="of-badge of-badge-info">Local today / SharePoint Week 4</span>
+        <span class="of-badge of-badge-muted">Activity Log</span>
     </div>
 
     <p class="of-muted-text">
-        Work Orders, Corrective Actions, Document Intake, Document Library, Data Quality, Reports, and Activity Log should not be rebuilt for SharePoint.
-        Week 4 should swap the provider and add real authentication, authorization, configuration, and production deployment readiness.
+        Work Orders, Corrective Actions, Document Intake, Document Library, Data Quality, Reports, and Activity Log should not be rebuilt for Week 4.
+        Week 4 should replace the authentication and storage providers underneath the existing workflow.
     </p>
 </InfoPanel>
 
-<TableCard Title="Week 4 SharePoint readiness checklist"
-           Subtitle="These are the configuration and production items needed before the storage provider becomes real.">
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Requirement</th>
-                <th>Needed for</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Tenant id</td>
-                <td>Connecting the app to the correct Microsoft 365 tenant.</td>
-                <td><span class="of-badge of-badge-warning">Week 4</span></td>
-            </tr>
-            <tr>
-                <td>App registration / client id</td>
-                <td>Allowing OperationsFlow to call Microsoft Graph.</td>
-                <td><span class="of-badge of-badge-warning">Week 4</span></td>
-            </tr>
-            <tr>
-                <td>Secret or certificate</td>
-                <td>Server-side authentication for Graph access.</td>
-                <td><span class="of-badge of-badge-warning">Week 4</span></td>
-            </tr>
-            <tr>
-                <td>SharePoint site id</td>
-                <td>Finding the production evidence site.</td>
-                <td><span class="of-badge of-badge-warning">Week 4</span></td>
-            </tr>
-            <tr>
-                <td>Drive/library id</td>
-                <td>Uploading files to the correct SharePoint document library.</td>
-                <td><span class="of-badge of-badge-warning">Week 4</span></td>
-            </tr>
-            <tr>
-                <td>Folder convention</td>
-                <td>Keeping evidence understandable outside the app.</td>
-                <td><span class="of-badge of-badge-info">Designed</span></td>
-            </tr>
-            <tr>
-                <td>Permission scopes</td>
-                <td>Upload, read, download, and delete/archive behaviour.</td>
-                <td><span class="of-badge of-badge-warning">Week 4</span></td>
-            </tr>
-            <tr>
-                <td>Retention/audit rules</td>
-                <td>Production document governance and traceability.</td>
-                <td><span class="of-badge of-badge-warning">Week 4</span></td>
-            </tr>
-        </tbody>
-    </table>
-</TableCard>
-
 <GuidanceNote Title="Production boundary" Icon="⚠️" Tone="warning">
     <p>
-        This page documents readiness, not a completed Microsoft Graph implementation.
-        The current app still runs as a local Blazor/SQLite prototype. Real Microsoft 365 storage, Entra authentication,
-        role enforcement, backup policy, retention policy, and tenant deployment are Week 4 production tasks.
+        Week 3 proves the local/free version and production-shaped architecture. Week 4 is still needed for real Microsoft OAuth2,
+        SharePoint/Graph storage, production secrets, tenant setup, hosted deployment, backup/restore, retention, and compliance hardening.
     </p>
 </GuidanceNote>

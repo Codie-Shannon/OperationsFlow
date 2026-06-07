@@ -2,261 +2,246 @@
 
 <PageTitle>Demo Guide - OperationsFlow</PageTitle>
 
-<PageHero Eyebrow="Portfolio Review"
+<PageHero Eyebrow="OPERATIONSFLOW / REVIEW WALKTHROUGH"
           Title="Demo Guide"
-          Subtitle="A guided route for reviewing OperationsFlow as a business-systems portfolio project with workflow capture, evidence, reporting, and production-readiness foundations."
-          BadgeText="Reviewer Route"
-          BadgeClass="of-badge-info">
+          Subtitle="Use this guide to walk a reviewer through the Week 3 local/free OperationsFlow system: login, roles, workflow records, evidence uploads, document library, data quality, reports, and the Week 4 Microsoft 365 production path."
+          BadgeText="Reviewer Path"
+          BadgeClass="of-badge of-badge-info">
     <Actions>
-        <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
         <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
         <a class="of-btn of-btn-secondary" href="/business-value">Business Value</a>
-        <a class="of-btn of-btn-secondary" href="/implementation-plan">Implementation Plan</a>
+        <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
+        <a class="of-btn of-btn-primary" href="/dashboard">Dashboard</a>
     </Actions>
 </PageHero>
 
-<PurposeNote Title="Purpose" Icon="🧭">
+<PurposeNote Title="Purpose" Icon="🎬">
     <p>
-        Use this page as the reviewer route. Start with dashboard visibility, then review workflow records,
-        evidence uploads, management reports, data quality, traceability, exports, and prototype boundaries.
+        This page gives a clean walkthrough for showing OperationsFlow to an employer, reviewer, or stakeholder.
+        The demo should show that this is not just a dashboard: it has login, roles, workflow capture, supporting evidence, quality checks, reports, and production direction.
     </p>
 </PurposeNote>
 
 <MetricGrid>
-    <MetricCard Title="Demo Route"
-                Value="8"
-                Detail="Main stops for reviewers"
-                Icon="🧭"
-                Tone="info" />
-
-    <MetricCard Title="Evidence Layer"
-                Value="Included"
-                Detail="Attachments and Document Library"
-                Icon="📎"
+    <MetricCard Title="Demo Start"
+                Value="Login"
+                Detail="Begin at the local SQL-backed login page."
+                Icon="🔐"
                 Tone="success" />
 
-    <MetricCard Title="Management Proof"
-                Value="Included"
-                Detail="Reports and Data Quality"
+    <MetricCard Title="Main Proof"
+                Value="Evidence"
+                Detail="Show record attachments and document library."
+                Icon="📎"
+                Tone="info" />
+
+    <MetricCard Title="Review Proof"
+                Value="Quality"
+                Detail="Show missing evidence checks and reports."
                 Icon="📊"
                 Tone="warning" />
 
-    <MetricCard Title="Production Path"
+    <MetricCard Title="Future Path"
                 Value="Week 4"
-                Detail="Microsoft 365 / SharePoint"
+                Detail="Explain OAuth2 and SharePoint/Graph upgrade."
                 Icon="☁️"
-                Tone="info" />
+                Tone="default" />
 </MetricGrid>
 
-<InfoPanel Title="Demo Story" Subtitle="How to explain the project in one short walkthrough.">
-    <ChildContent>
-        <p>
-            OperationsFlow is a workflow-style business system prototype for capturing operational follow-up work,
-            assigning ownership, attaching evidence, reviewing pressure, and producing traceable management outputs.
-            It is not just a dashboard. It shows the path from scattered work to accountable records, evidence,
-            data quality checks, reports, and future Microsoft 365 implementation.
-        </p>
-    </ChildContent>
-</InfoPanel>
+<TableCard Title="Demo accounts"
+           Subtitle="Use these seeded local accounts for the Week 3 local/free demonstration.">
 
-<InfoPanel Title="Demo Route" Subtitle="Recommended route for a portfolio walkthrough.">
-    <ChildContent>
-        <ol>
-            <li>
-                <strong>Dashboard:</strong> Start with the system overview and explain the problem:
-                scattered work across emails, paper notes, spreadsheets, and conversations.
-            </li>
-            <li>
-                <strong>Work Orders:</strong> Show operational work, owners, priority, status, due dates,
-                file counts, details, attachments, and activity history.
-            </li>
-            <li>
-                <strong>Corrective Actions:</strong> Show follow-up actions, source-linked context, close-out
-                evidence, and links from risk/training/document issues.
-            </li>
-            <li>
-                <strong>Document Intake:</strong> Show incoming document workflow, details pages, attached source
-                files, and how intake records feed reminders/reports/data quality.
-            </li>
-            <li>
-                <strong>Document Library:</strong> Show one evidence register across Work Orders, Corrective
-                Actions, and Document Intake, using the local storage provider.
-            </li>
-            <li>
-                <strong>Data Quality:</strong> Show missing evidence checks, overdue work, weak records,
-                compliance flags, and links back to the source records.
-            </li>
-            <li>
-                <strong>Reports:</strong> Show management action rows, evidence coverage, missing evidence
-                reporting, training compliance, document reviews, and workload pressure.
-            </li>
-            <li>
-                <strong>Activity Log:</strong> Finish with traceability: created, updated, uploaded, deleted,
-                and reviewed events.
-            </li>
-        </ol>
-    </ChildContent>
-</InfoPanel>
-
-<InfoPanel Title="What To Say" Subtitle="Plain-English reviewer explanation.">
-    <ChildContent>
-        <div class="of-review-proof-grid">
-            <div class="of-review-proof-card">
-                <strong>Business Context</strong>
-                <span>
-                    OperationsFlow captures follow-up work before it disappears into emails, paper notes,
-                    spreadsheets, or someone’s memory.
-                </span>
-            </div>
-
-            <div class="of-review-proof-card">
-                <strong>Workflow Context</strong>
-                <span>
-                    Records are owned, prioritised, tracked, reviewed, linked to evidence, and surfaced in
-                    management views.
-                </span>
-            </div>
-
-            <div class="of-review-proof-card">
-                <strong>Evidence Context</strong>
-                <span>
-                    Week 3 adds local document storage, record attachments, evidence counts, missing evidence
-                    checks, and reporting coverage.
-                </span>
-            </div>
-
-            <div class="of-review-proof-card">
-                <strong>Technical Context</strong>
-                <span>
-                    The local storage provider is a proof layer that can be swapped for SharePoint/Microsoft Graph
-                    in Week 4.
-                </span>
-            </div>
-
-            <div class="of-review-proof-card">
-                <strong>Portfolio Context</strong>
-                <span>
-                    The project demonstrates systems thinking, not just UI layout: workflow, data model, evidence,
-                    reporting, traceability, and boundaries.
-                </span>
-            </div>
-
-            <div class="of-review-proof-card">
-                <strong>Boundary Context</strong>
-                <span>
-                    The current version is still a local SQLite prototype. Production rollout needs auth,
-                    permissions, SharePoint storage, deployment, and operational ownership.
-                </span>
-            </div>
-        </div>
-    </ChildContent>
-</InfoPanel>
-
-<TableCard Title="Reviewer Stops"
-           Subtitle="Open these pages during a demo or portfolio review.">
-    <ChildContent>
-        <table>
-            <thead>
-                <tr>
-                    <th>Stop</th>
-                    <th>What It Proves</th>
-                    <th>Open</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>Dashboard</strong></td>
-                    <td>System overview, workflow modules, and demo boundary.</td>
-                    <td><a class="of-card-link" href="/dashboard">Open</a></td>
-                </tr>
-
-                <tr>
-                    <td><strong>Work Orders</strong></td>
-                    <td>Operational work capture, details, file counts, evidence, owner pressure, and history.</td>
-                    <td><a class="of-card-link" href="/work-orders">Open</a></td>
-                </tr>
-
-                <tr>
-                    <td><strong>Corrective Actions</strong></td>
-                    <td>Follow-up tracking, source-linked actions, close-out evidence, and accountability.</td>
-                    <td><a class="of-card-link" href="/corrective-actions">Open</a></td>
-                </tr>
-
-                <tr>
-                    <td><strong>Document Intake</strong></td>
-                    <td>Admin/document workflow capture, details pages, attached source files, and review pressure.</td>
-                    <td><a class="of-card-link" href="/document-intake">Open</a></td>
-                </tr>
-
-                <tr>
-                    <td><strong>Document Library</strong></td>
-                    <td>Local file storage, provider abstraction, cross-module evidence register, open/download/delete.</td>
-                    <td><a class="of-card-link" href="/document-library">Open</a></td>
-                </tr>
-
-                <tr>
-                    <td><strong>Data Quality</strong></td>
-                    <td>Missing evidence, overdue work, weak records, compliance flags, and source record links.</td>
-                    <td><a class="of-card-link" href="/data-quality">Open</a></td>
-                </tr>
-
-                <tr>
-                    <td><strong>Reports</strong></td>
-                    <td>Management reporting, evidence coverage, missing evidence report, and action rows.</td>
-                    <td><a class="of-card-link" href="/reports">Open</a></td>
-                </tr>
-
-                <tr>
-                    <td><strong>Activity Log</strong></td>
-                    <td>Traceability for created, updated, uploaded, deleted, and reviewed activity.</td>
-                    <td><a class="of-card-link" href="/activity-log">Open</a></td>
-                </tr>
-            </tbody>
-        </table>
-    </ChildContent>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>What to show</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="of-badge of-badge-danger">Admin</span></td>
+                <td>admin</td>
+                <td>Admin123!</td>
+                <td>Full access, user roles, settings, evidence, reports, and logout.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-warning">Manager</span></td>
+                <td>manager</td>
+                <td>Manager123!</td>
+                <td>Operational oversight, workflow records, reports, exports, and data quality.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-info">Reviewer</span></td>
+                <td>reviewer</td>
+                <td>Reviewer123!</td>
+                <td>Evidence, document library, reports, activity, and audit-style review.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Worker</span></td>
+                <td>worker</td>
+                <td>Worker123!</td>
+                <td>Assigned work and evidence upload path.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-muted">ReadOnly</span></td>
+                <td>viewer</td>
+                <td>Viewer123!</td>
+                <td>View-only stakeholder path.</td>
+            </tr>
+        </tbody>
+    </table>
 </TableCard>
 
-<InfoPanel Title="Week 3 Demo Focus" Subtitle="What changed in the production foundation sprint.">
-    <ChildContent>
-        <div class="of-review-proof-grid">
-            <div class="of-review-proof-card">
-                <strong>Local Storage</strong>
-                <span>Files are stored locally through a storage service abstraction.</span>
-            </div>
+<InfoPanel Title="Recommended walkthrough"
+           Subtitle="This sequence shows the strongest business-system story without getting lost in every page."
+           Tone="default">
 
-            <div class="of-review-proof-card">
-                <strong>Record Attachments</strong>
-                <span>Work Orders, Corrective Actions, and Document Intake can upload evidence directly from details pages.</span>
-            </div>
-
-            <div class="of-review-proof-card">
-                <strong>Document Library</strong>
-                <span>All active files appear in one searchable cross-module library.</span>
-            </div>
-
-            <div class="of-review-proof-card">
-                <strong>Evidence Counts</strong>
-                <span>Workflow register pages show whether key records already have files attached.</span>
-            </div>
-
-            <div class="of-review-proof-card">
-                <strong>Data Quality</strong>
-                <span>Priority or overdue records without evidence are now flagged.</span>
-            </div>
-
-            <div class="of-review-proof-card">
-                <strong>Reports</strong>
-                <span>Management reporting now includes evidence coverage and missing evidence rows.</span>
-            </div>
+    <div class="of-review-proof-grid">
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-success">Step 1</span>
+            <h3>Start at login</h3>
+            <p>
+                Open the app at <strong>/</strong>. Explain that Week 3 is the local/free version with SQL-backed users and password login.
+            </p>
         </div>
-    </ChildContent>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-success">Step 2</span>
+            <h3>Login as admin</h3>
+            <p>
+                Use <strong>admin / Admin123!</strong>. Show the sidebar signed-in card, role badge, and visible logout control.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-info">Step 3</span>
+            <h3>Refresh test</h3>
+            <p>
+                Refresh the browser to show persistent local login. Explain that the browser stores only the local user id and reloads roles from SQL.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-info">Step 4</span>
+            <h3>Dashboard overview</h3>
+            <p>
+                Show operational volume: work orders, corrective actions, document reviews, risks, training, and document intake.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-warning">Step 5</span>
+            <h3>Record details + evidence</h3>
+            <p>
+                Open a Work Order, Corrective Action, or Document Intake detail page and show the reusable RecordAttachments panel.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-warning">Step 6</span>
+            <h3>Document Library</h3>
+            <p>
+                Show that files from multiple modules appear in one central evidence library with provider, module, type, and record information.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-danger">Step 7</span>
+            <h3>Data Quality</h3>
+            <p>
+                Show missing evidence checks. Explain that the system identifies weak records instead of only displaying dashboards.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-info">Step 8</span>
+            <h3>Reports</h3>
+            <p>
+                Show evidence coverage reporting and missing evidence rows linking back to record detail pages.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-muted">Step 9</span>
+            <h3>Activity Log</h3>
+            <p>
+                Show workflow and evidence activity to prove traceability and reviewer visibility.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-success">Step 10</span>
+            <h3>Week 4 direction</h3>
+            <p>
+                Open Technical Overview or Integration Overview and explain Microsoft OAuth2, account linking, and SharePoint/Graph storage.
+            </p>
+        </div>
+    </div>
 </InfoPanel>
 
-<GuidanceNote Title="Boundary Notes" Icon="⚠️" Tone="warning">
-    <ul>
-        <li>This page is part of the portfolio review layer.</li>
-        <li>The current app uses local SQLite demo data and local file storage.</li>
-        <li>Production rollout still needs authentication, role permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
-        <li>Week 4 should replace the local storage proof with SharePoint/Microsoft Graph storage while keeping the same workflow pages.</li>
-    </ul>
+<div class="of-two-column-grid">
+    <InfoPanel Title="Local/free version talking points"
+               Subtitle="Use these when explaining the Week 3 implementation."
+               Tone="success">
+
+        <ul class="of-mini-list">
+            <li class="of-mini-list-item">
+                <strong>Login:</strong>
+                <span>SQL-backed local accounts with hashed passwords.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Session:</strong>
+                <span>Refresh keeps login; logout clears the saved local user id.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Roles:</strong>
+                <span>Admin, Manager, Reviewer, Worker, and ReadOnly.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Evidence:</strong>
+                <span>Files attach to records and appear in the central Document Library.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Review:</strong>
+                <span>Data Quality and Reports highlight missing evidence and coverage.</span>
+            </li>
+        </ul>
+    </InfoPanel>
+
+    <InfoPanel Title="Week 4 production talking points"
+               Subtitle="Use these when explaining the upgrade path."
+               Tone="warning">
+
+        <ul class="of-mini-list">
+            <li class="of-mini-list-item">
+                <strong>OAuth2:</strong>
+                <span>Microsoft login will prove identity.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Linking:</strong>
+                <span>Microsoft account maps to LocalUser through ExternalLoginLinks.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Authorization:</strong>
+                <span>Local SQL roles remain the permission source.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Storage:</strong>
+                <span>SharePoint/Graph replaces local file storage behind the same evidence workflow.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Deployment:</strong>
+                <span>Production hosting, secrets, backup, retention, and tenant setup are Week 4 work.</span>
+            </li>
+        </ul>
+    </InfoPanel>
+</div>
+
+<GuidanceNote Title="Demo rule" Icon="✅" Tone="info">
+    <p>
+        Do not present Week 3 as a live Microsoft 365 deployment. Present it as the local/free version with a clear path to the Week 4 licensed production version.
+    </p>
 </GuidanceNote>

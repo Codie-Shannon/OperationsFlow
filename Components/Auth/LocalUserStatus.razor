@@ -1,0 +1,59 @@
+﻿@using OperationsFlow.Services
+@implements IDisposable
+
+@inject LocalCurrentUserService CurrentUserService
+
+@if (CurrentUserService.IsSignedIn && CurrentUserService.CurrentUser is not null)
+{
+    <div class="of-sidebar-user">
+        <div class="of-sidebar-user__meta">
+            <span class="of-sidebar-user__status-dot"></span>
+            <span class="of-sidebar-user__label">Signed in</span>
+        </div>
+
+        <div class="of-sidebar-user__name">
+            @CurrentUserService.CurrentUser.DisplayName
+        </div>
+
+        <div class="of-sidebar-user__roles">
+            @foreach (var role in CurrentUserService.CurrentUser.Roles)
+            {
+                <span class="of-sidebar-user__role">@role</span>
+            }
+        </div>
+
+        <a class="of-sidebar-user__logout" href="/logout">
+            Log out
+        </a>
+    </div>
+}
+else
+{
+    <div class="of-sidebar-user">
+        <div class="of-sidebar-user__meta">
+            <span class="of-sidebar-user__status-dot of-sidebar-user__status-dot--muted"></span>
+            <span class="of-sidebar-user__label">Not signed in</span>
+        </div>
+
+        <a class="of-sidebar-user__login" href="/login">
+            Log in
+        </a>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        CurrentUserService.CurrentUserChanged += OnCurrentUserChanged;
+    }
+
+    private void OnCurrentUserChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        CurrentUserService.CurrentUserChanged -= OnCurrentUserChanged;
+    }
+}

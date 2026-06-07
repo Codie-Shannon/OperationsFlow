@@ -4,7 +4,7 @@
 
 <PageHero Eyebrow="OPERATIONSFLOW / ROADMAP"
           Title="Implementation Plan"
-          Subtitle="The implementation plan separates the local production foundation from the full Microsoft 365 production layer. Week 3 proves the evidence workflow locally. Week 4 replaces local proof with SharePoint storage, Entra authentication, permissions, and deployment readiness."
+          Subtitle="The implementation plan separates the Week 3 local/free system from the Week 4 live production system. Week 3 now proves SQL-backed login, local roles, local evidence workflow, reporting, and traceability. Week 4 upgrades the same workflow with Microsoft OAuth2, SharePoint/Graph, and production deployment hardening."
           BadgeText="Week 3 Final Pass"
           BadgeClass="of-badge of-badge-success">
     <Actions>
@@ -18,6 +18,7 @@
 <PurposeNote Title="Purpose" Icon="🗺️">
     <p>
         This page explains where OperationsFlow is now, what Week 3 completed, and how Week 4 should be implemented without throwing away the local workflow foundation.
+        Week 3 is the local/free version. Week 4 is the licensed/live production version.
     </p>
 </PurposeNote>
 
@@ -36,13 +37,13 @@
 
     <MetricCard Title="Week 3"
                 Value="Final Pass"
-                Detail="SQLite foundation, evidence layer, reports, quality checks, and storage readiness."
+                Detail="Local SQL auth, evidence layer, reports, quality checks, and storage readiness."
                 Icon="3️⃣"
                 Tone="info" />
 
     <MetricCard Title="Week 4"
                 Value="Next"
-                Detail="Microsoft 365, SharePoint, Entra ID, permissions, and deployment readiness."
+                Detail="OAuth2, Microsoft 365, SharePoint, permissions, and deployment readiness."
                 Icon="4️⃣"
                 Tone="warning" />
 </MetricGrid>
@@ -67,17 +68,17 @@
             <tr>
                 <td>Week 2</td>
                 <td><span class="of-badge of-badge-success">Complete</span></td>
-                <td>UI polish, reusable page layout, workflow pages, reports, data quality, activity, and portfolio review layer.</td>
+                <td>Reusable UI system, workflow pages, reports, data quality, activity, and portfolio review layer.</td>
             </tr>
             <tr>
                 <td>Week 3</td>
                 <td><span class="of-badge of-badge-info">Final pass</span></td>
-                <td>SQLite production foundation, local evidence storage, document library, attachment panels, evidence checks, reporting, and storage readiness.</td>
+                <td>Local/free version with SQL-backed auth, password login, local roles, evidence workflow, reports, quality checks, and storage readiness.</td>
             </tr>
             <tr>
                 <td>Week 4</td>
                 <td><span class="of-badge of-badge-warning">Next</span></td>
-                <td>Microsoft 365 / SharePoint production layer, Entra ID, permissions, provider swap, deployment readiness, and production documentation.</td>
+                <td>Microsoft OAuth2, account linking, SharePoint/Graph provider, production permissions, deployment readiness, and production documentation.</td>
             </tr>
         </tbody>
     </table>
@@ -85,22 +86,54 @@
 
 <div class="of-two-column-grid">
     <InfoPanel Title="Week 3 completed foundation"
-               Subtitle="The local workflow now proves the business system loop end-to-end."
+               Subtitle="The local/free system now proves the business workflow end-to-end."
                Tone="success">
 
         <ul class="of-mini-list">
-            <li class="of-mini-list-item"><strong>Persistence:</strong><span>SQLite persistence and local migrations.</span></li>
-            <li class="of-mini-list-item"><strong>Traceability:</strong><span>ActivityLogs table and evidence activity trail.</span></li>
-            <li class="of-mini-list-item"><strong>Metadata:</strong><span>DocumentAttachment model/service/storage layer.</span></li>
-            <li class="of-mini-list-item"><strong>Storage:</strong><span>Local file provider under wwwroot/uploads.</span></li>
-            <li class="of-mini-list-item"><strong>Library:</strong><span>Document Library for files across modules.</span></li>
-            <li class="of-mini-list-item"><strong>Component:</strong><span>Reusable RecordAttachments component.</span></li>
-            <li class="of-mini-list-item"><strong>Work Orders:</strong><span>Record attachment panel and file counts.</span></li>
-            <li class="of-mini-list-item"><strong>Corrective Actions:</strong><span>Record attachment panel and file counts.</span></li>
-            <li class="of-mini-list-item"><strong>Document Intake:</strong><span>Details page, attachments, file counts, and library connection.</span></li>
-            <li class="of-mini-list-item"><strong>Data Quality:</strong><span>Missing evidence checks for important records.</span></li>
-            <li class="of-mini-list-item"><strong>Reports:</strong><span>Evidence coverage and missing evidence report sections.</span></li>
-            <li class="of-mini-list-item"><strong>Portfolio docs:</strong><span>Reviewer, demo, and business value pages updated.</span></li>
+            <li class="of-mini-list-item">
+                <strong>Persistence:</strong>
+                <span>SQL Server Express / LocalDB provider support with existing local database fallback.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Local login:</strong>
+                <span>Username/email and password login through SQL-backed LocalUsers.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Password storage:</strong>
+                <span>Hashed passwords, not plain text.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Session:</strong>
+                <span>Persistent local login stores the local user id and reloads roles from SQL.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Roles:</strong>
+                <span>Admin, Manager, Reviewer, Worker, and ReadOnly role model.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Permissions:</strong>
+                <span>SQL-backed permission matrix for workflow, evidence, reports, exports, settings, and user management.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Evidence:</strong>
+                <span>Reusable RecordAttachments component across Work Orders, Corrective Actions, and Document Intake.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Library:</strong>
+                <span>Document Library shows active attachments across modules.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Quality:</strong>
+                <span>Data Quality flags important records missing supporting evidence.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Reports:</strong>
+                <span>Evidence coverage and missing evidence reporting added.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Portfolio docs:</strong>
+                <span>Reviewer, demo, business value, technical, integration, scope, and plan pages updated.</span>
+            </li>
         </ul>
     </InfoPanel>
 
@@ -109,16 +142,34 @@
                Tone="warning">
 
         <ul class="of-mini-list">
-            <li class="of-mini-list-item"><strong>Authentication:</strong><span>Microsoft Entra ID login.</span></li>
-            <li class="of-mini-list-item"><strong>Authorization:</strong><span>Role and permission enforcement.</span></li>
-            <li class="of-mini-list-item"><strong>Storage:</strong><span>SharePoint file storage provider via Microsoft Graph.</span></li>
-            <li class="of-mini-list-item"><strong>Configuration:</strong><span>Tenant id, client id, site id, drive/library id, and provider settings.</span></li>
-            <li class="of-mini-list-item"><strong>Provider swap:</strong><span>Upload/download/delete mapping to SharePoint behaviour.</span></li>
-            <li class="of-mini-list-item"><strong>Roles:</strong><span>Admin, Manager, Reviewer, Worker, and ReadOnly policy model.</span></li>
-            <li class="of-mini-list-item"><strong>Deployment:</strong><span>Local/test/production environment notes.</span></li>
-            <li class="of-mini-list-item"><strong>Governance:</strong><span>Audit, backup, retention, and support expectations.</span></li>
-            <li class="of-mini-list-item"><strong>Automation:</strong><span>Optional Power Automate notifications.</span></li>
-            <li class="of-mini-list-item"><strong>Reporting:</strong><span>Optional Power BI production reporting path.</span></li>
+            <li class="of-mini-list-item">
+                <strong>OAuth2:</strong>
+                <span>Microsoft OAuth2 / Entra ID sign-in.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Account linking:</strong>
+                <span>ExternalLoginLinks maps Microsoft account identity to LocalUser.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Authorization:</strong>
+                <span>Existing local SQL roles remain the application permission source.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Storage:</strong>
+                <span>SharePoint file storage provider through Microsoft Graph.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Configuration:</strong>
+                <span>Tenant id, client id, site id, drive/library id, and provider settings.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Testing:</strong>
+                <span>Provider swap testing across Work Orders, Corrective Actions, Document Intake, Document Library, Reports, and Activity Log.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Deployment:</strong>
+                <span>Local/test/production environment notes, secrets handling, backup/restore, and retention guidance.</span>
+            </li>
         </ul>
     </InfoPanel>
 </div>
@@ -131,52 +182,72 @@
         <div class="of-review-proof-card">
             <span class="of-badge of-badge-info">Step 1</span>
             <h3>Configuration foundation</h3>
-            <p>Add appsettings structure for storage provider, Graph/SharePoint settings, auth settings, and environment boundaries.</p>
+            <p>
+                Add appsettings/user-secrets/environment variable structure for OAuth2, Graph, SharePoint, storage provider, and environment boundaries.
+            </p>
         </div>
 
         <div class="of-review-proof-card">
             <span class="of-badge of-badge-warning">Step 2</span>
-            <h3>Authentication foundation</h3>
-            <p>Add Microsoft Entra ID authentication and safe local development fallback rules if needed.</p>
+            <h3>Microsoft OAuth2</h3>
+            <p>
+                Add Microsoft login and callback flow without breaking the local/free login fallback.
+            </p>
         </div>
 
         <div class="of-review-proof-card">
             <span class="of-badge of-badge-success">Step 3</span>
-            <h3>Role policy foundation</h3>
-            <p>Implement Admin, Manager, Reviewer, Worker, and ReadOnly policies without overcomplicating the UI.</p>
+            <h3>Account linking</h3>
+            <p>
+                Map Microsoft identity claims to ExternalLoginLinks, then resolve the matching LocalUser.
+            </p>
         </div>
 
         <div class="of-review-proof-card">
             <span class="of-badge of-badge-info">Step 4</span>
+            <h3>Role policy enforcement</h3>
+            <p>
+                Use the LocalUser roles and LocalRolePermissions as the app authorization source after OAuth2 sign-in.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-warning">Step 5</span>
             <h3>SharePoint storage provider</h3>
-            <p>Implement the provider behind the existing file storage abstraction using Microsoft Graph.</p>
+            <p>
+                Implement the provider behind IFileStorageService using Microsoft Graph without rebuilding workflow pages.
+            </p>
         </div>
 
         <div class="of-review-proof-card">
-            <span class="of-badge of-badge-muted">Step 5</span>
-            <h3>Provider swap testing</h3>
-            <p>Upload evidence from Work Orders, Corrective Actions, and Document Intake without rebuilding those pages.</p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-warning">Step 6</span>
+            <span class="of-badge of-badge-muted">Step 6</span>
             <h3>Production readiness docs</h3>
-            <p>Document tenant setup, app registration, permission scopes, site/library setup, folder convention, and deployment boundaries.</p>
+            <p>
+                Document tenant setup, app registration, permission scopes, site/library setup, folder convention, and deployment boundaries.
+            </p>
         </div>
 
         <div class="of-review-proof-card">
             <span class="of-badge of-badge-success">Step 7</span>
             <h3>Final release packaging</h3>
-            <p>Update README, screenshots, test checklist, release notes, known limitations, and portfolio walkthrough path.</p>
+            <p>
+                Update README, screenshots, release notes, known limitations, and the reviewer walkthrough path.
+            </p>
         </div>
     </div>
 </InfoPanel>
 
 <InfoPanel Title="Critical implementation rule"
            Subtitle="Week 4 should keep the Week 3 business workflow and replace the infrastructure underneath it."
-           Tone="success">
+           Tone="info">
 
     <div class="of-link-row">
+        <span class="of-badge of-badge-info">Login</span>
+        <span>→</span>
+        <span class="of-badge of-badge-success">LocalUser</span>
+        <span>→</span>
+        <span class="of-badge of-badge-warning">Role permissions</span>
+        <span>→</span>
         <span class="of-badge of-badge-info">Record details</span>
         <span>→</span>
         <span class="of-badge of-badge-success">Upload evidence</span>
@@ -192,12 +263,13 @@
 
     <p class="of-muted-text">
         Work Orders, Corrective Actions, Document Intake, Document Library, Data Quality, Reports, and Activity Log should not be rebuilt for SharePoint.
-        The production implementation should replace the provider behind that workflow, then add real authentication, authorization, storage configuration, and deployment readiness.
+        The production implementation should replace the provider/authentication layer underneath the existing workflow.
     </p>
 </InfoPanel>
 
-<GuidanceNote Title="Current sprint decision" Icon="🏁" Tone="info">
+<GuidanceNote Title="Current sprint decision" Icon="🏁" Tone="success">
     <p>
-        Finish Week 3 with storage readiness, role readiness, documentation, release notes, screenshots, and clean Git status before starting Week 4.
+        Finish Week 3 with local SQL authentication, persistent login, role documentation, storage readiness, release notes, screenshots,
+        and a clean Git status before starting Week 4.
     </p>
 </GuidanceNote>

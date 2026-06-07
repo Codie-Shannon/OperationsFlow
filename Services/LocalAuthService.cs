@@ -97,6 +97,34 @@ public class LocalAuthService
         return LocalLoginResult.Success(signedInUser);
     }
 
+    public async Task<LocalLoginResult> RestoreLoginAsync(int localUserId)
+    {
+        await _localIdentityService.EnsureSeedDataAsync();
+
+        var user = await _db.LocalUsers.FirstOrDefaultAsync(item => item.Id == localUserId);
+
+        if (user is null)
+        {
+            return LocalLoginResult.Fail("Saved local session could not be restored.");
+        }
+
+        if (!user.IsActive)
+        {
+            return LocalLoginResult.Fail("Saved local account is inactive.");
+        }
+
+        var signedInUser = await BuildSignedInUserAsync(user.Id);
+
+        if (signedInUser is null)
+        {
+            return LocalLoginResult.Fail("Saved local role profile could not be loaded.");
+        }
+
+        _currentUserService.SignIn(signedInUser);
+
+        return LocalLoginResult.Success(signedInUser);
+    }
+
     public void Logout()
     {
         _currentUserService.SignOut();

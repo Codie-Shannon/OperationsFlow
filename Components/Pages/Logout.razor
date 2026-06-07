@@ -1,14 +1,16 @@
 ﻿@page "/logout"
 @rendermode InteractiveServer
+
 @using OperationsFlow.Services
 @inject LocalAuthService LocalAuthService
+@inject LocalSessionStorageService LocalSessionStorageService
 @inject NavigationManager Navigation
 
 <PageTitle>Logout - OperationsFlow</PageTitle>
 
 <PageHero Eyebrow="OPERATIONSFLOW / LOCAL LOGIN"
           Title="Logout"
-          Subtitle="Sign out of the local SQL-backed Week 3 demo session."
+          Subtitle="Signing out of the local SQL-backed Week 3 demo session."
           BadgeText="Local Auth"
           BadgeClass="of-badge of-badge-muted">
     <Actions>
@@ -18,13 +20,21 @@
 
 <GuidanceNote Title="Signing out" Icon="🚪" Tone="info">
     <p>
-        You have been signed out of the local OperationsFlow session.
+        Clearing your local OperationsFlow session...
     </p>
 </GuidanceNote>
 
 @code {
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+        {
+            return;
+        }
+
         LocalAuthService.Logout();
+        await LocalSessionStorageService.ClearSignedInUserIdAsync();
+
+        Navigation.NavigateTo("/login", replace: true);
     }
 }

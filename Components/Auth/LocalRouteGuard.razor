@@ -1,7 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Components
 @using System.Reflection
 @using OperationsFlow.Services
+@inject NavigationManager Navigation
 @inject LocalCurrentUserService CurrentUserService
+@inject LocalAuthService LocalAuthService
+@inject LocalSessionStorageService LocalSessionStorageService
 
 @if (IsAllowed)
 {
@@ -12,10 +15,8 @@ else
     <LayoutView Layout="@DefaultLayout">
         <div class="p-4">
             <div class="of-badge of-badge-warning">Login required</div>
-            <h1 class="mt-3">Login required</h1>
-            <p class="of-muted-text">
-                You need to sign in before accessing OperationsFlow pages.
-            </p>
+            <h1 class="mt-3">@StatusTitle</h1>
+            <p class="of-muted-text">@StatusMessage</p>
             <a class="of-btn of-btn-primary" href="/login">Go to login</a>
         </div>
     </LayoutView>
@@ -32,11 +33,60 @@ else
 
     private bool IsAllowed => IsPublicPage || CurrentUserService.IsSignedIn;
 
+    private bool RestoreStarted { get; set; }
+
+    private string StatusTitle { get; set; } = "Checking login...";
+
+    private string StatusMessage { get; set; } = "OperationsFlow is checking for a saved local session.";
+
     protected override void OnParametersSet()
     {
         IsPublicPage = RouteData.PageType
             .GetCustomAttributes<RouteAttribute>(inherit: false)
             .Any(route => IsPublicRoute(route.Template));
+
+        RestoreStarted = false;
+        StatusTitle = "Checking login...";
+        StatusMessage = "OperationsFlow is checking for a saved local session.";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (IsPublicPage || CurrentUserService.IsSignedIn || RestoreStarted)
+        {
+            return;
+        }
+
+        RestoreStarted = true;
+
+        var savedUserId = await LocalSessionStorageService.GetSignedInUserIdAsync();
+
+        if (savedUserId.HasValue)
+        {
+            var restoreResult = await LocalAuthService.RestoreLoginAsync(savedUserId.Value);
+
+            if (restoreResult.Succeeded)
+            {
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
+
+            await LocalSessionStorageService.ClearSignedInUserIdAsync();
+        }
+
+        StatusTitle = "Login required";
+        StatusMessage = "You need to sign in before accessing OperationsFlow pages.";
+
+        var relativePath = Navigation.ToBaseRelativePath(Navigation.Uri);
+
+        if (string.IsNullOrWhiteSpace(relativePath))
+        {
+            relativePath = "/";
+        }
+
+        var returnUrl = Uri.EscapeDataString("/" + relativePath.TrimStart('/'));
+
+        Navigation.NavigateTo($"/login?returnUrl={returnUrl}", replace: true);
     }
 
     private static bool IsPublicRoute(string routeTemplate)

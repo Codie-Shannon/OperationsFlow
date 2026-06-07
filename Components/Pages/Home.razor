@@ -1,45 +1,262 @@
 @page "/dashboard"
+@rendermode InteractiveServer
+
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
 @using OperationsFlow.Services
+
 @inject DashboardService DashboardService
 @inject OperationsFlowDbContext Db
 
-<PageTitle>OperationsFlow Dashboard</PageTitle>
+<PageTitle>Dashboard - OperationsFlow</PageTitle>
 
 @if (summary == null)
 {
-    <EmptyState Title="Loading dashboard" Message="Loading OperationsFlow dashboard data..." Icon="⏳" />
+    <PageHero Eyebrow="BUSINESS OPERATIONS PROTOTYPE"
+              Title="OperationsFlow Dashboard"
+              Subtitle="Loading SQL-backed local workflow records, authentication state, evidence, document intake, and recent system activity."
+              BadgeText="Loading"
+              BadgeClass="of-badge of-badge-muted" />
+
+    <PurposeNote Title="Loading" Icon="⏳">
+        <p>Loading dashboard summary from the local OperationsFlow database...</p>
+    </PurposeNote>
 }
 else
 {
-    <PageHero Eyebrow="Business Operations Prototype" Title="OperationsFlow Dashboard" Subtitle="Live overview of work orders, corrective actions, document control, risk register items, training compliance, document intake, and recent system activity." BadgeText="SQLite demo data live" BadgeClass="of-badge-success">
-        <Actions><a class="of-btn of-btn-primary" href="/reviewer-checklist">Reviewer Checklist</a><a class="of-btn of-btn-secondary" href="/reports">Reports</a><a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a></Actions>
+    <PageHero Eyebrow="BUSINESS OPERATIONS PROTOTYPE"
+              Title="OperationsFlow Dashboard"
+              Subtitle="Live overview of SQL-backed local workflow records, authentication state, evidence, document intake, and recent system activity."
+              BadgeText="SQL-backed local demo live"
+              BadgeClass="of-badge of-badge-success">
+        <Actions>
+            <a class="of-btn of-btn-primary" href="/reviewer-checklist">Reviewer Checklist</a>
+            <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
+            <a class="of-btn of-btn-secondary" href="/portfolio">Portfolio Hub</a>
+        </Actions>
     </PageHero>
 
-    <PurposeNote Title="Purpose" Icon="📊"><p>The dashboard gives the reviewer a fast read on operational work, overdue follow-up, compliance pressure, document intake, and system traceability.</p></PurposeNote>
+    <PurposeNote Title="Purpose" Icon="📊">
+        <p>
+            The dashboard gives the reviewer a fast read on operational work, overdue follow-up, compliance pressure,
+            document intake, local authentication, evidence coverage, and system traceability.
+        </p>
+    </PurposeNote>
 
     <MetricGrid>
-        <MetricCard Title="Open Work Orders" Value="@summary.OpenWorkOrders.ToString()" Detail="@($"{summary.OverdueWorkOrders} overdue")" Icon="📋" Tone="warning" />
-        <MetricCard Title="Overdue Actions" Value="@summary.OverdueCorrectiveActions.ToString()" Detail="@($"{summary.OpenCorrectiveActions} open actions")" Icon="✅" Tone="danger" />
-        <MetricCard Title="Documents Due Soon" Value="@summary.DocumentsDueSoon.ToString()" Detail="@($"{summary.OverdueDocumentReviews} overdue reviews")" Icon="📄" Tone="info" />
-        <MetricCard Title="High / Critical Risks" Value="@summary.HighOrCriticalRisks.ToString()" Detail="@($"{summary.TotalRisks} total risks")" Icon="⚠️" Tone="warning" />
-        <MetricCard Title="Expired Training" Value="@summary.ExpiredTrainingRecords.ToString()" Detail="@($"{summary.TrainingExpiringSoon} expiring soon")" Icon="🎓" Tone="danger" />
-        <MetricCard Title="Training Compliance" Value="@($"{summary.TrainingComplianceRate:0.0}%")" Detail="@($"{summary.TotalTrainingRecords} training records")" Icon="📈" Tone="success" />
-        <MetricCard Title="Document Intake" Value="@summary.OpenDocumentIntakeItems.ToString()" Detail="@($"{summary.OverdueDocumentIntakeItems} overdue")" Icon="📥" Tone="info" />
+        <MetricCard Title="Open Work Orders"
+                    Value="@summary.OpenWorkOrders.ToString()"
+                    Detail="@($"{summary.OverdueWorkOrders} overdue")"
+                    Icon="📋"
+                    Tone="warning" />
+
+        <MetricCard Title="Overdue Actions"
+                    Value="@summary.OverdueCorrectiveActions.ToString()"
+                    Detail="@($"{summary.OpenCorrectiveActions} open actions")"
+                    Icon="✅"
+                    Tone="danger" />
+
+        <MetricCard Title="Documents Due Soon"
+                    Value="@summary.DocumentsDueSoon.ToString()"
+                    Detail="@($"{summary.OverdueDocumentReviews} overdue reviews")"
+                    Icon="📄"
+                    Tone="info" />
+
+        <MetricCard Title="High / Critical Risks"
+                    Value="@summary.HighOrCriticalRisks.ToString()"
+                    Detail="@($"{summary.TotalRisks} total risks")"
+                    Icon="⚠️"
+                    Tone="warning" />
+
+        <MetricCard Title="Expired Training"
+                    Value="@summary.ExpiredTrainingRecords.ToString()"
+                    Detail="@($"{summary.TrainingExpiringSoon} expiring soon")"
+                    Icon="🎓"
+                    Tone="danger" />
+
+        <MetricCard Title="Training Compliance"
+                    Value="@($"{summary.TrainingComplianceRate:0.0}%")"
+                    Detail="@($"{summary.TotalTrainingRecords} training records")"
+                    Icon="📈"
+                    Tone="success" />
+
+        <MetricCard Title="Document Intake"
+                    Value="@summary.TotalDocumentIntakeItems.ToString()"
+                    Detail="@($"{summary.OverdueDocumentIntakeItems} overdue")"
+                    Icon="📥"
+                    Tone="info" />
     </MetricGrid>
 
-    <InfoPanel Title="Core Workflow Modules" Subtitle="Open the main record groups from the dashboard."><ChildContent><div class="of-review-proof-grid"><a class="of-review-proof-card of-click-card" href="/work-orders"><strong>Work Orders</strong><span>Total @summary.TotalWorkOrders • Open @summary.OpenWorkOrders • Overdue @summary.OverdueWorkOrders</span></a><a class="of-review-proof-card of-click-card" href="/corrective-actions"><strong>Corrective Actions</strong><span>Total @summary.TotalCorrectiveActions • Open @summary.OpenCorrectiveActions • Overdue @summary.OverdueCorrectiveActions</span></a><a class="of-review-proof-card of-click-card" href="/documents"><strong>Document Control</strong><span>Total @summary.TotalDocuments • Due Soon @summary.DocumentsDueSoon • Overdue @summary.OverdueDocumentReviews</span></a><a class="of-review-proof-card of-click-card" href="/document-intake"><strong>Document Intake</strong><span>Total @summary.TotalDocumentIntakeItems • Needs Review @summary.DocumentIntakeNeedsReview • Overdue @summary.OverdueDocumentIntakeItems</span></a></div></ChildContent></InfoPanel>
+    <InfoPanel Title="Core Workflow Modules"
+               Subtitle="Open the main record groups from the dashboard."
+               Tone="default">
 
-    <InfoPanel Title="Compliance / Management Views" Subtitle="Use these pages for review, reporting, follow-up, and evidence."><ChildContent><div class="of-review-proof-grid"><a class="of-review-proof-card of-click-card" href="/risk-register"><strong>Risk Register</strong><span>Total @summary.TotalRisks • High/Critical @summary.HighOrCriticalRisks</span></a><a class="of-review-proof-card of-click-card" href="/training"><strong>Training</strong><span>Expired @summary.ExpiredTrainingRecords • Expiring @summary.TrainingExpiringSoon</span></a><a class="of-review-proof-card of-click-card" href="/reminders"><strong>Reminders</strong><span>Daily review view for overdue and due-soon work.</span></a><a class="of-review-proof-card of-click-card" href="/workload"><strong>Workload</strong><span>Owner pressure and assigned follow-up work.</span></a></div></ChildContent></InfoPanel>
+        <div class="of-dashboard-link-grid">
+            <a class="of-dashboard-link-card" href="/work-orders">
+                <span class="of-dashboard-link-card__eyebrow">Work Orders</span>
+                <span class="of-dashboard-link-card__title">Total @summary.TotalWorkOrders</span>
+                <span class="of-dashboard-link-card__meta">Open @summary.OpenWorkOrders • Overdue @summary.OverdueWorkOrders</span>
+            </a>
 
-    <TableCard Title="Recent Activity" Subtitle="Latest work order creation, edit, review, and workflow events." IsEmpty="@(recentActivities == null || !recentActivities.Any())" EmptyTitle="No activity yet" EmptyMessage="Create or edit records to generate activity history.">
-        <Actions><a class="of-btn of-btn-secondary" href="/activity-log">View Full Log</a></Actions>
-        <ChildContent><table><thead><tr><th>Date</th><th>Record</th><th>Description</th><th>Module</th><th>Action</th><th>By</th></tr></thead><tbody>@foreach(var item in recentActivities ?? new List<ActivityLog>()){<tr><td>@item.CreatedDate.ToString("dd MMM yyyy HH:mm")</td><td><strong>@item.RecordReference</strong></td><td>@item.Description</td><td>@item.ModuleName</td><td><span class="@GetActionClass(item.ActionType)">@item.ActionType</span></td><td>@item.CreatedBy</td></tr>}</tbody></table></ChildContent>
+            <a class="of-dashboard-link-card" href="/corrective-actions">
+                <span class="of-dashboard-link-card__eyebrow">Corrective Actions</span>
+                <span class="of-dashboard-link-card__title">Total @summary.TotalCorrectiveActions</span>
+                <span class="of-dashboard-link-card__meta">Open @summary.OpenCorrectiveActions • Overdue @summary.OverdueCorrectiveActions</span>
+            </a>
+
+            <a class="of-dashboard-link-card" href="/documents">
+                <span class="of-dashboard-link-card__eyebrow">Document Control</span>
+                <span class="of-dashboard-link-card__title">Total @summary.TotalDocuments</span>
+                <span class="of-dashboard-link-card__meta">Due Soon @summary.DocumentsDueSoon • Overdue @summary.OverdueDocumentReviews</span>
+            </a>
+
+            <a class="of-dashboard-link-card" href="/document-intake">
+                <span class="of-dashboard-link-card__eyebrow">Document Intake</span>
+                <span class="of-dashboard-link-card__title">Total @summary.TotalDocumentIntakeItems</span>
+                <span class="of-dashboard-link-card__meta">Needs Review @summary.DocumentIntakeNeedsReview • Overdue @summary.OverdueDocumentIntakeItems</span>
+            </a>
+        </div>
+    </InfoPanel>
+
+    <InfoPanel Title="Compliance / Management Views"
+               Subtitle="Use these pages for review, reporting, follow-up, and evidence."
+               Tone="default">
+
+        <div class="of-dashboard-link-grid">
+            <a class="of-dashboard-link-card" href="/risk-register">
+                <span class="of-dashboard-link-card__eyebrow">Risk Register</span>
+                <span class="of-dashboard-link-card__title">Total @summary.TotalRisks</span>
+                <span class="of-dashboard-link-card__meta">High/Critical @summary.HighOrCriticalRisks</span>
+            </a>
+
+            <a class="of-dashboard-link-card" href="/training">
+                <span class="of-dashboard-link-card__eyebrow">Training</span>
+                <span class="of-dashboard-link-card__title">Expired @summary.ExpiredTrainingRecords</span>
+                <span class="of-dashboard-link-card__meta">Expiring Soon @summary.TrainingExpiringSoon</span>
+            </a>
+
+            <a class="of-dashboard-link-card" href="/reminders">
+                <span class="of-dashboard-link-card__eyebrow">Reminders</span>
+                <span class="of-dashboard-link-card__title">Daily Review</span>
+                <span class="of-dashboard-link-card__meta">Overdue and due-soon follow-up work.</span>
+            </a>
+
+            <a class="of-dashboard-link-card" href="/workload">
+                <span class="of-dashboard-link-card__eyebrow">Workload</span>
+                <span class="of-dashboard-link-card__title">Owner Pressure</span>
+                <span class="of-dashboard-link-card__meta">Assigned follow-up and workload review.</span>
+            </a>
+        </div>
+    </InfoPanel>
+
+    <InfoPanel Title="Local SQL Authentication"
+               Subtitle="Week 3 now includes the local/free authentication foundation."
+               Tone="success">
+
+        <div class="of-dashboard-link-grid">
+            <a class="of-dashboard-link-card" href="/user-roles">
+                <span class="of-dashboard-link-card__eyebrow">User Roles</span>
+                <span class="of-dashboard-link-card__title">SQL-backed access</span>
+                <span class="of-dashboard-link-card__meta">Users, roles, permissions, and OAuth2 link prep.</span>
+            </a>
+
+            <a class="of-dashboard-link-card" href="/admin-settings">
+                <span class="of-dashboard-link-card__eyebrow">Admin Settings</span>
+                <span class="of-dashboard-link-card__title">Configuration surface</span>
+                <span class="of-dashboard-link-card__meta">Local auth, storage provider, Microsoft 365 readiness, and production settings.</span>
+            </a>
+
+            <a class="of-dashboard-link-card" href="/technical-overview">
+                <span class="of-dashboard-link-card__eyebrow">Technical Overview</span>
+                <span class="of-dashboard-link-card__title">Architecture</span>
+                <span class="of-dashboard-link-card__meta">Local login, evidence, storage, and Week 4 production upgrade.</span>
+            </a>
+
+            <a class="of-dashboard-link-card" href="/prototype-scope">
+                <span class="of-dashboard-link-card__eyebrow">Prototype Scope</span>
+                <span class="of-dashboard-link-card__title">Scope boundary</span>
+                <span class="of-dashboard-link-card__meta">Week 3 local/free vs Week 4 licensed/live production.</span>
+            </a>
+        </div>
+    </InfoPanel>
+
+    <TableCard Title="Recent Activity"
+               Subtitle="Latest work order creation, edit, review, upload, delete, and workflow events.">
+
+        @if (recentActivities == null || recentActivities.Count == 0)
+        {
+            <EmptyState Title="No recent activity"
+                        Message="No Activity Log entries are currently available." />
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Record</th>
+                        <th>Description</th>
+                        <th>Module</th>
+                        <th>Action</th>
+                        <th>By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in recentActivities)
+                    {
+                        <tr>
+                            <td>@item.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
+                            <td>@item.RecordReference</td>
+                            <td>@item.Description</td>
+                            <td>@item.ModuleName</td>
+                            <td><span class="@GetActionClass(item.ActionType)">@item.ActionType</span></td>
+                            <td>@item.CreatedBy</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="of-link-row">
+                <a class="of-btn of-btn-secondary" href="/activity-log">View Full Log</a>
+            </div>
+        }
     </TableCard>
 
-    <GuidanceNote Title="Review Notes" Icon="💡" Tone="info"><ul><li>Start here when reviewing the prototype.</li><li>Use the dashboard to jump into record pages, management pages, and evidence pages.</li><li>This is local SQLite demo data; Microsoft 365 sync is a later implementation stage.</li></ul></GuidanceNote>
+    <GuidanceNote Title="Reviewer guidance" Icon="✅" Tone="info">
+        <ul>
+            <li>Start here when reviewing the prototype.</li>
+            <li>Use the dashboard to jump into record pages, management pages, evidence pages, and local authentication pages.</li>
+            <li>This is now a SQL-backed local demo with local authentication; Microsoft OAuth2 and SharePoint/Graph are Week 4 production targets.</li>
+        </ul>
+    </GuidanceNote>
 }
 
-@code { private DashboardSummary? summary; private List<ActivityLog>? recentActivities; protected override async Task OnInitializedAsync(){ summary=await DashboardService.GetDashboardSummaryAsync(); recentActivities=await Db.ActivityLogs.AsNoTracking().OrderByDescending(x=>x.CreatedDate).Take(8).ToListAsync(); } private static string GetActionClass(string? actionType)=>actionType?.ToLowerInvariant() switch {"created"=>"badge badge-success","updated"=>"badge badge-info","reviewed"=>"badge badge-muted","deleted"=>"badge badge-danger",_=>"badge badge-warning"}; }
+@code {
+    private DashboardSummary? summary;
+
+    private List<ActivityLog>? recentActivities;
+
+    protected override async Task OnInitializedAsync()
+    {
+        summary = await DashboardService.GetDashboardSummaryAsync();
+
+        recentActivities = await Db.ActivityLogs
+            .AsNoTracking()
+            .OrderByDescending(x => x.CreatedDate)
+            .Take(8)
+            .ToListAsync();
+    }
+
+    private static string GetActionClass(string? actionType)
+    {
+        return actionType?.ToLowerInvariant() switch
+        {
+            "created" => "of-badge of-badge-success",
+            "updated" => "of-badge of-badge-info",
+            "reviewed" => "of-badge of-badge-muted",
+            "deleted" => "of-badge of-badge-danger",
+            _ => "of-badge of-badge-warning"
+        };
+    }
+}

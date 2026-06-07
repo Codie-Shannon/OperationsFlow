@@ -1,27 +1,26 @@
 ﻿@page "/"
 @page "/login"
 @rendermode InteractiveServer
+
 @using OperationsFlow.Services
+
 @inject LocalAuthService LocalAuthService
 @inject LocalCurrentUserService CurrentUserService
+@inject LocalSessionStorageService LocalSessionStorageService
 @inject NavigationManager Navigation
 
 <PageTitle>Login - OperationsFlow</PageTitle>
 
 <PageHero Eyebrow="OPERATIONSFLOW / LOCAL LOGIN"
           Title="Local Login"
-          Subtitle="Week 3 local/free mode uses SQL-backed users, password login, local roles, and local permissions. Week 4 will add Microsoft OAuth2 linking to these local accounts."
+          Subtitle="Week 3 local/free mode uses SQL-backed users, hashed password login, local roles, local permissions, persistent local login, and logout controls. Week 4 will add Microsoft OAuth2 linking to these local accounts."
           BadgeText="Local Auth"
-          BadgeClass="of-badge of-badge-info">
-    <Actions>
-        <a class="of-btn of-btn-secondary" href="/user-roles">User Roles</a>
-        <a class="of-btn of-btn-secondary" href="/admin-settings">Admin Settings</a>
-    </Actions>
-</PageHero>
+          BadgeClass="of-badge of-badge-info" />
 
 <PurposeNote Title="Purpose" Icon="🔐">
     <p>
-        Sign in with a local SQL-backed OperationsFlow account. This proves the free/local version of the auth model before Week 4 adds Microsoft OAuth2 account linking.
+        Sign in with a local SQL-backed OperationsFlow account. This proves the free/local version of the authentication model
+        before Week 4 adds Microsoft OAuth2 account linking, Microsoft 365 configuration, and SharePoint/Graph storage.
     </p>
 </PurposeNote>
 
@@ -46,7 +45,7 @@
 
                 <div class="of-link-row">
                     <a class="of-btn of-btn-primary" href="/dashboard">Go to dashboard</a>
-                    <button class="of-btn of-btn-secondary" @onclick="Logout">Logout</button>
+                    <button class="of-btn of-btn-secondary" @onclick="LogoutAsync">Log out</button>
                 </div>
             </div>
         }
@@ -73,7 +72,6 @@
                 <button class="of-btn of-btn-primary" @onclick="LoginAsync" disabled="@IsBusy">
                     @(IsBusy ? "Signing in..." : "Sign in")
                 </button>
-                <a class="of-btn of-btn-secondary" href="/user-roles">View roles</a>
             </div>
         }
     </InfoPanel>
@@ -116,7 +114,8 @@
             <span class="of-badge of-badge-success">Week 3</span>
             <h3>Local/free version</h3>
             <p>
-                SQL-backed users, hashed passwords, local roles, local permissions, local file storage, and local evidence workflow.
+                SQL-backed users, hashed passwords, persistent local login, local roles, local permissions, local file storage,
+                local evidence workflow, reports, and activity traceability.
             </p>
         </div>
 
@@ -124,7 +123,47 @@
             <span class="of-badge of-badge-warning">Week 4</span>
             <h3>Licensed/live version</h3>
             <p>
-                Microsoft OAuth2 login, Microsoft account linking, SharePoint/Graph storage, production permissions, and Microsoft 365 deployment.
+                Microsoft OAuth2 login, Microsoft account linking, SharePoint/Graph storage, production permissions,
+                Microsoft 365 configuration, and production deployment hardening.
+            </p>
+        </div>
+    </div>
+</InfoPanel>
+
+<InfoPanel Title="Local session behaviour"
+           Subtitle="The local/free version now behaves like a usable internal app demo."
+           Tone="info">
+
+    <div class="of-review-proof-grid">
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-success">Login</span>
+            <h3>SQL account check</h3>
+            <p>
+                Username/email and password are checked against LocalUsers. Passwords are verified against hashed values.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-info">Refresh</span>
+            <h3>Persistent local session</h3>
+            <p>
+                The browser stores only the local user id. The app reloads user, roles, and permissions from SQL after refresh.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-warning">Logout</span>
+            <h3>Session cleared</h3>
+            <p>
+                Logout clears the current user and removes the saved local user id from browser storage.
+            </p>
+        </div>
+
+        <div class="of-review-proof-card">
+            <span class="of-badge of-badge-muted">Week 4</span>
+            <h3>OAuth2 linking</h3>
+            <p>
+                Microsoft OAuth2 will identify the user, then ExternalLoginLinks will map that identity to LocalUser.
             </p>
         </div>
     </div>
@@ -132,15 +171,15 @@
 
 <GuidanceNote Title="Security boundary" Icon="⚠️" Tone="warning">
     <p>
-        Passwords are hashed, not stored as plain text. These seeded demo credentials are only for local portfolio testing.
-        A real deployment should require password changes, secure hosting, HTTPS, audit retention, and production account management.
+        Passwords are hashed, not stored as plain text. The browser stores only the local user id so the app can reload the
+        account from SQL after refresh. These seeded demo credentials are only for local portfolio testing.
     </p>
 </GuidanceNote>
 
 @code {
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
-    
+
     private string UserNameOrEmail { get; set; } = "admin";
 
     private string Password { get; set; } = "Admin123!";
@@ -160,10 +199,13 @@
         {
             var result = await LocalAuthService.LoginAsync(UserNameOrEmail, Password);
 
-            if (result.Succeeded)
+            if (result.Succeeded && result.User is not null)
             {
+                await LocalSessionStorageService.SaveSignedInUserIdAsync(result.User.Id);
+
                 StatusCssClass = "alert alert-success";
-                StatusMessage = $"Signed in as {result.User?.DisplayName}.";
+                StatusMessage = $"Signed in as {result.User.DisplayName}.";
+
                 var targetUrl = string.IsNullOrWhiteSpace(ReturnUrl)
                     ? "/dashboard"
                     : ReturnUrl;
@@ -187,9 +229,11 @@
         }
     }
 
-    private void Logout()
+    private async Task LogoutAsync()
     {
         LocalAuthService.Logout();
+        await LocalSessionStorageService.ClearSignedInUserIdAsync();
+
         StatusCssClass = "alert alert-info";
         StatusMessage = "Signed out.";
     }

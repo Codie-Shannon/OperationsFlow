@@ -4,40 +4,40 @@
 
 <PageHero Eyebrow="OPERATIONSFLOW / ADMINISTRATION"
           Title="Admin Settings"
-          Subtitle="Admin Settings shows the configuration surface OperationsFlow would need before production rollout. The current app runs in local demo mode, but Week 3 now documents the storage provider path and Week 4 will add production authentication and permissions."
-          BadgeText="Readiness Surface"
-          BadgeClass="of-badge of-badge-info">
+          Subtitle="Admin Settings documents the Week 3 local/free configuration surface and the Week 4 production upgrade path for OAuth2, Microsoft 365, SharePoint storage, notifications, reporting, and deployment hardening."
+          BadgeText="Local Auth Enabled"
+          BadgeClass="of-badge of-badge-success">
     <Actions>
+        <a class="of-btn of-btn-secondary" href="/user-roles">User Roles</a>
         <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
         <a class="of-btn of-btn-secondary" href="/integration-overview">Integration Overview</a>
-        <a class="of-btn of-btn-secondary" href="/user-roles">User Roles</a>
         <a class="of-btn of-btn-primary" href="/document-library">Document Library</a>
     </Actions>
 </PageHero>
 
 <PurposeNote Title="Purpose" Icon="⚙️">
     <p>
-        This page documents the current local configuration and the production settings OperationsFlow will need for SharePoint storage,
-        Microsoft Entra ID authentication, role enforcement, audit behaviour, notifications, and reporting.
+        This page explains the configuration surface OperationsFlow needs for a local/free deployment and a future Microsoft 365 production deployment.
+        Week 3 now includes SQL-backed local authentication. Week 4 will add Microsoft OAuth2 account linking and live Microsoft 365 integration.
     </p>
 </PurposeNote>
 
 <MetricGrid>
     <MetricCard Title="Current Mode"
-                Value="Local Demo"
-                Detail="No production authentication or role enforcement active yet."
-                Icon="💻"
-                Tone="info" />
+                Value="Local SQL"
+                Detail="SQL-backed users, password login, roles, and permissions."
+                Icon="🖥️"
+                Tone="success" />
 
     <MetricCard Title="Storage Provider"
                 Value="Local"
-                Detail="Files are stored under wwwroot/uploads for development proof only."
+                Detail="Files are stored under wwwroot/uploads for local proof."
                 Icon="📁"
-                Tone="success" />
+                Tone="info" />
 
     <MetricCard Title="Future Auth"
-                Value="Entra ID"
-                Detail="Week 4 target for login and role-aware access control."
+                Value="OAuth2"
+                Detail="Week 4 target for Microsoft account linking."
                 Icon="🔐"
                 Tone="warning" />
 
@@ -45,24 +45,25 @@
                 Value="SharePoint"
                 Detail="Week 4 target for production document library storage."
                 Icon="☁️"
-                Tone="default" />
+                Tone="warning" />
 </MetricGrid>
 
 <GuidanceNote Title="Current boundary" Icon="⚠️" Tone="warning">
     <p>
-        These settings are a readiness surface. The current local app does not enforce production authentication,
-        production role permissions, SharePoint storage, retention policies, or tenant-level security.
+        Week 3 is a local/free implementation. It includes local password login and role loading, but it does not yet include
+        Microsoft OAuth2, real Microsoft tenant authentication, live SharePoint storage, production password reset, hosted deployment,
+        backup policy, or retention/compliance sign-off.
     </p>
 </GuidanceNote>
 
-<TableCard Title="Current local evidence settings"
+<TableCard Title="Current local/free settings"
            Subtitle="These settings describe the working Week 3 local foundation.">
 
     <table class="table">
         <thead>
             <tr>
                 <th>Setting</th>
-                <th>Current value</th>
+                <th>Current Value</th>
                 <th>Notes</th>
             </tr>
         </thead>
@@ -70,12 +71,27 @@
             <tr>
                 <td><span class="of-badge of-badge-info">Application mode</span></td>
                 <td>Local demo / portfolio prototype</td>
-                <td>Used to prove workflow, not production security.</td>
+                <td>Used to prove the workflow and local/free deployment path.</td>
             </tr>
             <tr>
                 <td><span class="of-badge of-badge-success">Database</span></td>
-                <td>SQLite</td>
-                <td>Stores workflow records, activity logs, and attachment metadata.</td>
+                <td>SQL Server Express / LocalDB</td>
+                <td>Stores workflow records, activity logs, attachment metadata, users, roles, and permissions.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Auth provider</span></td>
+                <td>Local SQL</td>
+                <td>Username/password login backed by LocalUsers.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Password storage</span></td>
+                <td>Hashed passwords</td>
+                <td>Passwords are not stored in plain text.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-info">Session mode</span></td>
+                <td>Persistent local login</td>
+                <td>Browser stores local user id only; app reloads roles/permissions from SQL.</td>
             </tr>
             <tr>
                 <td><span class="of-badge of-badge-warning">File storage provider</span></td>
@@ -88,57 +104,81 @@
                 <td>Links files to module, record id, provider, file name, path/key, and status.</td>
             </tr>
             <tr>
-                <td><span class="of-badge of-badge-muted">File delete behaviour</span></td>
-                <td>Soft delete metadata</td>
-                <td>Deleted files are hidden from active library views and logged for traceability.</td>
-            </tr>
-            <tr>
                 <td><span class="of-badge of-badge-success">Activity audit</span></td>
                 <td>Activity Log</td>
-                <td>Upload/delete events are recorded for reviewer evidence.</td>
+                <td>Upload/delete and workflow events are recorded for reviewer evidence.</td>
             </tr>
             <tr>
                 <td><span class="of-badge of-badge-danger">Git safety</span></td>
                 <td>Do not commit uploads or database files</td>
-                <td>wwwroot/uploads, *.db, *.db-shm, and *.db-wal must stay out of commits.</td>
+                <td>wwwroot/uploads, *.db, *.db-shm, *.db-wal, *.mdf, and *.ldf must stay out of commits.</td>
             </tr>
         </tbody>
     </table>
 </TableCard>
 
 <div class="of-two-column-grid">
-    <InfoPanel Title="Week 4 storage settings needed"
-               Subtitle="These settings will be needed before the SharePoint provider can replace the local provider."
-               Tone="info">
+    <InfoPanel Title="Week 3 identity settings"
+               Subtitle="The local/free version now has a real SQL-backed auth model."
+               Tone="success">
 
         <ul class="of-mini-list">
-            <li class="of-mini-list-item"><strong>Provider selector:</strong><span>Local or SharePoint.</span></li>
-            <li class="of-mini-list-item"><strong>Tenant id:</strong><span>Microsoft 365 tenant identifier.</span></li>
-            <li class="of-mini-list-item"><strong>Client id:</strong><span>App registration id.</span></li>
-            <li class="of-mini-list-item"><strong>Secret/certificate:</strong><span>Secure Graph authentication credential.</span></li>
-            <li class="of-mini-list-item"><strong>SharePoint site:</strong><span>Host/site path or site id.</span></li>
-            <li class="of-mini-list-item"><strong>Drive/library:</strong><span>Drive id, library id, or document library name.</span></li>
-            <li class="of-mini-list-item"><strong>Base folder:</strong><span>Root folder path for OperationsFlow evidence.</span></li>
-            <li class="of-mini-list-item"><strong>Folder convention:</strong><span>Module and record id based evidence folders.</span></li>
-            <li class="of-mini-list-item"><strong>Upload controls:</strong><span>Allowed file types and size limits.</span></li>
-            <li class="of-mini-list-item"><strong>Retention:</strong><span>Archive, recycle, or retention-aligned delete behaviour.</span></li>
+            <li class="of-mini-list-item">
+                <strong>Provider:</strong>
+                <span>Local SQL authentication.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Users:</strong>
+                <span>LocalUsers table.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Roles:</strong>
+                <span>LocalRoles and LocalUserRoles.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Permissions:</strong>
+                <span>LocalPermissions and LocalRolePermissions.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Session:</strong>
+                <span>Persistent local login using saved user id, then SQL reload.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Logout:</strong>
+                <span>Clears saved local user id and current in-memory user.</span>
+            </li>
         </ul>
     </InfoPanel>
 
-    <InfoPanel Title="Week 4 auth/role settings needed"
-               Subtitle="These settings support the move from local demo to production access control."
+    <InfoPanel Title="Week 4 auth/settings needed"
+               Subtitle="These settings support the move from local login to Microsoft OAuth2 linking."
                Tone="warning">
 
         <ul class="of-mini-list">
-            <li class="of-mini-list-item"><strong>Auth provider:</strong><span>Microsoft Entra ID.</span></li>
-            <li class="of-mini-list-item"><strong>Role source:</strong><span>Entra groups, app roles, or local config mapping.</span></li>
-            <li class="of-mini-list-item"><strong>Admin:</strong><span>System configuration, provider setup, and role management.</span></li>
-            <li class="of-mini-list-item"><strong>Manager:</strong><span>Workflow oversight, reports, data quality, and follow-up review.</span></li>
-            <li class="of-mini-list-item"><strong>Reviewer:</strong><span>Evidence, reports, quality checks, and audit review.</span></li>
-            <li class="of-mini-list-item"><strong>Worker:</strong><span>Assigned work updates and evidence uploads.</span></li>
-            <li class="of-mini-list-item"><strong>ReadOnly:</strong><span>View-only access for review and demonstration.</span></li>
-            <li class="of-mini-list-item"><strong>Policy mapping:</strong><span>Upload, delete, export, settings, and role management permissions.</span></li>
-            <li class="of-mini-list-item"><strong>Dev fallback:</strong><span>Safe local testing mode if needed.</span></li>
+            <li class="of-mini-list-item">
+                <strong>OAuth2 provider:</strong>
+                <span>Microsoft OAuth2 / Entra ID.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Tenant id:</strong>
+                <span>Microsoft 365 tenant identifier.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Client id:</strong>
+                <span>App registration id.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Secret/certificate:</strong>
+                <span>Secure OAuth2 credential.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>External link:</strong>
+                <span>Microsoft account maps to LocalUser through ExternalLoginLinks.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Authorization source:</strong>
+                <span>Local SQL roles remain the application permission source.</span>
+            </li>
         </ul>
     </InfoPanel>
 </div>
@@ -151,28 +191,28 @@
             <tr>
                 <th>Group</th>
                 <th>Examples</th>
-                <th>Production concern</th>
+                <th>Production Concern</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td><span class="of-badge of-badge-info">Storage</span></td>
+                <td><span class="of-badge of-badge-success">Identity</span></td>
+                <td>Local SQL users, Microsoft OAuth2 links, password policy</td>
+                <td>Users need secure login and clear account ownership.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-info">Authorization</span></td>
+                <td>Roles, permissions, policy checks, admin-only areas</td>
+                <td>Not every user should edit, delete, export, or manage settings.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-warning">Storage</span></td>
                 <td>Provider, site id, drive id, folder convention, file limits</td>
                 <td>Files must be stored somewhere supportable, permissioned, and backed up.</td>
             </tr>
             <tr>
-                <td><span class="of-badge of-badge-warning">Identity</span></td>
-                <td>Tenant id, authority, client id, login policy</td>
-                <td>Users should authenticate through Microsoft Entra ID, not local demo assumptions.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-success">Authorization</span></td>
-                <td>Roles, groups, app policies, permissions</td>
-                <td>Not every user should delete files, change settings, export data, or manage roles.</td>
-            </tr>
-            <tr>
                 <td><span class="of-badge of-badge-muted">Audit</span></td>
-                <td>Activity Log retention, upload/delete events, record changes</td>
+                <td>Activity Log retention, login events, upload/delete events, record changes</td>
                 <td>Operational systems need traceability for review and accountability.</td>
             </tr>
             <tr>
@@ -190,38 +230,46 @@
 </TableCard>
 
 <InfoPanel Title="Week 4 admin implementation path"
-           Subtitle="Admin Settings should move from a readiness page into real configurable production behaviour."
-           Tone="success">
+           Subtitle="Admin Settings should move from documentation into real configurable production behaviour."
+           Tone="info">
 
     <div class="of-review-proof-grid">
         <div class="of-review-proof-card">
             <span class="of-badge of-badge-info">Step 1</span>
-            <h3>Provider config</h3>
-            <p>Add appsettings/user-secrets/environment variable support for Local vs SharePoint storage configuration.</p>
+            <h3>OAuth2 config</h3>
+            <p>
+                Add appsettings/user-secrets/environment variable support for Microsoft OAuth2 tenant, client, and callback settings.
+            </p>
         </div>
 
         <div class="of-review-proof-card">
             <span class="of-badge of-badge-warning">Step 2</span>
-            <h3>Auth config</h3>
-            <p>Add Microsoft Entra ID settings and login setup without breaking local development testing.</p>
+            <h3>Account linking</h3>
+            <p>
+                Link Microsoft identities to existing LocalUser records through ExternalLoginLinks.
+            </p>
         </div>
 
         <div class="of-review-proof-card">
             <span class="of-badge of-badge-success">Step 3</span>
             <h3>Role policy config</h3>
-            <p>Map Admin, Manager, Reviewer, Worker, and ReadOnly roles to actual authorization policies.</p>
+            <p>
+                Continue using local SQL roles/permissions as the app authorization source after Microsoft login.
+            </p>
         </div>
 
         <div class="of-review-proof-card">
             <span class="of-badge of-badge-muted">Step 4</span>
             <h3>Deployment notes</h3>
-            <p>Document the production values required before a real organisation could safely run the app.</p>
+            <p>
+                Document the production values required before a real organisation could safely run the app.
+            </p>
         </div>
     </div>
 </InfoPanel>
 
-<GuidanceNote Title="Block 8 outcome" Icon="✅" Tone="info">
+<GuidanceNote Title="Block 9 outcome" Icon="✅" Tone="info">
     <p>
-        Admin Settings now clearly describes the current local provider and the configuration needed for the Week 4 SharePoint/Microsoft 365 production provider.
+        Admin Settings now reflects the upgraded Week 3 local/free authentication system and the Week 4 OAuth2/Microsoft 365 production direction.
     </p>
 </GuidanceNote>

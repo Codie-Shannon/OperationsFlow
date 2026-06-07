@@ -1,417 +1,388 @@
 @page "/user-roles"
+@rendermode InteractiveServer
+
+@using OperationsFlow.Models
+@using OperationsFlow.Services
+
+@inject LocalIdentityService LocalIdentityService
 
 <PageTitle>User Roles - OperationsFlow</PageTitle>
 
-<PageHero Eyebrow="OPERATIONSFLOW / ACCESS CONTROL READINESS"
+<PageHero Eyebrow="OPERATIONSFLOW / LOCAL SQL AUTHENTICATION"
           Title="User Roles"
-          Subtitle="OperationsFlow currently runs in local demo mode, but the Week 3 production foundation now defines the role and permission model needed for Week 4 Microsoft Entra ID authentication and policy enforcement."
-          BadgeText="Role Ready"
-          BadgeClass="of-badge of-badge-info">
+          Subtitle="Week 3 now includes a local SQL-backed authentication and role foundation: password login, local users, local roles, local permissions, persistent local login, and a Week 4 path for Microsoft OAuth2 account linking."
+          BadgeText="Local Auth Live"
+          BadgeClass="of-badge of-badge-success">
     <Actions>
         <a class="of-btn of-btn-secondary" href="/admin-settings">Admin Settings</a>
         <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
-        <a class="of-btn of-btn-secondary" href="/integration-overview">Integration Overview</a>
-        <a class="of-btn of-btn-primary" href="/implementation-plan">Implementation Plan</a>
+        <a class="of-btn of-btn-secondary" href="/implementation-plan">Implementation Plan</a>
+        <a class="of-btn of-btn-primary" href="/login">Login</a>
     </Actions>
 </PageHero>
 
 <PurposeNote Title="Purpose" Icon="🔐">
     <p>
-        This page defines the production access model OperationsFlow will need before real rollout.
-        Week 3 documents the role boundaries. Week 4 should connect these roles to Microsoft Entra ID, app roles, groups, and authorization policies.
+        This page documents and displays the Week 3 local/free access-control model. OperationsFlow now has SQL-backed users,
+        password login, local roles, local permissions, and a persistent local session. Week 4 will add Microsoft OAuth2
+        login and link Microsoft identities back to these local SQL users.
     </p>
 </PurposeNote>
 
 <MetricGrid>
-    <MetricCard Title="Current Auth"
-                Value="Local Demo"
-                Detail="No production login or authorization enforcement is active yet."
-                Icon="💻"
-                Tone="info" />
-
-    <MetricCard Title="Production Auth"
-                Value="Entra ID"
-                Detail="Week 4 target for Microsoft identity and role mapping."
-                Icon="🔐"
-                Tone="warning" />
-
-    <MetricCard Title="Defined Roles"
-                Value="5"
-                Detail="Admin, Manager, Reviewer, Worker, and ReadOnly."
-                Icon="👥"
+    <MetricCard Title="Current Login"
+                Value="Local SQL"
+                Detail="Username/password login backed by the app database."
+                Icon="🔑"
                 Tone="success" />
 
-    <MetricCard Title="Permission Model"
-                Value="Ready"
-                Detail="Matrix prepared for Week 4 policy enforcement."
-                Icon="✅"
-                Tone="default" />
+    <MetricCard Title="Password Storage"
+                Value="Hashed"
+                Detail="Passwords are hashed, not stored as plain text."
+                Icon="🛡️"
+                Tone="success" />
+
+    <MetricCard Title="Defined Roles"
+                Value="@RoleCountText"
+                Detail="Admin, Manager, Reviewer, Worker, and ReadOnly."
+                Icon="👥"
+                Tone="info" />
+
+    <MetricCard Title="Week 4 Path"
+                Value="OAuth2"
+                Detail="Microsoft sign-in will link to LocalUser records."
+                Icon="☁️"
+                Tone="warning" />
 </MetricGrid>
 
-<GuidanceNote Title="Current boundary" Icon="⚠️" Tone="warning">
-    <p>
-        These roles are currently a readiness model only. The local prototype does not yet enforce authentication,
-        authorization policies, Microsoft Entra ID login, SharePoint permissions, or user/group membership checks.
-        Week 4 should turn this model into real application policies.
-    </p>
-</GuidanceNote>
-
-<InfoPanel Title="Role model"
-           Subtitle="The role model is designed around real operational responsibility, not just generic admin/user access."
-           Tone="default">
+<InfoPanel Title="Current Week 3 authentication model"
+           Subtitle="OperationsFlow now has a working local/free authentication layer."
+           Tone="success">
 
     <div class="of-review-proof-grid">
         <div class="of-review-proof-card">
-            <span class="of-badge of-badge-danger">Admin</span>
-            <h3>System administrator</h3>
+            <span class="of-badge of-badge-success">Implemented</span>
+            <h3>Local SQL users</h3>
             <p>
-                Owns system configuration, storage provider setup, role mapping, user access, production settings, and support boundaries.
+                Users are stored in the application database with username, display name, email, status, password hash, and login metadata.
             </p>
         </div>
 
         <div class="of-review-proof-card">
-            <span class="of-badge of-badge-warning">Manager</span>
-            <h3>Operational manager</h3>
+            <span class="of-badge of-badge-success">Implemented</span>
+            <h3>Password login</h3>
             <p>
-                Reviews dashboards, reports, overdue work, data quality, evidence coverage, workload, and follow-up performance.
+                The login page verifies a local username/email and password against the SQL-backed user record.
             </p>
         </div>
 
         <div class="of-review-proof-card">
-            <span class="of-badge of-badge-info">Reviewer</span>
-            <h3>Compliance / audit reviewer</h3>
+            <span class="of-badge of-badge-success">Implemented</span>
+            <h3>Persistent local session</h3>
             <p>
-                Reviews evidence, document library records, activity logs, reports, and missing evidence issues without managing system settings.
+                The browser stores only the local user id. Roles and permissions are reloaded from SQL after refresh.
             </p>
         </div>
 
         <div class="of-review-proof-card">
-            <span class="of-badge of-badge-success">Worker</span>
-            <h3>Assigned worker</h3>
+            <span class="of-badge of-badge-warning">Week 4</span>
+            <h3>Microsoft OAuth2 linking</h3>
             <p>
-                Updates assigned work, records follow-up notes, adds evidence, and helps close workflow records with supporting proof.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-muted">ReadOnly</span>
-            <h3>View-only user</h3>
-            <p>
-                Can view records, dashboards, and review pages, but cannot edit workflow records, upload files, delete files, export data, or change settings.
+                Microsoft login will identify the user, then map the Microsoft account to the existing local SQL user.
             </p>
         </div>
     </div>
 </InfoPanel>
 
-<TableCard Title="Role definitions"
-           Subtitle="Each role has a clear purpose so Week 4 policies can be mapped cleanly.">
+<TableCard Title="Seeded local users"
+           Subtitle="These users are seeded for the Week 3 local/free demo. Real deployments should replace seeded credentials.">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Role</th>
-                <th>Main purpose</th>
-                <th>Typical users</th>
-                <th>Week 4 source</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><span class="of-badge of-badge-danger">Admin</span></td>
-                <td>Manage system configuration, users, roles, provider settings, and production access boundaries.</td>
-                <td>System owner, IT admin, business systems admin.</td>
-                <td>Entra app role or admin group.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-warning">Manager</span></td>
-                <td>Manage operational follow-up, reporting, data quality, workload, and business review actions.</td>
-                <td>Operations manager, safety manager, department lead.</td>
-                <td>Entra group or configured app role.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-info">Reviewer</span></td>
-                <td>Review evidence, reports, data quality, activity history, and document traceability.</td>
-                <td>Compliance reviewer, auditor, management reviewer, external reviewer.</td>
-                <td>Entra group or reviewer app role.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-success">Worker</span></td>
-                <td>Update assigned records, attach evidence, and complete follow-up work.</td>
-                <td>Assigned staff, site workers, admin support, corrective action owners.</td>
-                <td>Entra group, user assignment, or app role.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-muted">ReadOnly</span></td>
-                <td>View records and dashboards without changing operational data.</td>
-                <td>Observers, demo users, limited reviewers, read-only stakeholders.</td>
-                <td>Fallback read-only group or default authenticated role.</td>
-            </tr>
-        </tbody>
-    </table>
+    @if (IsLoading)
+    {
+        <p class="of-muted-text">Loading local users...</p>
+    }
+    else if (Users.Count == 0)
+    {
+        <EmptyState Title="No local users found"
+                    Message="No SQL-backed local users are currently available." />
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Job Title</th>
+                    <th>Roles</th>
+                    <th>Password</th>
+                    <th>Status</th>
+                    <th>External Links</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Users)
+                {
+                    <tr>
+                        <td>
+                            <strong>@user.DisplayName</strong>
+                            <div class="of-muted-text">@user.UserName</div>
+                        </td>
+                        <td>@user.Email</td>
+                        <td>@user.Department</td>
+                        <td>@user.JobTitle</td>
+                        <td>
+                            <div class="of-link-row">
+                                @foreach (var role in user.Roles)
+                                {
+                                    <span class="@LocalIdentityService.GetRoleBadgeClass(role)">@role</span>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            @if (user.HasPassword)
+                            {
+                                <span class="of-badge of-badge-success">Hashed</span>
+                            }
+                            else
+                            {
+                                <span class="of-badge of-badge-danger">Missing</span>
+                            }
+                        </td>
+                        <td>
+                            @if (user.IsActive)
+                            {
+                                <span class="of-badge of-badge-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="of-badge of-badge-danger">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            @if (user.LinkedProviders.Any())
+                            {
+                                <div class="of-link-row">
+                                    @foreach (var provider in user.LinkedProviders)
+                                    {
+                                        <span class="of-badge of-badge-info">@provider</span>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="of-badge of-badge-muted">None</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </TableCard>
 
-<TableCard Title="Permission matrix"
-           Subtitle="This is the Week 4 policy target. Week 3 documents it; Week 4 should enforce it.">
+<TableCard Title="Role permission matrix"
+           Subtitle="Permissions are stored in SQL and loaded through the local role model.">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Permission</th>
-                <th>Admin</th>
-                <th>Manager</th>
-                <th>Reviewer</th>
-                <th>Worker</th>
-                <th>ReadOnly</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>View dashboard</td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-            </tr>
-            <tr>
-                <td>Create/edit work orders</td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-muted">View</span></td>
-                <td><span class="of-badge of-badge-warning">Assigned</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-            </tr>
-            <tr>
-                <td>Create/edit corrective actions</td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-muted">View</span></td>
-                <td><span class="of-badge of-badge-warning">Assigned</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-            </tr>
-            <tr>
-                <td>Create/edit document intake</td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-warning">Review</span></td>
-                <td><span class="of-badge of-badge-warning">Limited</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-            </tr>
-            <tr>
-                <td>Upload files</td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-warning">Review evidence</span></td>
-                <td><span class="of-badge of-badge-warning">Assigned</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-            </tr>
-            <tr>
-                <td>Delete / soft-delete files</td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-warning">Limited</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-            </tr>
-            <tr>
-                <td>View document library</td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-warning">Relevant</span></td>
-                <td><span class="of-badge of-badge-muted">View</span></td>
-            </tr>
-            <tr>
-                <td>View reports</td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-warning">Limited</span></td>
-                <td><span class="of-badge of-badge-muted">View</span></td>
-            </tr>
-            <tr>
-                <td>View data quality</td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-warning">Limited</span></td>
-                <td><span class="of-badge of-badge-muted">View</span></td>
-            </tr>
-            <tr>
-                <td>Export CSV</td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-warning">Approved</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-            </tr>
-            <tr>
-                <td>Manage settings</td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-            </tr>
-            <tr>
-                <td>Configure storage provider</td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-            </tr>
-            <tr>
-                <td>Manage users/roles</td>
-                <td><span class="of-badge of-badge-success">Yes</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-                <td><span class="of-badge of-badge-danger">No</span></td>
-            </tr>
-        </tbody>
-    </table>
+    @if (IsLoading)
+    {
+        <p class="of-muted-text">Loading permissions...</p>
+    }
+    else if (PermissionMatrix.Count == 0)
+    {
+        <EmptyState Title="No permissions found"
+                    Message="No local role permissions are currently available." />
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Permission</th>
+                    <th>Category</th>
+                    <th>Admin</th>
+                    <th>Manager</th>
+                    <th>Reviewer</th>
+                    <th>Worker</th>
+                    <th>ReadOnly</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var permission in PermissionMatrix)
+                {
+                    <tr>
+                        <td>
+                            <strong>@permission.PermissionName</strong>
+                            <div class="of-muted-text">@permission.PermissionKey</div>
+                        </td>
+                        <td><span class="of-badge of-badge-info">@permission.Category</span></td>
+                        <td>@AccessBadge(permission, "Admin")</td>
+                        <td>@AccessBadge(permission, "Manager")</td>
+                        <td>@AccessBadge(permission, "Reviewer")</td>
+                        <td>@AccessBadge(permission, "Worker")</td>
+                        <td>@AccessBadge(permission, "ReadOnly")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </TableCard>
 
 <div class="of-two-column-grid">
-    <InfoPanel Title="Week 4 authentication path"
-               Subtitle="Authentication should be added cleanly without breaking local development."
-               Tone="info">
+    <InfoPanel Title="Week 3 local/free auth"
+               Subtitle="The local version works without Microsoft licensing."
+               Tone="success">
 
         <ul class="of-mini-list">
             <li class="of-mini-list-item">
-                <strong>Provider:</strong>
-                <span>Microsoft Entra ID.</span>
+                <strong>Database:</strong>
+                <span>SQL Server Express / LocalDB, with SQLite fallback where configured.</span>
             </li>
             <li class="of-mini-list-item">
-                <strong>App registration:</strong>
-                <span>OperationsFlow registered in the target tenant.</span>
+                <strong>Login:</strong>
+                <span>Username/email and password.</span>
             </li>
             <li class="of-mini-list-item">
-                <strong>Sign-in users:</strong>
-                <span>Organisation users or selected test tenant users.</span>
+                <strong>Passwords:</strong>
+                <span>Hashed through ASP.NET Core password hashing.</span>
             </li>
             <li class="of-mini-list-item">
-                <strong>Role source:</strong>
-                <span>Entra groups, app roles, or configuration-based role mapping.</span>
+                <strong>Session:</strong>
+                <span>Persistent local user id stored in browser; permissions reload from SQL.</span>
             </li>
             <li class="of-mini-list-item">
-                <strong>Local fallback:</strong>
-                <span>Optional development-only mode for testing without production login.</span>
+                <strong>Logout:</strong>
+                <span>Clears in-memory user and saved local user id.</span>
             </li>
         </ul>
     </InfoPanel>
 
-    <InfoPanel Title="Week 4 authorization path"
-               Subtitle="Permissions should be enforced by policy, not hidden only in the UI."
+    <InfoPanel Title="Week 4 OAuth2 path"
+               Subtitle="Microsoft login will extend the local account model instead of replacing it."
                Tone="warning">
 
         <ul class="of-mini-list">
             <li class="of-mini-list-item">
-                <strong>Policy-based checks:</strong>
-                <span>Use authorization policies for protected actions.</span>
+                <strong>Provider:</strong>
+                <span>Microsoft OAuth2 / Entra ID.</span>
             </li>
             <li class="of-mini-list-item">
-                <strong>Route protection:</strong>
-                <span>Protect admin/config pages from non-admin users.</span>
+                <strong>Mapping:</strong>
+                <span>ExternalLoginLinks maps Microsoft identity to LocalUser.</span>
             </li>
             <li class="of-mini-list-item">
-                <strong>Action protection:</strong>
-                <span>Block upload/delete/export/settings actions where the role is not allowed.</span>
+                <strong>Authorization:</strong>
+                <span>Local SQL roles remain the source of app permissions.</span>
             </li>
             <li class="of-mini-list-item">
-                <strong>SharePoint alignment:</strong>
-                <span>App permissions and SharePoint library access should not conflict.</span>
+                <strong>Storage:</strong>
+                <span>SharePoint/Graph provider can replace local file storage.</span>
             </li>
             <li class="of-mini-list-item">
-                <strong>Audit:</strong>
-                <span>Denied or sensitive actions should be traceable where useful.</span>
+                <strong>Business fit:</strong>
+                <span>Matches traditional internal business apps that link OAuth2 to local accounts.</span>
             </li>
         </ul>
     </InfoPanel>
 </div>
 
-<TableCard Title="Policy target names"
-           Subtitle="Suggested policy names for Week 4 implementation. These are not enforced in Week 3 yet.">
+<TableCard Title="External login links"
+           Subtitle="Week 3 stores the table shape. Week 4 will replace placeholder links with real Microsoft provider identifiers.">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Policy</th>
-                <th>Allowed roles</th>
-                <th>Protects</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><span class="of-badge of-badge-info">CanViewDashboard</span></td>
-                <td>Admin, Manager, Reviewer, Worker, ReadOnly</td>
-                <td>Dashboard and general landing pages.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-success">CanEditWorkflow</span></td>
-                <td>Admin, Manager, assigned Worker</td>
-                <td>Work Orders, Corrective Actions, Document Intake create/edit actions.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-warning">CanUploadEvidence</span></td>
-                <td>Admin, Manager, Reviewer, assigned Worker</td>
-                <td>RecordAttachments upload actions.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-danger">CanDeleteEvidence</span></td>
-                <td>Admin, limited Manager</td>
-                <td>Soft-delete file actions in Document Library and record attachment panels.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-info">CanViewReports</span></td>
-                <td>Admin, Manager, Reviewer, limited Worker, ReadOnly</td>
-                <td>Reports, data quality, evidence coverage, and management review pages.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-warning">CanExportData</span></td>
-                <td>Admin, Manager, approved Reviewer</td>
-                <td>CSV exports and future Power BI/export endpoints.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-danger">CanManageSettings</span></td>
-                <td>Admin</td>
-                <td>Admin Settings, provider configuration, tenant settings, and app-level configuration.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-danger">CanManageUsers</span></td>
-                <td>Admin</td>
-                <td>User access, role mapping, and permission configuration.</td>
-            </tr>
-        </tbody>
-    </table>
+    @if (IsLoading)
+    {
+        <p class="of-muted-text">Loading external login links...</p>
+    }
+    else if (ExternalLinks.Count == 0)
+    {
+        <EmptyState Title="No external login links"
+                    Message="No Microsoft/OAuth2 links have been created yet." />
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Local User</th>
+                    <th>Provider</th>
+                    <th>Provider Email</th>
+                    <th>Provider User Id</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var link in ExternalLinks)
+                {
+                    <tr>
+                        <td>@link.LocalUserDisplayName</td>
+                        <td><span class="of-badge of-badge-info">@link.Provider</span></td>
+                        <td>@link.ProviderEmail</td>
+                        <td>@link.ProviderUserId</td>
+                        <td>
+                            @if (link.IsLinked)
+                            {
+                                <span class="of-badge of-badge-success">Linked</span>
+                            }
+                            else
+                            {
+                                <span class="of-badge of-badge-muted">Inactive</span>
+                            }
+                        </td>
+                        <td>@link.Notes</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </TableCard>
 
-<InfoPanel Title="How this connects to the evidence workflow"
-           Subtitle="The role model protects the same Week 3 workflow rather than changing the app shape."
-           Tone="success">
-
-    <div class="of-link-row">
-        <span class="of-badge of-badge-info">Authenticated user</span>
-        <span>→</span>
-        <span class="of-badge of-badge-success">Role mapping</span>
-        <span>→</span>
-        <span class="of-badge of-badge-warning">Policy check</span>
-        <span>→</span>
-        <span class="of-badge of-badge-info">Record action</span>
-        <span>→</span>
-        <span class="of-badge of-badge-muted">Activity Log</span>
-    </div>
-
-    <p class="of-muted-text">
-        In Week 4, upload, delete, export, settings, and role-management actions should be protected by policy.
-        The app should keep the Week 3 workflow shape: record details → upload evidence → Document Library → Data Quality/Reports → Activity Log.
-    </p>
-</InfoPanel>
-
-<GuidanceNote Title="Block 9 outcome" Icon="✅" Tone="info">
+<GuidanceNote Title="Security boundary" Icon="⚠️" Tone="warning">
     <p>
-        User Roles now defines the production-ready role and permission model for OperationsFlow.
-        Week 4 should connect this model to Microsoft Entra ID and enforce the policies in real application code.
+        Week 3 is a local/free portfolio implementation. It proves local password login and SQL-backed roles, but a real deployment
+        still needs production hosting, HTTPS, password-reset workflow, account management, audit retention, backup policy,
+        and environment-specific security review.
     </p>
 </GuidanceNote>
+
+@code {
+    private bool IsLoading { get; set; } = true;
+
+    private List<LocalUserSummary> Users { get; set; } = new();
+
+    private List<LocalRole> Roles { get; set; } = new();
+
+    private List<LocalRolePermissionSummary> PermissionMatrix { get; set; } = new();
+
+    private List<ExternalLoginLinkSummary> ExternalLinks { get; set; } = new();
+
+    private string RoleCountText => Roles.Count.ToString();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Users = await LocalIdentityService.GetUserSummariesAsync();
+        Roles = await LocalIdentityService.GetRolesAsync();
+        PermissionMatrix = await LocalIdentityService.GetRolePermissionSummariesAsync();
+        ExternalLinks = await LocalIdentityService.GetExternalLoginLinksAsync();
+
+        IsLoading = false;
+    }
+
+    private RenderFragment AccessBadge(LocalRolePermissionSummary permission, string roleName)
+    {
+        return builder =>
+        {
+            var accessLevel = permission.AccessByRole.TryGetValue(roleName, out var value)
+                ? value
+                : "No";
+
+            var cssClass = LocalIdentityService.GetBadgeClassForAccess(accessLevel);
+
+            builder.OpenElement(0, "span");
+            builder.AddAttribute(1, "class", cssClass);
+            builder.AddContent(2, accessLevel);
+            builder.CloseElement();
+        };
+    }
+}

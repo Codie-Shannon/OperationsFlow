@@ -4,7 +4,7 @@
 
 <PageHero Eyebrow="OPERATIONSFLOW / SCOPE BOUNDARY"
           Title="Prototype Scope"
-          Subtitle="OperationsFlow is a local portfolio prototype with a production-shaped workflow foundation. It proves business workflow design, evidence traceability, reporting, and Microsoft 365 readiness without pretending the local demo is already a production deployment."
+          Subtitle="OperationsFlow is a local/free business systems prototype with a production-shaped foundation. Week 3 proves local SQL authentication, role permissions, evidence traceability, reporting, and Microsoft 365 readiness without pretending the local demo is already a live production deployment."
           BadgeText="Scope Defined"
           BadgeClass="of-badge of-badge-warning">
     <Actions>
@@ -17,7 +17,7 @@
 
 <PurposeNote Title="Purpose" Icon="🎯">
     <p>
-        This page draws the line between what the Week 3 prototype proves locally and what still belongs to Week 4 production implementation.
+        This page draws the line between what the Week 3 local/free prototype proves and what still belongs to Week 4 production implementation.
         That makes the portfolio stronger because it is honest about the boundary instead of overclaiming.
     </p>
 </PurposeNote>
@@ -25,27 +25,27 @@
 <MetricGrid>
     <MetricCard Title="Week 3 Scope"
                 Value="Local Foundation"
-                Detail="Evidence workflow, document library, quality checks, reports, and activity traceability."
+                Detail="Local auth, evidence workflow, document library, quality checks, reports, and activity traceability."
                 Icon="✅"
                 Tone="success" />
 
     <MetricCard Title="Week 4 Scope"
                 Value="Production Layer"
-                Detail="SharePoint, Entra ID, provider swap, permissions, and deployment readiness."
+                Detail="OAuth2, SharePoint, Microsoft 365, permissions hardening, and deployment readiness."
                 Icon="🚀"
                 Tone="warning" />
 
-    <MetricCard Title="Current Storage"
-                Value="Local"
-                Detail="Files under wwwroot/uploads with metadata stored in SQLite."
-                Icon="📁"
-                Tone="info" />
+    <MetricCard Title="Current Auth"
+                Value="Local SQL"
+                Detail="Username/password login with SQL-backed roles and permissions."
+                Icon="🔐"
+                Tone="success" />
 
     <MetricCard Title="Production Claim"
                 Value="Not Yet"
                 Detail="No fake claims about live Graph, tenant auth, or production deployment."
                 Icon="⚠️"
-                Tone="default" />
+                Tone="warning" />
 </MetricGrid>
 
 <InfoPanel Title="Scope summary"
@@ -55,9 +55,9 @@
     <div class="of-review-proof-grid">
         <div class="of-review-proof-card">
             <span class="of-badge of-badge-success">In Scope</span>
-            <h3>Week 3 local foundation</h3>
+            <h3>Week 3 local/free version</h3>
             <p>
-                Local workflow capture, evidence uploads, document library, activity traceability, data quality, and reporting.
+                Local workflow capture, SQL-backed login, roles, permissions, evidence uploads, document library, activity traceability, data quality, and reporting.
             </p>
         </div>
 
@@ -65,7 +65,7 @@
             <span class="of-badge of-badge-warning">Planned</span>
             <h3>Week 4 production layer</h3>
             <p>
-                SharePoint storage, Entra authentication, role enforcement, tenant configuration, and deployment readiness.
+                Microsoft OAuth2, SharePoint storage, Graph API, account linking, production deployment, backup, retention, and tenant configuration.
             </p>
         </div>
 
@@ -73,7 +73,7 @@
             <span class="of-badge of-badge-danger">Not claimed</span>
             <h3>Live production deployment</h3>
             <p>
-                The current app is not yet a live production system with real users, production backups, retention, or compliance sign-off.
+                The current app is not yet a live production system with real users, production backups, retention rules, or compliance sign-off.
             </p>
         </div>
 
@@ -81,31 +81,46 @@
             <span class="of-badge of-badge-info">Portfolio value</span>
             <h3>Production-shaped prototype</h3>
             <p>
-                The project demonstrates how a local proof can be designed with a realistic Microsoft 365 production path.
+                The project demonstrates how a local proof can be designed with both SQL-backed internal app patterns and Microsoft 365 production paths.
             </p>
         </div>
     </div>
 </InfoPanel>
 
 <TableCard Title="What the prototype currently proves"
-           Subtitle="OperationsFlow proves more than CRUD screens. It shows an operational workflow loop with evidence and review.">
+           Subtitle="OperationsFlow proves more than CRUD screens. It shows an operational workflow loop with authentication, evidence, and review.">
 
     <table class="table">
         <thead>
             <tr>
                 <th>Area</th>
-                <th>Current proof</th>
-                <th>Why it matters</th>
+                <th>Current Proof</th>
+                <th>Why It Matters</th>
             </tr>
         </thead>
         <tbody>
+            <tr>
+                <td><span class="of-badge of-badge-success">Local login</span></td>
+                <td>SQL-backed username/password login with hashed passwords.</td>
+                <td>Shows a free/local internal business app path without Microsoft licensing.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Roles</span></td>
+                <td>Admin, Manager, Reviewer, Worker, and ReadOnly roles.</td>
+                <td>Shows the app understands different business access levels.</td>
+            </tr>
+            <tr>
+                <td><span class="of-badge of-badge-success">Permissions</span></td>
+                <td>LocalRolePermissions matrix stored in SQL.</td>
+                <td>Shows the app can separate view, edit, upload, delete, export, and admin actions.</td>
+            </tr>
             <tr>
                 <td><span class="of-badge of-badge-info">Workflow capture</span></td>
                 <td>Work Orders, Corrective Actions, Document Intake, Risk, Training, Controlled Documents, and compliance pages.</td>
                 <td>Shows how scattered operational work can be structured into reviewable records.</td>
             </tr>
             <tr>
-                <td><span class="of-badge of-badge-success">Ownership</span></td>
+                <td><span class="of-badge of-badge-warning">Ownership</span></td>
                 <td>Owners, statuses, priorities, due dates, workload views, reminders, and management reports.</td>
                 <td>Shows practical follow-up control instead of relying on memory, inboxes, or spreadsheets.</td>
             </tr>
@@ -137,7 +152,7 @@
             <tr>
                 <td><span class="of-badge of-badge-success">Production direction</span></td>
                 <td>Technical, integration, role, audit, deployment, testing, and implementation overview pages.</td>
-                <td>Shows the project has a realistic path from prototype to Microsoft 365 production implementation.</td>
+                <td>Shows the project has a realistic path from prototype to local business app or Microsoft 365 production implementation.</td>
             </tr>
         </tbody>
     </table>
@@ -145,20 +160,50 @@
 
 <div class="of-two-column-grid">
     <InfoPanel Title="Explicitly in scope for Week 3"
-               Subtitle="These pieces are part of the local production foundation."
+               Subtitle="These pieces are part of the local/free production foundation."
                Tone="success">
 
         <ul class="of-mini-list">
-            <li class="of-mini-list-item"><strong>Persistence:</strong><span>Local SQLite foundation and migrations.</span></li>
-            <li class="of-mini-list-item"><strong>Metadata:</strong><span>DocumentAttachment model and service layer.</span></li>
-            <li class="of-mini-list-item"><strong>Storage:</strong><span>Local file upload provider.</span></li>
-            <li class="of-mini-list-item"><strong>Attachments:</strong><span>RecordAttachments component.</span></li>
-            <li class="of-mini-list-item"><strong>Records:</strong><span>Attachment panels on Work Orders, Corrective Actions, and Document Intake.</span></li>
-            <li class="of-mini-list-item"><strong>Library:</strong><span>Document Library across modules.</span></li>
-            <li class="of-mini-list-item"><strong>Registers:</strong><span>File counts on workflow register pages.</span></li>
-            <li class="of-mini-list-item"><strong>Traceability:</strong><span>Activity Log upload/delete events.</span></li>
-            <li class="of-mini-list-item"><strong>Quality:</strong><span>Data Quality missing evidence checks.</span></li>
-            <li class="of-mini-list-item"><strong>Reports:</strong><span>Evidence coverage and missing evidence reports.</span></li>
+            <li class="of-mini-list-item">
+                <strong>Database:</strong>
+                <span>SQL Server Express / LocalDB provider support.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Login:</strong>
+                <span>Local username/password login.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Passwords:</strong>
+                <span>Hashed password storage.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Session:</strong>
+                <span>Persistent local login and logout controls.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Roles:</strong>
+                <span>Local SQL role assignments.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Permissions:</strong>
+                <span>Local SQL role-permission matrix.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Metadata:</strong>
+                <span>DocumentAttachment model and service layer.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Storage:</strong>
+                <span>Local file upload provider.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Attachments:</strong>
+                <span>RecordAttachments component.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Reports:</strong>
+                <span>Evidence coverage and missing evidence reports.</span>
+            </li>
         </ul>
     </InfoPanel>
 
@@ -167,23 +212,53 @@
                Tone="warning">
 
         <ul class="of-mini-list">
-            <li class="of-mini-list-item"><strong>Graph upload:</strong><span>Real Microsoft Graph file upload.</span></li>
-            <li class="of-mini-list-item"><strong>SharePoint:</strong><span>Real SharePoint document library storage.</span></li>
-            <li class="of-mini-list-item"><strong>Login:</strong><span>Microsoft Entra ID authentication.</span></li>
-            <li class="of-mini-list-item"><strong>Authorization:</strong><span>Role-based policy enforcement.</span></li>
-            <li class="of-mini-list-item"><strong>Tenant:</strong><span>Production tenant setup.</span></li>
-            <li class="of-mini-list-item"><strong>Secrets:</strong><span>Production secrets or certificate management.</span></li>
-            <li class="of-mini-list-item"><strong>Compliance:</strong><span>Retention policy and compliance sign-off.</span></li>
-            <li class="of-mini-list-item"><strong>Deployment:</strong><span>Hosted deployment with backup/restore plan.</span></li>
-            <li class="of-mini-list-item"><strong>Notifications:</strong><span>Live Teams/Outlook notification workflows.</span></li>
-            <li class="of-mini-list-item"><strong>Power BI:</strong><span>Production dataset/report deployment.</span></li>
+            <li class="of-mini-list-item">
+                <strong>Microsoft OAuth2:</strong>
+                <span>Real Microsoft login provider.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Account linking:</strong>
+                <span>Real Microsoft provider id mapped to LocalUser.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Graph upload:</strong>
+                <span>Real Microsoft Graph file upload.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>SharePoint:</strong>
+                <span>Real SharePoint document library storage.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Tenant:</strong>
+                <span>Production Microsoft tenant setup.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Secrets:</strong>
+                <span>Production secrets or certificate management.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Compliance:</strong>
+                <span>Retention policy and compliance sign-off.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Deployment:</strong>
+                <span>Hosted deployment with backup/restore plan.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Notifications:</strong>
+                <span>Live Teams/Outlook notification workflows.</span>
+            </li>
+            <li class="of-mini-list-item">
+                <strong>Power BI:</strong>
+                <span>Production dataset/report deployment.</span>
+            </li>
         </ul>
     </InfoPanel>
 </div>
 
 <GuidanceNote Title="Honest boundary" Icon="⚠️" Tone="warning">
     <p>
-        Week 3 is not pretending to be final production. It proves the workflow and architecture foundation locally.
-        Week 4 is where the production provider, identity, permissions, configuration, and deployment readiness should be added.
+        Week 3 is not pretending to be final production. It proves the local/free workflow and architecture foundation.
+        Week 4 is where the production provider, Microsoft OAuth2, SharePoint/Graph, tenant configuration, hosting, backup, retention, and deployment readiness should be added.
     </p>
 </GuidanceNote>
