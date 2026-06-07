@@ -2,14 +2,17 @@
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+@using OperationsFlow.Services
 @using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
+
 @inject OperationsFlowDbContext Db
+@inject DocumentAttachmentService AttachmentService
 
 <PageTitle>Data Quality - OperationsFlow</PageTitle>
 
 <PageHero Eyebrow="System Health"
           Title="Data Quality Report"
-          Subtitle="Identify missing owners, weak records, overdue items, expired compliance records, and data issues that need review before management reporting."
+          Subtitle="Identify missing owners, weak records, overdue work, expired compliance items, missing evidence, and data issues that need review before management reporting."
           BadgeText="@($"{TotalIssueCount} issues")"
           BadgeClass="@IssueBadgeClass">
     <Actions>
@@ -17,13 +20,15 @@
         <a class="of-btn of-btn-secondary" href="/reminders">Reminders</a>
         <a class="of-btn of-btn-secondary" href="/workload">Workload</a>
         <a class="of-btn of-btn-secondary" href="/activity-log">Activity Log</a>
+        <a class="of-btn of-btn-secondary" href="/document-library">Document Library</a>
     </Actions>
 </PageHero>
 
 <PurposeNote Title="Purpose" Icon="🧪">
     <p>
         Use this page to find weak or incomplete workflow records and jump directly to the page where each issue
-        can be reviewed, updated, or turned into follow-up work.
+        can be reviewed, updated, or turned into follow-up work. Week 3 adds evidence checks so overdue,
+        high-priority, or review-needed work can be flagged if no supporting file has been attached.
     </p>
 </PurposeNote>
 
@@ -46,16 +51,17 @@
                 Icon="⚠️"
                 Tone="warning" />
 
+    <MetricCard Title="Missing Evidence"
+                Value="@MissingEvidenceIssueCount.ToString()"
+                Detail="Priority records with no attached files"
+                Icon="📎"
+                Tone="@MissingEvidenceTone" />
+
     <MetricCard Title="Data Gaps"
                 Value="@DataGapCount.ToString()"
                 Detail="Missing owner, notes, controls, or dates"
                 Icon="🧩"
                 Tone="info" />
-
-    <MetricCard Title="Modules Checked"
-                Value="@ModuleOptions.Count.ToString()"
-                Detail="Operations and compliance data"
-                Icon="🔎" />
 
     <MetricCard Title="Action Links"
                 Value="@ActionableIssueCount.ToString()"
@@ -64,27 +70,27 @@
                 Tone="success" />
 </MetricGrid>
 
-<InfoPanel Title="Actionable Data Quality" Subtitle="Each issue includes a review link so weak records can be opened directly.">
+<InfoPanel Title="Evidence-Aware Data Quality" Subtitle="Week 3 now checks whether key workflow records have supporting files.">
     <ChildContent>
         <div class="of-review-proof-grid">
             <div class="of-review-proof-card">
-                <strong>Workflow</strong>
-                <span>Issues link to edit, details, or source module pages where the data can be reviewed.</span>
+                <strong>Work Orders</strong>
+                <span>Overdue, high, or critical work orders should have supporting evidence or progress files.</span>
             </div>
 
             <div class="of-review-proof-card">
-                <strong>Management</strong>
-                <span>Overdue, unassigned, blank-note, and missing-date issues become visible before review meetings.</span>
+                <strong>Corrective Actions</strong>
+                <span>Overdue, high, or critical actions should have close-out evidence, photos, notes, or documents.</span>
             </div>
 
             <div class="of-review-proof-card">
-                <strong>Traceability</strong>
-                <span>Opening and fixing records can create activity history on key workflow pages.</span>
+                <strong>Document Intake</strong>
+                <span>Overdue or review-needed intake records should have the source document attached.</span>
             </div>
 
             <div class="of-review-proof-card">
-                <strong>Prototype Boundary</strong>
-                <span>A production version would add permissions, audit rules, and approval checks.</span>
+                <strong>Production Path</strong>
+                <span>Local evidence checks become SharePoint document-library checks in the Week 4 production version.</span>
             </div>
         </div>
     </ChildContent>
@@ -140,11 +146,20 @@
                 <option value="@module">@module</option>
             }
         </select>
+
+        <select class="of-select" @bind="issueTypeFilter">
+            <option value="">All Issue Types</option>
+            <option value="Missing Evidence">Missing Evidence</option>
+            <option value="Missing Information">Missing Information</option>
+            <option value="Overdue Work">Overdue Work</option>
+            <option value="Compliance">Compliance</option>
+        </select>
     </ChildContent>
 
     <Actions>
         <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
         <a class="of-btn of-btn-secondary" href="/activity-log">Activity Log</a>
+        <a class="of-btn of-btn-secondary" href="/document-library">Document Library</a>
     </Actions>
 </FilterBar>
 
@@ -157,6 +172,7 @@
         <thead>
             <tr>
                 <th>Severity</th>
+                <th>Type</th>
                 <th>Module</th>
                 <th>Reference</th>
                 <th>Issue</th>
@@ -172,6 +188,11 @@
                     <td>
                         <span class="@GetSeverityClass(issue.Severity)">
                             @issue.Severity
+                        </span>
+                    </td>
+                    <td>
+                        <span class="@GetIssueTypeClass(issue.IssueType)">
+                            @issue.IssueType
                         </span>
                     </td>
                     <td>@issue.ModuleName</td>
@@ -194,6 +215,45 @@
         </tbody>
     </table>
 </TableCard>
+
+<InfoPanel Title="Missing Evidence" Subtitle="Priority workflow records that should have at least one file attached.">
+    <Actions>
+        <span class="of-badge of-badge-warning">@MissingEvidenceIssues.Count issues</span>
+    </Actions>
+
+    <ChildContent>
+        @if (!MissingEvidenceIssues.Any())
+        {
+            <EmptyState Title="No missing evidence issues"
+                        Message="Checked priority records currently have supporting files attached."
+                        Icon="✅" />
+        }
+        else
+        {
+            <div class="of-review-proof-grid">
+                @foreach (var issue in MissingEvidenceIssues.Take(8))
+                {
+                    <div class="of-review-proof-card">
+                        <strong>@issue.Reference</strong>
+                        <span>@issue.Issue</span>
+                        <span>@issue.ModuleName • @issue.Owner</span>
+
+                        <div class="of-link-row">
+                            <span class="@GetSeverityClass(issue.Severity)">
+                                @issue.Severity
+                            </span>
+
+                            @if (!string.IsNullOrWhiteSpace(issue.ActionUrl))
+                            {
+                                <a class="of-card-link" href="@issue.ActionUrl">Open</a>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </ChildContent>
+</InfoPanel>
 
 <InfoPanel Title="Overdue Operational Work" Subtitle="Open work orders and corrective actions that are past due.">
     <Actions>
@@ -314,7 +374,7 @@
         </ChildContent>
     </InfoPanel>
 
-    <InfoPanel Title="Document Intake Issues" Subtitle="Incoming documents overdue, needing review, or missing processing information.">
+    <InfoPanel Title="Document Intake Issues" Subtitle="Incoming documents overdue, needing review, missing files, or missing processing information.">
         <Actions>
             <span class="of-badge of-badge-info">@DocumentIntakeIssues.Count issues</span>
         </Actions>
@@ -369,6 +429,11 @@
             </div>
 
             <div class="of-review-proof-card">
+                <strong>Evidence</strong>
+                <span>Flags overdue, high-priority, or review-needed records that have no attached files.</span>
+            </div>
+
+            <div class="of-review-proof-card">
                 <strong>Compliance Dates</strong>
                 <span>Flags expired training and overdue or due-soon document reviews.</span>
             </div>
@@ -376,6 +441,11 @@
             <div class="of-review-proof-card">
                 <strong>Record Detail</strong>
                 <span>Flags blank notes, missing controls, and missing completed dates on closed records.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Week 4 Ready</strong>
+                <span>Evidence checks are provider-independent and can work with SharePoint storage later.</span>
             </div>
         </div>
     </ChildContent>
@@ -385,9 +455,10 @@
     <ul>
         <li>Critical issues should be opened before warning or info records.</li>
         <li>Missing owners weaken workload reporting and should be fixed early.</li>
+        <li>Missing evidence weakens close-out, review, and management traceability.</li>
         <li>Blank notes reduce traceability, especially for completed or reviewed work.</li>
         <li>Data Quality should be checked before using Reports for portfolio screenshots or review meetings.</li>
-        <li>This is local SQLite prototype validation; production rules could add role-based validation, approval requirements, attachments, and audit retention.</li>
+        <li>In Week 4, local evidence checks can map to SharePoint document library files and metadata.</li>
     </ul>
 </GuidanceNote>
 
@@ -398,10 +469,12 @@
     private List<RiskItem> risks = new();
     private List<TrainingRecord> trainingRecords = new();
     private List<DocumentIntakeModel> documentIntakeItems = new();
+    private List<DocumentAttachment> attachments = new();
 
     private string searchText = "";
     private string severityFilter = "";
     private string moduleFilter = "";
+    private string issueTypeFilter = "";
 
     private List<DataQualityIssue> AllIssues
     {
@@ -415,9 +488,11 @@
             AddRiskIssues(issues);
             AddTrainingIssues(issues);
             AddDocumentIntakeIssues(issues);
+            AddEvidenceIssues(issues);
 
             return issues
                 .OrderByDescending(x => x.SeveritySort)
+                .ThenBy(x => x.IssueType)
                 .ThenBy(x => x.ModuleName)
                 .ThenBy(x => x.Reference)
                 .ToList();
@@ -437,6 +512,7 @@
                     Contains(x.Reference, searchText) ||
                     Contains(x.Issue, searchText) ||
                     Contains(x.Owner, searchText) ||
+                    Contains(x.IssueType, searchText) ||
                     Contains(x.RecommendedAction, searchText));
             }
 
@@ -450,6 +526,11 @@
                 query = query.Where(x => string.Equals(x.ModuleName, moduleFilter, StringComparison.OrdinalIgnoreCase));
             }
 
+            if (!string.IsNullOrWhiteSpace(issueTypeFilter))
+            {
+                query = query.Where(x => string.Equals(x.IssueType, issueTypeFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
             return query.ToList();
         }
     }
@@ -457,13 +538,14 @@
     private List<DataQualityIssue> OverdueWorkIssues =>
         AllIssues
             .Where(x =>
-                (x.ModuleName == "Work Orders" || x.ModuleName == "Corrective Actions") &&
-                Contains(x.Issue, "overdue"))
+                x.IssueType == "Overdue Work" &&
+                (x.ModuleName == "Work Orders" || x.ModuleName == "Corrective Actions"))
             .ToList();
 
     private List<DataQualityIssue> ComplianceIssues =>
         AllIssues
             .Where(x =>
+                x.IssueType == "Compliance" ||
                 x.ModuleName == "Document Control" ||
                 x.ModuleName == "Risk Register" ||
                 x.ModuleName == "Training")
@@ -471,10 +553,12 @@
 
     private List<DataQualityIssue> MissingInformationIssues =>
         AllIssues
-            .Where(x =>
-                Contains(x.Issue, "missing") ||
-                Contains(x.Issue, "blank") ||
-                Contains(x.Issue, "without"))
+            .Where(x => x.IssueType == "Missing Information")
+            .ToList();
+
+    private List<DataQualityIssue> MissingEvidenceIssues =>
+        AllIssues
+            .Where(x => x.IssueType == "Missing Evidence")
             .ToList();
 
     private List<DataQualityIssue> DocumentIntakeIssues =>
@@ -486,8 +570,12 @@
     private int FilteredIssueCount => FilteredIssues.Count;
     private int CriticalIssueCount => AllIssues.Count(x => x.Severity == "Critical");
     private int WarningIssueCount => AllIssues.Count(x => x.Severity == "Warning");
+    private int MissingEvidenceIssueCount => MissingEvidenceIssues.Count;
     private int DataGapCount => MissingInformationIssues.Count;
     private int ActionableIssueCount => AllIssues.Count(x => !string.IsNullOrWhiteSpace(x.ActionUrl));
+
+    private string MissingEvidenceTone =>
+        MissingEvidenceIssueCount > 0 ? "warning" : "success";
 
     private string IssueTone =>
         CriticalIssueCount > 0 ? "danger" :
@@ -516,29 +604,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        workOrders = await Db.WorkOrders
-            .AsNoTracking()
-            .ToListAsync();
-
-        correctiveActions = await Db.CorrectiveActions
-            .AsNoTracking()
-            .ToListAsync();
-
-        documents = await Db.DocumentRecords
-            .AsNoTracking()
-            .ToListAsync();
-
-        risks = await Db.RiskItems
-            .AsNoTracking()
-            .ToListAsync();
-
-        trainingRecords = await Db.TrainingRecords
-            .AsNoTracking()
-            .ToListAsync();
-
-        documentIntakeItems = await Db.DocumentIntakeItems
-            .AsNoTracking()
-            .ToListAsync();
+        workOrders = await Db.WorkOrders.AsNoTracking().ToListAsync();
+        correctiveActions = await Db.CorrectiveActions.AsNoTracking().ToListAsync();
+        documents = await Db.DocumentRecords.AsNoTracking().ToListAsync();
+        risks = await Db.RiskItems.AsNoTracking().ToListAsync();
+        trainingRecords = await Db.TrainingRecords.AsNoTracking().ToListAsync();
+        documentIntakeItems = await Db.DocumentIntakeItems.AsNoTracking().ToListAsync();
+        attachments = await AttachmentService.GetAllActiveAsync();
     }
 
     private void AddWorkOrderIssues(List<DataQualityIssue> issues)
@@ -552,6 +624,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Critical",
+                    IssueType: "Overdue Work",
                     ModuleName: "Work Orders",
                     Reference: reference,
                     Issue: $"Work order is overdue. Due date was {item.DueDate:dd MMM yyyy}.",
@@ -564,6 +637,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Warning",
+                    IssueType: "Missing Information",
                     ModuleName: "Work Orders",
                     Reference: reference,
                     Issue: "Work order is missing an owner.",
@@ -576,6 +650,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Info",
+                    IssueType: "Missing Information",
                     ModuleName: "Work Orders",
                     Reference: reference,
                     Issue: "Work order has blank notes.",
@@ -591,17 +666,18 @@
         foreach (var item in correctiveActions)
         {
             var reference = $"CA-{item.Id}";
-            var actionUrl = $"/corrective-actions/edit/{item.Id}?returnUrl={Uri.EscapeDataString("/data-quality")}";
+            var actionUrl = $"/corrective-actions/details/{item.Id}";
 
             if (item.IsOverdue)
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Critical",
+                    IssueType: "Overdue Work",
                     ModuleName: "Corrective Actions",
                     Reference: reference,
                     Issue: $"Corrective action is overdue. Due date was {item.DueDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.Owner),
-                    RecommendedAction: "Open the corrective action, review progress, update owner/status, adjust the due date if required, or close if completed.",
+                    RecommendedAction: "Open the corrective action, review progress, update owner/status, attach close-out evidence, or close if completed.",
                     ActionUrl: actionUrl));
             }
 
@@ -609,6 +685,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Warning",
+                    IssueType: "Missing Information",
                     ModuleName: "Corrective Actions",
                     Reference: reference,
                     Issue: "Corrective action is missing an owner.",
@@ -621,6 +698,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Warning",
+                    IssueType: "Missing Information",
                     ModuleName: "Corrective Actions",
                     Reference: reference,
                     Issue: "Corrective action is completed/closed without a completed date.",
@@ -633,6 +711,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Info",
+                    IssueType: "Missing Information",
                     ModuleName: "Corrective Actions",
                     Reference: reference,
                     Issue: "Corrective action has blank notes.",
@@ -654,6 +733,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Critical",
+                    IssueType: "Compliance",
                     ModuleName: "Document Control",
                     Reference: reference,
                     Issue: $"Document review is overdue. Review date was {item.NextReviewDate:dd MMM yyyy}.",
@@ -665,6 +745,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Warning",
+                    IssueType: "Compliance",
                     ModuleName: "Document Control",
                     Reference: reference,
                     Issue: $"Document review is due soon on {item.NextReviewDate:dd MMM yyyy}.",
@@ -677,6 +758,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Warning",
+                    IssueType: "Missing Information",
                     ModuleName: "Document Control",
                     Reference: reference,
                     Issue: "Document is missing an owner.",
@@ -689,6 +771,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Info",
+                    IssueType: "Missing Information",
                     ModuleName: "Document Control",
                     Reference: reference,
                     Issue: "Document record has blank notes.",
@@ -710,6 +793,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: item.RiskLevel == "Critical" ? "Critical" : "Warning",
+                    IssueType: "Compliance",
                     ModuleName: "Risk Register",
                     Reference: reference,
                     Issue: $"{item.RiskLevel} risk requires monitoring. Risk score is {item.RiskScore}.",
@@ -722,6 +806,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Critical",
+                    IssueType: "Compliance",
                     ModuleName: "Risk Register",
                     Reference: reference,
                     Issue: $"Risk review is overdue. Review date was {item.ReviewDate:dd MMM yyyy}.",
@@ -734,6 +819,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Warning",
+                    IssueType: "Missing Information",
                     ModuleName: "Risk Register",
                     Reference: reference,
                     Issue: "Risk item is missing an owner.",
@@ -746,6 +832,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Warning",
+                    IssueType: "Missing Information",
                     ModuleName: "Risk Register",
                     Reference: reference,
                     Issue: "Risk item is missing controls.",
@@ -767,6 +854,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Critical",
+                    IssueType: "Compliance",
                     ModuleName: "Training",
                     Reference: reference,
                     Issue: $"Training record is expired. Expiry date was {item.ExpiryDate:dd MMM yyyy}.",
@@ -778,6 +866,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Warning",
+                    IssueType: "Compliance",
                     ModuleName: "Training",
                     Reference: reference,
                     Issue: $"Training expires soon on {item.ExpiryDate:dd MMM yyyy}.",
@@ -790,6 +879,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Warning",
+                    IssueType: "Missing Information",
                     ModuleName: "Training",
                     Reference: reference,
                     Issue: "Required training record is missing a staff name.",
@@ -802,6 +892,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Info",
+                    IssueType: "Missing Information",
                     ModuleName: "Training",
                     Reference: reference,
                     Issue: "Training record has blank notes.",
@@ -817,17 +908,18 @@
         foreach (var item in documentIntakeItems)
         {
             var reference = $"DI-{item.Id}";
-            var actionUrl = $"/document-intake/edit/{item.Id}?returnUrl={Uri.EscapeDataString("/data-quality")}";
+            var actionUrl = $"/document-intake/details/{item.Id}";
 
             if (item.IsOverdue)
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Critical",
+                    IssueType: "Overdue Work",
                     ModuleName: "Document Intake",
                     Reference: reference,
                     Issue: $"Document intake item is overdue. Due date was {item.DueDate:dd MMM yyyy}.",
                     Owner: SafeOwner(item.AssignedTo),
-                    RecommendedAction: "Open the intake item, confirm the processing owner, update status, or complete/reject it.",
+                    RecommendedAction: "Open the intake item, confirm the processing owner, attach the source document, update status, or complete/reject it.",
                     ActionUrl: actionUrl));
             }
 
@@ -835,11 +927,12 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Warning",
+                    IssueType: "Compliance",
                     ModuleName: "Document Intake",
                     Reference: reference,
                     Issue: "Document intake item is waiting for manual review.",
                     Owner: SafeOwner(item.AssignedTo),
-                    RecommendedAction: "Open the intake item, check the document, confirm the required processing step, and update the status.",
+                    RecommendedAction: "Open the intake item, check the attached source document, confirm the required processing step, and update the status.",
                     ActionUrl: actionUrl));
             }
 
@@ -847,6 +940,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Warning",
+                    IssueType: "Missing Information",
                     ModuleName: "Document Intake",
                     Reference: reference,
                     Issue: "Document intake item is missing an assigned person.",
@@ -859,6 +953,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Warning",
+                    IssueType: "Missing Information",
                     ModuleName: "Document Intake",
                     Reference: reference,
                     Issue: "Document intake item is completed/rejected without a completed date.",
@@ -871,6 +966,7 @@
             {
                 issues.Add(new DataQualityIssue(
                     Severity: "Info",
+                    IssueType: "Missing Information",
                     ModuleName: "Document Intake",
                     Reference: reference,
                     Issue: "Document intake item has blank notes.",
@@ -879,6 +975,79 @@
                     ActionUrl: actionUrl));
             }
         }
+    }
+
+    private void AddEvidenceIssues(List<DataQualityIssue> issues)
+    {
+        foreach (var item in workOrders)
+        {
+            var requiresEvidence =
+                item.IsOverdue ||
+                IsHighPriority(item.Priority);
+
+            if (requiresEvidence && !HasAttachment("Work Orders", item.Id))
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: item.IsOverdue ? "Critical" : "Warning",
+                    IssueType: "Missing Evidence",
+                    ModuleName: "Work Orders",
+                    Reference: item.WorkOrderNumber,
+                    Issue: "Priority work order has no attached evidence or supporting file.",
+                    Owner: SafeOwner(item.Owner),
+                    RecommendedAction: "Open the work order and upload photos, documents, notes, or supporting evidence before management review.",
+                    ActionUrl: $"/work-orders/details/{item.Id}"));
+            }
+        }
+
+        foreach (var item in correctiveActions)
+        {
+            var requiresEvidence =
+                item.IsOverdue ||
+                IsHighPriority(item.Priority) ||
+                IsClosedStatus(item.Status);
+
+            if (requiresEvidence && !HasAttachment("Corrective Actions", item.Id))
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: item.IsOverdue ? "Critical" : "Warning",
+                    IssueType: "Missing Evidence",
+                    ModuleName: "Corrective Actions",
+                    Reference: $"CA-{item.Id}",
+                    Issue: "Corrective action has no attached evidence, close-out file, or supporting document.",
+                    Owner: SafeOwner(item.Owner),
+                    RecommendedAction: "Open the corrective action and upload close-out evidence, photos, forms, review notes, or supporting documentation.",
+                    ActionUrl: $"/corrective-actions/details/{item.Id}"));
+            }
+        }
+
+        foreach (var item in documentIntakeItems)
+        {
+            var requiresEvidence =
+                item.IsOverdue ||
+                item.NeedsReview ||
+                IsHighPriority(item.Priority);
+
+            if (requiresEvidence && !HasAttachment("Document Intake", item.Id))
+            {
+                issues.Add(new DataQualityIssue(
+                    Severity: item.IsOverdue ? "Critical" : "Warning",
+                    IssueType: "Missing Evidence",
+                    ModuleName: "Document Intake",
+                    Reference: $"DI-{item.Id}",
+                    Issue: "Document intake record needs review or follow-up but has no source file attached.",
+                    Owner: SafeOwner(item.AssignedTo),
+                    RecommendedAction: "Open the document intake record and attach the source document, scan, email export, PDF, or processing evidence.",
+                    ActionUrl: $"/document-intake/details/{item.Id}"));
+            }
+        }
+    }
+
+    private bool HasAttachment(string moduleName, int recordId)
+    {
+        return attachments.Any(x =>
+            !x.IsDeleted &&
+            x.RecordId == recordId &&
+            string.Equals(x.ModuleName, moduleName, StringComparison.OrdinalIgnoreCase));
     }
 
     private string GetModuleSeverityClass(string moduleName)
@@ -913,6 +1082,12 @@
                string.Equals(status, "Rejected", StringComparison.OrdinalIgnoreCase);
     }
 
+    private static bool IsHighPriority(string? priority)
+    {
+        return string.Equals(priority, "High", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(priority, "Critical", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static string SafeOwner(string? owner)
     {
         return string.IsNullOrWhiteSpace(owner) ? "Unassigned" : owner;
@@ -935,6 +1110,18 @@
         };
     }
 
+    private static string GetIssueTypeClass(string? issueType)
+    {
+        return issueType?.ToLowerInvariant() switch
+        {
+            "missing evidence" => "badge badge-warning",
+            "missing information" => "badge badge-info",
+            "overdue work" => "badge badge-danger",
+            "compliance" => "badge badge-warning",
+            _ => "badge badge-muted"
+        };
+    }
+
     private static string Pluralise(int count, string singular, string plural)
     {
         return count == 1 ? singular : plural;
@@ -942,6 +1129,7 @@
 
     private sealed record DataQualityIssue(
         string Severity,
+        string IssueType,
         string ModuleName,
         string Reference,
         string Issue,
