@@ -2,7 +2,9 @@
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+@using OperationsFlow.Services
 @inject OperationsFlowDbContext Db
+@inject DocumentAttachmentService AttachmentService
 
 <PageTitle>Corrective Actions - OperationsFlow</PageTitle>
 
@@ -123,6 +125,7 @@ else
                     <th>Status</th>
                     <th>Due Date</th>
                     <th>Completed</th>
+                    <th>Files</th>
                     <th>Flag</th>
                     <th>Actions</th>
                 </tr>
@@ -157,6 +160,11 @@ else
                             {
                                 <span class="of-muted-text">Not completed</span>
                             }
+                        </td>
+                        <td>
+                            <span class="@GetFileCountClass(item.Id)">
+                                @GetAttachmentCount(item.Id) file(s)
+                            </span>
                         </td>
                         <td>
                             @if (item.IsOverdue)
@@ -223,6 +231,7 @@ else
 
 @code {
     private List<CorrectiveAction>? correctiveActions;
+    private Dictionary<int, int> attachmentCounts = new();
 
     private string searchText = "";
     private string statusFilter = "";
@@ -328,6 +337,8 @@ else
         correctiveActions = await Db.CorrectiveActions
             .AsNoTracking()
             .ToListAsync();
+
+        await LoadAttachmentCountsAsync();
     }
 
     private static bool Contains(string? source, string search)
@@ -374,5 +385,31 @@ else
             "low" => "badge badge-muted",
             _ => "badge badge-muted"
         };
+    }
+
+    private async Task LoadAttachmentCountsAsync()
+    {
+        var attachments = await AttachmentService.GetAllActiveAsync();
+
+        attachmentCounts = attachments
+            .Where(x =>
+                string.Equals(x.ModuleName, "Corrective Actions", StringComparison.OrdinalIgnoreCase) &&
+                x.RecordId.HasValue)
+            .GroupBy(x => x.RecordId!.Value)
+            .ToDictionary(x => x.Key, x => x.Count());
+    }
+
+    private int GetAttachmentCount(int correctiveActionId)
+    {
+        return attachmentCounts.TryGetValue(correctiveActionId, out var count)
+            ? count
+            : 0;
+    }
+
+    private string GetFileCountClass(int correctiveActionId)
+    {
+        return GetAttachmentCount(correctiveActionId) > 0
+            ? "badge badge-success"
+            : "badge badge-muted";
     }
 }

@@ -1,8 +1,11 @@
 ﻿@page "/work-orders"
+@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+@using OperationsFlow.Services
 @inject OperationsFlowDbContext Db
+@inject DocumentAttachmentService AttachmentService
 
 <PageTitle>Work Orders - OperationsFlow</PageTitle>
 
@@ -112,6 +115,7 @@ else
                     <th>Priority</th>
                     <th>Status</th>
                     <th>Due Date</th>
+                    <th>Files</th>
                     <th>Flag</th>
                     <th>Actions</th>
                 </tr>
@@ -137,6 +141,11 @@ else
                             </span>
                         </td>
                         <td>@item.DueDate.ToString("dd MMM yyyy")</td>
+                        <td>
+                            <span class="@GetFileCountClass(item.Id)">
+                                @GetAttachmentCount(item.Id) file(s)
+                            </span>
+                        </td>
                         <td>
                             @if (item.IsOverdue)
                             {
@@ -171,6 +180,7 @@ else
 
 @code {
     private List<WorkOrder>? workOrders;
+    private Dictionary<int, int> attachmentCounts = new();
 
     private string searchText = "";
     private string statusFilter = "";
@@ -253,6 +263,8 @@ else
         workOrders = await Db.WorkOrders
             .AsNoTracking()
             .ToListAsync();
+
+        await LoadAttachmentCountsAsync();
     }
 
     private static bool Contains(string? source, string search)
@@ -288,5 +300,31 @@ else
             "low" => "badge badge-muted",
             _ => "badge badge-muted"
         };
+    }
+
+    private async Task LoadAttachmentCountsAsync()
+    {
+        var attachments = await AttachmentService.GetAllActiveAsync();
+
+        attachmentCounts = attachments
+            .Where(x =>
+                string.Equals(x.ModuleName, "Work Orders", StringComparison.OrdinalIgnoreCase) &&
+                x.RecordId.HasValue)
+            .GroupBy(x => x.RecordId!.Value)
+            .ToDictionary(x => x.Key, x => x.Count());
+    }
+
+    private int GetAttachmentCount(int workOrderId)
+    {
+        return attachmentCounts.TryGetValue(workOrderId, out var count)
+            ? count
+            : 0;
+    }
+
+    private string GetFileCountClass(int workOrderId)
+    {
+        return GetAttachmentCount(workOrderId) > 0
+            ? "badge badge-success"
+            : "badge badge-muted";
     }
 }
