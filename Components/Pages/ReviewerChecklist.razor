@@ -2,339 +2,320 @@
 
 <PageTitle>Reviewer Checklist - OperationsFlow</PageTitle>
 
-<PageHero Eyebrow="System Review"
+<PageHero Eyebrow="Portfolio Review"
           Title="Reviewer Checklist"
-          Subtitle="A guided checklist for reviewing the OperationsFlow portfolio prototype, Week 1 review package, and Week 2 workflow MVP."
-          BadgeText="Week 2 Review Ready"
+          Subtitle="Use this checklist to review what OperationsFlow proves: workflow capture, ownership, evidence, reporting, data quality, traceability, and the Week 3 production foundation."
+          BadgeText="Week 3 Ready"
           BadgeClass="of-badge-success">
     <Actions>
-        <a class="of-btn of-btn-primary" href="/">Open Dashboard</a>
+        <a class="of-btn of-btn-secondary" href="/">Open Dashboard</a>
         <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
         <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+        <a class="of-btn of-btn-secondary" href="/business-value">Business Value</a>
     </Actions>
 </PageHero>
 
 <PurposeNote Title="Purpose" Icon="✅">
     <p>
-        Use this page to review what OperationsFlow proves. The checklist covers dashboard visibility,
-        create/edit workflows, source-linked corrective actions, record history, workload, reminders,
-        reports, data quality, CSV exports, documentation, and prototype boundaries.
+        Use this page to review the prototype as a business-system portfolio piece. The checklist covers
+        dashboard visibility, workflow registers, create/edit/details pages, document intake, evidence uploads,
+        local document library storage, activity traceability, reports, data quality, CSV exports, and Week 4
+        Microsoft 365 production direction.
     </p>
 </PurposeNote>
 
 <MetricGrid>
-    <MetricCard Title="Review Areas"
-                Value="12"
-                Detail="Workflow, management, evidence, boundaries, and next-stage planning"
-                Icon="📋" />
-
-    <MetricCard Title="Workflow Pages"
-                Value="6"
-                Detail="Work orders, actions, intake, risk, documents, and training"
-                Icon="🧩"
+    <MetricCard Title="Workflow Capture"
+                Value="3"
+                Detail="Work Orders, Corrective Actions, Document Intake"
+                Icon="📋"
                 Tone="info" />
 
-    <MetricCard Title="Traceability"
-                Value="Yes"
-                Detail="Activity history and global activity log"
-                Icon="🕒"
+    <MetricCard Title="Evidence Layer"
+                Value="Live"
+                Detail="Record attachments and Document Library"
+                Icon="📎"
                 Tone="success" />
 
-    <MetricCard Title="Exports"
-                Value="7+"
-                Detail="CSV package plus export README and manifest"
-                Icon="⬇️"
-                Tone="warning" />
+    <MetricCard Title="Traceability"
+                Value="Active"
+                Detail="Activity Log and record history"
+                Icon="🧾"
+                Tone="success" />
 
-    <MetricCard Title="Boundary"
-                Value="Demo"
-                Detail="Local SQLite prototype, not production deployment"
-                Icon="🧱"
-                Tone="danger" />
+    <MetricCard Title="Management Review"
+                Value="Ready"
+                Detail="Reports, Data Quality, Workload, Reminders"
+                Icon="📊"
+                Tone="warning" />
 </MetricGrid>
 
-<InfoPanel Title="Recommended Review Path" Subtitle="Use this order when reviewing the app for the first time.">
-    <ol class="of-review-steps">
-        <li>Start on Dashboard to understand the system overview.</li>
-        <li>Open Work Orders and review create, edit, details, and history.</li>
-        <li>Open Corrective Actions and test source-linked follow-up workflows.</li>
-        <li>Open Document Intake and review admin/document workflow tracking.</li>
-        <li>Open Risk Register, Training, and Documents to test Create Action links.</li>
-        <li>Open Workload and Reminders to confirm follow-up visibility.</li>
-        <li>Open Data Quality and Reports to confirm management review visibility.</li>
-        <li>Open Activity Log to confirm record-level traceability.</li>
-        <li>Open CSV exports to confirm external review package support.</li>
-        <li>Read technical and prototype notes before judging production boundaries.</li>
-    </ol>
+<InfoPanel Title="Recommended Review Route" Subtitle="Fastest path for someone reviewing the project.">
+    <ChildContent>
+        <ol>
+            <li>Start on Dashboard to understand the system overview.</li>
+            <li>Open Work Orders and review list, file counts, details, attachments, and activity history.</li>
+            <li>Open Corrective Actions and test source-linked follow-up workflows plus attachments.</li>
+            <li>Open Document Intake and review list-to-details workflow, file count, and attached source documents.</li>
+            <li>Open Document Library to confirm files from Work Orders, Corrective Actions, and Document Intake appear together.</li>
+            <li>Open Data Quality to confirm missing evidence checks and issue links.</li>
+            <li>Open Reports to confirm management-level evidence coverage and missing evidence reporting.</li>
+            <li>Open Activity Log to confirm upload, delete, create, update, and review traceability.</li>
+            <li>Open CSV exports to confirm external review package support.</li>
+            <li>Read prototype boundaries before judging production readiness.</li>
+        </ol>
+    </ChildContent>
 </InfoPanel>
 
-<InfoPanel Title="What Week 2 Proves" Subtitle="The workflow MVP is no longer just reporting.">
-    <div class="of-review-proof-grid">
-        <div class="of-review-proof-card">
-            <strong>CREATE</strong>
-            <span>New workflow records can be created for Work Orders, Corrective Actions, and Document Intake.</span>
-        </div>
+<InfoPanel Title="Core Proof Points" Subtitle="What the app now demonstrates.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Capture</strong>
+                <span>Work Orders, Corrective Actions, and Document Intake capture scattered follow-up work before it disappears.</span>
+            </div>
 
-        <div class="of-review-proof-card">
-            <strong>EDIT</strong>
-            <span>Existing records can be updated and reviewed.</span>
-        </div>
+            <div class="of-review-proof-card">
+                <strong>Own</strong>
+                <span>Records carry owner, status, due date, priority, notes, and module-specific context.</span>
+            </div>
 
-        <div class="of-review-proof-card">
-            <strong>LINKED</strong>
-            <span>Risk, training, and document issues can create prefilled corrective actions.</span>
-        </div>
+            <div class="of-review-proof-card">
+                <strong>Attach</strong>
+                <span>Files can be uploaded directly to key workflow records and shown through Document Library.</span>
+            </div>
 
-        <div class="of-review-proof-card">
-            <strong>TRACEABLE</strong>
-            <span>Created, updated, and reviewed events are visible in record pages and Activity Log.</span>
-        </div>
-    </div>
+            <div class="of-review-proof-card">
+                <strong>Trace</strong>
+                <span>Activity Log and record history show what changed, who did it, and when it happened.</span>
+            </div>
 
-    <div class="of-link-row">
-        <a class="of-btn of-btn-primary" href="/">Open Dashboard</a>
-        <a class="of-btn of-btn-secondary" href="/work-orders">Review Work Orders</a>
-        <a class="of-btn of-btn-secondary" href="/corrective-actions">Review Actions</a>
-        <a class="of-btn of-btn-secondary" href="/reports">Open Reports</a>
-    </div>
+            <div class="of-review-proof-card">
+                <strong>Review</strong>
+                <span>Reports and Data Quality convert operational records into management review tasks.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Prepare</strong>
+                <span>Week 3 local storage and abstraction prepare the project for Week 4 SharePoint/Microsoft 365 implementation.</span>
+            </div>
+        </div>
+    </ChildContent>
 </InfoPanel>
 
-<TableCard Title="Functional Review Checklist" Subtitle="Use this section to manually verify the main Week 2 workflows.">
-    <table>
-        <thead>
-            <tr>
-                <th>Area</th>
-                <th>Checks</th>
-                <th>Review Link</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><strong>Dashboard</strong></td>
-                <td>
-                    <ul class="of-check-list">
-                        <li>Dashboard loads without errors.</li>
-                        <li>Summary cards show live demo counts.</li>
-                        <li>Module cards link to major workflow areas.</li>
-                        <li>Dashboard explains SQLite demo data boundary.</li>
-                    </ul>
-                </td>
-                <td><a class="of-card-link" href="/">Open Dashboard</a></td>
-            </tr>
+<TableCard Title="Application Review Checklist"
+           Subtitle="Open each area and confirm the expected behaviour.">
+    <ChildContent>
+        <table>
+            <thead>
+                <tr>
+                    <th>Area</th>
+                    <th>Checks</th>
+                    <th>Review Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Dashboard</strong></td>
+                    <td>
+                        <ul>
+                            <li>Dashboard loads without errors.</li>
+                            <li>Summary cards show demo counts.</li>
+                            <li>Module cards link to major workflow areas.</li>
+                            <li>Dashboard explains local SQLite demo boundary.</li>
+                        </ul>
+                    </td>
+                    <td><a class="of-card-link" href="/">Open Dashboard</a></td>
+                </tr>
 
-            <tr>
-                <td><strong>Work Orders</strong></td>
-                <td>
-                    <ul class="of-check-list">
-                        <li>Work Orders list loads.</li>
-                        <li>Create Work Order validates required fields.</li>
-                        <li>Saved work order appears in list and detail pages.</li>
-                        <li>Edit Work Order records changed fields in history.</li>
-                    </ul>
-                </td>
-                <td><a class="of-card-link" href="/work-orders">Open Work Orders</a></td>
-            </tr>
+                <tr>
+                    <td><strong>Work Orders</strong></td>
+                    <td>
+                        <ul>
+                            <li>Work Orders list loads.</li>
+                            <li>File count column shows attached-file status.</li>
+                            <li>Create Work Order validates required fields.</li>
+                            <li>Saved work order appears in list and detail pages.</li>
+                            <li>Details page supports record-level attachments.</li>
+                            <li>Edit Work Order records changed fields in history.</li>
+                        </ul>
+                    </td>
+                    <td><a class="of-card-link" href="/work-orders">Open Work Orders</a></td>
+                </tr>
 
-            <tr>
-                <td><strong>Corrective Actions</strong></td>
-                <td>
-                    <ul class="of-check-list">
-                        <li>Corrective Actions list loads.</li>
-                        <li>Create Corrective Action saves a new action.</li>
-                        <li>Edit Corrective Action records changed fields.</li>
-                        <li>Source-linked actions preserve context in notes.</li>
-                    </ul>
-                </td>
-                <td><a class="of-card-link" href="/corrective-actions">Open Actions</a></td>
-            </tr>
+                <tr>
+                    <td><strong>Corrective Actions</strong></td>
+                    <td>
+                        <ul>
+                            <li>Corrective Actions list loads.</li>
+                            <li>File count column shows attached-file status.</li>
+                            <li>Create Corrective Action saves a new action.</li>
+                            <li>Edit Corrective Action records changed fields.</li>
+                            <li>Details page supports close-out evidence attachments.</li>
+                            <li>Source-linked actions preserve context in notes.</li>
+                        </ul>
+                    </td>
+                    <td><a class="of-card-link" href="/corrective-actions">Open Actions</a></td>
+                </tr>
 
-            <tr>
-                <td><strong>Document Intake</strong></td>
-                <td>
-                    <ul class="of-check-list">
-                        <li>Document Intake list loads.</li>
-                        <li>Create Intake saves a new incoming document record.</li>
-                        <li>Edit Intake records changed fields in history.</li>
-                        <li>Due dates and statuses feed reminders, workload, and reporting.</li>
-                    </ul>
-                </td>
-                <td><a class="of-card-link" href="/document-intake">Open Intake</a></td>
-            </tr>
+                <tr>
+                    <td><strong>Document Intake</strong></td>
+                    <td>
+                        <ul>
+                            <li>Document Intake list loads.</li>
+                            <li>Open link routes to a dedicated intake details page.</li>
+                            <li>File count column shows attached source documents.</li>
+                            <li>Create Intake saves a new incoming document record.</li>
+                            <li>Details page supports source document uploads.</li>
+                            <li>Due dates and statuses feed reminders, workload, reports, and data quality.</li>
+                        </ul>
+                    </td>
+                    <td><a class="of-card-link" href="/document-intake">Open Intake</a></td>
+                </tr>
 
-            <tr>
-                <td><strong>Risk Register</strong></td>
-                <td>
-                    <ul class="of-check-list">
-                        <li>Risk Register loads risk summary cards.</li>
-                        <li>Risk table, search, and filtering work.</li>
-                        <li>Create Action button opens prefilled corrective action.</li>
-                        <li>Risk context is copied into corrective action notes.</li>
-                    </ul>
-                </td>
-                <td><a class="of-card-link" href="/risk-register">Open Risks</a></td>
-            </tr>
+                <tr>
+                    <td><strong>Document Library</strong></td>
+                    <td>
+                        <ul>
+                            <li>Document Library loads without errors.</li>
+                            <li>Upload, open, download, and delete actions work.</li>
+                            <li>Files show module, record reference, provider, type, uploaded user, and size.</li>
+                            <li>Files from Work Orders, Corrective Actions, and Document Intake appear together.</li>
+                            <li>Local provider is clearly shown as Week 3 proof before SharePoint storage.</li>
+                        </ul>
+                    </td>
+                    <td><a class="of-card-link" href="/document-library">Open Library</a></td>
+                </tr>
 
-            <tr>
-                <td><strong>Training Compliance</strong></td>
-                <td>
-                    <ul class="of-check-list">
-                        <li>Training page loads compliance summary.</li>
-                        <li>Expired and expiring records are visible.</li>
-                        <li>Create Action button opens prefilled corrective action.</li>
-                        <li>Training context is copied into corrective action notes.</li>
-                    </ul>
-                </td>
-                <td><a class="of-card-link" href="/training-compliance">Open Training</a></td>
-            </tr>
+                <tr>
+                    <td><strong>Data Quality</strong></td>
+                    <td>
+                        <ul>
+                            <li>Data Quality loads issue metrics.</li>
+                            <li>Missing Evidence metric appears.</li>
+                            <li>Issue Type filter works.</li>
+                            <li>Missing Evidence section links back to record details.</li>
+                            <li>Document Intake issues include missing source file checks.</li>
+                        </ul>
+                    </td>
+                    <td><a class="of-card-link" href="/data-quality">Open Data Quality</a></td>
+                </tr>
 
-            <tr>
-                <td><strong>Document Control</strong></td>
-                <td>
-                    <ul class="of-check-list">
-                        <li>Documents page loads controlled document summary.</li>
-                        <li>Overdue and due-soon reviews are visible.</li>
-                        <li>Create Action button opens prefilled corrective action.</li>
-                        <li>Document context is copied into corrective action notes.</li>
-                    </ul>
-                </td>
-                <td><a class="of-card-link" href="/documents">Open Documents</a></td>
-            </tr>
+                <tr>
+                    <td><strong>Reports</strong></td>
+                    <td>
+                        <ul>
+                            <li>Reports load management action rows.</li>
+                            <li>Attached Files metric appears.</li>
+                            <li>Missing Evidence metric appears.</li>
+                            <li>Evidence Coverage Report appears.</li>
+                            <li>Missing Evidence Report links to record details.</li>
+                            <li>Document Intake report opens details pages.</li>
+                        </ul>
+                    </td>
+                    <td><a class="of-card-link" href="/reports">Open Reports</a></td>
+                </tr>
 
-            <tr>
-                <td><strong>Management Views</strong></td>
-                <td>
-                    <ul class="of-check-list">
-                        <li>Workload shows owner pressure and assigned work.</li>
-                        <li>Reminders show overdue and due-soon follow-up items.</li>
-                        <li>Reports show management action rows.</li>
-                        <li>Data Quality links to records requiring review.</li>
-                    </ul>
-                </td>
-                <td><a class="of-card-link" href="/workload">Open Workload</a></td>
-            </tr>
-        </tbody>
-    </table>
+                <tr>
+                    <td><strong>Risk / Training / Documents</strong></td>
+                    <td>
+                        <ul>
+                            <li>Risk Register loads risk summary cards.</li>
+                            <li>Training page loads compliance summary.</li>
+                            <li>Documents page loads controlled document summary.</li>
+                            <li>Create Action links open prefilled corrective actions.</li>
+                            <li>Context is copied into corrective action notes.</li>
+                        </ul>
+                    </td>
+                    <td><a class="of-card-link" href="/risk-register">Open Risks</a></td>
+                </tr>
+
+                <tr>
+                    <td><strong>Management Views</strong></td>
+                    <td>
+                        <ul>
+                            <li>Workload shows owner pressure and assigned work.</li>
+                            <li>Reminders show overdue and due-soon follow-up items.</li>
+                            <li>Reports show management action rows and evidence coverage.</li>
+                            <li>Data Quality links to records requiring review.</li>
+                        </ul>
+                    </td>
+                    <td><a class="of-card-link" href="/workload">Open Workload</a></td>
+                </tr>
+
+                <tr>
+                    <td><strong>Activity Evidence</strong></td>
+                    <td>
+                        <ul>
+                            <li>Activity Log shows created records.</li>
+                            <li>Activity Log shows updated records.</li>
+                            <li>Activity Log shows document upload/delete events.</li>
+                            <li>Record detail/edit pages show local history.</li>
+                            <li>CSV activity export is available.</li>
+                        </ul>
+                    </td>
+                    <td><a class="of-card-link" href="/activity-log">Open Activity Log</a></td>
+                </tr>
+
+                <tr>
+                    <td><strong>CSV Export Package</strong></td>
+                    <td>
+                        <ul>
+                            <li>Export README opens in browser.</li>
+                            <li>Export manifest downloads as CSV.</li>
+                            <li>Main module CSV files download correctly.</li>
+                            <li>Exports explain future Microsoft 365 / Power BI direction.</li>
+                        </ul>
+                    </td>
+                    <td><a class="of-card-link" href="/exports/activity-log.csv">Open Export</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </ChildContent>
 </TableCard>
 
-<TableCard Title="Evidence Package Checklist" Subtitle="Confirm the project has enough review material for GitHub, job applications, and walkthroughs.">
-    <table>
-        <thead>
-            <tr>
-                <th>Evidence Area</th>
-                <th>Checks</th>
-                <th>Review Link</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><strong>GitHub README</strong></td>
-                <td>
-                    <ul class="of-check-list">
-                        <li>README explains the project purpose.</li>
-                        <li>README includes Week 1 and Week 2 workflow evidence.</li>
-                        <li>README links to the walkthrough video.</li>
-                        <li>README explains prototype limitations honestly.</li>
-                    </ul>
-                </td>
-                <td>
-                    <a class="of-card-link" href="https://github.com/Codie-Shannon/OperationsFlow" target="_blank" rel="noopener noreferrer">
-                        Open GitHub
-                    </a>
-                </td>
-            </tr>
+<InfoPanel Title="Prototype Boundaries" Subtitle="What the current project is and is not.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Current Demo</strong>
+                <span>Runs as a local Blazor/SQLite demo app with local file storage under the configured upload path.</span>
+            </div>
 
-            <tr>
-                <td><strong>Video Walkthrough</strong></td>
-                <td>
-                    <ul class="of-check-list">
-                        <li>Video shows the working prototype.</li>
-                        <li>Video is trimmed enough for a reviewer.</li>
-                        <li>Video focuses on business value, not only UI.</li>
-                        <li>Video link is available from README or portfolio material.</li>
-                    </ul>
-                </td>
-                <td>
-                    <a class="of-card-link" href="https://youtu.be/" target="_blank" rel="noopener noreferrer">
-                        Open Video
-                    </a>
-                </td>
-            </tr>
+            <div class="of-review-proof-card">
+                <strong>Workflow Scope</strong>
+                <span>Tracks workflow metadata, ownership, status, due dates, notes, evidence, history, and reports.</span>
+            </div>
 
-            <tr>
-                <td><strong>CSV Export Package</strong></td>
-                <td>
-                    <ul class="of-check-list">
-                        <li>Export README opens in browser.</li>
-                        <li>Export manifest downloads as CSV.</li>
-                        <li>Main module CSV files download correctly.</li>
-                        <li>Exports explain future Microsoft 365 / Power BI direction.</li>
-                    </ul>
-                </td>
-                <td><a class="of-card-link" href="/exports/README.txt">Open Export README</a></td>
-            </tr>
+            <div class="of-review-proof-card">
+                <strong>Not Live Yet</strong>
+                <span>Does not use live authentication, live Microsoft Lists, SharePoint storage, Teams, or Outlook notifications yet.</span>
+            </div>
 
-            <tr>
-                <td><strong>Activity Evidence</strong></td>
-                <td>
-                    <ul class="of-check-list">
-                        <li>Activity Log shows created records.</li>
-                        <li>Activity Log shows updated records.</li>
-                        <li>Record detail/edit pages show local history.</li>
-                        <li>CSV activity export is available.</li>
-                    </ul>
-                </td>
-                <td><a class="of-card-link" href="/activity-log">Open Activity Log</a></td>
-            </tr>
-        </tbody>
-    </table>
-</TableCard>
+            <div class="of-review-proof-card">
+                <strong>Not Production Storage Yet</strong>
+                <span>Does not store real production business documents and does not enforce production audit retention rules yet.</span>
+            </div>
 
-<InfoPanel Title="Prototype Boundary Checklist" Subtitle="Clear boundaries stop reviewers from confusing the portfolio prototype with a full production deployment.">
-    <div class="of-two-column-grid">
-        <GuidanceNote Title="What this prototype does" Icon="✅" Tone="success">
-            <ul>
-                <li>Runs as a local Blazor/SQLite demo app.</li>
-                <li>Tracks workflow metadata across multiple modules.</li>
-                <li>Creates and edits key workflow records.</li>
-                <li>Shows traceability through activity history and Activity Log.</li>
-                <li>Exports demo data to CSV files.</li>
-                <li>Demonstrates Microsoft 365-ready workflow thinking.</li>
-            </ul>
-        </GuidanceNote>
+            <div class="of-review-proof-card">
+                <strong>Week 3 Foundation</strong>
+                <span>Maps local prototype data and local files to Microsoft Lists/SharePoint-ready structures.</span>
+            </div>
 
-        <GuidanceNote Title="What this prototype does not yet do" Icon="⚠️" Tone="warning">
-            <ul>
-                <li>Does not use live authentication or role-based permissions yet.</li>
-                <li>Does not sync to Microsoft Lists or SharePoint yet.</li>
-                <li>Does not send live Teams or Outlook notifications yet.</li>
-                <li>Does not store real production business documents.</li>
-                <li>Does not enforce production audit retention rules yet.</li>
-                <li>Does not replace a full ERP, job management, or safety platform.</li>
-            </ul>
-        </GuidanceNote>
-    </div>
+            <div class="of-review-proof-card">
+                <strong>Week 4 Direction</strong>
+                <span>Use a test tenant to build Microsoft 365 auth, SharePoint storage, Power Automate, and production-style permissions.</span>
+            </div>
+        </div>
+    </ChildContent>
 </InfoPanel>
 
-<InfoPanel Title="Week 3 / Week 4 Forward Path" Subtitle="What the next implementation stage should prove.">
-    <div class="of-review-proof-grid">
-        <div class="of-review-proof-card">
-            <strong>Week 3</strong>
-            <span>Hybrid implementation foundation: map local prototype data to Microsoft Lists/SharePoint-ready structures while keeping the app useful without a tenant.</span>
-        </div>
-
-        <div class="of-review-proof-card">
-            <strong>Week 4</strong>
-            <span>Microsoft 365 implementation: use a test tenant to build live Microsoft Lists, Power Automate flows, Teams/Outlook notifications, and Power BI-style reporting.</span>
-        </div>
-
-        <div class="of-review-proof-card">
-            <strong>Portfolio</strong>
-            <span>Business systems proof: show the same thinking used in real-world AIE automation, including intake, routing, ownership, follow-up, reporting, and traceability.</span>
-        </div>
-
-        <div class="of-review-proof-card">
-            <strong>Polish</strong>
-            <span>Final cleanup pass: clean CSS, spacing, mobile behaviour, screenshots, README, and demo flow once functionality is locked.</span>
-        </div>
-    </div>
-</InfoPanel>
+<GuidanceNote Title="Reviewer Notes" Icon="💡" Tone="info">
+    <ul>
+        <li>Judge this as a production-shaped prototype, not a fully deployed SaaS product.</li>
+        <li>The important proof is the workflow thinking: capture, ownership, evidence, reporting, and traceability.</li>
+        <li>The evidence layer is intentionally provider-independent so local storage can be replaced by SharePoint later.</li>
+        <li>The app now shows management value, not just CRUD screens.</li>
+        <li>Week 4 should focus on Microsoft 365 implementation, authentication, permissions, deployment, and production documentation.</li>
+    </ul>
+</GuidanceNote>

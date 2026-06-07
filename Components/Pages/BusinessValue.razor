@@ -2,80 +2,256 @@
 
 <PageTitle>Business Value - OperationsFlow</PageTitle>
 
-<PageHero
-    Eyebrow="Portfolio Evidence"
-    Title="Business Value"
-    Subtitle="Explain the practical business problems OperationsFlow demonstrates for operations, admin, safety, compliance, and management follow-up."
-    BadgeText="Week 2"
-    BadgeClass="of-badge-info">
+<PageHero Eyebrow="Portfolio Review"
+          Title="Business Value"
+          Subtitle="OperationsFlow proves that scattered operational follow-up work can be captured, owned, evidenced, reviewed, reported, and traced through one workflow-style system."
+          BadgeText="Business Systems Proof"
+          BadgeClass="of-badge-success">
     <Actions>
         <a class="of-btn of-btn-secondary" href="/portfolio-hub">Portfolio Hub</a>
-        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
         <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
+        <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
     </Actions>
 </PageHero>
 
-<PurposeNote Title="Purpose" Icon="📌">
-    <p>OperationsFlow proves that scattered follow-up work can be captured, owned, reviewed, reported, and traced through one workflow-style prototype.</p>
+<PurposeNote Title="Purpose" Icon="💼">
+    <p>
+        OperationsFlow is a portfolio project that shows business-system thinking: capture work, assign ownership,
+        manage follow-up, attach evidence, identify weak records, report pressure, and create a traceable review
+        path. It is designed to look like a practical internal operations tool, not a generic dashboard.
+    </p>
 </PurposeNote>
 
 <MetricGrid>
-    <MetricCard Title="Workflow MVP" Value="Week 2" Detail="Create/edit, reminders, workload, reporting, and traceability" Icon="✅" Tone="success" />
-    <MetricCard Title="Prototype" Value="SQLite" Detail="Local demo data, not production deployment" Icon="🧪" Tone="info" />
-    <MetricCard Title="Evidence" Value="Ready" Detail="Supports screenshots, walkthroughs, and review notes" Icon="📦" Tone="success" />
-    <MetricCard Title="Next Stage" Value="M365" Detail="SharePoint, Lists, Power Automate, and Power BI direction" Icon="🔗" Tone="warning" />
+    <MetricCard Title="Business Problem"
+                Value="Scattered"
+                Detail="Work hidden in emails, notes, spreadsheets, and conversations"
+                Icon="🧩"
+                Tone="warning" />
+
+    <MetricCard Title="System Response"
+                Value="Captured"
+                Detail="Workflows, owners, due dates, statuses, notes, and evidence"
+                Icon="📋"
+                Tone="success" />
+
+    <MetricCard Title="Management Value"
+                Value="Visible"
+                Detail="Reports, workload, reminders, data quality, and activity"
+                Icon="📊"
+                Tone="info" />
+
+    <MetricCard Title="Production Path"
+                Value="Mapped"
+                Detail="Local proof can move toward Microsoft 365 / SharePoint"
+                Icon="☁️"
+                Tone="info" />
 </MetricGrid>
 
-<InfoPanel Title="Review Summary" Subtitle="What this page should communicate to a reviewer.">
+<InfoPanel Title="The Business Problem" Subtitle="Why this kind of system matters.">
+    <ChildContent>
+        <p>
+            In small and medium businesses, important follow-up work often starts in informal places:
+            an email, a Teams message, a phone call, a spreadsheet row, a paper form, a maintenance request,
+            a training gap, a document review, or a safety conversation. Without a workflow layer, work can be
+            missed, repeated, delayed, or completed without evidence.
+        </p>
+    </ChildContent>
+</InfoPanel>
+
+<InfoPanel Title="What OperationsFlow Solves" Subtitle="The business value shown by the prototype.">
     <ChildContent>
         <div class="of-review-proof-grid">
             <div class="of-review-proof-card">
-                <strong>Business Context</strong>
-                <span>Explains why the workflow exists and what problem it solves.</span>
+                <strong>Capture</strong>
+                <span>Turns scattered follow-up work into records with title, owner, due date, priority, status, notes, and module context.</span>
             </div>
+
             <div class="of-review-proof-card">
-                <strong>Technical Context</strong>
-                <span>Connects the local Blazor/SQLite prototype to a realistic implementation path.</span>
+                <strong>Accountability</strong>
+                <span>Shows who owns the work, what is overdue, what is high priority, and what needs review first.</span>
             </div>
+
             <div class="of-review-proof-card">
-                <strong>Portfolio Context</strong>
-                <span>Shows the project as evidence of systems thinking, not just UI layout.</span>
+                <strong>Evidence</strong>
+                <span>Lets records carry supporting files such as PDFs, photos, forms, scans, notes, and source documents.</span>
             </div>
+
             <div class="of-review-proof-card">
-                <strong>Boundary Context</strong>
-                <span>Keeps the prototype honest about what is and is not production-ready.</span>
+                <strong>Traceability</strong>
+                <span>Activity Log and record history help prove what was created, updated, uploaded, deleted, or reviewed.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Management Review</strong>
+                <span>Reports, workload, reminders, and data quality views turn operational data into review actions.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Production Direction</strong>
+                <span>The local proof is shaped so Microsoft Lists, SharePoint, Power Automate, and Power BI-style reporting can be added later.</span>
             </div>
         </div>
     </ChildContent>
 </InfoPanel>
 
-<InfoPanel Title="Key Points" Subtitle="Use these notes when walking through the project.">
+<TableCard Title="Business Value Map"
+           Subtitle="How each feature connects to practical business value.">
     <ChildContent>
-        <ol class="of-review-steps">
-            <li>OperationsFlow captures work before it disappears into emails, conversations, spreadsheets, or paper notes.</li>
-            <li>Records feed management views such as Reminders, Workload, Reports, Data Quality, and Activity Log.</li>
-            <li>Corrective actions can be source-linked from risks, training, and controlled documents.</li>
-            <li>Activity history provides traceability evidence for create, update, and review workflows.</li>
-            <li>The project is Microsoft 365-ready in design, but still a local SQLite demo prototype.</li>
-        </ol>
-    </ChildContent>
-</InfoPanel>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Business Value</th>
+                    <th>Where To Review</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Work Orders</strong></td>
+                    <td>Captures operational jobs, maintenance issues, owner responsibility, status, priority, due dates, notes, and evidence files.</td>
+                    <td><a class="of-card-link" href="/work-orders">Open Work Orders</a></td>
+                </tr>
 
-<InfoPanel Title="Connected Review Links" Subtitle="Open the main evidence pages from here.">
+                <tr>
+                    <td><strong>Corrective Actions</strong></td>
+                    <td>Tracks safety, quality, risk, training, and document follow-up through accountable action records and close-out evidence.</td>
+                    <td><a class="of-card-link" href="/corrective-actions">Open Actions</a></td>
+                </tr>
+
+                <tr>
+                    <td><strong>Document Intake</strong></td>
+                    <td>Captures incoming document/admin work so invoices, supplier documents, scans, forms, and evidence packs can be processed and reviewed.</td>
+                    <td><a class="of-card-link" href="/document-intake">Open Intake</a></td>
+                </tr>
+
+                <tr>
+                    <td><strong>Document Library</strong></td>
+                    <td>Provides a single evidence register across workflow modules, showing module, record reference, provider, file type, uploader, and actions.</td>
+                    <td><a class="of-card-link" href="/document-library">Open Library</a></td>
+                </tr>
+
+                <tr>
+                    <td><strong>Workload</strong></td>
+                    <td>Shows owner pressure, overdue work, high-priority items, and which people need follow-up first.</td>
+                    <td><a class="of-card-link" href="/workload">Open Workload</a></td>
+                </tr>
+
+                <tr>
+                    <td><strong>Reminders</strong></td>
+                    <td>Highlights due-soon and overdue tasks before they become missed work.</td>
+                    <td><a class="of-card-link" href="/reminders">Open Reminders</a></td>
+                </tr>
+
+                <tr>
+                    <td><strong>Data Quality</strong></td>
+                    <td>Flags weak records, overdue work, missing evidence, compliance issues, and incomplete workflow data before management review.</td>
+                    <td><a class="of-card-link" href="/data-quality">Open Data Quality</a></td>
+                </tr>
+
+                <tr>
+                    <td><strong>Reports</strong></td>
+                    <td>Summarises management action rows, evidence coverage, missing evidence, training compliance, document reviews, and workload pressure.</td>
+                    <td><a class="of-card-link" href="/reports">Open Reports</a></td>
+                </tr>
+
+                <tr>
+                    <td><strong>Activity Log</strong></td>
+                    <td>Gives traceability for created, updated, uploaded, deleted, and reviewed activity.</td>
+                    <td><a class="of-card-link" href="/activity-log">Open Activity Log</a></td>
+                </tr>
+
+                <tr>
+                    <td><strong>CSV Exports</strong></td>
+                    <td>Supports management packs, Excel review, Power BI-style analysis, handover evidence, and external review packages.</td>
+                    <td><a class="of-card-link" href="/exports/activity-log.csv">Open Export</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </ChildContent>
+</TableCard>
+
+<InfoPanel Title="Why The Evidence Layer Matters" Subtitle="This is the difference between a dashboard and a workflow system.">
     <ChildContent>
         <div class="of-review-proof-grid">
-            <a class="of-review-proof-card of-click-card" href="/reports"><strong>Reports</strong><span>Management reporting and CSV export evidence.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/data-quality"><strong>Data Quality</strong><span>Weak records, overdue work, and review issues.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/activity-log"><strong>Activity Log</strong><span>Global traceability and workflow evidence.</span></a>
-            <a class="of-review-proof-card of-click-card" href="/implementation-plan"><strong>Implementation Plan</strong><span>Week 3/4 hybrid and Microsoft 365 direction.</span></a>
+            <div class="of-review-proof-card">
+                <strong>Before</strong>
+                <span>A dashboard can say something is overdue, but it may not prove what happened or what evidence exists.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>After</strong>
+                <span>OperationsFlow can show the record, the owner, the due date, the attached evidence, and the activity log.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Management Review</strong>
+                <span>Reports and Data Quality can now flag records that should have files but do not.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Audit Mindset</strong>
+                <span>Even as a prototype, the app shows the kind of thinking needed for reviewability and handover.</span>
+            </div>
         </div>
     </ChildContent>
 </InfoPanel>
 
-<GuidanceNote Title="Prototype Boundary" Icon="🚧" Tone="warning">
+<InfoPanel Title="Portfolio Value" Subtitle="What this project says about the developer.">
+    <ChildContent>
+        <div class="of-review-proof-grid">
+            <div class="of-review-proof-card">
+                <strong>Business Analysis</strong>
+                <span>Identifies a real operational pain point and turns it into a workflow model.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Full-Stack Thinking</strong>
+                <span>Combines data models, UI pages, services, storage, reports, exports, and activity history.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Reusable Components</strong>
+                <span>Uses shared cards, filters, tables, detail layouts, and attachment panels across modules.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Production Awareness</strong>
+                <span>Separates prototype proof from production needs like authentication, permissions, SharePoint, retention, and deployment.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Microsoft 365 Direction</strong>
+                <span>Maps naturally to Microsoft Lists, SharePoint document libraries, Power Automate, Teams/Outlook, and Power BI-style review.</span>
+            </div>
+
+            <div class="of-review-proof-card">
+                <strong>Real-World Relevance</strong>
+                <span>Matches the kind of operational automation and workflow thinking used in admin, safety, engineering, and business systems work.</span>
+            </div>
+        </div>
+    </ChildContent>
+</InfoPanel>
+
+<InfoPanel Title="Prototype Boundaries" Subtitle="Honest limits before calling this production-ready.">
+    <ChildContent>
+        <ul>
+            <li>The current app uses local SQLite demo data.</li>
+            <li>The current document library uses local storage, not SharePoint production storage.</li>
+            <li>Authentication and role-based permissions are not fully implemented yet.</li>
+            <li>Production audit retention, backups, and operational ownership still need to be defined.</li>
+            <li>Microsoft Lists, SharePoint, Teams, Outlook, Power Automate, and Power BI integration are Week 4 direction items.</li>
+            <li>The project does not replace a full ERP, job management system, or safety platform; it proves a workflow layer and integration direction.</li>
+        </ul>
+    </ChildContent>
+</InfoPanel>
+
+<GuidanceNote Title="Business Value Summary" Icon="💡" Tone="info">
     <ul>
-        <li>This page is part of the portfolio review layer.</li>
-        <li>The current app uses local SQLite demo data.</li>
-        <li>Production rollout would need authentication, permissions, audit retention, Microsoft 365 integration, backups, and operational ownership.</li>
+        <li>OperationsFlow is strongest as proof of practical business-system thinking.</li>
+        <li>The project connects workflow capture, evidence, management reporting, data quality, and traceability.</li>
+        <li>The evidence layer makes it stronger than a basic CRUD dashboard.</li>
+        <li>Week 4 should focus on proving the production path with Microsoft 365, SharePoint, authentication, and deployment readiness.</li>
     </ul>
 </GuidanceNote>
