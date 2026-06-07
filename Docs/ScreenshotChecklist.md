@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This checklist explains which screenshots are included in the OperationsFlow review package and what each screenshot demonstrates.
+This checklist explains which screenshots should be included in the OperationsFlow review package and what each screenshot demonstrates.
 
 The screenshots are used to show the project visually before a reviewer runs the app. They also help keep the GitHub repository reviewable for Vanessa, Lester, Peter, employers, or technical reviewers.
 
@@ -23,12 +23,13 @@ OperationsFlow is not just a set of pages. The screenshots prove that the projec
 
 ## Current Screenshot Package Status
 
-Current screenshot package:
+Current screenshot package target:
 
-- **36 screenshots included**
-- Screenshots are named in review order.
-- Screenshots cover the main workflow, safety/compliance pages, admin workflow, reviewer pages, technical pages, and production planning pages.
-- A separate corrective-action details screenshot is not required because the corrective action edit page now acts as the review/detail page and includes activity history.
+- **36 screenshots**
+- Screenshots should be named in review order.
+- Screenshots should cover the main workflow, safety/compliance pages, admin workflow, reviewer pages, technical pages, and production planning pages.
+
+Because Week 2 included a major UI cleanup, screenshots should be refreshed after the final UI/CSS merge.
 
 ---
 
@@ -52,8 +53,6 @@ The full screenshot list belongs in this checklist instead of the README so the 
 ---
 
 ## Minimum Sendable Screenshot Pack
-
-These are the most important screenshots for quick review.
 
 | Screenshot | Page / Route | What It Proves | Priority |
 |---|---|---|---|
@@ -143,8 +142,6 @@ If screenshots are stored somewhere else, update the README image links and this
 
 ## Vanessa / OSHE Screenshot Pack
 
-Recommended screenshots for a safety/compliance-focused review:
-
 | Screenshot | Why It Matters |
 |---|---|
 | `01-portfolio-hub.png` | Shows where to start. |
@@ -167,8 +164,6 @@ Recommended screenshots for a safety/compliance-focused review:
 
 ## Lester / Peter Screenshot Pack
 
-Recommended screenshots for an admin/document workflow review:
-
 | Screenshot | Why It Matters |
 |---|---|
 | `01-portfolio-hub.png` | Shows where to start. |
@@ -186,8 +181,6 @@ Recommended screenshots for an admin/document workflow review:
 ---
 
 ## Employer / Technical Screenshot Pack
-
-Recommended screenshots for a .NET/business systems portfolio review:
 
 | Screenshot | Why It Matters |
 |---|---|

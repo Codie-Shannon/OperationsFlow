@@ -188,6 +188,61 @@ These pages are not normal end-user ERP screens, but they are valuable for portf
 
 ---
 
+## Shared UI Component System
+
+### Decision
+
+Refactor repeated page structures into shared Razor UI components.
+
+### Reason
+
+The app grew into many pages with repeated headers, panels, metric cards, filter bars, table cards, guidance notes, and empty states.
+
+Shared components reduce duplication and make the app easier to maintain.
+
+Key shared UI components include:
+
+- `PageHero`
+- `PurposeNote`
+- `MetricGrid`
+- `MetricCard`
+- `InfoPanel`
+- `ActionStrip`
+- `TableCard`
+- `FilterBar`
+- `GuidanceNote`
+- `ActivityHistoryPanel`
+- `EmptyState`
+
+### Trade-off
+
+Shared components require more care with parameters and named child content, but they make the UI much more consistent.
+
+---
+
+## CSS Strategy
+
+### Decision
+
+Use one main CSS file during rapid build-out, then clean and consolidate it after the shared UI refactor.
+
+### Reason
+
+A single file allowed fast iteration during the first build. After Week 2, the stylesheet was cleaned and reduced so it better supports the shared UI component system.
+
+### Current State
+
+- `wwwroot/app.css` remains the main stylesheet.
+- Duplicate/old clutter was reduced.
+- Shared `of-*` classes are the preferred styling direction.
+- Workload dense card styling was polished into review lanes.
+
+### Trade-off
+
+The CSS is cleaner but still not fully modular. A future production version could split it into base/layout/component/page files if the app continues to grow.
+
+---
+
 ## Microsoft 365 Integration Planning
 
 ### Decision
@@ -214,6 +269,8 @@ Potential integration targets:
 - Excel/Power BI-ready exports.
 - Microsoft Entra ID authentication.
 
+Week 3 should build local production-shaped providers and schemas. Week 4 should connect the live Microsoft 365 implementation.
+
 ---
 
 ## Testing Strategy
@@ -234,6 +291,7 @@ Current testing:
 - Create/edit workflow checks.
 - Report/data quality review.
 - Visual review.
+- CSV export checks.
 
 Future testing:
 
@@ -244,30 +302,6 @@ Future testing:
 - Export tests.
 - Migration tests.
 - Deployment tests.
-
----
-
-## CSS Strategy
-
-### Decision
-
-Use one main CSS file during rapid build-out.
-
-### Reason
-
-This allowed faster iteration while building many modules and reviewer pages.
-
-### Trade-off
-
-The CSS file is now large and should be refactored.
-
-Future cleanup:
-
-- Split shared styles from page-specific styles.
-- Consolidate repeated card/table/badge classes.
-- Create design tokens.
-- Remove unused duplicate styles.
-- Review responsive behaviour.
 
 ---
 
@@ -289,6 +323,7 @@ Current prototype proves:
 - Reporting concept.
 - Traceability concept.
 - Data quality concept.
+- Shared UI/component direction.
 - Production upgrade plan.
 
 Production still needs:
@@ -301,11 +336,12 @@ Production still needs:
 - Automated tests.
 - Deployment pipeline.
 - Live integrations.
+- Production file/document storage.
 
 ---
 
 ## Technical Summary
 
-OperationsFlow was built with practical prototype decisions: Blazor for UI, EF Core for persistence, SQLite for local demo data, seeded records for realistic review, activity logging for traceability, CSV exports for management/reporting workflows, and reviewer pages for clear portfolio communication.
+OperationsFlow was built with practical prototype decisions: Blazor for UI, EF Core for persistence, SQLite for local demo data, seeded records for realistic review, activity logging for traceability, CSV exports for management/reporting workflows, shared UI components for maintainability, cleaned CSS for consistency, and reviewer pages for clear portfolio communication.
 
 The technical direction is realistic for a future production internal business system.

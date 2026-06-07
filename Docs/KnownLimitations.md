@@ -19,6 +19,7 @@ It is designed to demonstrate:
 - Reminders and workload visibility.
 - Data quality checks.
 - Activity traceability.
+- Shared UI component refactoring.
 - Reviewer support pages.
 - Production planning.
 - Microsoft 365 integration direction.
@@ -82,7 +83,7 @@ Production requirement:
 
 Current state:
 
-- User Roles page explains the future production access model.
+- The User Roles page explains the future production access model.
 - Roles are not enforced yet in the app.
 
 Production requirement:
@@ -95,6 +96,8 @@ Production requirement:
 - Read-only viewer role.
 - Page/action restrictions.
 - Export restrictions.
+
+Week 3 should add local role/permission foundations before Week 4 production mapping.
 
 ---
 
@@ -132,6 +135,8 @@ Production requirement:
 - Excel/Power BI-ready reporting feed.
 - Integration error handling.
 
+Week 3 should add schema/dry-run services. Week 4 should connect the live Microsoft 365 implementation.
+
 ---
 
 ### No Live Xero / Cin7 / WorkflowMax Integration Yet
@@ -155,15 +160,18 @@ Production requirement:
 Current state:
 
 - Controlled documents and document intake records store metadata.
-- The current app does not store/upload real files.
+- The current app does not store/upload real files yet.
 
 Production requirement:
 
+- Local file/document library foundation.
 - SharePoint or controlled storage.
 - File permissions.
 - File links.
 - Version/review history.
 - Attachments/evidence.
+
+Week 3 should build local file storage and attachment metadata. Week 4 should connect SharePoint document library storage.
 
 ---
 
@@ -186,20 +194,21 @@ Production requirement:
 
 ---
 
-### CSS Needs Refactor
+### Styling Is Consolidated, Not Fully Modular
 
 Current state:
 
-- CSS grew quickly during rapid feature/page development.
-- Styles work for the current prototype but should be cleaned.
+- The CSS was cleaned and reduced after the Week 2 shared UI refactor.
+- The app now uses a more consistent shared styling system.
+- CSS is still largely in `wwwroot/app.css`.
 
-Production/refactor requirement:
+Future maintainability option:
 
-- Split CSS into module/page files.
-- Extract reusable card/table/badge styles.
-- Remove duplicate classes.
-- Review layout breakpoints.
-- Keep shared design tokens consistent.
+- Split CSS into smaller files if the app continues to grow.
+- Keep shared design tokens and `of-*` component classes.
+- Avoid page-specific duplication.
+
+This is no longer a blocker for the Week 2 review package.
 
 ---
 
@@ -240,9 +249,7 @@ Production requirement:
 
 ### Not a Full ERP System
 
-OperationsFlow is not currently a full ERP.
-
-It does not include:
+OperationsFlow is not currently a full ERP. It does not include:
 
 - Accounting.
 - Inventory.
@@ -286,18 +293,17 @@ The current version proves:
 - The reporting approach.
 - The activity traceability concept.
 - The data quality concept.
+- The shared UI/system cleanup.
 - The production upgrade path.
 
-The next version would focus on production hardening.
+The next version should focus on production foundations.
 
 ---
 
 ## Limitation Summary
 
-OperationsFlow is ready to be reviewed as a portfolio prototype.
-
-It should not be presented as a finished production ERP or live business system.
+OperationsFlow is ready to be reviewed as a portfolio prototype. It should not be presented as a finished production ERP or live business system.
 
 Best wording:
 
-> OperationsFlow is a working Blazor/.NET business workflow prototype. It demonstrates the structure, workflows, reporting, traceability, and production planning needed for an internal operations/compliance follow-up system. A production rollout would require authentication, role permissions, hosted database storage, backups, testing, deployment, monitoring, and live integrations.
+> OperationsFlow is a working Blazor/.NET business workflow prototype. It demonstrates the structure, workflows, reporting, traceability, UI consistency, and production planning needed for an internal operations/compliance follow-up system. A production rollout would require authentication, role permissions, hosted database storage, backups, testing, deployment, monitoring, file/document storage, and live integrations.

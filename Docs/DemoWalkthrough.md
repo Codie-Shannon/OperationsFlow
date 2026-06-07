@@ -1,8 +1,8 @@
 # OperationsFlow Demo Walkthrough
 
-This walkthrough is designed for showing the current OperationsFlow prototype.
+This walkthrough is designed for showing the current OperationsFlow prototype. It supports both live demos and no-speaking demos.
 
-It supports both live demos and no-speaking demos. The app includes Portfolio Hub, Reviewer Checklist, Demo Guide, Business Value, Prototype Scope, Technical Overview, Deployment Overview, Testing Overview, and Integration Overview pages so a reviewer can understand the project without needing a long spoken explanation.
+The app includes Portfolio Hub, Reviewer Checklist, Demo Guide, Business Value, Prototype Scope, Technical Overview, Deployment Overview, Testing Overview, and Integration Overview pages so a reviewer can understand the project without needing a long spoken explanation.
 
 ---
 
@@ -19,9 +19,10 @@ Use this when sending the project for review without voice-over.
 7. Open **Corrective Actions** and edit one record.
 8. Open **Reports**.
 9. Open **Data Quality**.
-10. Open **Technical Overview**.
-11. Open **Deployment Overview**.
-12. Open **Integration Overview**.
+10. Open **Activity Log**.
+11. Open **Technical Overview**.
+12. Open **Deployment Overview**.
+13. Open **Integration Overview**.
 
 Main message:
 
@@ -122,6 +123,7 @@ Show:
 
 - List/search/filter.
 - Create Corrective Action.
+- Details/review page.
 - Edit Corrective Action.
 - Status guidance.
 - Completed date behaviour.
@@ -226,6 +228,7 @@ Show:
 - Overdue count.
 - High-priority count.
 - Pressure level.
+- Owner review lanes.
 
 Explain:
 

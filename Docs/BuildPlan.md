@@ -4,26 +4,9 @@ This document summarises the build plan and current state for OperationsFlow.
 
 ---
 
-## Current Build Goal
-
-The current sprint goal is to make OperationsFlow sendable and reviewable for Vanessa, Lester, Peter, employers, and technical reviewers.
-
-The project needs to show:
-
-- Working business workflow screens.
-- Editable records.
-- Reporting and exports.
-- Data quality checks.
-- Activity traceability.
-- Safety/compliance review value.
-- Document/admin intake value.
-- Reviewer guidance.
-- Honest prototype boundaries.
-- Realistic production upgrade path.
-
----
-
 ## Current Build State
+
+Week 2 UI cleanup and workflow polish is complete.
 
 Completed/reviewable areas include:
 
@@ -58,219 +41,174 @@ Completed/reviewable areas include:
 - Testing Overview
 - Integration Overview
 
----
+Week 2 also completed:
 
-## Final Packaging Blocks
-
-### Block 28 — Documentation Refresh
-
-Goal:
-
-Update README and Docs folder to match the current build.
-
-Tasks:
-
-- Update README.
-- Update Architecture.
-- Update Case Study.
-- Update Demo Walkthrough.
-- Update Feature Checklist.
-- Update Known Limitations.
-- Update Enterprise Upgrade Plan.
-- Update Targeted Pitches.
-- Update Technical Decisions.
-- Update Build Plan.
-
-Status:
-
-- In progress / packaging stage.
+- Shared UI component refactor.
+- App-wide CSS cleanup.
+- Activity history empty-state fix.
+- Workload card layout polish.
+- Calendar section build fix.
+- Final manual route/workflow testing.
 
 ---
 
-### Block 29 — Screenshot and Demo Checklist
+## Week 2 Lock-In Tasks
 
-Goal:
+Before moving into Week 3:
 
-Create a screenshot/review checklist for final presentation.
-
-Recommended screenshots:
-
-- Portfolio Hub
-- Reviewer Checklist
-- Business Value
-- Dashboard
-- Safety Meeting Pack
-- Corrective Actions list
-- Corrective Action edit page
-- Document Intake
-- Workload
-- Reports
-- Data Quality
-- Activity Log
-- Technical Overview
-- Deployment Overview
-- Integration Overview
-
-Recommended demo check:
-
-- App builds.
-- App runs.
-- Navigation works.
-- Key pages load.
-- Create/edit workflows work.
-- Reports load.
-- CSV exports work.
-- Data Quality loads.
-- Activity history loads.
-- Reviewer path is understandable.
+- [x] `dotnet build` passes.
+- [x] Manual page testing completed.
+- [x] Core create/edit flows tested.
+- [x] Management/evidence pages checked.
+- [x] CSS cleanup applied.
+- [x] Documentation refreshed.
+- [ ] Screenshots refreshed after final UI.
+- [ ] README screenshot links confirmed.
+- [ ] Week 2 merged to `main`.
+- [ ] Week 2 backup branch created.
+- [ ] Week 3 branch created from updated `main`.
 
 ---
 
-### Block 30 — CSS Cleanup / Refactor Plan
+## Week 2 Final Test Checklist
 
-Goal:
+Manual QA checklist before pushing/merging:
 
-Reduce risk from large CSS file and make future maintenance easier.
-
-Recommended work:
-
-- Identify repeated card/table/badge classes.
-- Extract shared page layout classes.
-- Move page-specific styles into grouped sections or files.
-- Remove unused duplicate styles.
-- Keep existing UI stable during cleanup.
-- Avoid major redesign during packaging.
-
-Important:
-
-CSS cleanup should be careful and incremental because visual polish is already working.
+- [x] `dotnet build` passes.
+- [x] `dotnet run` starts app.
+- [x] Dashboard loads.
+- [x] Portfolio Hub loads.
+- [x] Reviewer Checklist loads.
+- [x] Demo Guide loads.
+- [x] Business Value loads.
+- [x] Work Orders list loads.
+- [x] Work Order create/edit/details works.
+- [x] Corrective Actions list loads.
+- [x] Corrective Action create/edit/details works.
+- [x] Risk/Training/Documents can create prefilled corrective actions.
+- [x] Document Intake list loads.
+- [x] Document Intake create/edit works.
+- [x] Safety Overview loads.
+- [x] Safety Meeting Pack loads.
+- [x] Compliance Calendar loads.
+- [x] Documents loads.
+- [x] Risk Register loads.
+- [x] Training loads.
+- [x] Reminders loads.
+- [x] Workload loads.
+- [x] Reports loads.
+- [x] Data Quality loads.
+- [x] Activity Log loads.
+- [x] Technical Overview loads.
+- [x] Data Model loads.
+- [x] User Roles loads.
+- [x] Audit Overview loads.
+- [x] Deployment Overview loads.
+- [x] Testing Overview loads.
+- [x] Integration Overview loads.
+- [x] Prototype Scope loads.
+- [x] Implementation Plan loads.
+- [x] Admin Settings loads.
+- [x] CSV exports work.
+- [x] Activity history empty states look correct.
+- [x] README/docs are being updated.
+- [ ] Screenshots are current enough after final UI cleanup.
 
 ---
 
-### Block 31 — Final Release Package
+## Recommended Branch Workflow
 
-Goal:
+From completed `week2-ui-cleanup`:
 
-Prepare the final review package.
+```bash
+git checkout week2-ui-cleanup
+dotnet build
+git status
+git add .
+git commit -m "Complete Week 2 UI cleanup and stylesheet consolidation"
+git push origin week2-ui-cleanup
+```
 
-Tasks:
+Merge to main:
 
-- Final build check.
-- Final run check.
-- Final navigation check.
-- Final screenshot update.
-- Final README/docs check.
-- Commit docs and screenshots.
-- Push branch.
-- Prepare short message for Vanessa/Lester/Peter.
+```bash
+git checkout main
+git pull origin main
+git merge week2-ui-cleanup
+dotnet build
+git push origin main
+```
 
----
-
-## Recommended Final Branch Workflow
-
-Use the `vanessa-safety-overview` branch for the current review package.
-
-Suggested commit messages:
+After README/screenshots/docs refresh:
 
 ```bash
 git add .
-git commit -m "Update documentation for current OperationsFlow review package"
-git push origin vanessa-safety-overview
+git commit -m "Update README, screenshots, and docs for Week 2 UI cleanup"
+git push origin main
 ```
 
-For screenshots:
+Create backup:
 
 ```bash
-git add Screenshots Docs README.md
-git commit -m "Add final review screenshots and demo checklist"
-git push origin vanessa-safety-overview
+git checkout main
+git pull origin main
+git branch backup/week2-ui-cleanup-complete
+git push origin backup/week2-ui-cleanup-complete
 ```
 
-For CSS cleanup:
+Create Week 3 branch:
 
 ```bash
-git add wwwroot
-git commit -m "Clean up shared page styling"
-git push origin vanessa-safety-overview
-```
-
-For final package:
-
-```bash
-git add .
-git commit -m "Prepare OperationsFlow review package"
-git push origin vanessa-safety-overview
+git checkout -b week3-production-foundation
+git push -u origin week3-production-foundation
 ```
 
 ---
 
-## Five-Day Packaging Plan
+## Week 3 Build Goal
 
-### Day 1
+Week 3 is **Production Foundation**.
 
-- Finish reviewer/system pages.
-- Update docs.
-- Confirm build and navigation.
+It should build local working versions of production features using production-shaped architecture.
 
-### Day 2
+Week 3 should include:
 
-- Screenshot package.
-- README polish.
-- Demo/reviewer checklist.
-- Fix obvious layout issues.
-
-### Day 3
-
-- CSS cleanup pass.
-- Confirm pages still look stable.
-- Run full manual test checklist.
-
-### Day 4
-
-- Package for Vanessa/Lester/Peter.
-- Prepare messages.
-- Review final repo branch.
-
-### Day 5
-
-- Buffer day.
-- Fix issues found during review.
-- Final push and send.
+- Production configuration/options structure.
+- File storage interface.
+- Local file storage provider.
+- SharePoint file storage provider placeholder.
+- Document attachment model.
+- Local Document Library page.
+- Attachment UI for records.
+- Role/permission foundation.
+- Permission Matrix page.
+- Microsoft Lists schema registry.
+- M365 Readiness / Production Readiness page.
+- Mock/dry-run sync service.
+- Notification rule and local notification preview/log.
+- README/docs updates for production foundation.
 
 ---
 
-## Manual QA Checklist
+## Week 4 Direction
 
-Before sending:
+Week 4 is the **full production Microsoft 365 implementation**.
 
-- [ ] `dotnet build` passes.
-- [ ] `dotnet run` starts app.
-- [ ] Dashboard loads.
-- [ ] Portfolio Hub loads.
-- [ ] Reviewer Checklist loads.
-- [ ] Demo Guide loads.
-- [ ] Business Value loads.
-- [ ] Corrective Actions list loads.
-- [ ] Corrective Action create/edit works.
-- [ ] Document Intake list loads.
-- [ ] Document Intake create/edit works.
-- [ ] Safety Meeting Pack loads.
-- [ ] Workload loads.
-- [ ] Reports loads.
-- [ ] Data Quality loads.
-- [ ] Activity Log loads.
-- [ ] Technical Overview loads.
-- [ ] Deployment Overview loads.
-- [ ] Integration Overview loads.
-- [ ] CSV exports work.
-- [ ] README matches current app.
-- [ ] Docs match current app.
-- [ ] Screenshots are current enough.
+Week 4 should connect:
+
+- Real Microsoft 365 environment.
+- Real SharePoint site.
+- Real Microsoft Lists.
+- Real document library.
+- Real file uploads to SharePoint.
+- Real list sync.
+- Real Teams/Outlook/Power Automate notification path.
+- Production configuration and setup documentation.
 
 ---
 
 ## Current Build Summary
 
-OperationsFlow has moved beyond an early dashboard prototype. It is now a broad, connected business workflow prototype with working modules, reviewer support pages, production planning pages, and documentation.
+OperationsFlow has moved beyond an early dashboard prototype.
 
-The remaining work is mainly packaging, polish, documentation, screenshots, and careful cleanup.
+It is now a broad, connected business workflow prototype with working modules, reviewer support pages, management/evidence pages, activity traceability, data quality, exports, shared UI components, cleaned CSS, production planning pages, and a clear next step toward production foundation work.

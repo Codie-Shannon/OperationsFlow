@@ -2,11 +2,11 @@
 
 ## Summary
 
-OperationsFlow is a Blazor/.NET 8 business workflow prototype built to demonstrate practical internal business systems development.
+OperationsFlow is a Blazor/.NET 8 business workflow prototype built to demonstrate practical internal business systems development. It tracks operational work, corrective actions, document intake, controlled documents, risk items, training compliance, reminders, workload, reports, CSV exports, data quality, activity history, reviewer support, and production planning.
 
-It tracks operational work, corrective actions, document intake, controlled documents, risk items, training compliance, reminders, workload, reports, CSV exports, data quality, activity history, reviewer support, and production planning.
+The project is designed as a portfolio-ready proof of capability for .NET business systems, admin workflow automation, safety/compliance tracking, reporting, UI refactoring, and production-aware planning.
 
-The project is designed as a portfolio-ready proof of capability for .NET business systems, admin workflow automation, safety/compliance tracking, reporting, and production-aware planning.
+Week 2 completed a major UI/component and stylesheet cleanup, turning the project into a more consistent, reviewable, and maintainable business workflow prototype.
 
 ---
 
@@ -95,6 +95,15 @@ The goal was to demonstrate:
 - Testing Overview
 - Integration Overview
 
+### UI / Maintainability Work
+
+- Shared UI component system.
+- Reusable page hero, panels, metric cards, filter bars, table cards, guidance notes, and empty states.
+- Consolidated app stylesheet.
+- Cleaned repeated CSS patterns.
+- Workload review lane polish.
+- Consistent management/reporting page layout.
+
 ---
 
 ## Key Workflows
@@ -107,7 +116,7 @@ A user can:
 - Edit status, priority, owner, due date, and notes.
 - View work order details.
 - See per-record activity history.
-- Have dashboard, reports, reminders, and workload update based on saved data.
+- Have dashboard, reports, reminders, workload, data quality, and CSV exports update based on saved data.
 
 ### Corrective Action Workflow
 
@@ -115,10 +124,11 @@ A user can:
 
 - Create a corrective action manually.
 - Generate corrective actions from risk, document, and training modules.
-- Edit owner, status, priority, due date, completed date, and notes.
+- Edit owner, status, priority, source, action type, due date, completed date, and notes.
 - Use helper guidance for better follow-up evidence.
 - Automatically set completed date when appropriate.
 - Log creation, update, and review events.
+- Review details and activity history.
 
 ### Document Intake Workflow
 
@@ -162,6 +172,7 @@ Groups assigned work by owner/person and shows:
 - Overdue count.
 - High-priority count.
 - Pressure level.
+- Review lanes for assigned work.
 
 ### Reports
 
@@ -176,6 +187,7 @@ Provides reporting views for:
 - Document Intake by status.
 - Document Intake by target system.
 - Attention items.
+- CSV exports.
 
 ### Data Quality
 
@@ -207,9 +219,7 @@ Identifies system health issues such as:
 
 ### Data Layer
 
-The prototype uses SQLite and Entity Framework Core.
-
-Seed data provides realistic records for testing and portfolio demonstration.
+The prototype uses SQLite and Entity Framework Core. Seed data provides realistic records for testing and portfolio demonstration.
 
 ### Services
 
@@ -219,16 +229,13 @@ Current application services include:
 - `ActivityLogService`
 - `CsvExportService`
 
-Future production refactor could add:
+Future production foundation work will add:
 
-- `WorkOrderService`
-- `CorrectiveActionService`
-- `DocumentIntakeService`
-- `ReportService`
-- `ReminderService`
-- `WorkloadService`
-- `SettingsService`
-- `IntegrationService`
+- File storage service interfaces/providers.
+- Role/permission services.
+- Microsoft Lists schema registry.
+- Mock/dry-run sync service.
+- Notification service boundary.
 
 ### Traceability
 
@@ -242,9 +249,7 @@ Activity is shown in:
 
 ### CSV Export
 
-CSV exports support management reporting and spreadsheet workflows.
-
-Data can be opened in Excel, used for meetings, or later fed into Power BI-style reporting.
+CSV exports support management reporting and spreadsheet workflows. Data can be opened in Excel, used for meetings, or later fed into Power BI-style reporting.
 
 ---
 
@@ -314,6 +319,8 @@ Relevant features:
 - CSV exports
 - Activity logging
 - Data quality rules
+- Shared Razor UI components
+- CSS cleanup/refactor
 - Business process modelling
 - Production roadmap planning
 
@@ -333,31 +340,34 @@ Limitations:
 - Admin Settings is a starter configuration page.
 - No full automated testing.
 - No production deployment pipeline.
-- CSS needs cleanup/refactor after rapid expansion.
+- No production file storage yet.
 
 ---
 
 ## Future Improvements
 
-- Database-driven settings.
-- Full admin settings create/edit.
-- Authentication and roles.
-- SQL Server/PostgreSQL/Azure SQL.
-- EF Core migrations.
-- Service-layer refactor.
-- File upload and document attachment tracking.
-- SharePoint document library integration.
-- Outlook email intake.
-- Teams/email notifications.
-- Microsoft Lists/API sync where useful.
-- Per-field audit trail.
-- API layer.
-- Tests and deployment pipeline.
+Week 3 production foundation:
+
+- Production config/options structure.
+- File storage interface and local provider.
+- Document attachment metadata.
+- Local Document Library page.
+- Role/permission foundation.
+- Microsoft Lists schema registry.
+- Mock/dry-run sync.
+- Notification rule preview/log.
+
+Week 4 production implementation:
+
+- Real Microsoft 365 tenant/test environment.
+- SharePoint site/document library.
+- Microsoft Lists.
+- Graph/SharePoint integration.
+- Real notifications.
+- Production deployment configuration.
 
 ---
 
 ## Result
 
-OperationsFlow is a strong portfolio prototype showing the ability to plan, build, and explain a practical internal business system.
-
-It demonstrates business workflow thinking, .NET/Blazor development, persistence, traceability, reporting, exports, data quality checks, reviewer guidance, and a realistic production upgrade path.
+OperationsFlow is a strong portfolio prototype showing the ability to plan, build, refactor, test, and explain a practical internal business system. It demonstrates business workflow thinking, .NET/Blazor development, persistence, traceability, reporting, exports, data quality checks, reviewer guidance, maintainable UI direction, and a realistic production upgrade path.

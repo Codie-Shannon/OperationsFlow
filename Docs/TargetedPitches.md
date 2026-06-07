@@ -6,7 +6,7 @@ This document provides short pitch angles for different audiences.
 
 ## One-Sentence Summary
 
-OperationsFlow is a Blazor/.NET business workflow prototype that turns scattered operational, safety/compliance, document, and follow-up work into one connected reviewable system with owner accountability, reporting, exports, data quality checks, and activity traceability.
+OperationsFlow is a Blazor/.NET business workflow prototype that turns scattered operational, safety/compliance, document, and follow-up work into one connected reviewable system with owner accountability, reporting, exports, data quality checks, shared UI structure, and activity traceability.
 
 ---
 
@@ -14,9 +14,9 @@ OperationsFlow is a Blazor/.NET business workflow prototype that turns scattered
 
 OperationsFlow is a practical .NET/Blazor portfolio project focused on real business workflow problems rather than a generic CRUD demo.
 
-It includes editable work orders, corrective actions, document intake, risk, training, controlled documents, reminders, workload reporting, CSV exports, data quality checks, activity history, reviewer guidance, and production planning.
+It includes editable work orders, corrective actions, document intake, risk, training, controlled documents, reminders, workload reporting, CSV exports, data quality checks, activity history, reviewer guidance, shared UI components, and production planning.
 
-The project demonstrates C#, Blazor, EF Core, SQLite, workflow design, reporting, data quality rules, audit thinking, and a realistic Microsoft 365 upgrade path.
+The project demonstrates C#, Blazor, EF Core, SQLite, workflow design, reporting, data quality rules, audit thinking, UI refactoring, and a realistic Microsoft 365 upgrade path.
 
 ---
 
@@ -98,14 +98,14 @@ Suggested demo path:
 
 ## .NET Developer / Employer Pitch
 
-OperationsFlow is a business systems project built with .NET 8, Blazor, C#, Entity Framework Core, SQLite, Razor components, and CSV export endpoints.
+OperationsFlow is a business systems project built with .NET 8, Blazor, C#, Entity Framework Core, SQLite, Razor components, shared UI components, and CSV export endpoints.
 
 It demonstrates:
 
 - CRUD workflows.
 - Search/filter/list pages.
-- Create/edit forms.
-- Record details.
+- Create/edit/details pages.
+- Shared Razor components.
 - Shared services.
 - EF Core persistence.
 - Seeded demo data.
@@ -113,6 +113,7 @@ It demonstrates:
 - Reporting views.
 - CSV export.
 - Data quality logic.
+- UI cleanup/refactor.
 - Production planning pages.
 
 Key message:
@@ -137,9 +138,7 @@ Suggested demo path:
 
 ## Business Analyst / Systems Role Pitch
 
-OperationsFlow demonstrates business process thinking.
-
-It models how scattered work becomes structured workflow:
+OperationsFlow demonstrates business process thinking. It models how scattered work becomes structured workflow:
 
 - Identify records that need follow-up.
 - Assign an owner.
@@ -148,61 +147,37 @@ It models how scattered work becomes structured workflow:
 - Surface overdue items.
 - Review workload.
 - Export management summaries.
-- Record activity history.
 - Identify weak data before reporting.
+- Explain production limitations and rollout requirements.
 
 Key message:
 
-> The project shows the ability to understand business problems, model workflows, create review views, and plan a realistic move from prototype to production.
+> OperationsFlow shows an ability to understand a business process, turn it into structured records, surface the important exceptions, and explain how the system could move toward production.
 
 ---
 
-## Microsoft 365 / Power Platform Style Pitch
+## Microsoft 365 / Power Platform Pitch
 
-OperationsFlow is not currently a Power Platform app, but it maps naturally to Microsoft 365 workflows.
+OperationsFlow is not live-integrated yet, but it has a clear Microsoft 365 direction.
 
-Future integration path:
+Relevant future mapping:
 
-- SharePoint for documents/evidence.
-- Teams for reminders/escalations.
-- Outlook for follow-up emails.
-- Microsoft Lists for smaller structured lists if useful.
-- Excel/Power BI-ready exports for reporting.
-- Entra ID for authentication.
+- Work Orders → Microsoft Lists / SharePoint list.
+- Corrective Actions → Microsoft Lists / Planner-style follow-up.
+- Document Intake → SharePoint document library + metadata list.
+- Controlled Documents → SharePoint document library.
+- Reminders → Power Automate / Teams / Outlook.
+- Reports → Excel / Power BI-ready exports.
+- Roles → Entra ID / SharePoint groups.
 
 Key message:
 
-> The project shows the same thinking used in Microsoft 365 workflow automation: centralising scattered follow-up, connecting documents, assigning owners, sending reminders, and producing management-ready reports.
+> The prototype proves the workflow first. Week 3 will build local production-shaped foundations, and Week 4 can replace those providers with real Microsoft 365 services.
 
 ---
 
-## Short Message for Sending the Repo
+## Best Short Description
 
-Hi,
+Use this description when sending the repo:
 
-I’ve put together a working Blazor/.NET portfolio prototype called OperationsFlow.
-
-It demonstrates a connected business workflow system for operational work, corrective actions, safety/compliance follow-up, document intake, reminders, workload visibility, reports, CSV exports, data quality checks, activity traceability, and production planning.
-
-The best starting page is **Portfolio Hub**, then **Reviewer Checklist** or **Demo Guide**. The project is intentionally presented as a local prototype, not a finished production system, and it includes pages explaining the prototype boundaries, deployment requirements, testing path, and Microsoft 365 integration direction.
-
----
-
-## Honest Scope Line
-
-Use this if someone asks whether it is production-ready:
-
-> Not yet. It is a working local Blazor/SQLite prototype that proves the workflow, reporting, traceability, and production planning. A production version would need authentication, roles, hosted database storage, backups, tests, deployment, monitoring, and live integrations.
-
----
-
-## Strongest Interview Talking Points
-
-- Built a working Blazor/.NET business workflow prototype.
-- Focused on practical business problems, not just UI pages.
-- Connected multiple workflow areas into reporting and review pages.
-- Added create/edit/save workflows and activity history.
-- Added CSV exports for management/spreadsheet workflows.
-- Added data quality checks to identify weak records.
-- Added reviewer support pages so the project explains itself.
-- Added production planning pages covering data model, roles, audit, deployment, testing, and Microsoft 365 integration.
+> OperationsFlow is a Blazor/.NET portfolio prototype for operations, safety/compliance, and document/admin workflow tracking. It includes editable records, source-linked corrective actions, reminders, workload, reports, CSV exports, data quality checks, activity history, reviewer guidance, and production planning toward Microsoft 365.

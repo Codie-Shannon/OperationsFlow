@@ -1,18 +1,12 @@
 # OperationsFlow
 
-**OperationsFlow** is a Blazor/.NET 8 business workflow prototype for tracking operational work, corrective actions, document intake, safety/compliance review, risk, training, controlled documents, reminders, workload, reports, CSV exports, data quality, activity history, and production planning.
+**OperationsFlow** is a Blazor/.NET 8 business workflow prototype for tracking operational work, corrective actions, document intake, safety/compliance review, risk, training, controlled documents, reminders, workload, reports, CSV exports, data quality, activity history, reviewer guidance, and production planning.
 
 It was built as a focused portfolio project to demonstrate practical business systems development: turning scattered admin, operations, safety/compliance, document, and follow-up work into one connected workflow system.
 
-> **Current status:** OperationsFlow is a local portfolio prototype using SQLite and seeded demo data. It demonstrates workflow design, record editing, reporting, exports, reminders, workload visibility, activity traceability, data quality checks, reviewer guidance, production planning, testing awareness, deployment planning, and Microsoft 365 integration direction. It is not yet a production deployment and does not currently include real authentication, role permissions, hosted infrastructure, live SharePoint/Teams/Outlook integration, production file storage, or automated test coverage.
+> **Current status:** Week 2 UI cleanup and workflow polish is complete. OperationsFlow is still a local portfolio prototype using SQLite and seeded demo data, but it now has a consistent shared UI component system, cleaned stylesheet, tested workflow pages, reporting/evidence pages, reviewer pages, and a clear Week 3/Week 4 path toward production foundations and Microsoft 365 implementation.
 
----
-
-## Week 1 Review Walkthrough
-
-A short silent walkthrough video is available for reviewers who want a quick overview of the Week 1 review package.
-
-[Watch the Week 1 Review Walkthrough](https://youtu.be/Ng0jTAEdqKs)
+OperationsFlow is **not yet a production deployment**. It does not currently include real authentication, enforced role permissions, hosted infrastructure, live Microsoft 365 / SharePoint / Teams / Outlook integration, production file storage, automated tests, or production monitoring.
 
 ---
 
@@ -46,9 +40,10 @@ OperationsFlow demonstrates ability to:
 - Create dashboard KPIs, reports, reminders, CSV exports, workload views, and data quality checks.
 - Track activity history globally and per record.
 - Model admin/document intake, compliance follow-up, risk, training, controlled documents, and corrective actions.
-- Explain a prototype clearly for business reviewers, technical reviewers, and future production planning.
-- Separate current prototype functionality from future production requirements.
-- Plan a realistic Microsoft 365 upgrade path using SharePoint, Teams, Outlook, identity, reporting exports, and integrations.
+- Generate source-linked corrective actions from risk, training, and document review records.
+- Build and reuse shared Razor UI components across a multi-page business application.
+- Consolidate a large stylesheet into a cleaner shared UI styling system.
+- Explain prototype scope, business value, production limitations, and Microsoft 365 upgrade direction clearly.
 
 ---
 
@@ -60,6 +55,8 @@ Current prototype includes:
 - SQLite persistence
 - EF Core data layer
 - Seeded demo data
+- Shared UI component system
+- Cleaned app stylesheet
 - Dashboard and management overview
 - Work Orders workflow
 - Corrective Actions workflow
@@ -96,7 +93,7 @@ Current prototype includes:
 
 ## Screenshots
 
-OperationsFlow includes a 36-image screenshot review pack covering the main workflow, safety/compliance pages, admin workflow, reviewer pages, and production planning pages.
+OperationsFlow includes a screenshot review pack covering the main workflow, safety/compliance pages, admin workflow, reviewer pages, technical pages, and production planning pages.
 
 See the full [Screenshot Checklist](Docs/ScreenshotChecklist.md) for the complete screenshot list and what each image proves.
 
@@ -130,16 +127,16 @@ See the full [Screenshot Checklist](Docs/ScreenshotChecklist.md) for the complet
 
 For someone reviewing the project without a live spoken demo, start here:
 
-1. **Week 1 Review Walkthrough** — short silent video overview.
-2. **Portfolio Hub** — starting point for reviewers.
-3. **Reviewer Checklist** — what to click, verify, and assess.
-4. **Demo Guide** — guided walkthrough paths.
-5. **Business Value** — why the workflow matters.
-6. **Corrective Actions** — editable workflow record example.
-7. **Safety Meeting Pack** — connected compliance review page.
-8. **Workload** — owner-based management visibility.
-9. **Reports** — management summaries and export concepts.
-10. **Data Quality** — weak record and system health checks.
+1. **Portfolio Hub** — starting point for reviewers.
+2. **Reviewer Checklist** — what to click, verify, and assess.
+3. **Demo Guide** — guided walkthrough paths.
+4. **Business Value** — why the workflow matters.
+5. **Corrective Actions** — editable workflow record example.
+6. **Safety Meeting Pack** — connected compliance review page.
+7. **Workload** — owner-based management visibility.
+8. **Reports** — management summaries and export concepts.
+9. **Data Quality** — weak record and system health checks.
+10. **Activity Log** — workflow traceability.
 11. **Technical Overview** — stack, architecture, and production direction.
 12. **Deployment Overview** — what would be needed before real rollout.
 13. **Integration Overview** — Microsoft 365 / SharePoint / Teams / Outlook direction.
@@ -163,7 +160,7 @@ For someone reviewing the project without a live spoken demo, start here:
 - View work order details.
 - Per-record activity history.
 - Overdue tracking.
-- Dashboard/report integration.
+- Dashboard/report/reminder/workload integration.
 - CSV export.
 
 ### Corrective Actions
@@ -171,7 +168,8 @@ For someone reviewing the project without a live spoken demo, start here:
 - List, search, and filter.
 - Create corrective action.
 - Edit corrective action.
-- Owner, priority, status, due date, completed date, and notes.
+- Details/review page.
+- Owner, source, action type, priority, status, due date, completed date, and notes.
 - Status guidance.
 - Completed date behaviour.
 - Activity logging.
@@ -216,7 +214,7 @@ Target systems are tracked as workflow metadata only. The current app does not l
 - Risk Register
 - Training Compliance
 
-Risk items, document reviews, and training issues can generate corrective actions.
+Risk items, document reviews, and training issues can generate prefilled corrective actions.
 
 ### Management Views
 
@@ -267,11 +265,126 @@ Current prototype structure:
 
 ```text
 Blazor UI
-↓
+    ↓
 Razor Components / Pages
-↓
+    ↓
 Application Services
-↓
+    ↓
 Entity Framework Core
-↓
+    ↓
 SQLite Database
+```
+
+Key services currently include:
+
+- `DashboardService`
+- `ActivityLogService`
+- `CsvExportService`
+
+Week 3 will add production-foundation services such as file storage, roles/permissions, Microsoft 365 schema mapping, dry-run sync, and notification boundaries.
+
+---
+
+## Current Limitations
+
+OperationsFlow is currently a strong local portfolio prototype, not a live production system.
+
+Current limitations:
+
+- Local SQLite database.
+- Seeded demo data.
+- No real authentication.
+- No enforced role permissions.
+- No production hosted environment.
+- No production file storage or document library.
+- No live Microsoft 365 / SharePoint / Teams / Outlook integration.
+- No production backup/restore process.
+- No automated test suite.
+- No CI/CD deployment pipeline.
+
+See [Known Limitations](Docs/KnownLimitations.md) for details.
+
+---
+
+## Week 2 Completion
+
+Week 2 completed:
+
+- Shared UI component system.
+- Workflow module refactors.
+- Management/evidence page refactors.
+- Static/support page refactors.
+- Activity history empty state fix.
+- Calendar section build fix.
+- App-wide stylesheet cleanup.
+- Workload review lane polish.
+- Final manual page testing.
+
+See [Release Notes](Docs/ReleaseNotes.md) and [Release Package](Docs/ReleasePackage.md).
+
+---
+
+## Week 3 / Week 4 Direction
+
+### Week 3 — Production Foundation
+
+Week 3 will build local working versions of production foundations:
+
+- Production configuration/options structure.
+- File storage interface and local file storage provider.
+- Document attachment model.
+- Local Document Library page.
+- Role/permission foundation.
+- Microsoft Lists schema registry.
+- Microsoft 365 readiness/dry-run checks.
+- Notification rules and local notification preview/log.
+
+### Week 4 — Production Microsoft 365 Implementation
+
+Week 4 will connect the production implementation:
+
+- Real Microsoft 365 environment.
+- Real SharePoint site and document library.
+- Real Microsoft Lists.
+- Real file uploads to SharePoint.
+- Real sync flows.
+- Real Teams/Outlook/Power Automate notification path.
+- Production configuration and deployment documentation.
+
+---
+
+## Run Locally
+
+```bash
+dotnet restore
+dotnet build
+dotnet run
+```
+
+Then open the local URL shown in the terminal.
+
+---
+
+## Documentation
+
+Key documentation:
+
+- [Case Study](Docs/CaseStudy.md)
+- [Architecture](Docs/Architecture.md)
+- [Build Plan](Docs/BuildPlan.md)
+- [Demo Walkthrough](Docs/DemoWalkthrough.md)
+- [Feature Checklist](Docs/FeatureChecklist.md)
+- [Known Limitations](Docs/KnownLimitations.md)
+- [Release Package](Docs/ReleasePackage.md)
+- [Release Notes](Docs/ReleaseNotes.md)
+- [Screenshot Checklist](Docs/ScreenshotChecklist.md)
+- [Styling System](Docs/StylingSystem.md)
+- [Targeted Pitches](Docs/TargetedPitches.md)
+- [Technical Decisions](Docs/TechnicalDecisions.md)
+
+---
+
+## Summary
+
+OperationsFlow is a portfolio-ready Blazor/.NET business workflow prototype showing operational follow-up, safety/compliance review, document/admin workflow, reporting, data quality, activity traceability, and a realistic production path toward Microsoft 365.
+

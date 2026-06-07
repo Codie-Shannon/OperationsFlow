@@ -11,8 +11,10 @@ This checklist summarises the current implemented/reviewable features and the ma
 - [x] Entity Framework Core data access
 - [x] Seeded demo data
 - [x] Shared navigation
-- [x] Reusable page intro pattern
-- [x] Reusable card/table visual style
+- [x] Reusable page intro/layout pattern
+- [x] Reusable card/table/panel visual style
+- [x] Shared UI component system
+- [x] Cleaned consolidated stylesheet
 - [x] Dashboard overview
 - [x] Local run/demo workflow
 - [ ] Hosted production deployment
@@ -62,6 +64,7 @@ This checklist summarises the current implemented/reviewable features and the ma
 - [x] Corrective action list
 - [x] Search/filter
 - [x] Create corrective action
+- [x] Corrective action details/review page
 - [x] Edit corrective action
 - [x] Owner field
 - [x] Source field
@@ -110,6 +113,7 @@ This checklist summarises the current implemented/reviewable features and the ma
 - [x] Appears in workload/reminders/reports/data quality
 - [ ] Email inbox integration
 - [ ] OCR/metadata extraction
+- [ ] Local file/document library foundation
 - [ ] SharePoint file routing
 - [ ] Approval/rejection workflow
 
@@ -202,8 +206,8 @@ This checklist summarises the current implemented/reviewable features and the ma
 - [x] Deployment Overview
 - [x] Testing Overview
 - [x] Integration Overview
-- [ ] Final release notes page
-- [ ] Screenshot checklist page/file
+- [x] Screenshot checklist file
+- [x] Release notes file
 
 ---
 
@@ -234,13 +238,33 @@ This checklist summarises the current implemented/reviewable features and the ma
 - [x] Targeted Pitches
 - [x] Technical Decisions
 - [x] Build Plan
-- [ ] Final screenshot pack
-- [ ] Release notes
+- [x] Release Package
+- [x] Release Notes
+- [x] Screenshot Checklist
+- [x] Styling System
+- [ ] Final refreshed screenshot pack after Week 2 UI cleanup
+
+---
+
+## Week 3 Production Foundation Targets
+
+- [ ] Production config/options structure
+- [ ] File storage interface
+- [ ] Local file storage provider
+- [ ] SharePoint file storage provider placeholder
+- [ ] DocumentAttachment model
+- [ ] Local Document Library page
+- [ ] Role/permission foundation
+- [ ] Permission Matrix page
+- [ ] Microsoft Lists schema registry
+- [ ] M365 Readiness / Production Readiness page
+- [ ] Mock/dry-run sync service
+- [ ] Notification rule and local notification preview/log
 
 ---
 
 ## Current Overall State
 
-OperationsFlow is currently a strong local portfolio prototype that demonstrates business workflow thinking, .NET/Blazor development, CRUD workflows, reporting, exports, data quality, activity traceability, reviewer guidance, and production planning.
+OperationsFlow is currently a strong local portfolio prototype that demonstrates business workflow thinking, .NET/Blazor development, CRUD workflows, reporting, exports, data quality, activity traceability, reviewer guidance, shared UI refactoring, CSS cleanup, and production planning.
 
 It is not yet a production deployment, but it has a clear path toward one.

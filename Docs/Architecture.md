@@ -2,9 +2,11 @@
 
 ## Overview
 
-OperationsFlow is a Blazor/.NET 8 portfolio prototype using local SQLite data persistence. It demonstrates practical business workflow tracking, reporting, CSV exports, reminders, workload visibility, data quality checks, activity traceability, and production planning.
+OperationsFlow is a Blazor/.NET 8 portfolio prototype using local SQLite persistence. It demonstrates practical business workflow tracking, reporting, CSV exports, reminders, workload visibility, data quality checks, activity traceability, reviewer guidance, and production planning.
 
 The project is intentionally honest about scope. It is a working local prototype, not a finished production ERP or hosted enterprise system.
+
+Week 2 has now completed the shared UI/component cleanup and stylesheet consolidation. The next stage is Week 3 production foundation work.
 
 ---
 
@@ -12,13 +14,13 @@ The project is intentionally honest about scope. It is a working local prototype
 
 ```text
 Blazor UI
-↓
+    ↓
 Razor Components / Pages
-↓
+    ↓
 Application Services
-↓
+    ↓
 Entity Framework Core
-↓
+    ↓
 SQLite Database
 ```
 
@@ -28,19 +30,42 @@ Current implemented services include:
 - `ActivityLogService`
 - `CsvExportService`
 
-The app currently behaves like this:
+Current behaviour:
 
 ```text
 Create/Edit record
-↓
+    ↓
 SQLite data updates
-↓
+    ↓
 Dashboard/reports/reminders/workload update
-↓
+    ↓
 Activity Log records the change
-↓
+    ↓
 CSV export reflects the saved data
 ```
+
+---
+
+## Shared UI Architecture
+
+Week 2 introduced a shared UI component system for repeated page structures.
+
+Shared UI component examples:
+
+- `PageHero`
+- `PurposeNote`
+- `MetricGrid`
+- `MetricCard`
+- `InfoPanel`
+- `ActionStrip`
+- `TableCard`
+- `FilterBar`
+- `StatusFlow`
+- `GuidanceNote`
+- `ActivityHistoryPanel`
+- `EmptyState`
+
+This reduced repeated Razor markup, made pages easier to scan, and gave the app a consistent dashboard/business-system look.
 
 ---
 
@@ -117,15 +142,15 @@ Current activity logging is record-level traceability.
 
 ```text
 User creates or edits a record
-↓
+    ↓
 Page saves changes through EF Core
-↓
+    ↓
 ActivityLogService creates an ActivityLog record
-↓
+    ↓
 Activity appears in:
-- Global Activity Log
-- Dashboard Recent Activity
-- Per-record Activity History
+    - Global Activity Log
+    - Dashboard Recent Activity
+    - Per-record Activity History
 ```
 
 Current Activity Log fields include:
@@ -157,13 +182,13 @@ CSV exports are implemented through app endpoints and `CsvExportService`.
 
 ```text
 User clicks export link
-↓
+    ↓
 Endpoint calls CsvExportService
-↓
+    ↓
 Service reads records from SQLite through EF Core
-↓
+    ↓
 CSV string is generated
-↓
+    ↓
 Browser downloads CSV file
 ```
 
@@ -229,7 +254,49 @@ These views reuse the same workflow records to show owner pressure, overdue work
 
 ---
 
-## Production Architecture Direction
+## Week 3 Production Foundation Architecture
+
+Week 3 should add production-shaped local providers and interfaces:
+
+```text
+Blazor UI
+    ↓
+Application Services
+    ↓
+Production Foundation Interfaces
+    ↓
+Local Providers / Mock Providers
+    ↓
+SQLite + Local Storage
+```
+
+Target service areas:
+
+```text
+IFileStorageService
+    LocalFileStorageService
+    SharePointFileStorageService placeholder
+
+IMicrosoft365ListService
+    MockMicrosoft365ListService
+    GraphMicrosoft365ListService placeholder
+
+INotificationService
+    LocalNotificationService
+    TeamsNotificationService placeholder
+
+IUserContextService
+    DemoUserContextService
+
+IPermissionService
+    PermissionService
+```
+
+Week 3 should build local working versions of production features while keeping Week 4 ready for live Microsoft 365 providers.
+
+---
+
+## Future Production Architecture
 
 A future production version may move toward:
 
@@ -246,23 +313,19 @@ Target flow:
 
 ```text
 Blazor UI
-↓
+    ↓
 Application Services
-↓
+    ↓
 Domain / Business Rules
-↓
+    ↓
 Infrastructure
-↓
+    ↓
 SQL Server / Azure SQL / PostgreSQL
-↓
+    ↓
 Authentication / Permissions / Integrations
 ```
 
----
-
-## Future Architecture Upgrades
-
-Future upgrades could include:
+Future architecture upgrades could include:
 
 - Service-layer refactor for all modules.
 - Request/view models instead of editing EF entities directly in forms.
@@ -285,6 +348,4 @@ Future upgrades could include:
 
 ## Current Architecture Summary
 
-OperationsFlow currently proves the business workflow and reporting concept with a working Blazor/SQLite prototype.
-
-It is suitable as a portfolio/demo prototype and is structured around a realistic path toward a production internal business workflow system.
+OperationsFlow currently proves the business workflow and reporting concept with a working Blazor/SQLite prototype. It is suitable as a portfolio/demo prototype and is structured around a realistic path toward a production internal business workflow system.

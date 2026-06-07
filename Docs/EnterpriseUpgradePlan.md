@@ -4,7 +4,7 @@
 
 This document explains how OperationsFlow could move from the current local Blazor/SQLite portfolio prototype into a production-ready internal business workflow system.
 
-The current project already demonstrates workflow design, reporting, exports, reminders, workload visibility, data quality, activity traceability, reviewer support, and production planning. A production version would focus on security, hosting, real data, integrations, testing, monitoring, and support.
+The current project already demonstrates workflow design, reporting, exports, reminders, workload visibility, data quality, activity traceability, reviewer support, shared UI structure, and production planning.
 
 ---
 
@@ -16,8 +16,10 @@ Current state:
 - SQLite database.
 - Seeded demo data.
 - Manual build/run testing.
+- Shared UI component system.
+- Cleaned consolidated stylesheet.
 - No real authentication.
-- No role-based permissions.
+- No enforced role-based permissions.
 - No live Microsoft 365 integration.
 - No production document storage.
 - No hosted deployment.
@@ -43,6 +45,7 @@ A production version would include:
 - Automated tests.
 - Deployment pipeline.
 - Monitoring and support.
+- Microsoft 365 / SharePoint / Teams / Outlook integration where appropriate.
 
 ---
 
@@ -50,18 +53,19 @@ A production version would include:
 
 ### Phase 1 — Stabilise the Prototype
 
-Goal: make the current local system cleaner, easier to maintain, and safer to expand.
+Goal: make the local system cleaner, easier to maintain, and safer to expand.
 
-Tasks:
+Completed in Week 2:
 
-- Refactor CSS into smaller files.
-- Clean repeated card/table styles.
-- Review navigation order.
-- Confirm all pages build and load.
-- Confirm all reviewer pages explain the project accurately.
-- Add a final screenshot/demo checklist.
-- Update README and docs.
-- Create release notes.
+- Shared UI component system.
+- Consistent page layout.
+- Core workflow page refactor.
+- Management/evidence page refactor.
+- Support/static page refactor.
+- CSS cleanup and consolidation.
+- Workload review lane polish.
+- Final manual page testing.
+- Documentation refresh.
 
 Outcome:
 
@@ -69,25 +73,29 @@ A polished portfolio/demo package ready for Vanessa, Lester, Peter, employers, a
 
 ---
 
-### Phase 2 — Service Layer and Data Rules
+### Phase 2 — Production Foundation Layer
 
-Goal: move business logic out of pages and into clearer services.
+Goal: build local working versions of production features with production-shaped architecture.
 
-Tasks:
+Recommended Week 3 tasks:
 
-- Add `WorkOrderService`.
-- Add `CorrectiveActionService`.
-- Add `DocumentIntakeService`.
-- Add `ReminderService`.
-- Add `ReportService`.
-- Add `DataQualityService`.
-- Add validation rules.
-- Add clearer save/update methods.
-- Reduce direct EF usage inside pages where practical.
+- Add production configuration structure.
+- Add `IFileStorageService`.
+- Add `LocalFileStorageService`.
+- Add `SharePointFileStorageService` placeholder.
+- Add `DocumentAttachment` model.
+- Add local Document Library page.
+- Add file upload/list/download locally.
+- Add role/permission models and services.
+- Add Permission Matrix page.
+- Add Microsoft Lists schema registry.
+- Add M365 Readiness / Production Readiness page.
+- Add mock/dry-run sync service.
+- Add notification rules and local notification preview/log.
 
 Outcome:
 
-The app becomes easier to test, extend, and productionise.
+The app still runs locally, but the shape of the production system is already in place.
 
 ---
 
@@ -186,20 +194,21 @@ Goal: connect workflow records to the business tools people already use.
 Potential integrations:
 
 - SharePoint document libraries.
+- Microsoft Lists.
 - Teams notifications.
 - Outlook reminders/emails.
-- Microsoft Lists where useful.
 - Excel/Power BI-ready exports.
 - APIs for job/accounting/ERP systems.
 
 Recommended order:
 
-1. CSV/Excel exports.
-2. SharePoint document links.
-3. Teams/Outlook notifications.
-4. Authentication/roles.
-5. API or scheduled sync.
-6. Two-way integration only after workflow rules are stable.
+1. Local file/document foundation.
+2. SharePoint document library provider.
+3. Microsoft Lists schema creation/sync.
+4. Teams/Outlook notifications.
+5. Authentication/roles.
+6. API or scheduled sync.
+7. Two-way integration only after workflow rules are stable.
 
 Outcome:
 
@@ -302,11 +311,11 @@ OperationsFlow should not jump straight from prototype to full ERP replacement.
 The best path is:
 
 1. Polish the prototype.
-2. Stabilise services and business rules.
+2. Add production foundation services locally.
 3. Move to production storage.
 4. Add authentication and roles.
 5. Strengthen audit logging.
-6. Add Microsoft 365 integrations gradually.
+6. Add Microsoft 365 integrations.
 7. Add tests, deployment, monitoring, and support.
 8. Pilot with one workflow before expanding.
 
