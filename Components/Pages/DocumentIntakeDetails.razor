@@ -1,0 +1,393 @@
+﻿@page "/document-intake/details/{Id:int}"
+
+@using Microsoft.AspNetCore.Components
+@using Microsoft.EntityFrameworkCore
+@using OperationsFlow.Data
+@using OperationsFlow.Models
+@using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
+
+@inject OperationsFlowDbContext Db
+@inject NavigationManager Navigation
+
+<PageTitle>Document Intake Details - OperationsFlow</PageTitle>
+
+@if (isLoading)
+{
+    <EmptyState Icon="⏳"
+                Title="Loading intake record..."
+                Message="The document intake record is being loaded." />
+}
+else if (documentIntake == null)
+{
+    <PageHero Title="Document Intake Not Found"
+              Eyebrow="Admin Workflow"
+              Subtitle="The selected document intake record could not be found.">
+        <Actions>
+            <a class="btn btn-secondary" href="/document-intake">Back to Document Intake</a>
+        </Actions>
+    </PageHero>
+
+    <EmptyState Icon="📥"
+                Title="No intake record found"
+                Message="Return to the intake register and open a valid record." />
+}
+else
+{
+    <PageHero Title="@documentIntake.DocumentName"
+              Eyebrow="Document Intake"
+              Subtitle="@($"{DisplayText(documentIntake.SourceType)} • {DisplayText(documentIntake.TargetSystem)}")"
+              BadgeText="@GetFlagText(documentIntake)"
+              BadgeClass="@GetFlagClass(documentIntake)">
+        <Actions>
+            <a class="btn btn-secondary" href="/document-intake">Back to Intake</a>
+            <a class="btn btn-secondary" href="/document-library">Document Library</a>
+            <a class="btn btn-secondary" href="/activity-log">Activity Log</a>
+        </Actions>
+    </PageHero>
+
+    <div class="of-metric-grid">
+        <MetricCard Title="Priority"
+                    Value="@DisplayText(documentIntake.Priority)"
+                    Detail="@DisplayText(documentIntake.AssignedTo)"
+                    Icon="⚡"
+                    Tone="@GetPriorityTone(documentIntake.Priority)" />
+
+        <MetricCard Title="Status"
+                    Value="@DisplayText(documentIntake.Status)"
+                    Detail="@GetStatusDetail(documentIntake)"
+                    Icon="📌"
+                    Tone="@GetStatusTone(documentIntake.Status)" />
+
+        <MetricCard Title="Due Date"
+                    Value="@documentIntake.DueDate.ToString("dd MMM")"
+                    Detail="@documentIntake.DueDate.ToString("yyyy")"
+                    Icon="📅"
+                    Tone="warning" />
+
+        <MetricCard Title="Target System"
+                    Value="@DisplayText(documentIntake.TargetSystem)"
+                    Detail="@DisplayText(documentIntake.DocumentType)"
+                    Icon="🧭"
+                    Tone="info" />
+    </div>
+
+    <InfoPanel Title="Document Intake Details"
+               Subtitle="Core record information used by workload, reminders, reports, data quality, and file evidence.">
+        <ChildContent>
+            <div class="of-detail-grid">
+                <div class="of-detail-card">
+                    <span class="of-detail-label">Document</span>
+                    <strong>@documentIntake.DocumentName</strong>
+                </div>
+
+                <div class="of-detail-card">
+                    <span class="of-detail-label">Received From</span>
+                    <strong>@DisplayText(documentIntake.ReceivedFrom)</strong>
+                </div>
+
+                <div class="of-detail-card">
+                    <span class="of-detail-label">Received Date</span>
+                    <strong>@documentIntake.ReceivedDate.ToString("dd MMM yyyy")</strong>
+                </div>
+
+                <div class="of-detail-card">
+                    <span class="of-detail-label">Source Type</span>
+                    <strong>@DisplayText(documentIntake.SourceType)</strong>
+                </div>
+
+                <div class="of-detail-card">
+                    <span class="of-detail-label">Document Type</span>
+                    <strong>@DisplayText(documentIntake.DocumentType)</strong>
+                </div>
+
+                <div class="of-detail-card">
+                    <span class="of-detail-label">Assigned To</span>
+                    <strong>@DisplayText(documentIntake.AssignedTo)</strong>
+                </div>
+
+                <div class="of-detail-card">
+                    <span class="of-detail-label">Target System</span>
+                    <strong>@DisplayText(documentIntake.TargetSystem)</strong>
+                </div>
+
+                <div class="of-detail-card">
+                    <span class="of-detail-label">Priority</span>
+                    <span class="@GetPriorityClass(documentIntake.Priority)">
+                        @DisplayText(documentIntake.Priority)
+                    </span>
+                </div>
+
+                <div class="of-detail-card">
+                    <span class="of-detail-label">Status</span>
+                    <span class="@GetStatusClass(documentIntake.Status)">
+                        @DisplayText(documentIntake.Status)
+                    </span>
+                </div>
+
+                <div class="of-detail-card">
+                    <span class="of-detail-label">Due Date</span>
+                    <strong>@documentIntake.DueDate.ToString("dd MMM yyyy")</strong>
+                </div>
+
+                <div class="of-detail-card">
+                    <span class="of-detail-label">Completed Date</span>
+                    <strong>@(documentIntake.CompletedDate?.ToString("dd MMM yyyy") ?? "Not completed")</strong>
+                </div>
+
+                <div class="of-detail-card">
+                    <span class="of-detail-label">Flag</span>
+                    <span class="@GetFlagClass(documentIntake)">
+                        @GetFlagText(documentIntake)
+                    </span>
+                </div>
+            </div>
+        </ChildContent>
+    </InfoPanel>
+
+    <InfoPanel Title="Notes"
+               Subtitle="Recorded context, processing notes, or follow-up instructions.">
+        <ChildContent>
+            <div class="of-note-box">
+                @DisplayText(documentIntake.Notes)
+            </div>
+        </ChildContent>
+    </InfoPanel>
+
+    <RecordAttachments ModuleName="Document Intake"
+                       RecordId="@documentIntake.Id"
+                       RecordReference="@($"DI-{documentIntake.Id}")"
+                       Title="Document Intake Attachments"
+                       Subtitle="Upload source documents, PDFs, scans, emails, forms, or processing evidence linked to this intake record."
+                       DefaultUploadedBy="@DisplayText(documentIntake.AssignedTo)" />
+
+    <TableCard Title="Activity History"
+               Subtitle="Record-level traceability for this document intake item."
+               IsEmpty="@(!activityHistory.Any())"
+               EmptyTitle="No activity history yet"
+               EmptyMessage="Upload files or update this intake item to generate activity history.">
+        <ChildContent>
+            @if (activityHistory.Any())
+            {
+                <div class="table-responsive">
+                    <table class="of-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Action</th>
+                                <th>Description</th>
+                                <th>Created By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var activity in activityHistory)
+                            {
+                                <tr>
+                                    <td>@activity.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
+                                    <td>
+                                        <span class="@GetActivityBadgeClass(activity.ActionType)">
+                                            @activity.ActionType
+                                        </span>
+                                    </td>
+                                    <td>@activity.Description</td>
+                                    <td>@activity.CreatedBy</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </ChildContent>
+    </TableCard>
+
+    <InfoPanel Title="Next Actions"
+               Subtitle="Return to the register or continue reviewing linked evidence.">
+        <Actions>
+            <a class="btn btn-secondary" href="/document-intake">Back to Intake</a>
+            <a class="btn btn-primary" href="/document-library">Open Document Library</a>
+        </Actions>
+        <ChildContent>
+            <ul>
+                <li>Confirm the source document has been attached if the record is waiting for review.</li>
+                <li>Use Document Library to verify the file is visible across modules.</li>
+                <li>Use Activity Log to prove upload and delete traceability.</li>
+                <li>Week 4 can connect this same workflow to SharePoint document storage.</li>
+            </ul>
+        </ChildContent>
+    </InfoPanel>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private DocumentIntakeModel? documentIntake;
+    private List<ActivityLog> activityHistory = new();
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        documentIntake = await Db.DocumentIntakeItems
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == Id);
+
+        if (documentIntake != null)
+        {
+            await LoadActivityHistoryAsync();
+        }
+
+        isLoading = false;
+    }
+
+    private async Task LoadActivityHistoryAsync()
+    {
+        activityHistory = await Db.ActivityLogs
+            .AsNoTracking()
+            .Where(x => x.ModuleName == "Document Intake" && x.RecordId == Id)
+            .OrderByDescending(x => x.CreatedDate)
+            .ToListAsync();
+    }
+
+    private static string DisplayText(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? "Not recorded" : value;
+    }
+
+    private static string GetStatusDetail(DocumentIntakeModel item)
+    {
+        if (item.IsCompleted)
+        {
+            return item.CompletedDate.HasValue
+                ? $"Completed {item.CompletedDate.Value:dd MMM yyyy}"
+                : "Completed or rejected";
+        }
+
+        if (item.IsOverdue)
+        {
+            return $"{Math.Max(0, (DateTime.Today - item.DueDate.Date).Days)} day(s) overdue";
+        }
+
+        if (item.IsDueSoon)
+        {
+            return $"Due in {Math.Max(0, (item.DueDate.Date - DateTime.Today).Days)} day(s)";
+        }
+
+        return "Open workflow item";
+    }
+
+    private static string GetFlagText(DocumentIntakeModel item)
+    {
+        if (item.IsOverdue)
+        {
+            return "Overdue";
+        }
+
+        if (item.NeedsReview)
+        {
+            return "Needs Review";
+        }
+
+        if (item.IsDueSoon)
+        {
+            return "Due Soon";
+        }
+
+        if (item.IsCompleted)
+        {
+            return "Complete";
+        }
+
+        return "On Track";
+    }
+
+    private static string GetFlagClass(DocumentIntakeModel item)
+    {
+        if (item.IsOverdue)
+        {
+            return "badge badge-danger";
+        }
+
+        if (item.NeedsReview)
+        {
+            return "badge badge-warning";
+        }
+
+        if (item.IsDueSoon)
+        {
+            return "badge badge-info";
+        }
+
+        if (item.IsCompleted)
+        {
+            return "badge badge-success";
+        }
+
+        return "badge badge-muted";
+    }
+
+    private static string GetPriorityTone(string? priority)
+    {
+        return priority?.ToLowerInvariant() switch
+        {
+            "critical" => "danger",
+            "high" => "warning",
+            "medium" => "info",
+            "low" => "default",
+            _ => "default"
+        };
+    }
+
+    private static string GetStatusTone(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "completed" => "success",
+            "rejected" => "danger",
+            "entered" => "info",
+            "data checked" => "info",
+            "needs review" => "warning",
+            "saved" => "default",
+            "received" => "default",
+            _ => "default"
+        };
+    }
+
+    private static string GetPriorityClass(string? priority)
+    {
+        return priority?.ToLowerInvariant() switch
+        {
+            "critical" => "badge badge-danger",
+            "high" => "badge badge-warning",
+            "medium" => "badge badge-info",
+            "low" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private static string GetStatusClass(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "completed" => "badge badge-success",
+            "rejected" => "badge badge-danger",
+            "entered" => "badge badge-info",
+            "data checked" => "badge badge-info",
+            "needs review" => "badge badge-warning",
+            "saved" => "badge badge-muted",
+            "received" => "badge badge-muted",
+            _ => "badge badge-muted"
+        };
+    }
+
+    private static string GetActivityBadgeClass(string? actionType)
+    {
+        return actionType?.ToLowerInvariant() switch
+        {
+            "created" => "badge badge-success",
+            "updated" => "badge badge-info",
+            "reviewed" => "badge badge-secondary",
+            "completed" => "badge badge-success",
+            "closed" => "badge badge-success",
+            "deleted" => "badge badge-danger",
+            _ => "badge badge-secondary"
+        };
+    }
+}

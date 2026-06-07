@@ -1,48 +1,51 @@
 ﻿@page "/document-intake"
+
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+@using OperationsFlow.Services
 @using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
+
 @inject OperationsFlowDbContext Db
+@inject DocumentAttachmentService AttachmentService
 
 <PageTitle>Document Intake - OperationsFlow</PageTitle>
 
-<PageHero Eyebrow="Admin Workflow"
-          Title="Document Intake"
-          Subtitle="Track incoming emails, PDFs, forms, supplier documents, job paperwork, and admin processing through review, entry, and completion."
-          BadgeText="@($"{NeedsReviewCount} need review")"
-          BadgeClass="of-badge-warning">
+<PageHero Title="Document Intake"
+          Eyebrow="Admin Workflow"
+          Subtitle="Capture incoming document workflow items, track ownership, and connect intake records to local evidence files before Week 4 SharePoint storage is connected."
+          BadgeText="@($"{ActionableCount} needs attention")"
+          BadgeClass="badge badge-warning">
     <Actions>
-        <a class="of-btn of-btn-primary" href="/document-intake/create">+ New Intake</a>
-        <a class="of-btn of-btn-secondary" href="/workload">Workload</a>
-        <a class="of-btn of-btn-secondary" href="/reminders">Reminders</a>
-        <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
+        <a class="btn btn-primary" href="/document-intake/create">+ New Intake</a>
+        <a class="btn btn-secondary" href="/document-library">Document Library</a>
+        <a class="btn btn-secondary" href="/workload">Workload</a>
+        <a class="btn btn-secondary" href="/reminders">Reminders</a>
+        <a class="btn btn-secondary" href="/reports">Reports</a>
     </Actions>
 </PageHero>
 
-<PurposeNote Title="Purpose" Icon="📥">
-    <p>
-        Document Intake captures admin/document processing work before it disappears into email,
-        folders, paper piles, or someone’s memory. Intake records feed workload, reminders,
-        reports, data quality checks, and activity history.
-    </p>
+<PurposeNote Icon="📥">
+    Document Intake captures admin/document processing work before it disappears into email, folders, paper piles, or someone’s memory.
+    Intake records now connect to local file evidence so documents can be opened, reviewed, attached, and traced through the Document Library.
 </PurposeNote>
 
-<MetricGrid>
+<div class="of-metric-grid">
     <MetricCard Title="Total Intake"
                 Value="@TotalCount.ToString()"
-                Detail="All incoming document records"
-                Icon="📋" />
+                Detail="Incoming document workflow records"
+                Icon="📥"
+                Tone="default" />
 
     <MetricCard Title="Needs Review"
                 Value="@NeedsReviewCount.ToString()"
-                Detail="Awaiting manual check"
+                Detail="Records waiting for manual review"
                 Icon="🔎"
                 Tone="warning" />
 
     <MetricCard Title="Overdue"
                 Value="@OverdueCount.ToString()"
-                Detail="Past due and not completed"
+                Detail="Due date has passed"
                 Icon="🚨"
                 Tone="danger" />
 
@@ -50,23 +53,56 @@
                 Value="@DueSoonCount.ToString()"
                 Detail="Due within the next 7 days"
                 Icon="📅"
-                Tone="info" />
+                Tone="warning" />
 
     <MetricCard Title="Completed"
                 Value="@CompletedCount.ToString()"
-                Detail="Processed or rejected records"
+                Detail="Completed or rejected records"
                 Icon="✅"
                 Tone="success" />
-</MetricGrid>
+
+    <MetricCard Title="Attached Files"
+                Value="@TotalAttachmentCount.ToString()"
+                Detail="Files linked to intake records"
+                Icon="📎"
+                Tone="info" />
+</div>
+
+<InfoPanel Title="Intake → Document Library Workflow"
+           Subtitle="What this page now proves.">
+    <ChildContent>
+        <div class="of-card-grid">
+            <div class="of-mini-card">
+                <h3>Capture</h3>
+                <p>Incoming document work is tracked with owner, source, target system, status, priority, due date, and notes.</p>
+            </div>
+
+            <div class="of-mini-card">
+                <h3>Open</h3>
+                <p>Each intake row opens a detail page where the exact record can be reviewed before work is completed.</p>
+            </div>
+
+            <div class="of-mini-card">
+                <h3>Attach</h3>
+                <p>Files can be uploaded directly against an intake record using the shared RecordAttachments component.</p>
+            </div>
+
+            <div class="of-mini-card">
+                <h3>Trace</h3>
+                <p>Uploaded files appear in Document Library and Activity Log so document work has evidence.</p>
+            </div>
+        </div>
+    </ChildContent>
+</InfoPanel>
 
 <FilterBar Title="Filter Document Intake">
     <ChildContent>
-        <input class="of-input"
-               placeholder="Search document intake..."
+        <input class="form-control"
+               placeholder="Search intake records..."
                @bind="searchText"
                @bind:event="oninput" />
 
-        <select class="of-select" @bind="statusFilter">
+        <select class="form-control" @bind="statusFilter">
             <option value="">All Statuses</option>
             @foreach (var status in StatusOptions)
             {
@@ -74,7 +110,7 @@
             }
         </select>
 
-        <select class="of-select" @bind="sourceTypeFilter">
+        <select class="form-control" @bind="sourceTypeFilter">
             <option value="">All Sources</option>
             @foreach (var sourceType in SourceTypeOptions)
             {
@@ -82,7 +118,7 @@
             }
         </select>
 
-        <select class="of-select" @bind="targetSystemFilter">
+        <select class="form-control" @bind="targetSystemFilter">
             <option value="">All Target Systems</option>
             @foreach (var targetSystem in TargetSystemOptions)
             {
@@ -90,7 +126,7 @@
             }
         </select>
 
-        <select class="of-select" @bind="priorityFilter">
+        <select class="form-control" @bind="priorityFilter">
             <option value="">All Priorities</option>
             @foreach (var priority in PriorityOptions)
             {
@@ -100,133 +136,137 @@
     </ChildContent>
 
     <Actions>
-        <a class="of-btn of-btn-secondary" href="/data-quality">Data Quality</a>
-        <a class="of-btn of-btn-secondary" href="/activity-log">Activity Log</a>
+        <a class="btn btn-secondary" href="/data-quality">Data Quality</a>
+        <a class="btn btn-secondary" href="/activity-log">Activity Log</a>
     </Actions>
 </FilterBar>
 
-@if (documentIntakeItems == null)
-{
-    <InfoPanel Title="Loading Document Intake" Subtitle="Loading document intake records from the local SQLite database.">
-        <p class="of-muted-text">Loading document intake...</p>
-    </InfoPanel>
-}
-else
-{
-    <TableCard Title="Document Intake Register"
-               Subtitle="Search, filter, open, and edit incoming document/admin workflow records."
-               IsEmpty="@(!FilteredItems.Any())"
-               EmptyTitle="No intake records found"
-               EmptyMessage="No intake records match the current search or filter selection.">
-        <table>
-            <thead>
-                <tr>
-                    <th>Document</th>
-                    <th>Received From</th>
-                    <th>Source Type</th>
-                    <th>Document Type</th>
-                    <th>Assigned To</th>
-                    <th>Target System</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                    <th>Due Date</th>
-                    <th>Flag</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in FilteredItems)
-                {
-                    <tr>
-                        <td><strong>@item.DocumentName</strong></td>
-                        <td>@DisplayText(item.ReceivedFrom)</td>
-                        <td>@DisplayText(item.SourceType)</td>
-                        <td>@DisplayText(item.DocumentType)</td>
-                        <td>@DisplayText(item.AssignedTo)</td>
-                        <td>@DisplayText(item.TargetSystem)</td>
-                        <td>
-                            <span class="@GetPriorityClass(item.Priority)">
-                                @DisplayText(item.Priority)
-                            </span>
-                        </td>
-                        <td>
-                            <span class="@GetStatusClass(item.Status)">
-                                @DisplayText(item.Status)
-                            </span>
-                        </td>
-                        <td>@item.DueDate.ToString("dd MMM yyyy")</td>
-                        <td>
-                            @if (item.IsOverdue)
-                            {
-                                <span class="of-badge of-badge-danger">Overdue</span>
-                            }
-                            else if (item.NeedsReview)
-                            {
-                                <span class="of-badge of-badge-warning">Needs Review</span>
-                            }
-                            else if (item.IsDueSoon)
-                            {
-                                <span class="of-badge of-badge-info">Due Soon</span>
-                            }
-                            else if (item.IsCompleted)
-                            {
-                                <span class="of-badge of-badge-success">Complete</span>
-                            }
-                            else
-                            {
-                                <span class="of-badge of-badge-success">On Track</span>
-                            }
-                        </td>
-                        <td>
-                            <div class="of-row-actions">
-                                <a class="of-card-link" href="@($"/document-intake/edit/{item.Id}?returnUrl={Uri.EscapeDataString("/document-intake")}")">Open / Edit</a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </TableCard>
-}
-
-<InfoPanel Title="Document Intake Workflow" Subtitle="This module proves admin/document work can be tracked like operational workflow.">
+<TableCard Title="Document Intake Register"
+           Subtitle="@($"Showing {FilteredItems.Count()} of {TotalCount} intake record(s). {ActionableCount} currently need attention.")"
+           IsEmpty="@(documentIntakeItems is not null && !FilteredItems.Any())"
+           EmptyTitle="No intake records found"
+           EmptyMessage="Adjust the current filters or add a new intake record.">
     <ChildContent>
-        <div class="of-review-proof-grid">
-            <div class="of-review-proof-card">
-                <strong>Received</strong>
-                <span>Incoming documents are captured with source, sender, date, and document type.</span>
-            </div>
+        @if (documentIntakeItems == null)
+        {
+            <EmptyState Icon="⏳"
+                        Title="Loading document intake..."
+                        Message="Incoming document workflow records are loading." />
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="of-table">
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>Received From</th>
+                            <th>Source</th>
+                            <th>Type</th>
+                            <th>Assigned To</th>
+                            <th>Target System</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                            <th>Files</th>
+                            <th>Flag</th>
+                            <th>Open</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in FilteredItems)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@item.DocumentName</strong>
 
-            <div class="of-review-proof-card">
-                <strong>Assigned</strong>
-                <span>Each record has an owner so workload and reminders stay visible.</span>
-            </div>
+                                    @if (!string.IsNullOrWhiteSpace(item.Notes))
+                                    {
+                                        <div class="helper-text">@item.Notes</div>
+                                    }
+                                </td>
+                                <td>@DisplayText(item.ReceivedFrom)</td>
+                                <td>@DisplayText(item.SourceType)</td>
+                                <td>@DisplayText(item.DocumentType)</td>
+                                <td>@DisplayText(item.AssignedTo)</td>
+                                <td>@DisplayText(item.TargetSystem)</td>
+                                <td>
+                                    <span class="@GetPriorityClass(item.Priority)">
+                                        @DisplayText(item.Priority)
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="@GetStatusClass(item.Status)">
+                                        @DisplayText(item.Status)
+                                    </span>
+                                </td>
+                                <td>
+                                    @item.DueDate.ToString("dd MMM yyyy")
 
-            <div class="of-review-proof-card">
-                <strong>Processed</strong>
-                <span>Status shows whether the record is saved, checked, entered, completed, or rejected.</span>
+                                    @if (item.IsOverdue)
+                                    {
+                                        <div class="helper-text">@DaysPastDue(item.DueDate) day(s) overdue</div>
+                                    }
+                                    else if (item.IsDueSoon)
+                                    {
+                                        <div class="helper-text">Due in @DaysUntilDue(item.DueDate) day(s)</div>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="@GetFileCountClass(item.Id)">
+                                        @GetAttachmentCount(item.Id) file(s)
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (item.IsOverdue)
+                                    {
+                                        <span class="badge badge-danger">Overdue</span>
+                                    }
+                                    else if (item.NeedsReview)
+                                    {
+                                        <span class="badge badge-warning">Needs Review</span>
+                                    }
+                                    else if (item.IsDueSoon)
+                                    {
+                                        <span class="badge badge-info">Due Soon</span>
+                                    }
+                                    else if (item.IsCompleted)
+                                    {
+                                        <span class="badge badge-success">Complete</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-muted">On Track</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a class="link-action" href="@($"/document-intake/details/{item.Id}")">Open</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
+        }
+    </ChildContent>
+</TableCard>
 
-            <div class="of-review-proof-card">
-                <strong>Traceable</strong>
-                <span>Created, updated, and reviewed events are recorded in the Activity Log.</span>
-            </div>
-        </div>
+<InfoPanel Title="Document Intake Notes"
+           Subtitle="How this module should be reviewed.">
+    <ChildContent>
+        <ul>
+            <li>Open overdue and needs-review records first.</li>
+            <li>Use the file count to confirm whether evidence has already been attached.</li>
+            <li>Incoming documents should be attached to the intake record before being completed or rejected.</li>
+            <li>Attached files should also appear in Document Library for cross-module review.</li>
+            <li>Week 4 can swap the local provider to SharePoint without changing the intake workflow shape.</li>
+        </ul>
     </ChildContent>
 </InfoPanel>
 
-<GuidanceNote Title="Review Notes" Icon="💡" Tone="info">
-    <ul>
-        <li>Needs Review, overdue, and due-soon intake items should appear in Reminders.</li>
-        <li>Assigned intake records should contribute to owner workload.</li>
-        <li>Completed or rejected records should have a completed date.</li>
-        <li>Creating or editing an intake item should generate activity history.</li>
-        <li>This prototype tracks document workflow metadata; actual file upload/storage is a later stage.</li>
-    </ul>
-</GuidanceNote>
-
 @code {
     private List<DocumentIntakeModel>? documentIntakeItems;
+    private Dictionary<int, int> attachmentCounts = new();
 
     private string searchText = "";
     private string statusFilter = "";
@@ -282,6 +322,7 @@ else
             return query
                 .OrderByDescending(x => x.IsOverdue)
                 .ThenByDescending(x => x.NeedsReview)
+                .ThenByDescending(x => x.IsDueSoon)
                 .ThenBy(x => x.DueDate)
                 .ThenBy(x => x.DocumentName)
                 .ToList();
@@ -293,6 +334,8 @@ else
     private int OverdueCount => documentIntakeItems?.Count(x => x.IsOverdue) ?? 0;
     private int DueSoonCount => documentIntakeItems?.Count(x => x.IsDueSoon) ?? 0;
     private int CompletedCount => documentIntakeItems?.Count(x => x.IsCompleted) ?? 0;
+    private int ActionableCount => documentIntakeItems?.Count(x => x.IsOverdue || x.NeedsReview || x.IsDueSoon) ?? 0;
+    private int TotalAttachmentCount => attachmentCounts.Values.Sum();
 
     private List<string> StatusOptions =>
         documentIntakeItems?
@@ -331,6 +374,44 @@ else
         documentIntakeItems = await Db.DocumentIntakeItems
             .AsNoTracking()
             .ToListAsync();
+
+        await LoadAttachmentCountsAsync();
+    }
+
+    private async Task LoadAttachmentCountsAsync()
+    {
+        var attachments = await AttachmentService.GetAllActiveAsync();
+
+        attachmentCounts = attachments
+            .Where(x =>
+                string.Equals(x.ModuleName, "Document Intake", StringComparison.OrdinalIgnoreCase) &&
+                x.RecordId.HasValue)
+            .GroupBy(x => x.RecordId!.Value)
+            .ToDictionary(x => x.Key, x => x.Count());
+    }
+
+    private int GetAttachmentCount(int documentIntakeId)
+    {
+        return attachmentCounts.TryGetValue(documentIntakeId, out var count)
+            ? count
+            : 0;
+    }
+
+    private string GetFileCountClass(int documentIntakeId)
+    {
+        return GetAttachmentCount(documentIntakeId) > 0
+            ? "badge badge-success"
+            : "badge badge-muted";
+    }
+
+    private static int DaysPastDue(DateTime dueDate)
+    {
+        return Math.Max(0, (DateTime.Today - dueDate.Date).Days);
+    }
+
+    private static int DaysUntilDue(DateTime dueDate)
+    {
+        return Math.Max(0, (dueDate.Date - DateTime.Today).Days);
     }
 
     private static bool Contains(string? source, string search)
