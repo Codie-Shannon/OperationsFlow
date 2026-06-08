@@ -75,7 +75,15 @@ public class LocalSignedInUser
 
     public string Email { get; set; } = string.Empty;
 
+    public string SignInProvider { get; set; } = "Local";
+
     public List<string> Roles { get; set; } = new();
 
     public List<string> Permissions { get; set; } = new();
+
+    public bool IsMicrosoftLinked =>
+        SignInProvider.Equals("Microsoft", StringComparison.OrdinalIgnoreCase);
+
+    public string SignInProviderDisplay =>
+        IsMicrosoftLinked ? "Microsoft-linked" : "Local login";
 }

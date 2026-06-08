@@ -85,7 +85,7 @@ public class LocalAuthService
 
         await _db.SaveChangesAsync();
 
-        var signedInUser = await BuildSignedInUserAsync(user.Id);
+        var signedInUser = await BuildSignedInUserAsync(user.Id, "Local");
 
         if (signedInUser is null)
         {
@@ -113,7 +113,19 @@ public class LocalAuthService
             return LocalLoginResult.Fail("Saved local account is inactive.");
         }
 
-        var signedInUser = await BuildSignedInUserAsync(user.Id);
+        var latestMicrosoftLink = await _db.ExternalLoginLinks
+            .AsNoTracking()
+            .Where(link =>
+                link.LocalUserId == user.Id &&
+                link.Provider == "Microsoft" &&
+                link.IsLinked &&
+                link.LastLoginAt.HasValue)
+            .OrderByDescending(link => link.LastLoginAt)
+            .FirstOrDefaultAsync();
+
+        var provider = latestMicrosoftLink is null ? "Local" : "Microsoft";
+
+        var signedInUser = await BuildSignedInUserAsync(user.Id, provider);
 
         if (signedInUser is null)
         {
@@ -226,7 +238,7 @@ public class LocalAuthService
 
         await _db.SaveChangesAsync();
 
-        var signedInUser = await BuildSignedInUserAsync(user.Id);
+        var signedInUser = await BuildSignedInUserAsync(user.Id, "Microsoft");
 
         if (signedInUser is null)
         {
@@ -247,30 +259,9 @@ public class LocalAuthService
         _currentUserService.SignOut();
     }
 
-    private static string ExtractMicrosoftUserName(string providerEmail)
-    {
-        if (string.IsNullOrWhiteSpace(providerEmail))
-        {
-            return "";
-        }
-
-        var prefix = providerEmail
-            .Split('@', StringSplitOptions.RemoveEmptyEntries)
-            .FirstOrDefault() ?? "";
-
-        prefix = prefix.Trim().ToLowerInvariant();
-
-        return prefix switch
-        {
-            "readonly" => "viewer",
-            "read-only" => "viewer",
-            "read_only" => "viewer",
-            "read only" => "viewer",
-            _ => prefix
-        };
-    }
-
-    private async Task<LocalSignedInUser?> BuildSignedInUserAsync(int userId)
+    private async Task<LocalSignedInUser?> BuildSignedInUserAsync(
+        int userId,
+        string signInProvider)
     {
         var user = await _db.LocalUsers.FirstOrDefaultAsync(item => item.Id == userId);
 
@@ -313,8 +304,34 @@ public class LocalAuthService
             UserName = user.UserName,
             DisplayName = user.DisplayName,
             Email = user.Email,
+            SignInProvider = string.IsNullOrWhiteSpace(signInProvider)
+                ? "Local"
+                : signInProvider,
             Roles = roles,
             Permissions = permissions
+        };
+    }
+
+    private static string ExtractMicrosoftUserName(string providerEmail)
+    {
+        if (string.IsNullOrWhiteSpace(providerEmail))
+        {
+            return "";
+        }
+
+        var prefix = providerEmail
+            .Split('@', StringSplitOptions.RemoveEmptyEntries)
+            .FirstOrDefault() ?? "";
+
+        prefix = prefix.Trim().ToLowerInvariant();
+
+        return prefix switch
+        {
+            "readonly" => "viewer",
+            "read-only" => "viewer",
+            "read_only" => "viewer",
+            "read only" => "viewer",
+            _ => prefix
         };
     }
 }

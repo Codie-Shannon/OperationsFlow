@@ -16,6 +16,10 @@
         </div>
 
         <div class="of-sidebar-user__roles">
+            <span class="of-sidebar-user__role @(CurrentUserService.CurrentUser.IsMicrosoftLinked ? "of-badge-info" : "of-badge-muted")">
+                @CurrentUserService.CurrentUser.SignInProviderDisplay
+            </span>
+
             @foreach (var role in CurrentUserService.CurrentUser.Roles)
             {
                 <span class="of-sidebar-user__role">@role</span>
