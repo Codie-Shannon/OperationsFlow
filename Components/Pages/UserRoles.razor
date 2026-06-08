@@ -99,7 +99,7 @@
                         <thead>
                             <tr>
                                 <th>User</th>
-                                <th>Email</th>
+                                <th>Local Email</th>
                                 <th>Department</th>
                                 <th>Job Title</th>
                                 <th>Roles</th>
@@ -120,7 +120,7 @@
                                     <td>@user.Department</td>
                                     <td>@user.JobTitle</td>
                                     <td>
-                                        <div class="of-link-row">
+                                        <div class="of-badge-stack">
                                             @foreach (var role in user.Roles)
                                             {
                                                 <span class="@LocalIdentityService.GetRoleBadgeClass(role)">@role</span>
@@ -150,10 +150,10 @@
                                     <td>
                                         @if (user.LinkedProviders.Any())
                                         {
-                                            <div class="of-link-row">
+                                            <div class="of-badge-stack">
                                                 @foreach (var provider in user.LinkedProviders)
                                                 {
-                                                    <span class="of-badge of-badge-info">@provider-linked</span>
+                                                    <span class="of-badge of-badge-info">@($"{provider}-linked")</span>
                                                 }
                                             </div>
                                         }

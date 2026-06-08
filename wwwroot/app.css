@@ -5318,3 +5318,10 @@ main .content {
     .of-dashboard-link-card:focus * {
         text-decoration: none;
     }
+
+.of-badge-stack {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+}
