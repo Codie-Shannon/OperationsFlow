@@ -1,4 +1,8 @@
-﻿using Azure.Identity;
+﻿using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using Azure.Core;
+using Azure.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
@@ -30,7 +34,7 @@ public class SharePointFileStorageService : IFileStorageService
             return Failed(request, validationMessage);
         }
 
-        if (!microsoft365Options.IsSharePointReady && !microsoft365Options.HasBasicGraphConfig)
+        if (!microsoft365Options.HasBasicGraphConfig)
         {
             return Failed(request, "Microsoft 365 Graph configuration is incomplete.");
         }
@@ -87,7 +91,6 @@ public class SharePointFileStorageService : IFileStorageService
             }
 
             await WriteMetadataAsync(
-                graphClient,
                 drive.Id,
                 uploadedItem.Id,
                 request,
@@ -119,7 +122,7 @@ public class SharePointFileStorageService : IFileStorageService
         string storedRelativePath,
         CancellationToken cancellationToken = default)
     {
-        // For Week 4 pilot use, files are opened through their SharePoint web URL.
+        // Week 4 pilot opens SharePoint-backed files through their SharePoint web URL.
         // Direct stream download can be added later if needed.
         return Task.FromResult<Stream?>(null);
     }
@@ -128,8 +131,8 @@ public class SharePointFileStorageService : IFileStorageService
         string storedRelativePath,
         CancellationToken cancellationToken = default)
     {
-        // Deleting is still handled as a soft-delete in OperationsFlow metadata.
-        // Physical SharePoint deletion can be added later as a hard-delete/admin action.
+        // OperationsFlow currently soft-deletes attachment metadata.
+        // Physical SharePoint delete can be added later as an admin/hard-delete action.
         return Task.FromResult(false);
     }
 
@@ -200,14 +203,19 @@ public class SharePointFileStorageService : IFileStorageService
 
     private GraphServiceClient CreateGraphClient()
     {
-        var credential = new ClientSecretCredential(
-            microsoft365Options.TenantId,
-            microsoft365Options.ClientId,
-            microsoft365Options.ClientSecret);
+        var credential = CreateCredential();
 
         var scopes = new[] { "https://graph.microsoft.com/.default" };
 
         return new GraphServiceClient(credential, scopes);
+    }
+
+    private ClientSecretCredential CreateCredential()
+    {
+        return new ClientSecretCredential(
+            microsoft365Options.TenantId,
+            microsoft365Options.ClientId,
+            microsoft365Options.ClientSecret);
     }
 
     private async Task<Site?> ResolveSiteAsync(
@@ -255,16 +263,50 @@ public class SharePointFileStorageService : IFileStorageService
                     StringComparison.OrdinalIgnoreCase));
     }
 
-    private Task WriteMetadataAsync(
-        GraphServiceClient graphClient,
+    private async Task WriteMetadataAsync(
         string driveId,
         string driveItemId,
         FileStorageSaveRequest request,
         CancellationToken cancellationToken)
     {
-        // Block 3 uploads the file to SharePoint and returns the SharePoint item URL/IDs.
-        // Block 4 will add metadata writeback using the SharePoint list item fields endpoint.
-        return Task.CompletedTask;
+        var credential = CreateCredential();
+
+        var token = await credential.GetTokenAsync(
+            new TokenRequestContext(new[] { "https://graph.microsoft.com/.default" }),
+            cancellationToken);
+
+        var metadata = new Dictionary<string, object?>
+        {
+            ["OperationsFlowModule"] = NormalizeModuleName(request.ModuleName),
+            ["OperationsFlowRecordId"] = request.RecordId ?? 0,
+            ["OperationsFlowRecordRef"] = BuildRecordReference(request.RecordReference, request.RecordId),
+            ["IsEvidence"] = request.IsEvidence,
+            ["IsControlledDocument"] = request.IsControlledDocument,
+            ["UploadedByDisplayName"] = string.IsNullOrWhiteSpace(request.UploadedBy)
+                ? "Demo User"
+                : request.UploadedBy,
+            ["OperationsFlowNotes"] = request.Notes ?? ""
+        };
+
+        var json = JsonSerializer.Serialize(metadata);
+
+        using var httpClient = new HttpClient();
+        using var httpRequest = new HttpRequestMessage(
+            HttpMethod.Patch,
+            $"https://graph.microsoft.com/v1.0/drives/{Uri.EscapeDataString(driveId)}/items/{Uri.EscapeDataString(driveItemId)}/listItem/fields");
+
+        httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+        httpRequest.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        using var response = await httpClient.SendAsync(httpRequest, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            throw new InvalidOperationException(
+                $"SharePoint metadata writeback failed ({(int)response.StatusCode} {response.ReasonPhrase}): {responseBody}");
+        }
     }
 
     private (string HostName, string SitePath) GetSharePointHostAndPath()
@@ -285,6 +327,18 @@ public class SharePointFileStorageService : IFileStorageService
         }
 
         throw new InvalidOperationException("SharePoint site target is not configured.");
+    }
+
+    private static string NormalizeSitePath(string sitePath)
+    {
+        if (string.IsNullOrWhiteSpace(sitePath))
+        {
+            return "";
+        }
+
+        return sitePath.StartsWith("/")
+            ? sitePath
+            : $"/{sitePath}";
     }
 
     private static string BuildFolderPath(string moduleName, string recordReference, int? recordId)
@@ -382,17 +436,5 @@ public class SharePointFileStorageService : IFileStorageService
             Provider = ProviderName,
             ErrorMessage = errorMessage
         };
-    }
-
-    private static string NormalizeSitePath(string sitePath)
-    {
-        if (string.IsNullOrWhiteSpace(sitePath))
-        {
-            return "";
-        }
-
-        return sitePath.StartsWith("/")
-            ? sitePath
-            : $"/{sitePath}";
     }
 }
