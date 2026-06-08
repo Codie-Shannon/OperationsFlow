@@ -74,6 +74,10 @@ public class DocumentAttachmentService
             return DocumentAttachmentCreateResult.Failed(storageResult.ErrorMessage);
         }
 
+        var cleanUploadedBy = string.IsNullOrWhiteSpace(uploadedBy)
+            ? "Unknown User"
+            : uploadedBy;
+
         var attachment = new DocumentAttachment
         {
             ModuleName = string.IsNullOrWhiteSpace(moduleName) ? "General" : moduleName,
@@ -86,7 +90,7 @@ public class DocumentAttachmentService
             ContentType = storageResult.ContentType,
             FileSizeBytes = storageResult.FileSizeBytes,
             StorageProvider = storageResult.Provider,
-            UploadedBy = string.IsNullOrWhiteSpace(uploadedBy) ? "Demo User" : uploadedBy,
+            UploadedBy = cleanUploadedBy,
             UploadedDate = DateTime.Now,
             Notes = notes ?? "",
             Status = "Active",
@@ -96,6 +100,7 @@ public class DocumentAttachmentService
         };
 
         db.DocumentAttachments.Add(attachment);
+
         await db.SaveChangesAsync();
 
         await activityLogService.LogAsync(
@@ -103,7 +108,8 @@ public class DocumentAttachmentService
             recordId: attachment.Id,
             recordReference: attachment.OriginalFileName,
             actionType: "Created",
-            description: $"Uploaded document attachment '{attachment.OriginalFileName}' to {attachment.ModuleName} / {attachment.DisplayRecordReference} using {attachment.StorageProvider} storage.");
+            description: $"Uploaded document attachment '{attachment.OriginalFileName}' to {attachment.ModuleName} / {attachment.DisplayRecordReference} using {attachment.StorageProvider} storage.",
+            createdBy: attachment.UploadedBy);
 
         return DocumentAttachmentCreateResult.Created(attachment);
     }
@@ -120,6 +126,10 @@ public class DocumentAttachmentService
             return false;
         }
 
+        var cleanDeletedBy = string.IsNullOrWhiteSpace(deletedBy)
+            ? "Unknown User"
+            : deletedBy;
+
         var storageDeleted = await fileStorageService.DeleteAsync(attachment.StoredRelativePath);
 
         if (!storageDeleted)
@@ -129,14 +139,15 @@ public class DocumentAttachmentService
                 recordId: attachment.Id,
                 recordReference: attachment.OriginalFileName,
                 actionType: "Delete Failed",
-                description: $"Could not delete physical document attachment '{attachment.OriginalFileName}' from {attachment.StorageProvider} storage.");
+                description: $"Could not delete physical document attachment '{attachment.OriginalFileName}' from {attachment.StorageProvider} storage.",
+                createdBy: cleanDeletedBy);
 
             return false;
         }
 
         attachment.IsDeleted = true;
         attachment.DeletedDate = DateTime.Now;
-        attachment.DeletedBy = string.IsNullOrWhiteSpace(deletedBy) ? "Demo User" : deletedBy;
+        attachment.DeletedBy = cleanDeletedBy;
         attachment.Status = "Deleted";
 
         await db.SaveChangesAsync();
@@ -146,12 +157,13 @@ public class DocumentAttachmentService
             recordId: attachment.Id,
             recordReference: attachment.OriginalFileName,
             actionType: "Deleted",
-            description: $"Deleted document attachment '{attachment.OriginalFileName}' from {attachment.ModuleName} / {attachment.DisplayRecordReference} and removed the physical file from {attachment.StorageProvider} storage.");
+            description: $"Deleted document attachment '{attachment.OriginalFileName}' from {attachment.ModuleName} / {attachment.DisplayRecordReference} and removed the physical file from {attachment.StorageProvider} storage.",
+            createdBy: cleanDeletedBy);
 
         return true;
     }
 
-    public async Task<Stream> OpenReadAsync(DocumentAttachment attachment)
+    public async Task<Stream?> OpenReadAsync(DocumentAttachment attachment)
     {
         return await fileStorageService.OpenReadAsync(attachment.StoredRelativePath);
     }

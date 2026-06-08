@@ -1,6 +1,5 @@
 ﻿@page "/document-library"
 @using Microsoft.AspNetCore.Components.Forms
-@using Microsoft.EntityFrameworkCore
 @using Microsoft.Extensions.Options
 @using OperationsFlow.Data
 @using OperationsFlow.Models
@@ -8,6 +7,7 @@
 @using OperationsFlow.Services
 @using OperationsFlow.Services.Storage
 @inject OperationsFlowDbContext Db
+@inject LocalCurrentUserService CurrentUserService
 @inject IFileStorageService FileStorageService
 @inject DocumentAttachmentService AttachmentService
 @inject LocalCurrentUserService CurrentUserService
@@ -447,6 +447,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        uploadModel.UploadedBy = CurrentUserDisplayName;
+
         await LoadAttachmentsAsync();
         isLoading = false;
     }
@@ -572,7 +574,7 @@
             return;
         }
 
-        var deleted = await AttachmentService.SoftDeleteAsync(id, "Demo User");
+        var deleted = await AttachmentService.SoftDeleteAsync(id, CurrentUserDisplayName);
 
         if (deleted)
         {
@@ -593,7 +595,7 @@
         uploadModel.ModuleName = "General";
         uploadModel.RecordId = null;
         uploadModel.RecordReference = "";
-        uploadModel.UploadedBy = "Demo User";
+        uploadModel.UploadedBy = CurrentUserDisplayName;
         uploadModel.Notes = "";
         uploadModel.IsEvidence = false;
         uploadModel.IsControlledDocument = false;
@@ -646,4 +648,13 @@
 
         public bool IsControlledDocument { get; set; }
     }
+
+    private string CurrentUserDisplayName =>
+        CurrentUserService.CurrentUser is null
+            ? "Unknown User"
+            : !string.IsNullOrWhiteSpace(CurrentUserService.CurrentUser.DisplayName)
+                ? CurrentUserService.CurrentUser.DisplayName
+                : !string.IsNullOrWhiteSpace(CurrentUserService.CurrentUser.Email)
+                    ? CurrentUserService.CurrentUser.Email
+                    : "Unknown User";
 }

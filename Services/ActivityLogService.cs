@@ -5,11 +5,11 @@ namespace OperationsFlow.Services;
 
 public class ActivityLogService
 {
-    private readonly OperationsFlowDbContext _db;
+    private readonly OperationsFlowDbContext db;
 
     public ActivityLogService(OperationsFlowDbContext db)
     {
-        _db = db;
+        this.db = db;
     }
 
     public async Task LogAsync(
@@ -18,20 +18,21 @@ public class ActivityLogService
         string recordReference,
         string actionType,
         string description,
-        string createdBy = "Demo User")
+        string createdBy = "System")
     {
         var activityLog = new ActivityLog
         {
-            ModuleName = moduleName,
+            ModuleName = string.IsNullOrWhiteSpace(moduleName) ? "Unknown" : moduleName,
             RecordId = recordId,
-            RecordReference = recordReference,
-            ActionType = actionType,
-            Description = description,
-            CreatedBy = createdBy,
+            RecordReference = recordReference ?? "",
+            ActionType = string.IsNullOrWhiteSpace(actionType) ? "Activity" : actionType,
+            Description = description ?? "",
+            CreatedBy = string.IsNullOrWhiteSpace(createdBy) ? "System" : createdBy,
             CreatedDate = DateTime.Now
         };
 
-        _db.ActivityLogs.Add(activityLog);
-        await _db.SaveChangesAsync();
+        db.ActivityLogs.Add(activityLog);
+
+        await db.SaveChangesAsync();
     }
 }

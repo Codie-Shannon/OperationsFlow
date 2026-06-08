@@ -4,6 +4,7 @@
 @using OperationsFlow.Options
 @using OperationsFlow.Services
 @using OperationsFlow.Services.Storage
+@inject LocalCurrentUserService CurrentUserService
 @inject DocumentAttachmentService AttachmentService
 @inject IFileStorageService FileStorageService
 @inject IOptions<FileStorageOptions> FileStorageSettings
@@ -276,9 +277,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        uploadedBy = string.IsNullOrWhiteSpace(DefaultUploadedBy)
-            ? "Demo User"
-            : DefaultUploadedBy;
+        uploadedBy = CurrentUserDisplayName;
 
         await LoadAttachmentsAsync();
         isLoading = false;
@@ -438,6 +437,7 @@
         notes = "";
         isEvidence = true;
         isControlledDocument = false;
+        uploadedBy = CurrentUserDisplayName;
     }
 
     private string GetOpenUrl(DocumentAttachment attachment)
@@ -464,4 +464,13 @@
 
         return $"{bytes / 1024.0 / 1024.0:0.0} MB";
     }
+
+    private string CurrentUserDisplayName =>
+        CurrentUserService.CurrentUser is null
+            ? "Unknown User"
+            : !string.IsNullOrWhiteSpace(CurrentUserService.CurrentUser.DisplayName)
+                ? CurrentUserService.CurrentUser.DisplayName
+                : !string.IsNullOrWhiteSpace(CurrentUserService.CurrentUser.Email)
+                    ? CurrentUserService.CurrentUser.Email
+                    : "Unknown User";
 }
