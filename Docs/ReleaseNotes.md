@@ -4,7 +4,7 @@
 
 OperationsFlow now has a working single-tenant Microsoft 365 pilot path.
 
-### Completed
+## Completed
 
 - Microsoft 365 configuration foundation.
 - Microsoft Graph connection test.
@@ -28,11 +28,12 @@ OperationsFlow now has a working single-tenant Microsoft 365 pilot path.
 - Sidebar status showing Local login vs Microsoft-linked.
 - Updated screenshots and documentation.
 
-### Positioning
+## Positioning
 
-OperationsFlow is now production pilot-ready for a single-tenant Microsoft 365 environment. It is not yet a fully hardened enterprise SaaS platform.
+OperationsFlow is now production pilot-ready for a single-tenant Microsoft 365 environment.
+It is not yet a fully hardened enterprise SaaS platform.
 
-### Remaining hardening
+## Remaining hardening
 
 - Rotate any exposed development client secrets.
 - Move secrets to user-secrets, environment variables, or a managed secret store.

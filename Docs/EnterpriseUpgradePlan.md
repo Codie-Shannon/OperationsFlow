@@ -1,6 +1,7 @@
 # Enterprise Upgrade Plan
 
-OperationsFlow Week 4 is a working single-tenant Microsoft 365 pilot. This plan lists what would be needed to move from pilot to a real enterprise deployment.
+OperationsFlow Week 4 is a working single-tenant Microsoft 365 pilot.
+This plan lists what would be needed to move from pilot to a real enterprise deployment.
 
 ## Already proven
 
