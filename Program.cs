@@ -64,6 +64,7 @@ builder.Services.AddScoped<LocalAuthService>();
 builder.Services.AddScoped<LocalSessionStorageService>();
 
 builder.Services.AddScoped<Microsoft365GraphService>();
+builder.Services.AddHttpClient<MicrosoftOAuthService>();
 
 builder.Services.AddScoped<IFileStorageService>(serviceProvider =>
 {
@@ -112,6 +113,63 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+app.MapGet("/auth/microsoft/start", (
+    MicrosoftOAuthService microsoftOAuthService,
+    string? returnUrl) =>
+{
+    var authorizationUrl = microsoftOAuthService.BuildAuthorizationUrl(
+        string.IsNullOrWhiteSpace(returnUrl) ? "/dashboard" : returnUrl);
+
+    return Results.Redirect(authorizationUrl);
+});
+
+app.MapGet("/signin-oidc", async (
+    MicrosoftOAuthService microsoftOAuthService,
+    string? code,
+    string? state,
+    string? error,
+    string? error_description,
+    CancellationToken cancellationToken) =>
+{
+    if (!string.IsNullOrWhiteSpace(error))
+    {
+        var message = Uri.EscapeDataString(
+            string.IsNullOrWhiteSpace(error_description)
+                ? error
+                : $"{error}: {error_description}");
+
+        return Results.Redirect($"/microsoft-login-complete?error={message}");
+    }
+
+    if (string.IsNullOrWhiteSpace(code))
+    {
+        var message = Uri.EscapeDataString("Microsoft sign-in did not return an authorization code.");
+        return Results.Redirect($"/microsoft-login-complete?error={message}");
+    }
+
+    try
+    {
+        var result = await microsoftOAuthService.CompleteSignInAsync(code, cancellationToken);
+
+        if (!result.Succeeded || !result.LocalUserId.HasValue)
+        {
+            var message = Uri.EscapeDataString(result.Message);
+            return Results.Redirect($"/microsoft-login-complete?error={message}");
+        }
+
+        var returnUrl = string.IsNullOrWhiteSpace(state)
+            ? "/dashboard"
+            : Uri.UnescapeDataString(state);
+
+        return Results.Redirect($"/microsoft-login-complete?localUserId={result.LocalUserId.Value}&returnUrl={Uri.EscapeDataString(returnUrl)}");
+    }
+    catch (Exception ex)
+    {
+        var message = Uri.EscapeDataString($"Microsoft sign-in failed: {ex.Message}");
+        return Results.Redirect($"/microsoft-login-complete?error={message}");
+    }
+});
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

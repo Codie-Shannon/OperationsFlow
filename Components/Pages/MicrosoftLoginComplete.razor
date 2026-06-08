@@ -1,0 +1,85 @@
+﻿@page "/microsoft-login-complete"
+@rendermode InteractiveServer
+@using OperationsFlow.Services
+@inject LocalAuthService LocalAuthService
+@inject LocalSessionStorageService LocalSessionStorageService
+@inject NavigationManager Navigation
+
+<PageTitle>Microsoft Sign-in Complete - OperationsFlow</PageTitle>
+
+<div class="of-page">
+    <PageHero Eyebrow="OPERATIONSFLOW / MICROSOFT LOGIN"
+              Title="Microsoft Sign-in"
+              Subtitle="Completing Microsoft OAuth2 sign-in and loading the linked local OperationsFlow role profile."
+              BadgeText="@StatusBadge"
+              BadgeClass="@StatusBadgeClass" />
+
+    <InfoPanel Title="Sign-in status"
+               Subtitle="Microsoft identity is mapped to a local OperationsFlow user before permissions are loaded.">
+        <ChildContent>
+            <p>@StatusMessage</p>
+        </ChildContent>
+    </InfoPanel>
+</div>
+
+@code {
+    [SupplyParameterFromQuery] private int? LocalUserId { get; set; }
+
+    [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
+
+    [SupplyParameterFromQuery] private string? Error { get; set; }
+
+    private string StatusMessage { get; set; } = "Completing Microsoft sign-in...";
+    private string StatusBadge { get; set; } = "Signing in";
+    private string StatusBadgeClass { get; set; } = "of-badge of-badge-info";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(Error))
+        {
+            StatusMessage = Error;
+            StatusBadge = "Failed";
+            StatusBadgeClass = "of-badge of-badge-danger";
+            StateHasChanged();
+            return;
+        }
+
+        if (!LocalUserId.HasValue)
+        {
+            StatusMessage = "Microsoft sign-in did not return a local OperationsFlow user.";
+            StatusBadge = "Failed";
+            StatusBadgeClass = "of-badge of-badge-danger";
+            StateHasChanged();
+            return;
+        }
+
+        var restoreResult = await LocalAuthService.RestoreLoginAsync(LocalUserId.Value);
+
+        if (!restoreResult.Succeeded || restoreResult.User is null)
+        {
+            StatusMessage = restoreResult.Message;
+            StatusBadge = "Failed";
+            StatusBadgeClass = "of-badge of-badge-danger";
+            StateHasChanged();
+            return;
+        }
+
+        await LocalSessionStorageService.SaveSignedInUserIdAsync(restoreResult.User.Id);
+
+        StatusMessage = $"Signed in as {restoreResult.User.DisplayName}.";
+        StatusBadge = "Signed in";
+        StatusBadgeClass = "of-badge of-badge-success";
+        StateHasChanged();
+
+        var targetUrl = string.IsNullOrWhiteSpace(ReturnUrl)
+            ? "/dashboard"
+            : ReturnUrl;
+
+        Navigation.NavigateTo(targetUrl, replace: true);
+    }
+}

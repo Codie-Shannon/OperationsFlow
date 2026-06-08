@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OperationsFlow.Data;
 using OperationsFlow.Models;
+using OperationsFlow.Services.Microsoft365;
 
 namespace OperationsFlow.Services;
 
@@ -33,9 +34,8 @@ public class LocalAuthService
             return LocalLoginResult.Fail("Enter a username/email and password.");
         }
 
-        var user = await _db.LocalUsers.FirstOrDefaultAsync(item =>
-            item.UserName == loginValue ||
-            item.Email == loginValue);
+        var user = await _db.LocalUsers
+            .FirstOrDefaultAsync(item => item.UserName == loginValue || item.Email == loginValue);
 
         if (user is null)
         {
@@ -125,9 +125,149 @@ public class LocalAuthService
         return LocalLoginResult.Success(signedInUser);
     }
 
+    public async Task<MicrosoftOAuthSignInResult> LoginExternalMicrosoftAsync(
+        string providerUserId,
+        string providerEmail,
+        string providerDisplayName)
+    {
+        await _localIdentityService.EnsureSeedDataAsync();
+
+        providerUserId = providerUserId.Trim();
+        providerEmail = providerEmail.Trim();
+
+        if (string.IsNullOrWhiteSpace(providerUserId))
+        {
+            return MicrosoftOAuthSignInResult.Fail("Microsoft provider user id was missing.");
+        }
+
+        if (string.IsNullOrWhiteSpace(providerEmail))
+        {
+            return MicrosoftOAuthSignInResult.Fail("Microsoft provider email was missing.");
+        }
+
+        var existingLink = await _db.ExternalLoginLinks
+            .FirstOrDefaultAsync(item =>
+                item.Provider == "Microsoft" &&
+                item.ProviderUserId == providerUserId &&
+                item.IsLinked);
+
+        LocalUser? user = null;
+
+        if (existingLink is not null)
+        {
+            user = await _db.LocalUsers
+                .FirstOrDefaultAsync(item => item.Id == existingLink.LocalUserId);
+        }
+
+        if (user is null)
+        {
+            var normalizedProviderEmail = providerEmail.Trim().ToLowerInvariant();
+
+            user = await _db.LocalUsers
+                .FirstOrDefaultAsync(item =>
+                    item.Email.ToLower() == normalizedProviderEmail);
+        }
+
+        if (user is null)
+        {
+            var microsoftUserName = ExtractMicrosoftUserName(providerEmail);
+
+            user = await _db.LocalUsers
+                .FirstOrDefaultAsync(item =>
+                    item.UserName.ToLower() == microsoftUserName);
+        }
+
+        if (user is null)
+        {
+            return MicrosoftOAuthSignInResult.Fail($"No active local OperationsFlow user is linked to Microsoft account '{providerEmail}'.");
+        }
+
+        if (!user.IsActive)
+        {
+            return MicrosoftOAuthSignInResult.Fail("The matched local OperationsFlow account is inactive.");
+        }
+
+        var link = await _db.ExternalLoginLinks
+            .FirstOrDefaultAsync(item =>
+                item.Provider == "Microsoft" &&
+                item.LocalUserId == user.Id);
+
+        if (link is null)
+        {
+            link = new ExternalLoginLink
+            {
+                LocalUserId = user.Id,
+                Provider = "Microsoft",
+                ProviderUserId = providerUserId,
+                ProviderEmail = providerEmail,
+                ProviderDisplayName = string.IsNullOrWhiteSpace(providerDisplayName)
+                    ? user.DisplayName
+                    : providerDisplayName,
+                IsLinked = true,
+                LinkedAt = DateTime.UtcNow,
+                LastLoginAt = DateTime.UtcNow,
+                Notes = "Auto-linked during Week 4 Microsoft OAuth2 sign-in."
+            };
+
+            _db.ExternalLoginLinks.Add(link);
+        }
+        else
+        {
+            link.ProviderUserId = providerUserId;
+            link.ProviderEmail = providerEmail;
+            link.ProviderDisplayName = string.IsNullOrWhiteSpace(providerDisplayName)
+                ? user.DisplayName
+                : providerDisplayName;
+            link.IsLinked = true;
+            link.LastLoginAt = DateTime.UtcNow;
+        }
+
+        user.LastLoginAt = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync();
+
+        var signedInUser = await BuildSignedInUserAsync(user.Id);
+
+        if (signedInUser is null)
+        {
+            return MicrosoftOAuthSignInResult.Fail("Microsoft sign-in succeeded, but the local role profile could not be loaded.");
+        }
+
+        _currentUserService.SignIn(signedInUser);
+
+        return MicrosoftOAuthSignInResult.Success(
+            localUserId: signedInUser.Id,
+            providerUserId: providerUserId,
+            email: providerEmail,
+            displayName: signedInUser.DisplayName);
+    }
+
     public void Logout()
     {
         _currentUserService.SignOut();
+    }
+
+    private static string ExtractMicrosoftUserName(string providerEmail)
+    {
+        if (string.IsNullOrWhiteSpace(providerEmail))
+        {
+            return "";
+        }
+
+        var prefix = providerEmail
+            .Split('@', StringSplitOptions.RemoveEmptyEntries)
+            .FirstOrDefault() ?? "";
+
+        prefix = prefix.Trim().ToLowerInvariant();
+
+        return prefix switch
+        {
+            "readonly" => "viewer",
+            "read-only" => "viewer",
+            "read_only" => "viewer",
+            "read only" => "viewer",
+            _ => prefix
+        };
     }
 
     private async Task<LocalSignedInUser?> BuildSignedInUserAsync(int userId)
@@ -157,8 +297,7 @@ public class LocalAuthService
                 userRole => userRole.LocalRoleId,
                 rolePermission => rolePermission.LocalRoleId,
                 (userRole, rolePermission) => rolePermission)
-            .Where(rolePermission =>
-                rolePermission.AccessLevel != "No")
+            .Where(rolePermission => rolePermission.AccessLevel != "No")
             .Join(
                 _db.LocalPermissions,
                 rolePermission => rolePermission.LocalPermissionId,
