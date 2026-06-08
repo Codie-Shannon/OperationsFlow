@@ -2,207 +2,137 @@
 
 ## Summary
 
-OperationsFlow is a Blazor/.NET 8 business workflow prototype built to demonstrate practical internal business systems development. It tracks operational work, corrective actions, document intake, controlled documents, risk items, training compliance, reminders, workload, reports, CSV exports, data quality, activity history, reviewer support, and production planning.
+OperationsFlow is a practical business workflow system prototype built with .NET 8, Blazor, EF Core, local SQL authentication, role permissions, document evidence handling, reports, data quality checks, and Microsoft 365 production-readiness.
 
-The project is designed as a portfolio-ready proof of capability for .NET business systems, admin workflow automation, safety/compliance tracking, reporting, UI refactoring, and production-aware planning.
-
-Week 2 completed a major UI/component and stylesheet cleanup, turning the project into a more consistent, reviewable, and maintainable business workflow prototype.
-
----
+The project shows how operational requests, corrective actions, document intake, risk follow-up, training compliance, document review, evidence files, and management reporting can be connected into one internal workflow system.
 
 ## Problem
 
-Many small businesses rely on disconnected tools for daily operations:
+Workplace operational follow-up often gets scattered across:
 
-- Email inboxes
-- Spreadsheets
-- PDF attachments
-- Paper forms
-- Shared folders
-- Manual follow-ups
-- Separate registers for risk, training, documents, and corrective actions
+- email inboxes
+- paper notes
+- verbal updates
+- spreadsheet trackers
+- unstructured document folders
+- disconnected systems
+- manual reporting packs
 
-This creates common problems:
+That creates problems:
 
-- Work gets missed or forgotten.
-- Owners and responsibilities are unclear.
-- Corrective actions are not followed up.
-- Document reviews become overdue.
-- Training records expire.
-- Incoming paperwork gets stuck in email.
-- Managers lack a clear workload/reporting view.
-- Data quality issues are hard to spot before reporting.
-- Changes are hard to trace later.
-
----
+- unclear ownership
+- missed due dates
+- weak evidence trails
+- duplicated admin work
+- management cannot easily see pressure points
+- automation is difficult because the workflow is not structured
 
 ## Goal
 
-Build a working local prototype that shows how these workflows can be centralised into one internal system.
+Build a working local prototype that proves the workflow shape before connecting live Microsoft 365 services.
 
-The goal was to demonstrate:
+The system should:
 
-1. Operational tracking.
-2. Corrective action follow-up.
-3. Safety/compliance review.
-4. Document/admin intake tracking.
-5. Dashboard visibility.
-6. Reporting/export capability.
-7. Activity traceability.
-8. Data quality checks.
-9. Reviewer-ready explanation pages.
-10. A realistic path toward a production version.
-
----
+- capture work consistently
+- assign ownership
+- track status and due dates
+- attach evidence
+- log activity
+- surface overdue/missing evidence issues
+- support reporting and review
+- enforce local role permissions
+- provide a clear Microsoft 365 production path
 
 ## What Was Built
 
 ### Core Workflow Modules
 
-- Dashboard
 - Work Orders
 - Corrective Actions
 - Document Intake
-- Controlled Documents
 - Risk Register
 - Training Compliance
-- Safety Overview
-- Safety Meeting Pack
-- Compliance Calendar
+- Document Control
 
 ### Management Modules
 
-- Reminder Centre
+- Dashboard
 - Workload
+- Reminders
 - Reports
 - Data Quality
 - Activity Log
-- Admin Settings starter
+
+### Evidence Modules
+
+- Local Document Library
+- Record-level attachments
+- Attachment metadata
+- File counts on workflow registers
+- Missing evidence checks
+- Evidence coverage reporting
+
+### Authentication / Permissions
+
+- Local SQL users
+- Local roles
+- Local permissions
+- Login/logout
+- Session-based local sign-in
+- Protected navigation
+- Action-level permission enforcement
 
 ### Reviewer / Portfolio Modules
 
-- Portfolio Hub
 - Reviewer Checklist
 - Demo Guide
 - Business Value
+- Technical Overview
+- Integration Overview
 - Prototype Scope
 - Implementation Plan
-- Technical Overview
-- Data Model
 - User Roles
-- Audit Overview
-- Deployment Overview
-- Testing Overview
-- Integration Overview
-
-### UI / Maintainability Work
-
-- Shared UI component system.
-- Reusable page hero, panels, metric cards, filter bars, table cards, guidance notes, and empty states.
-- Consolidated app stylesheet.
-- Cleaned repeated CSS patterns.
-- Workload review lane polish.
-- Consistent management/reporting page layout.
-
----
+- Admin Settings
 
 ## Key Workflows
 
 ### Work Order Workflow
 
-A user can:
-
-- Create a work order.
-- Edit status, priority, owner, due date, and notes.
-- View work order details.
-- See per-record activity history.
-- Have dashboard, reports, reminders, workload, data quality, and CSV exports update based on saved data.
+```text
+Create work order -> assign owner -> track status/due date -> attach evidence -> log activity -> show in workload/reminders/reports/data quality
+```
 
 ### Corrective Action Workflow
 
-A user can:
-
-- Create a corrective action manually.
-- Generate corrective actions from risk, document, and training modules.
-- Edit owner, status, priority, source, action type, due date, completed date, and notes.
-- Use helper guidance for better follow-up evidence.
-- Automatically set completed date when appropriate.
-- Log creation, update, and review events.
-- Review details and activity history.
+```text
+Issue/risk/training/document review -> create source-linked action -> assign owner/priority -> track follow-up -> attach close-out evidence -> log history
+```
 
 ### Document Intake Workflow
 
-A user can:
+```text
+Incoming document -> intake record -> owner/target system/status -> details page -> attach source documents -> show in library/reports/data quality
+```
 
-- Track incoming documents, PDFs, emails, supplier paperwork, customer requests, internal forms, and job paperwork.
-- Assign the item to a person.
-- Track the target system.
-- Move the item through statuses.
-- Add notes and follow-up evidence.
-- See intake items in Dashboard, Reports, Reminder Centre, Workload, Data Quality, Activity Log, and CSV exports.
+### Permission Workflow
 
----
+```text
+User logs in -> local SQL roles load -> permissions exposed through CurrentUserService -> UI hides actions not allowed for role
+```
 
 ## Management Visibility
 
-OperationsFlow includes management-style views:
+OperationsFlow gives managers/reviewers:
 
-### Dashboard
-
-Shows overall status and recent activity.
-
-### Reminder Centre
-
-Shows what needs attention now:
-
-- Overdue work orders.
-- Overdue corrective actions.
-- Document reviews.
-- Training expiries.
-- Document intake follow-ups.
-
-### Workload
-
-Groups assigned work by owner/person and shows:
-
-- Total assigned.
-- Work orders.
-- Corrective actions.
-- Document intake items.
-- Overdue count.
-- High-priority count.
-- Pressure level.
-- Review lanes for assigned work.
-
-### Reports
-
-Provides reporting views for:
-
-- Work Orders by status.
-- Corrective Actions by priority/status.
-- Risks by level.
-- Training by department.
-- Overdue items by owner.
-- Document reviews.
-- Document Intake by status.
-- Document Intake by target system.
-- Attention items.
-- CSV exports.
-
-### Data Quality
-
-Identifies system health issues such as:
-
-- Missing owners.
-- Blank/weak notes.
-- Overdue work.
-- Expired training.
-- High/critical risks.
-- Documents overdue for review.
-- Completed records missing completed dates.
-- Document intake records needing review.
-
----
+- open work count
+- overdue items
+- high/critical risks
+- training compliance rate
+- document intake pressure
+- missing evidence rows
+- evidence coverage by module
+- activity traceability
+- CSV export package when permitted
 
 ## Technical Implementation
 
@@ -212,162 +142,100 @@ Identifies system health issues such as:
 - Blazor
 - C#
 - Entity Framework Core
-- SQLite
-- Razor Components
-- CSS
-- Git/GitHub
+- SQLite/local development support
+- SQL Server / LocalDB production foundation
+- local file storage
+- Microsoft 365 / SharePoint / Graph path for Week 4
 
 ### Data Layer
 
-The prototype uses SQLite and Entity Framework Core. Seed data provides realistic records for testing and portfolio demonstration.
+The app uses EF Core models/services for workflow records, activity logs, attachments, local users, roles, and permissions.
 
 ### Services
 
-Current application services include:
-
-- `DashboardService`
-- `ActivityLogService`
-- `CsvExportService`
-
-Future production foundation work will add:
-
-- File storage service interfaces/providers.
-- Role/permission services.
-- Microsoft Lists schema registry.
-- Mock/dry-run sync service.
-- Notification service boundary.
+- activity logging
+- CSV export package
+- dashboard/reporting queries
+- document attachment metadata
+- file storage abstraction
+- local identity/auth/session services
+- local current user permissions
+- database schema safety service
 
 ### Traceability
 
-Activity logs are created when records are created, edited, reviewed, or updated.
+Create/edit/upload/delete/review actions produce visible Activity Log records and/or record-level history.
 
-Activity is shown in:
+### Permissions
 
-- Global Activity Log
-- Dashboard Recent Activity
-- Per-record Activity History
+Week 3 includes action-level permission enforcement:
 
-### CSV Export
-
-CSV exports support management reporting and spreadsheet workflows. Data can be opened in Excel, used for meetings, or later fed into Power BI-style reporting.
-
----
+- workflow create/edit -> `CanEditWorkflow`
+- evidence upload -> `CanUploadEvidence`
+- evidence delete -> `CanDeleteEvidence`
+- CSV/export links -> `CanExportData`
+- settings/admin -> `CanManageSettings`
+- users/roles -> `CanManageUsers`
 
 ## Business Value
 
-OperationsFlow shows how a business could:
+OperationsFlow demonstrates:
 
-- Reduce missed follow-up.
-- Improve accountability.
-- Track safety/compliance work.
-- Centralise incoming document/admin processing.
-- Give managers visibility into workload.
-- Improve reporting.
-- Export data for meetings or analysis.
-- Find weak records before management review.
-- Build toward SharePoint, Outlook, Teams, Microsoft Lists, and reporting integrations.
-
----
+- less reliance on memory/manual follow-up
+- clearer ownership
+- stronger evidence trail
+- better management visibility
+- structured workflow before automation
+- safer rollout path from local pilot to Microsoft 365 production
 
 ## Relevance by Audience
 
 ### Vanessa / OSHE
 
-Relevant features:
-
-- Safety Meeting Pack
-- Corrective Actions
-- Risk Register
-- Training Compliance
-- Controlled Documents
-- Reminder Centre
-- Workload
-- Reports
-- Data Quality
-- Activity Log
-- CSV exports
-- Business Value
-- Prototype Scope
+Relevant to safety, compliance, training, document review, corrective actions, evidence, and management reporting.
 
 ### Lester / Peter
 
-Relevant features:
+Relevant to M365/AI/process review because it shows task-based workflow capture, human-in-the-loop decisions, document/PDF intake thinking, SharePoint-ready evidence storage, and structured automation planning.
 
-- Document Intake
-- Target system tracking
-- Assigned processing
-- Incoming PDF/email/document tracking
-- Workflow statuses
-- Activity traceability
-- Workload
-- Reports
-- CSV exports
-- Integration Overview
-- Deployment Overview
+### AIE / Workflow Automation
 
-### .NET / Business Systems Roles
+Relevant to SharePoint/Power Automate job setup style workflows, INFO mailbox intake, Planner/Playbook task mapping, and human review stages.
 
-Relevant features:
+### JV / Business Systems
 
-- C#
-- Blazor
-- Entity Framework Core
-- SQLite
-- CRUD workflows
-- Search/filtering
-- Reporting
-- CSV exports
-- Activity logging
-- Data quality rules
-- Shared Razor UI components
-- CSS cleanup/refactor
-- Business process modelling
-- Production roadmap planning
-
----
+Relevant to local SQL-backed business systems, login/users/roles, workflow records, evidence handling, and future OAuth2 linking.
 
 ## Current Limitations
 
-This version is a portfolio prototype, not a production enterprise deployment.
-
-Limitations:
-
-- Local SQLite database.
-- Seeded demo data.
-- No authentication/permissions.
-- No live Microsoft 365, SharePoint, Outlook, Teams, Xero, Cin7, or WorkflowMax integrations.
-- Some settings are still hardcoded in forms.
-- Admin Settings is a starter configuration page.
-- No full automated testing.
-- No production deployment pipeline.
-- No production file storage yet.
-
----
+- Not hosted as production.
+- Microsoft Entra OAuth2 is not connected yet.
+- SharePoint/Graph file storage is not connected yet.
+- No production Xero/Cin7/WorkflowMax integration yet.
+- Automated test suite is not complete.
+- Production retention, backup, monitoring, and security review are future work.
 
 ## Future Improvements
 
-Week 3 production foundation:
+### Week 4
 
-- Production config/options structure.
-- File storage interface and local provider.
-- Document attachment metadata.
-- Local Document Library page.
-- Role/permission foundation.
-- Microsoft Lists schema registry.
-- Mock/dry-run sync.
-- Notification rule preview/log.
+- Microsoft 365 tenant configuration.
+- Entra app registration.
+- OAuth2 sign-in.
+- External login links to local users.
+- SharePoint document library provider.
+- Graph upload/open/delete.
+- Production setup guide.
 
-Week 4 production implementation:
+### Later
 
-- Real Microsoft 365 tenant/test environment.
-- SharePoint site/document library.
-- Microsoft Lists.
-- Graph/SharePoint integration.
-- Real notifications.
-- Production deployment configuration.
-
----
+- Power BI reporting.
+- Power Automate notifications.
+- Planner/Teams task sync.
+- Xero/Cin7/WorkflowMax connector research.
+- Automated tests.
+- Hosted deployment.
 
 ## Result
 
-OperationsFlow is a strong portfolio prototype showing the ability to plan, build, refactor, test, and explain a practical internal business system. It demonstrates business workflow thinking, .NET/Blazor development, persistence, traceability, reporting, exports, data quality checks, reviewer guidance, maintainable UI direction, and a realistic production upgrade path.
+OperationsFlow is now a strong portfolio/business-systems proof project: not just a UI demo, but a local SQL-backed workflow system with evidence, permissions, reporting, and a clear Microsoft 365 implementation path.

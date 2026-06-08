@@ -2,321 +2,151 @@
 
 ## Purpose
 
-This document explains how OperationsFlow could move from the current local Blazor/SQLite portfolio prototype into a production-ready internal business workflow system.
+This document explains how OperationsFlow can move from the completed local Week 3 production foundation into a Microsoft 365-connected internal business workflow pilot.
 
-The current project already demonstrates workflow design, reporting, exports, reminders, workload visibility, data quality, activity traceability, reviewer support, shared UI structure, and production planning.
+## Current Week 3 State
 
----
+Implemented locally:
 
-## Current Prototype State
+- Blazor/.NET 8 app.
+- EF Core persistence.
+- SQLite/local development support.
+- SQL Server / LocalDB production foundation support.
+- Local SQL-backed login.
+- Local users, roles, and permissions.
+- Protected navigation.
+- Permission-controlled workflow actions.
+- Local file storage abstraction.
+- DocumentAttachment metadata.
+- Local Document Library.
+- Record-level attachments.
+- Evidence-aware Data Quality.
+- Evidence coverage Reports.
+- Activity Log traceability.
 
-Current state:
-
-- Local Blazor/.NET 8 app.
-- SQLite database.
-- Seeded demo data.
-- Manual build/run testing.
-- Shared UI component system.
-- Cleaned consolidated stylesheet.
-- No real authentication.
-- No enforced role-based permissions.
-- No live Microsoft 365 integration.
-- No production document storage.
-- No hosted deployment.
-- No automated test suite.
-
-The prototype is suitable for portfolio review and business process demonstration.
-
----
+Week 3 is no longer just planning. It is a working local version of the production-shaped system.
 
 ## Target Production State
 
-A production version would include:
-
-- Hosted application environment.
-- Production database.
-- Secure authentication.
-- Role-based access control.
-- Controlled document storage.
-- Notification rules.
-- Reporting/export governance.
-- Audit logging.
-- Backups and restore testing.
-- Automated tests.
-- Deployment pipeline.
-- Monitoring and support.
-- Microsoft 365 / SharePoint / Teams / Outlook integration where appropriate.
-
----
-
-## Recommended Upgrade Phases
-
-### Phase 1 — Stabilise the Prototype
-
-Goal: make the local system cleaner, easier to maintain, and safer to expand.
-
-Completed in Week 2:
-
-- Shared UI component system.
-- Consistent page layout.
-- Core workflow page refactor.
-- Management/evidence page refactor.
-- Support/static page refactor.
-- CSS cleanup and consolidation.
-- Workload review lane polish.
-- Final manual page testing.
-- Documentation refresh.
-
-Outcome:
-
-A polished portfolio/demo package ready for Vanessa, Lester, Peter, employers, and technical reviewers.
-
----
-
-### Phase 2 — Production Foundation Layer
-
-Goal: build local working versions of production features with production-shaped architecture.
-
-Recommended Week 3 tasks:
-
-- Add production configuration structure.
-- Add `IFileStorageService`.
-- Add `LocalFileStorageService`.
-- Add `SharePointFileStorageService` placeholder.
-- Add `DocumentAttachment` model.
-- Add local Document Library page.
-- Add file upload/list/download locally.
-- Add role/permission models and services.
-- Add Permission Matrix page.
-- Add Microsoft Lists schema registry.
-- Add M365 Readiness / Production Readiness page.
-- Add mock/dry-run sync service.
-- Add notification rules and local notification preview/log.
-
-Outcome:
-
-The app still runs locally, but the shape of the production system is already in place.
-
----
-
-### Phase 3 — Production Database
-
-Goal: move from local SQLite/demo data to production-capable storage.
-
-Options:
-
-- SQL Server
-- Azure SQL
-- PostgreSQL
-- Another approved hosted database
-
-Tasks:
-
-- Add EF Core migrations.
-- Add environment-specific connection strings.
-- Add production seed/reference data strategy.
-- Add backup and restore procedures.
-- Add data migration approach.
-- Confirm indexes for report/search pages.
-
-Outcome:
-
-The system can store real business workflow data safely.
-
----
-
-### Phase 4 — Authentication and Roles
-
-Goal: ensure users only see and edit what they are allowed to.
-
-Possible approaches:
-
-- Microsoft Entra ID
-- ASP.NET Core Identity
-- Another approved identity provider
-
-Roles:
-
-- Administrator
-- Manager
-- Safety / Compliance Reviewer
-- Action Owner
-- Document Processor
-- Viewer
-
-Tasks:
-
-- Add sign-in.
-- Add user identity to created/updated records.
-- Add page/action permissions.
-- Restrict admin settings.
-- Restrict exports.
-- Restrict sensitive record areas.
-- Add role review documentation.
-
-Outcome:
-
-A production user model with accountability and least-privilege access.
-
----
-
-### Phase 5 — Audit and Traceability
-
-Goal: strengthen activity logging for production accountability.
-
-Current prototype:
-
-- Global Activity Log.
-- Per-record Activity History.
-- Created/updated/reviewed-style events.
-
-Production additions:
-
-- Authenticated user IDs.
-- Before/after values.
-- Field-level changes.
-- Export history.
-- Admin setting changes.
-- Role changes.
-- Login/security events where appropriate.
-- Retention rules.
-
-Outcome:
-
-Managers and auditors can see who changed what, when, and why.
-
----
-
-### Phase 6 — Document and Microsoft 365 Integration
-
-Goal: connect workflow records to the business tools people already use.
-
-Potential integrations:
-
-- SharePoint document libraries.
-- Microsoft Lists.
-- Teams notifications.
-- Outlook reminders/emails.
-- Excel/Power BI-ready exports.
-- APIs for job/accounting/ERP systems.
-
-Recommended order:
-
-1. Local file/document foundation.
-2. SharePoint document library provider.
-3. Microsoft Lists schema creation/sync.
-4. Teams/Outlook notifications.
-5. Authentication/roles.
-6. API or scheduled sync.
-7. Two-way integration only after workflow rules are stable.
-
-Outcome:
-
-OperationsFlow becomes an internal workflow hub rather than another isolated system.
-
----
-
-### Phase 7 — Testing and Deployment
-
-Goal: make releases repeatable and safe.
-
-Testing additions:
-
-- Unit tests for business rules.
-- Integration tests for database reads/writes.
-- UI smoke tests for important pages.
-- Role/security tests.
-- Export tests.
-- Data quality rule tests.
-- Migration tests.
-
-Deployment additions:
-
-- Build pipeline.
-- Staging environment.
-- Production environment.
-- Release notes.
-- Rollback plan.
-- Monitoring.
-- Logging.
-- Support process.
-
-Outcome:
-
-The system can be updated safely without breaking core workflows.
-
----
+A production/pilot version would include:
+
+- hosted application environment
+- approved production database
+- Microsoft Entra ID authentication
+- local/approved app role mapping
+- SharePoint document library storage
+- Graph API file operations
+- tenant-specific admin settings
+- backup/retention/monitoring
+- formal security review
+- approved reporting and audit rules
+
+## Upgrade Phases
+
+### Phase 1 — Completed Local Prototype
+
+Completed:
+
+- workflow pages
+- management pages
+- data quality
+- reports
+- activity traceability
+- shared UI cleanup
+
+### Phase 2 — Completed Week 3 Production Foundation
+
+Completed:
+
+- local SQL auth
+- roles/permissions
+- local session behaviour
+- file storage abstraction
+- document/evidence metadata
+- local document library
+- permission enforcement
+
+### Phase 3 — Microsoft 365 Tenant Setup
+
+Next:
+
+- confirm Microsoft 365 admin access
+- create test users/groups
+- create SharePoint site
+- create document library
+- define folders/metadata
+- create Entra app registration
+- set redirect URLs
+- configure Graph permissions
+- record tenant/app/site/library IDs securely outside public repo
+
+### Phase 4 — Microsoft Identity Integration
+
+Add:
+
+- OAuth2 sign-in
+- Microsoft account claim capture
+- ExternalLoginLink mapping to LocalUser
+- local role/permission enforcement stays as authorisation source
+- login/logout/session updates
+- configured/not-configured admin states
+
+### Phase 5 — SharePoint File Storage Provider
+
+Add:
+
+- Graph client/configuration
+- SharePoint upload
+- SharePoint open/download links
+- soft-delete/archive strategy
+- metadata mapping to existing DocumentAttachment model
+- provider switching between Local and SharePoint
+
+### Phase 6 — Pilot Hardening
+
+Add:
+
+- setup guide
+- deployment notes
+- test plan
+- screenshots
+- known limitations
+- backup/retention recommendations
+- security review checklist
+
+### Phase 7 — Optional Integrations
+
+Later:
+
+- Power Automate notifications
+- Planner/Teams task handoff
+- Outlook mailbox intake
+- Power BI reporting
+- Xero/Cin7/WorkflowMax connector research
 
 ## Low-Risk First Production Pilot
 
-The safest first production pilot would be one workflow area, not the full system.
+A sensible pilot should use:
 
-Recommended pilot:
-
-**Safety / Compliance Follow-Up**
-
-Why:
-
-- It has clear business value.
-- Records are easy to understand.
-- Corrective actions, risks, training, documents, reminders, workload, reports, and data quality all support the same review process.
-- It can be tested with a small user group before wider rollout.
-
-Pilot scope:
-
-- Corrective Actions
-- Safety Meeting Pack
-- Risk Register
-- Training Compliance
-- Controlled Documents
-- Reminder Centre
-- Workload
-- Reports
-- Data Quality
-- Activity Log
-
-Pilot users:
-
-- 1 manager
-- 1 safety/compliance reviewer
-- 1 admin/document processor
-- 2–5 action owners
-
-Pilot review cadence:
-
-- Weekly safety/compliance review.
-- Weekly workload review.
-- Monthly management report.
-
----
+- one test site
+- limited users
+- non-sensitive demo/pilot data
+- clear permission groups
+- SharePoint evidence library
+- local SQL/app database
+- manager review before expanding
 
 ## Production Risks and Controls
 
-| Risk | Example Problem | Control |
+| Risk | Impact | Control |
 |---|---|---|
-| Data loss | Records deleted or corrupted | Backups and restore tests |
-| Bad release | Navigation, saving, or reporting breaks | Test/staging/release checks |
-| Unauthorised access | Users see records they should not see | Authentication and role permissions |
-| Notification noise | Too many reminders are sent | Confirm owner/status/due-date rules first |
-| Bad data | Missing owners or weak notes distort reports | Data quality checks and validation |
-| Failed sync | Integration silently fails | Logging, retries, and support ownership |
-| Poor adoption | Users do not trust the system | Small pilot, training, and phased rollout |
-
----
+| Incorrect access | Users see or change records they should not | Entra auth + role/permission checks |
+| Lost files | Evidence unavailable | SharePoint library + retention/backup |
+| Weak audit | Changes cannot be reviewed | Activity Log + authenticated user identity |
+| Poor data quality | Reports become unreliable | Data Quality checks + required fields |
+| Over-automation | Human decision points removed too early | Human-in-the-loop stages |
+| Tenant misconfiguration | Login/storage fails | Admin configuration checklist |
 
 ## Enterprise Upgrade Summary
 
-OperationsFlow should not jump straight from prototype to full ERP replacement.
-
-The best path is:
-
-1. Polish the prototype.
-2. Add production foundation services locally.
-3. Move to production storage.
-4. Add authentication and roles.
-5. Strengthen audit logging.
-6. Add Microsoft 365 integrations.
-7. Add tests, deployment, monitoring, and support.
-8. Pilot with one workflow before expanding.
-
-This keeps the project realistic and low-risk while preserving the value already demonstrated in the prototype.
+OperationsFlow already has the local shape of a production internal workflow system. The next enterprise step is connecting approved Microsoft 365 identity and SharePoint file storage to the existing local workflow foundation.

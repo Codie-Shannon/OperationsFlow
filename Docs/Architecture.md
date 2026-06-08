@@ -2,350 +2,177 @@
 
 ## Overview
 
-OperationsFlow is a Blazor/.NET 8 portfolio prototype using local SQLite persistence. It demonstrates practical business workflow tracking, reporting, CSV exports, reminders, workload visibility, data quality checks, activity traceability, reviewer guidance, and production planning.
+OperationsFlow is a Blazor/.NET 8 internal workflow system prototype with a completed Week 3 production foundation. It demonstrates practical workflow capture, management reporting, evidence handling, local SQL authentication, role/action permissions, data quality checks, and a Microsoft 365 / SharePoint-ready storage and identity path.
 
-The project is intentionally honest about scope. It is a working local prototype, not a finished production ERP or hosted enterprise system.
-
-Week 2 has now completed the shared UI/component cleanup and stylesheet consolidation. The next stage is Week 3 production foundation work.
-
----
+The project is intentionally honest about scope. It is a working local pilot/prototype with production-shaped architecture. It is not yet a hosted production deployment.
 
 ## Current Implemented Architecture
 
 ```text
 Blazor UI
-    ↓
-Razor Components / Pages
-    ↓
-Application Services
-    ↓
-Entity Framework Core
-    ↓
-SQLite Database
+  -> Shared UI components
+  -> Workflow pages
+  -> Local authentication and session services
+  -> Local current user/permission service
+  -> EF Core services
+  -> SQLite or SQL Server/LocalDB
+  -> Workflow tables
+  -> LocalUser / LocalRole / LocalPermission / LocalRolePermission
+  -> DocumentAttachment metadata
+  -> IFileStorageService
+      -> LocalFileStorageService
+      -> SharePointFileStorageService placeholder
 ```
 
-Current implemented services include:
+## Core Architectural Decisions
 
-- `DashboardService`
-- `ActivityLogService`
-- `CsvExportService`
+- Keep workflow pages provider-independent.
+- Store workflow records locally through EF Core.
+- Store user/role/permission state in local SQL.
+- Use a current-user service to expose permission flags to pages/components.
+- Use a storage interface so local files can be replaced with SharePoint storage in Week 4.
+- Store attachment metadata separately from physical files.
+- Use Activity Log as the visible traceability layer.
+- Keep Microsoft 365 integration as the Week 4 provider/identity layer rather than rebuilding the UI.
 
-Current behaviour:
+## Authentication and Permissions
+
+Week 3 implements local SQL-backed authentication.
+
+Implemented:
+
+- login page as app landing page
+- logout page/control
+- local session persistence using browser `sessionStorage`
+- protected routes/navigation
+- sidebar signed-in user card
+- local users, roles, and permissions
+- permission helper properties such as workflow edit, upload evidence, delete evidence, export data, manage settings, and manage users
+- ReadOnly view-only enforcement across key pages
+- Admin action testing
+
+Current authorisation boundary:
 
 ```text
-Create/Edit record
-    ↓
-SQLite data updates
-    ↓
-Dashboard/reports/reminders/workload update
-    ↓
-Activity Log records the change
-    ↓
-CSV export reflects the saved data
+LocalUser -> LocalRole -> LocalRolePermission -> LocalPermission
 ```
 
----
+ReadOnly users can view pages, reports, data quality, and activity information, but cannot create, edit, upload, delete, export, or manage users/settings.
+
+## Data Storage
+
+Supported/implemented local development storage:
+
+- SQLite for simple local demo/development scenarios.
+- SQL Server / LocalDB for the local auth and production foundation path.
+
+Future production targets:
+
+- SQL Server
+- Azure SQL
+- PostgreSQL if required by hosting/environment
+
+## File and Evidence Storage
+
+Current Week 3 provider:
+
+```text
+LocalFileStorageService -> wwwroot/uploads or configured local upload path
+```
+
+Metadata is stored in `DocumentAttachment` records:
+
+- module name
+- record id/reference
+- original file name
+- stored file name/path
+- public/open URL
+- content type
+- file size
+- storage provider
+- uploaded by/date
+- notes
+- evidence flag
+- controlled document flag
+- soft delete fields
+
+Week 4 provider:
+
+```text
+SharePointFileStorageService -> Microsoft Graph -> SharePoint document library
+```
+
+The page/component workflow should stay the same while the provider changes.
+
+## Activity Logging Flow
+
+```text
+Create/edit/upload/delete/review action
+  -> service/page writes ActivityLog record
+  -> record detail pages show local history
+  -> Activity Log page shows global traceability
+  -> Reports/Data Quality can reference review/evidence state
+```
+
+Production audit work would add immutable rules, identity claims, retention policy, and potentially Microsoft 365 audit/history mapping.
 
 ## Shared UI Architecture
 
-Week 2 introduced a shared UI component system for repeated page structures.
+The app uses a shared UI component system to keep pages consistent:
 
-Shared UI component examples:
+- PageHero
+- PurposeNote
+- MetricGrid
+- MetricCard
+- InfoPanel
+- TableCard
+- FilterBar
+- EmptyState
+- GuidanceNote
+- ActionStrip
+- ActivityHistoryPanel
+- RecordAttachments
 
-- `PageHero`
-- `PurposeNote`
-- `MetricGrid`
-- `MetricCard`
-- `InfoPanel`
-- `ActionStrip`
-- `TableCard`
-- `FilterBar`
-- `StatusFlow`
-- `GuidanceNote`
-- `ActivityHistoryPanel`
-- `EmptyState`
-
-This reduced repeated Razor markup, made pages easier to scan, and gave the app a consistent dashboard/business-system look.
-
----
+This reduces repeated markup and keeps future Week 4 pages visually consistent.
 
 ## Current Main Modules
-
-Implemented/reviewable modules include:
 
 - Dashboard
 - Work Orders
 - Corrective Actions
-- Safety Overview
-- Safety Meeting Pack
-- Compliance Calendar
-- Controlled Documents
+- Document Intake
+- Document Library
 - Risk Register
 - Training Compliance
-- Document Intake
-- Reminder Centre
+- Document Control
+- Reminders
 - Workload
 - Reports
 - Data Quality
 - Activity Log
-- Admin Settings starter
-
-Reviewer/support pages include:
-
-- Portfolio Hub
-- Reviewer Checklist
-- Demo Guide
-- Business Value
-- Prototype Scope
-- Implementation Plan
-- Technical Overview
-- Data Model
 - User Roles
-- Audit Overview
-- Deployment Overview
-- Testing Overview
-- Integration Overview
+- Admin Settings
+- Reviewer/Business/Technical overview pages
 
----
+## Week 4 Production Architecture
 
-## Data Storage
-
-Current prototype storage:
-
-- SQLite
-- Entity Framework Core
-- Seeded demo data
-- Local database files during development
-
-This supports real create/edit/save/report behaviour for portfolio review.
-
-Future production storage would move to:
-
-- SQL Server
-- Azure SQL
-- PostgreSQL
-- Another approved hosted database
-
-Production storage would also require:
-
-- EF Core migrations
-- Backup/restore procedures
-- Access control
-- Environment-specific connection strings
-- Monitoring
-
----
-
-## Activity Logging Flow
-
-Current activity logging is record-level traceability.
+Week 4 should add live Microsoft 365 providers and configuration:
 
 ```text
-User creates or edits a record
-    ↓
-Page saves changes through EF Core
-    ↓
-ActivityLogService creates an ActivityLog record
-    ↓
-Activity appears in:
-    - Global Activity Log
-    - Dashboard Recent Activity
-    - Per-record Activity History
+Microsoft Entra ID / OAuth2
+  -> external identity claim
+  -> ExternalLoginLink
+  -> LocalUser
+  -> Local SQL roles/permissions
+
+SharePoint / Graph
+  -> SharePoint document library
+  -> upload/open/delete file operations
+  -> DocumentAttachment metadata still stored in OperationsFlow
 ```
 
-Current Activity Log fields include:
+The design goal is to replace/extend providers, not rewrite the workflow pages.
 
-- Module name
-- Record ID
-- Record reference
-- Action type
-- Description
-- Created by
-- Created date
+## Architecture Summary
 
-Future production audit logging would add:
-
-- Authenticated user ID
-- Field name
-- Old value
-- New value
-- Event type
-- Source page/action
-- Export history
-- Admin/security events
-
----
-
-## CSV Export Flow
-
-CSV exports are implemented through app endpoints and `CsvExportService`.
-
-```text
-User clicks export link
-    ↓
-Endpoint calls CsvExportService
-    ↓
-Service reads records from SQLite through EF Core
-    ↓
-CSV string is generated
-    ↓
-Browser downloads CSV file
-```
-
-Current export areas include:
-
-- Work Orders
-- Corrective Actions
-- Risk Register
-- Training
-- Document Reviews
-- Activity Log
-- Document Intake
-
----
-
-## Document Intake Workflow
-
-The current Document Intake module tracks incoming admin/document processing records.
-
-Implemented fields include:
-
-- Document name
-- Received date
-- Received from
-- Source type
-- Document type
-- Assigned to
-- Target system
-- Status
-- Priority
-- Due date
-- Completed date
-- Notes
-
-Current target system values include demo options such as:
-
-- SharePoint
-- Xero
-- Cin7
-- WorkflowMax
-- Email Folder
-- Internal System
-
-These are tracked as workflow metadata only. The app does not currently integrate live with those external systems.
-
----
-
-## Reporting and Management Views
-
-Current management views include:
-
-- Dashboard KPIs
-- Recent Activity
-- Reminder Centre
-- Workload
-- Reports
-- Data Quality
-- Activity Log
-- Safety Meeting Pack
-- Compliance Calendar
-
-These views reuse the same workflow records to show owner pressure, overdue work, attention items, weak records, management summaries, and review evidence.
-
----
-
-## Week 3 Production Foundation Architecture
-
-Week 3 should add production-shaped local providers and interfaces:
-
-```text
-Blazor UI
-    ↓
-Application Services
-    ↓
-Production Foundation Interfaces
-    ↓
-Local Providers / Mock Providers
-    ↓
-SQLite + Local Storage
-```
-
-Target service areas:
-
-```text
-IFileStorageService
-    LocalFileStorageService
-    SharePointFileStorageService placeholder
-
-IMicrosoft365ListService
-    MockMicrosoft365ListService
-    GraphMicrosoft365ListService placeholder
-
-INotificationService
-    LocalNotificationService
-    TeamsNotificationService placeholder
-
-IUserContextService
-    DemoUserContextService
-
-IPermissionService
-    PermissionService
-```
-
-Week 3 should build local working versions of production features while keeping Week 4 ready for live Microsoft 365 providers.
-
----
-
-## Future Production Architecture
-
-A future production version may move toward:
-
-```text
-OperationsFlow.Web
-OperationsFlow.Application
-OperationsFlow.Domain
-OperationsFlow.Infrastructure
-OperationsFlow.Shared
-OperationsFlow.Tests
-```
-
-Target flow:
-
-```text
-Blazor UI
-    ↓
-Application Services
-    ↓
-Domain / Business Rules
-    ↓
-Infrastructure
-    ↓
-SQL Server / Azure SQL / PostgreSQL
-    ↓
-Authentication / Permissions / Integrations
-```
-
-Future architecture upgrades could include:
-
-- Service-layer refactor for all modules.
-- Request/view models instead of editing EF entities directly in forms.
-- EF Core migrations.
-- SQL Server, PostgreSQL, or Azure SQL.
-- Authentication.
-- Role-based permissions.
-- Database-driven settings.
-- Per-field audit history.
-- File upload and attachment handling.
-- SharePoint document storage.
-- Outlook email intake.
-- Teams/email notifications.
-- Microsoft Lists or API sync.
-- Power BI/Excel-ready reporting.
-- Tests.
-- Production hosting/deployment pipeline.
-
----
-
-## Current Architecture Summary
-
-OperationsFlow currently proves the business workflow and reporting concept with a working Blazor/SQLite prototype. It is suitable as a portfolio/demo prototype and is structured around a realistic path toward a production internal business workflow system.
+OperationsFlow now proves both the workflow concept and the local production foundation. It is ready for Week 4 Microsoft 365 tenant configuration, OAuth2 sign-in, SharePoint document storage, and pilot deployment preparation.

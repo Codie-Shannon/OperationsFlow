@@ -1,309 +1,97 @@
 # OperationsFlow Known Limitations
 
-This document lists the current known limitations of OperationsFlow and explains which limitations are intentional prototype boundaries versus future production upgrades.
-
----
-
 ## Prototype Status
 
-OperationsFlow is currently a local portfolio prototype.
-
-It is designed to demonstrate:
-
-- Workflow design.
-- C#/Blazor development.
-- CRUD screens.
-- SQLite persistence.
-- Reporting.
-- CSV exports.
-- Reminders and workload visibility.
-- Data quality checks.
-- Activity traceability.
-- Shared UI component refactoring.
-- Reviewer support pages.
-- Production planning.
-- Microsoft 365 integration direction.
-
-It is not currently intended to be used as a live production ERP or enterprise system.
-
----
+OperationsFlow is a local production-foundation prototype. It is suitable for portfolio review, manager review, and Week 4 Microsoft 365 pilot configuration planning. It is not yet a hosted/live production deployment.
 
 ## Current Technical Limitations
 
-### Local Database Only
+### Not Hosted Yet
 
-Current state:
+The app currently runs locally. A production version would need hosting, deployment process, environment configuration, monitoring, backups, and support procedures.
 
-- Uses SQLite.
-- Stores demo data locally.
-- Suitable for prototype/demo use.
+### Microsoft 365 Not Connected Yet
 
-Production requirement:
+A Microsoft 365 tenant is available for Week 4 setup, but the application is not yet connected to:
 
-- SQL Server, Azure SQL, PostgreSQL, or another approved hosted database.
-- EF Core migrations.
-- Backups.
-- Restore process.
-- Access control.
+- Microsoft Entra OAuth2 login
+- Microsoft Graph
+- SharePoint document libraries
+- Teams
+- Planner
+- Outlook mailbox intake
+- Power Automate
+- Power BI service
 
----
+### Local Authentication Is Not Production Identity
 
-### Seeded Demo Data
+Week 3 local SQL-backed authentication is implemented and tested, including local roles and action permissions.
 
-Current state:
+Remaining production identity work:
 
-- Uses seeded sample records.
-- Data is realistic enough for review but not connected to a real company dataset.
+- Entra ID / OAuth2 sign-in
+- external login mapping
+- token handling
+- tenant/app registration config
+- secure secret/certificate handling
+- production sign-in/logout testing
 
-Production requirement:
+### Role Permissions Are Local App Permissions
 
-- Real user-created records.
-- Migration/import process.
-- Data ownership rules.
-- Validation and cleanup.
+Week 3 app permissions are enforced in the UI/actions and are suitable for local pilot demonstration. Production would also need:
 
----
+- server-side/policy-level enforcement review
+- authenticated identity claims
+- security testing
+- audit rules
+- tenant group mapping if used
 
-### No Authentication Yet
+### File Storage Is Local
 
-Current state:
+Week 3 stores files locally through the file storage abstraction. It stores file metadata in `DocumentAttachment` records.
 
-- The app does not currently require sign-in.
-- User names are demo text, not authenticated identities.
+Remaining production file work:
 
-Production requirement:
-
-- Microsoft Entra ID, ASP.NET Core Identity, or another approved identity provider.
-- Authenticated user ID on created/updated/reviewed records.
-- Role-specific access.
-
----
-
-### No Role-Based Permissions Yet
-
-Current state:
-
-- The User Roles page explains the future production access model.
-- Roles are not enforced yet in the app.
-
-Production requirement:
-
-- Admin role.
-- Manager role.
-- Safety/compliance reviewer role.
-- Action owner role.
-- Document processor role.
-- Read-only viewer role.
-- Page/action restrictions.
-- Export restrictions.
-
-Week 3 should add local role/permission foundations before Week 4 production mapping.
-
----
-
-### No Hosted Deployment Yet
-
-Current state:
-
-- Runs locally.
-- Suitable for portfolio review.
-
-Production requirement:
-
-- Hosted app environment.
-- Separate development/test/production environments.
-- Environment-specific configuration.
-- Logging.
-- Monitoring.
-- Release/rollback process.
-
----
-
-### No Live Microsoft 365 Integration Yet
-
-Current state:
-
-- Integration Overview explains the path.
-- No live SharePoint, Teams, Outlook, Microsoft Lists, or Power BI connection currently exists.
-
-Production requirement:
-
-- SharePoint document links/storage.
-- Teams notifications.
-- Outlook reminders/emails.
-- Microsoft Lists/API sync where useful.
-- Excel/Power BI-ready reporting feed.
-- Integration error handling.
-
-Week 3 should add schema/dry-run services. Week 4 should connect the live Microsoft 365 implementation.
-
----
+- SharePoint document library setup
+- Graph upload/open/delete
+- file permission model
+- retention rules
+- folder/metadata conventions
 
 ### No Live Xero / Cin7 / WorkflowMax Integration Yet
 
-Current state:
+OperationsFlow currently models workflow pressure and integration direction. It does not yet connect to Xero, Cin7, WorkflowMax, or other external business systems.
 
-- Document Intake tracks target systems as workflow metadata.
-- Target system values are used to show where a document/admin item should end up.
+### No Production Reporting Platform Yet
 
-Production requirement:
-
-- Confirm source of truth.
-- Use APIs only after business rules are stable.
-- Add retry/error logging.
-- Avoid unsafe two-way sync until required.
-
----
-
-### No Production File Storage Yet
-
-Current state:
-
-- Controlled documents and document intake records store metadata.
-- The current app does not store/upload real files yet.
-
-Production requirement:
-
-- Local file/document library foundation.
-- SharePoint or controlled storage.
-- File permissions.
-- File links.
-- Version/review history.
-- Attachments/evidence.
-
-Week 3 should build local file storage and attachment metadata. Week 4 should connect SharePoint document library storage.
-
----
+Reports and CSV exports are implemented locally. Production reporting could later use Power BI, scheduled exports, or approved management dashboards.
 
 ### No Automated Test Suite Yet
 
-Current state:
+Manual testing has been done, including Admin and ReadOnly permission behaviour. Automated unit/integration/UI tests are still future work.
 
-- Manual testing is used.
-- Testing Overview explains manual and production test requirements.
+### Seeded / Demo Data
 
-Production requirement:
+The app uses demo records for portfolio and testing purposes. Production would require approved data migration/import rules.
 
-- Unit tests.
-- Integration tests.
-- UI smoke tests.
-- Role/security tests.
-- Export tests.
-- Migration tests.
-- CI/CD pipeline checks.
+### Some Options Are Still Hardcoded
 
----
+Some dropdowns/status lists/options are currently code-defined. Production would likely move more configuration into admin tables/settings.
 
-### Styling Is Consolidated, Not Fully Modular
+### Admin Settings Is a Configuration Boundary
 
-Current state:
-
-- The CSS was cleaned and reduced after the Week 2 shared UI refactor.
-- The app now uses a more consistent shared styling system.
-- CSS is still largely in `wwwroot/app.css`.
-
-Future maintainability option:
-
-- Split CSS into smaller files if the app continues to grow.
-- Keep shared design tokens and `of-*` component classes.
-- Avoid page-specific duplication.
-
-This is no longer a blocker for the Week 2 review package.
-
----
-
-### Some Form Options Are Still Hardcoded
-
-Current state:
-
-- Several dropdown options are defined in pages/forms.
-- This is acceptable for prototype speed.
-
-Production requirement:
-
-- Database-driven reference lists.
-- Admin-managed settings.
-- Audit changes to settings/options.
-- Role-restricted admin pages.
-
----
-
-### Admin Settings Is a Starter Page
-
-Current state:
-
-- Admin Settings demonstrates the direction for configurable departments, sites, priorities, statuses, and system options.
-- It is not a full production admin console yet.
-
-Production requirement:
-
-- Persist settings in the database.
-- Add create/edit/delete settings.
-- Add validation.
-- Add permissions.
-- Add audit logging.
-
----
+Admin Settings explains and previews production configuration. It is not yet a full production admin console for tenant secrets, Graph permissions, or deployment settings.
 
 ## Business Scope Limitations
 
 ### Not a Full ERP System
 
-OperationsFlow is not currently a full ERP. It does not include:
+OperationsFlow is focused on workflow follow-up, evidence, reporting, and management visibility. It is not a full ERP, accounting, CRM, or manufacturing system.
 
-- Accounting.
-- Inventory.
-- Payroll.
-- Purchasing.
-- Sales orders.
-- Manufacturing planning.
-- Asset depreciation.
-- Customer relationship management.
-- Full document management.
-- Full HR/training management.
+### Not a Certified Compliance System
 
-It is best described as an operational follow-up and business workflow prototype.
-
----
-
-### Not a Production Safety Compliance System Yet
-
-OperationsFlow demonstrates safety/compliance follow-up workflows.
-
-It does not currently replace:
-
-- Certified safety management systems.
-- Legal compliance registers.
-- Formal audit systems.
-- Regulated document control systems.
-
-A production version would need validation, permissions, audit controls, backups, and business sign-off.
-
----
-
-## What These Limitations Mean
-
-These limitations are not failures of the project. They show honest prototype scope.
-
-The current version proves:
-
-- The workflow model.
-- The UI structure.
-- The record model.
-- The reporting approach.
-- The activity traceability concept.
-- The data quality concept.
-- The shared UI/system cleanup.
-- The production upgrade path.
-
-The next version should focus on production foundations.
-
----
+It can support compliance workflows, but a production safety/compliance system would need business validation, legal/process sign-off, security review, and approved retention/audit policies.
 
 ## Limitation Summary
 
-OperationsFlow is ready to be reviewed as a portfolio prototype. It should not be presented as a finished production ERP or live business system.
-
-Best wording:
-
-> OperationsFlow is a working Blazor/.NET business workflow prototype. It demonstrates the structure, workflows, reporting, traceability, UI consistency, and production planning needed for an internal operations/compliance follow-up system. A production rollout would require authentication, role permissions, hosted database storage, backups, testing, deployment, monitoring, file/document storage, and live integrations.
+OperationsFlow now proves the workflow, evidence, reporting, role-permission, and production architecture shape. The remaining limitations are mostly production integration, hosting, identity, SharePoint/Graph storage, automated testing, and formal security/governance work.

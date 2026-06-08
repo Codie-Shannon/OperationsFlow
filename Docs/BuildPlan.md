@@ -1,214 +1,142 @@
 # OperationsFlow Build Plan
 
-This document summarises the build plan and current state for OperationsFlow.
-
----
-
 ## Current Build State
 
-Week 2 UI cleanup and workflow polish is complete.
+Current branch/state at the end of Week 3:
 
-Completed/reviewable areas include:
+```text
+Week 3 Production Foundation: complete after permission enforcement
+Next stage: Week 4 Microsoft 365 production implementation
+```
 
-- Dashboard
-- Work Orders
-- Corrective Actions
-- Safety Overview
-- Safety Meeting Pack
-- Compliance Calendar
-- Controlled Documents
-- Risk Register
-- Training Compliance
-- Document Intake
-- Reminder Centre
-- Workload
-- Reports
-- CSV exports
-- Data Quality
-- Activity Log
-- Admin Settings starter
-- Portfolio Hub
-- Reviewer Checklist
-- Demo Guide
-- Business Value
-- Prototype Scope
-- Implementation Plan
-- Technical Overview
-- Data Model
-- User Roles
-- Audit Overview
-- Deployment Overview
-- Testing Overview
-- Integration Overview
+Completed Week 3 work includes local SQL authentication, roles/permissions, session login/logout, file storage abstraction, local document library, attachments, evidence checks, reports, and permission-controlled workflow actions.
 
-Week 2 also completed:
+## Completed Week 3 Blocks
 
-- Shared UI component refactor.
-- App-wide CSS cleanup.
-- Activity history empty-state fix.
-- Workload card layout polish.
-- Calendar section build fix.
-- Final manual route/workflow testing.
+### Block 1 — Production Configuration Foundation
 
----
+- Added production-style options/configuration.
+- Added local/demo feature switches.
+- Added Microsoft 365, storage, notification, and operations options.
 
-## Week 2 Lock-In Tasks
+### Block 2 — File Storage Abstraction
 
-Before moving into Week 3:
+- Added `IFileStorageService`.
+- Added local file provider.
+- Added SharePoint provider placeholder for Week 4.
 
-- [x] `dotnet build` passes.
-- [x] Manual page testing completed.
-- [x] Core create/edit flows tested.
-- [x] Management/evidence pages checked.
-- [x] CSS cleanup applied.
-- [x] Documentation refreshed.
-- [ ] Screenshots refreshed after final UI.
-- [ ] README screenshot links confirmed.
-- [ ] Week 2 merged to `main`.
-- [ ] Week 2 backup branch created.
-- [ ] Week 3 branch created from updated `main`.
+### Block 3 — DocumentAttachment Model/Service
 
----
+- Added file metadata model.
+- Added attachment service.
+- Added schema safety for local demo state.
 
-## Week 2 Final Test Checklist
+### Block 4 — Document Library
 
-Manual QA checklist before pushing/merging:
+- Added local document library page.
+- Added upload/list/open/download/soft-delete behaviour.
+- Added activity logging for upload/delete.
 
-- [x] `dotnet build` passes.
-- [x] `dotnet run` starts app.
-- [x] Dashboard loads.
-- [x] Portfolio Hub loads.
-- [x] Reviewer Checklist loads.
-- [x] Demo Guide loads.
-- [x] Business Value loads.
-- [x] Work Orders list loads.
-- [x] Work Order create/edit/details works.
-- [x] Corrective Actions list loads.
-- [x] Corrective Action create/edit/details works.
-- [x] Risk/Training/Documents can create prefilled corrective actions.
-- [x] Document Intake list loads.
-- [x] Document Intake create/edit works.
-- [x] Safety Overview loads.
-- [x] Safety Meeting Pack loads.
-- [x] Compliance Calendar loads.
-- [x] Documents loads.
-- [x] Risk Register loads.
-- [x] Training loads.
-- [x] Reminders loads.
-- [x] Workload loads.
-- [x] Reports loads.
-- [x] Data Quality loads.
-- [x] Activity Log loads.
-- [x] Technical Overview loads.
-- [x] Data Model loads.
-- [x] User Roles loads.
-- [x] Audit Overview loads.
-- [x] Deployment Overview loads.
-- [x] Testing Overview loads.
-- [x] Integration Overview loads.
-- [x] Prototype Scope loads.
-- [x] Implementation Plan loads.
-- [x] Admin Settings loads.
-- [x] CSV exports work.
-- [x] Activity history empty states look correct.
-- [x] README/docs are being updated.
-- [ ] Screenshots are current enough after final UI cleanup.
+### Block 5 — Record Attachments
 
----
+- Added reusable `RecordAttachments` component.
+- Connected attachments to Work Orders and Corrective Actions.
+
+### Block 6 — Document Intake Details
+
+- Added document intake details route.
+- Connected Document Intake to attachments and file counts.
+
+### Block 7 — Evidence-Aware Data Quality and Reports
+
+- Added missing-evidence checks.
+- Added evidence coverage reporting.
+- Updated reviewer/business pages for evidence workflows.
+
+### Block 8 — SharePoint Readiness Documentation
+
+- Explained local provider, metadata model, and Week 4 SharePoint path.
+
+### Block 9 — Local SQL Authentication and Roles
+
+- Added SQL Server / LocalDB support.
+- Added local SQL users, roles, permissions.
+- Added login/logout/session behaviour.
+- Added protected navigation and sidebar user status.
+
+### Block 10 — Permission Enforcement and Final Week 3 Sign-Off
+
+- Fixed ReadOnly viewer bug.
+- Wrapped create/edit workflow actions with workflow edit permission.
+- Wrapped upload actions with upload evidence permission.
+- Wrapped delete actions with delete evidence permission.
+- Wrapped CSV/export links with export permission.
+- Wrapped admin/user actions with settings/user management permissions.
+- Tested Admin and ReadOnly behaviour.
+
+## Current Test Requirement
+
+Before creating the Week 4 branch, confirm:
+
+```text
+Admin can create/edit/upload/delete/export/administer.
+ReadOnly can view but cannot create/edit/upload/delete/export/administer.
+```
 
 ## Recommended Branch Workflow
 
-From completed `week2-ui-cleanup`:
+After final Week 3 commit:
 
 ```bash
-git checkout week2-ui-cleanup
-dotnet build
+git checkout week3-production-foundation
+git pull
 git status
-git add .
-git commit -m "Complete Week 2 UI cleanup and stylesheet consolidation"
-git push origin week2-ui-cleanup
 ```
 
-Merge to main:
+Optional backup:
 
 ```bash
-git checkout main
-git pull origin main
-git merge week2-ui-cleanup
-dotnet build
-git push origin main
+git branch backup/week3-production-foundation-complete
+git push origin backup/week3-production-foundation-complete
 ```
 
-After README/screenshots/docs refresh:
+Create Week 4 branch:
 
 ```bash
-git add .
-git commit -m "Update README, screenshots, and docs for Week 2 UI cleanup"
-git push origin main
+git checkout -b week4-production-implementation
+git push -u origin week4-production-implementation
 ```
 
-Create backup:
+## Week 4 Build Goal
 
-```bash
-git checkout main
-git pull origin main
-git branch backup/week2-ui-cleanup-complete
-git push origin backup/week2-ui-cleanup-complete
-```
+Week 4 is the full Microsoft 365 production implementation path.
 
-Create Week 3 branch:
+It should connect the existing Week 3 system to:
 
-```bash
-git checkout -b week3-production-foundation
-git push -u origin week3-production-foundation
-```
+- Microsoft 365 tenant
+- Entra app registration
+- OAuth2 sign-in
+- external login linking
+- SharePoint site/document library
+- Microsoft Graph file upload/open/delete
+- configured/not-configured admin states
+- production pilot documentation
 
----
+## Week 4 Build Order
 
-## Week 3 Build Goal
-
-Week 3 is **Production Foundation**.
-
-It should build local working versions of production features using production-shaped architecture.
-
-Week 3 should include:
-
-- Production configuration/options structure.
-- File storage interface.
-- Local file storage provider.
-- SharePoint file storage provider placeholder.
-- Document attachment model.
-- Local Document Library page.
-- Attachment UI for records.
-- Role/permission foundation.
-- Permission Matrix page.
-- Microsoft Lists schema registry.
-- M365 Readiness / Production Readiness page.
-- Mock/dry-run sync service.
-- Notification rule and local notification preview/log.
-- README/docs updates for production foundation.
-
----
-
-## Week 4 Direction
-
-Week 4 is the **full production Microsoft 365 implementation**.
-
-Week 4 should connect:
-
-- Real Microsoft 365 environment.
-- Real SharePoint site.
-- Real Microsoft Lists.
-- Real document library.
-- Real file uploads to SharePoint.
-- Real list sync.
-- Real Teams/Outlook/Power Automate notification path.
-- Production configuration and setup documentation.
-
----
+1. Confirm tenant/admin access.
+2. Create test users and groups.
+3. Create SharePoint site/document library.
+4. Create Entra app registration.
+5. Set redirect URLs.
+6. Add Graph permissions.
+7. Add Microsoft auth options/configuration.
+8. Implement OAuth2 sign-in.
+9. Link external Microsoft accounts to local users.
+10. Implement SharePoint file storage provider.
+11. Test upload/open/delete through SharePoint.
+12. Update Admin Settings, docs, screenshots, and release notes.
 
 ## Current Build Summary
 
-OperationsFlow has moved beyond an early dashboard prototype.
-
-It is now a broad, connected business workflow prototype with working modules, reviewer support pages, management/evidence pages, activity traceability, data quality, exports, shared UI components, cleaned CSS, production planning pages, and a clear next step toward production foundation work.
+Week 3 proves the local internal business system foundation. Week 4 should connect Microsoft 365 services into that foundation without rebuilding the app structure.

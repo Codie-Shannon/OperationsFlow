@@ -1,270 +1,150 @@
 # OperationsFlow Feature Checklist
 
-This checklist summarises the current implemented/reviewable features and the main future production upgrades.
-
----
-
 ## Core App
 
-- [x] Blazor/.NET 8 application
-- [x] SQLite local database
-- [x] Entity Framework Core data access
-- [x] Seeded demo data
-- [x] Shared navigation
-- [x] Reusable page intro/layout pattern
-- [x] Reusable card/table/panel visual style
-- [x] Shared UI component system
-- [x] Cleaned consolidated stylesheet
-- [x] Dashboard overview
-- [x] Local run/demo workflow
-- [ ] Hosted production deployment
-- [ ] Authentication
-- [ ] Role-based permissions
-- [ ] Production database
-- [ ] Automated tests
+- [x] Blazor/.NET 8 app
+- [x] Shared layout/navigation
+- [x] Shared UI components
+- [x] SQLite local development support
+- [x] SQL Server / LocalDB production foundation support
+- [x] EF Core models/services
+- [x] Seeded demo workflow data
+- [x] Activity logging
+- [x] CSV export package
 
----
+## Authentication / Permissions
+
+- [x] Local SQL-backed users
+- [x] Local roles
+- [x] Local permissions
+- [x] Login page as landing page
+- [x] Logout flow
+- [x] SessionStorage login persistence
+- [x] Protected navigation
+- [x] Sidebar user/role display
+- [x] ReadOnly view-only role tested
+- [x] Admin action role tested
+- [x] Workflow create/edit permission enforcement
+- [x] Evidence upload permission enforcement
+- [x] Evidence delete permission enforcement
+- [x] CSV/export permission enforcement
+- [x] Settings/user management permission boundaries
+- [ ] Microsoft Entra OAuth2 sign-in
+- [ ] Microsoft account to local user linking
 
 ## Dashboard
 
-- [x] KPI cards
-- [x] Summary panels
-- [x] Recent activity feed
-- [x] Links to workflow modules
-- [x] Shows operations/compliance status
-- [ ] User-personalised dashboard
-- [ ] Configurable KPI definitions
-- [ ] Production analytics feed
-
----
+- [x] Workflow status cards
+- [x] Recent activity visibility
+- [x] Local SQL/auth status messaging
+- [x] Links to user roles/admin/technical pages
 
 ## Work Orders
 
-- [x] Work order list
-- [x] Search/filter
-- [x] Create work order
-- [x] Edit work order
-- [x] Work order details
-- [x] Owner field
-- [x] Status field
-- [x] Priority field
-- [x] Due date tracking
-- [x] Notes
-- [x] Overdue logic
-- [x] Per-record activity history
-- [x] CSV export
-- [ ] Approval workflow
-- [ ] File attachments
-- [ ] Assignment notifications
-
----
+- [x] Register/list
+- [x] Details page
+- [x] Create page
+- [x] Edit page
+- [x] Activity history
+- [x] Attachment panel
+- [x] File count column
+- [x] ReadOnly hides new/edit/upload/delete actions
 
 ## Corrective Actions
 
-- [x] Corrective action list
-- [x] Search/filter
-- [x] Create corrective action
-- [x] Corrective action details/review page
-- [x] Edit corrective action
-- [x] Owner field
-- [x] Source field
-- [x] Action type field
-- [x] Priority field
-- [x] Status field
-- [x] Due date field
-- [x] Completed date field
-- [x] Notes field
-- [x] Owner guidance
-- [x] Due date guidance
-- [x] Notes guidance
-- [x] Status flow guidance
-- [x] Activity logging
-- [x] Per-record activity history
-- [x] CSV export
-- [x] Corrective action creation from risk records
-- [x] Corrective action creation from document review records
-- [x] Corrective action creation from training records
-- [ ] Approval/sign-off workflow
-- [ ] File/evidence attachments
-- [ ] Escalation notifications
-
----
+- [x] Register/list
+- [x] Details page
+- [x] Create page
+- [x] Edit page
+- [x] Source-linked creation from risk/training/documents
+- [x] Attachment panel
+- [x] File count column
+- [x] ReadOnly hides new/edit/upload/delete actions
 
 ## Document Intake
 
-- [x] Document intake list
-- [x] Search/filter
-- [x] Create document intake item
-- [x] Edit document intake item
-- [x] Document name
-- [x] Received date
-- [x] Received from
-- [x] Source type
-- [x] Document type
-- [x] Assigned to
-- [x] Target system
-- [x] Priority
-- [x] Status
-- [x] Due date
-- [x] Completed date
-- [x] Notes
-- [x] Activity logging
-- [x] CSV export
-- [x] Appears in workload/reminders/reports/data quality
-- [ ] Email inbox integration
-- [ ] OCR/metadata extraction
-- [ ] Local file/document library foundation
+- [x] Register/list
+- [x] Details page
+- [x] Create page
+- [x] Edit page
+- [x] Attachment panel
+- [x] File count column
+- [x] ReadOnly hides new/edit/upload/delete actions
 - [ ] SharePoint file routing
-- [ ] Approval/rejection workflow
 
----
+## Document Library
+
+- [x] Upload local files
+- [x] Store file metadata
+- [x] Search/filter
+- [x] Open/download links
+- [x] Soft delete
+- [x] Activity logging
+- [x] Upload/delete permission enforcement
+- [ ] SharePoint provider connected
 
 ## Safety / Compliance
 
-- [x] Safety Overview
-- [x] Safety Meeting Pack
-- [x] Compliance Calendar
-- [x] Controlled Documents
 - [x] Risk Register
 - [x] Training Compliance
-- [x] High/critical risk visibility
-- [x] Expired training visibility
-- [x] Due-soon training visibility
-- [x] Document review visibility
-- [x] Corrective action generation from compliance records
-- [x] Meeting-ready attention items
-- [ ] Formal review sign-off
-- [ ] Compliance evidence attachments
-- [ ] Scheduled meeting pack export
-
----
+- [x] Document Control
+- [x] Source-linked Create Action links
+- [x] Create Action links hidden from ReadOnly
 
 ## Management Views
 
-- [x] Reminder Centre
-- [x] Workload page
-- [x] Reports page
-- [x] Data Quality page
-- [x] Activity Log
-- [x] Owner pressure visibility
-- [x] Overdue visibility
-- [x] Management summary tables
-- [x] CSV export links
-- [x] Weak record checks
-- [ ] Scheduled email reports
-- [ ] Power BI feed
-- [ ] Configurable reporting periods
-
----
+- [x] Workload
+- [x] Reminders
+- [x] Reports
+- [x] Evidence coverage report
+- [x] Missing evidence report
+- [x] Data Quality
+- [x] Missing evidence checks
 
 ## Activity / Audit
 
 - [x] Global Activity Log
-- [x] Dashboard recent activity
-- [x] Per-record Activity History
-- [x] Created/updated/reviewed-style records
-- [x] Module name
-- [x] Record reference
-- [x] Created by display text
-- [x] Created date
-- [ ] Authenticated user ID
-- [ ] Field-level before/after values
-- [ ] Immutable audit events
-- [ ] Export history
-- [ ] Admin/security change tracking
-
----
+- [x] Record-level histories
+- [x] Upload/delete activity events
+- [x] Export hidden unless export permission exists
+- [ ] Production immutable audit rules
+- [ ] Microsoft 365 audit/history mapping
 
 ## CSV Exports
 
-- [x] Work Orders export
-- [x] Corrective Actions export
-- [x] Risk Register export
-- [x] Training export
-- [x] Document Reviews export
-- [x] Activity Log export
-- [x] Document Intake export
-- [ ] Export permissions
+- [x] Export package
+- [x] README/manifest
+- [x] Export permission visibility rules
 - [ ] Scheduled exports
-- [ ] Approved KPI/report definitions
-- [ ] Power BI-ready model/feed
-
----
+- [ ] Power BI service publishing
 
 ## Reviewer / Portfolio Pages
 
-- [x] Portfolio Hub
 - [x] Reviewer Checklist
 - [x] Demo Guide
 - [x] Business Value
+- [x] Technical Overview
+- [x] Integration Overview
 - [x] Prototype Scope
 - [x] Implementation Plan
-- [x] Technical Overview
-- [x] Data Model
 - [x] User Roles
-- [x] Audit Overview
-- [x] Deployment Overview
-- [x] Testing Overview
-- [x] Integration Overview
-- [x] Screenshot checklist file
-- [x] Release notes file
+- [x] Admin Settings
 
----
+## Week 4 Microsoft 365 Targets
 
-## Production Planning Pages
-
-- [x] Prototype boundaries explained
-- [x] Production upgrade path explained
-- [x] User roles explained
-- [x] Audit requirements explained
-- [x] Deployment requirements explained
-- [x] Testing requirements explained
-- [x] Microsoft 365 integration path explained
-- [ ] Production architecture implemented
-- [ ] Production permissions implemented
-- [ ] Production integrations implemented
-
----
-
-## Documentation
-
-- [x] README
-- [x] Case Study
-- [x] Architecture
-- [x] Demo Walkthrough
-- [x] Feature Checklist
-- [x] Known Limitations
-- [x] Enterprise Upgrade Plan
-- [x] Targeted Pitches
-- [x] Technical Decisions
-- [x] Build Plan
-- [x] Release Package
-- [x] Release Notes
-- [x] Screenshot Checklist
-- [x] Styling System
-- [ ] Final refreshed screenshot pack after Week 2 UI cleanup
-
----
-
-## Week 3 Production Foundation Targets
-
-- [ ] Production config/options structure
-- [ ] File storage interface
-- [ ] Local file storage provider
-- [ ] SharePoint file storage provider placeholder
-- [ ] DocumentAttachment model
-- [ ] Local Document Library page
-- [ ] Role/permission foundation
-- [ ] Permission Matrix page
-- [ ] Microsoft Lists schema registry
-- [ ] M365 Readiness / Production Readiness page
-- [ ] Mock/dry-run sync service
-- [ ] Notification rule and local notification preview/log
-
----
+- [ ] Confirm tenant/admin access
+- [ ] Create test users/groups
+- [ ] Create SharePoint site
+- [ ] Create SharePoint document library
+- [ ] Create Entra app registration
+- [ ] Configure redirect URLs
+- [ ] Configure Graph permissions
+- [ ] Implement OAuth2 sign-in
+- [ ] Link Microsoft accounts to LocalUser
+- [ ] Connect SharePointFileStorageService
+- [ ] Test SharePoint upload/open/delete
+- [ ] Update docs/screenshots/setup guide
 
 ## Current Overall State
 
-OperationsFlow is currently a strong local portfolio prototype that demonstrates business workflow thinking, .NET/Blazor development, CRUD workflows, reporting, exports, data quality, activity traceability, reviewer guidance, shared UI refactoring, CSS cleanup, and production planning.
-
-It is not yet a production deployment, but it has a clear path toward one.
+OperationsFlow now demonstrates business workflow thinking, local SQL auth, permissions, evidence/document handling, reports, data quality, activity traceability, shared UI refactoring, and a clear Microsoft 365 production implementation path.

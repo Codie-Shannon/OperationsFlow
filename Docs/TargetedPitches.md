@@ -1,183 +1,121 @@
 # OperationsFlow Targeted Pitch Notes
 
-This document provides short pitch angles for different audiences.
-
----
-
 ## One-Sentence Summary
 
-OperationsFlow is a Blazor/.NET business workflow prototype that turns scattered operational, safety/compliance, document, and follow-up work into one connected reviewable system with owner accountability, reporting, exports, data quality checks, shared UI structure, and activity traceability.
-
----
+OperationsFlow is a .NET/Blazor internal workflow system prototype that connects work orders, corrective actions, document intake, evidence files, reports, data quality, activity history, local roles/permissions, and a Microsoft 365 / SharePoint production path.
 
 ## General Portfolio Pitch
 
-OperationsFlow is a practical .NET/Blazor portfolio project focused on real business workflow problems rather than a generic CRUD demo.
-
-It includes editable work orders, corrective actions, document intake, risk, training, controlled documents, reminders, workload reporting, CSV exports, data quality checks, activity history, reviewer guidance, shared UI components, and production planning.
-
-The project demonstrates C#, Blazor, EF Core, SQLite, workflow design, reporting, data quality rules, audit thinking, UI refactoring, and a realistic Microsoft 365 upgrade path.
-
----
+OperationsFlow demonstrates practical business systems development: C#, Blazor, EF Core, local SQL authentication, role permissions, workflow design, reporting, data quality, evidence/document handling, activity traceability, shared UI refactoring, and Microsoft 365 upgrade planning.
 
 ## Vanessa / OSHE Pitch
 
-OperationsFlow helps show how safety and compliance follow-up could be tracked in one place.
+OperationsFlow shows how safety/admin/compliance follow-up work could be captured, assigned, evidenced, and reviewed.
 
-The strongest OSHE-relevant areas are:
+Relevant pieces:
 
-- Safety Meeting Pack
-- Corrective Actions
-- Risk Register
-- Training Compliance
-- Controlled Documents
-- Reminder Centre
-- Workload
-- Reports
-- Data Quality
-- Activity Log
+- corrective actions
+- risk register
+- training compliance
+- controlled documents
+- document intake
+- evidence attachments
+- missing evidence checks
+- reports
+- activity log
+- management review pages
 
-Key message:
+Possible wording:
 
-> The system helps make overdue safety/compliance work visible, assigns ownership, tracks follow-up, highlights weak records, and creates meeting-ready summaries without rebuilding everything manually from emails and spreadsheets.
-
-Suggested demo path:
-
-1. Portfolio Hub
-2. Business Value
-3. Safety Meeting Pack
-4. Risk Register
-5. Create Corrective Action from Risk
-6. Corrective Actions
-7. Training Compliance
-8. Controlled Documents
-9. Workload
-10. Reports
-11. Data Quality
-12. Activity Log
-
----
+```text
+I built OperationsFlow as a practical workflow proof showing how safety/admin/compliance follow-up can be captured, assigned, evidenced, and reported from one place. The current version is local with SQL-backed roles and permissions. The next stage is connecting it to Microsoft 365/SharePoint for a production-style pilot.
+```
 
 ## Lester / Peter Pitch
 
-OperationsFlow can also be shown as an admin/document workflow system.
+OperationsFlow is relevant to M365/AI/process review because it proves a task-based workflow mindset.
 
-The strongest relevant areas are:
+Relevant pieces:
 
-- Document Intake
-- Assigned processing
-- Target system tracking
-- Workflow statuses
-- Due dates
-- Notes
-- Activity history
-- Workload
-- Reports
-- CSV exports
-- Integration Overview
+- document intake
+- human review/assignment stages
+- workflow records
+- evidence storage
+- reports
+- integration overview
+- implementation plan
+- Microsoft 365 / SharePoint direction
 
-Key message:
+Possible wording:
 
-> The Document Intake workflow shows how incoming emails, PDFs, scanned documents, supplier documents, customer requests, internal forms, and job paperwork could be tracked from receipt through review, processing, completion, reporting, and future system integration.
+```text
+OperationsFlow is a practical example of the way I think about workflow improvement: understand the current process first, separate human decision points from repeatable tasks, capture the work in a structured system, and then look at where Microsoft 365, SharePoint, Power Automate, or AI-assisted steps could help.
+```
 
-Suggested demo path:
+## AIE Pitch
 
-1. Portfolio Hub
-2. Document Intake
-3. Create Document Intake item
-4. Edit status/target system/assigned person
-5. Per-record Activity History
-6. Reminder Centre
-7. Workload
-8. Reports
-9. CSV Export
-10. Integration Overview
-11. Implementation Plan
+Relevant to:
 
----
+- INFO mailbox workflow automation
+- RFQ / PO / job setup flow mapping
+- Planner/Playbook task handoff
+- human-in-the-loop review points
+- SharePoint/Teams/Power Automate path
+
+Possible wording:
+
+```text
+The project is a public-safe example of the same workflow thinking: intake, review, assignment, evidence, reporting, activity traceability, and staged Microsoft 365 implementation.
+```
+
+## JV / Business Systems Pitch
+
+Relevant to:
+
+- local SQL-backed app
+- users/roles/permissions
+- .NET/Blazor/EF Core
+- document/evidence handling
+- future OAuth2 linking
+- business workflow CRUD
+
+Possible wording:
+
+```text
+OperationsFlow now includes a local SQL-backed auth and role-permission model, with the next step being OAuth2/Microsoft identity linking. That makes it relevant to internal business systems where local records, roles, and external identity need to work together.
+```
 
 ## .NET Developer / Employer Pitch
 
-OperationsFlow is a business systems project built with .NET 8, Blazor, C#, Entity Framework Core, SQLite, Razor components, shared UI components, and CSV export endpoints.
-
-It demonstrates:
-
-- CRUD workflows.
-- Search/filter/list pages.
-- Create/edit/details pages.
-- Shared Razor components.
-- Shared services.
-- EF Core persistence.
-- Seeded demo data.
-- Activity logging.
-- Reporting views.
-- CSV export.
-- Data quality logic.
-- UI cleanup/refactor.
-- Production planning pages.
-
-Key message:
-
-> This project shows I can build business-focused software that goes beyond isolated screens: records are created, edited, reported, exported, traced, reviewed, and connected into management workflows.
-
-Suggested demo path:
-
-1. Technical Overview
-2. Data Model
-3. Work Orders
-4. Corrective Actions
-5. Document Intake
-6. Reports
-7. CSV Export
-8. Activity Log
-9. Data Quality
-10. Deployment Overview
-11. Integration Overview
-
----
+OperationsFlow is a business systems project built with .NET 8, Blazor, C#, Entity Framework Core, local SQL/SQLite support, reusable Razor components, CSV exports, authentication services, local permissions, and provider-based file storage.
 
 ## Business Analyst / Systems Role Pitch
 
-OperationsFlow demonstrates business process thinking. It models how scattered work becomes structured workflow:
+OperationsFlow demonstrates translating messy operational work into structured processes:
 
-- Identify records that need follow-up.
-- Assign an owner.
-- Add priority/status/due date.
-- Track progress.
-- Surface overdue items.
-- Review workload.
-- Export management summaries.
-- Identify weak data before reporting.
-- Explain production limitations and rollout requirements.
-
-Key message:
-
-> OperationsFlow shows an ability to understand a business process, turn it into structured records, surface the important exceptions, and explain how the system could move toward production.
-
----
+- intake
+- ownership
+- due dates
+- evidence
+- exceptions
+- reporting
+- data quality
+- review path
+- implementation roadmap
 
 ## Microsoft 365 / Power Platform Pitch
 
-OperationsFlow is not live-integrated yet, but it has a clear Microsoft 365 direction.
+The prototype proves the workflow first. Week 3 built local production-shaped foundations. Week 4 can replace local providers with real Microsoft 365 services:
 
-Relevant future mapping:
-
-- Work Orders → Microsoft Lists / SharePoint list.
-- Corrective Actions → Microsoft Lists / Planner-style follow-up.
-- Document Intake → SharePoint document library + metadata list.
-- Controlled Documents → SharePoint document library.
-- Reminders → Power Automate / Teams / Outlook.
-- Reports → Excel / Power BI-ready exports.
-- Roles → Entra ID / SharePoint groups.
-
-Key message:
-
-> The prototype proves the workflow first. Week 3 will build local production-shaped foundations, and Week 4 can replace those providers with real Microsoft 365 services.
-
----
+- users -> Entra ID / OAuth2
+- roles -> local app permissions or mapped groups
+- document storage -> SharePoint library
+- files -> Graph API
+- follow-up -> Planner/Teams/Power Automate later
+- reporting -> CSV/Power BI later
 
 ## Best Short Description
 
-Use this description when sending the repo:
-
-> OperationsFlow is a Blazor/.NET portfolio prototype for operations, safety/compliance, and document/admin workflow tracking. It includes editable records, source-linked corrective actions, reminders, workload, reports, CSV exports, data quality checks, activity history, reviewer guidance, and production planning toward Microsoft 365.
+```text
+OperationsFlow is a local SQL-backed workflow and evidence tracking system built in Blazor/.NET, with roles, permissions, reports, data quality checks, and a staged Microsoft 365 / SharePoint production path.
+```

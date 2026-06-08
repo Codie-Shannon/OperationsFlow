@@ -1,347 +1,168 @@
 # OperationsFlow Technical Decisions
 
-This document records key technical decisions made for OperationsFlow and why they were appropriate for the current prototype stage.
-
----
-
 ## Project Type
 
 ### Decision
 
-Build OperationsFlow as a Blazor/.NET 8 web application.
+Build OperationsFlow as a Blazor/.NET 8 application.
 
 ### Reason
 
-Blazor and .NET are suitable for internal business systems because they support:
-
-- C# application logic.
-- Component-based UI.
-- Strong data modelling.
-- Entity Framework Core.
-- Future authentication/roles.
-- Future deployment to internal/cloud hosting.
-
-### Trade-off
-
-Blazor is more structured than a quick static HTML prototype, but it better demonstrates real business application development.
-
----
+Blazor fits the project because it supports C#, component-based UI, internal business app patterns, and a clean path from local prototype to hosted production application.
 
 ## Database
 
 ### Decision
 
-Use SQLite for the current prototype.
+Use EF Core with SQLite/local development support and SQL Server / LocalDB for Week 3 production foundation/auth.
 
 ### Reason
 
-SQLite is simple for local portfolio development:
-
-- No database server required.
-- Easy to run locally.
-- Works well with EF Core.
-- Good enough to demonstrate persistence, CRUD, reports, and exports.
+SQLite kept the early prototype fast and portable. SQL Server / LocalDB made the local auth/roles/permissions foundation more realistic for internal business systems.
 
 ### Trade-off
 
-SQLite is not the final production target. A production version would move to SQL Server, Azure SQL, PostgreSQL, or another hosted database.
+Production would still need an approved hosted database and deployment environment.
 
----
-
-## Entity Framework Core
+## Local Authentication and Roles
 
 ### Decision
 
-Use EF Core for data access and persistence.
+Add local SQL-backed users, roles, permissions, login/logout, and sessionStorage login persistence in Week 3.
 
 ### Reason
 
-EF Core provides:
-
-- Model-backed records.
-- Querying.
-- Relationship handling.
-- Future migration path.
-- Production database portability.
+This proves the app can handle role-based internal workflow behaviour before Microsoft OAuth2/Entra ID is connected.
 
 ### Trade-off
 
-Some pages currently interact with EF models more directly than a fully layered production system should. Future production work should move more logic into services.
+Local login is not the final production identity layer. Week 4 should add Microsoft OAuth2 and link external identities to local users.
 
----
-
-## Seeded Demo Data
+## Permission Enforcement
 
 ### Decision
 
-Use seeded demo records.
+Use a current-user service with explicit permission flags for UI/action visibility.
 
 ### Reason
 
-The project needed realistic examples for review without using private business data.
+The app needs to demonstrate real role-based behaviour:
 
-Seeded data allows reviewers to see:
-
-- Overdue records.
-- High-priority work.
-- Expired training.
-- Document review issues.
-- Risk items.
-- Corrective actions.
-- Document intake examples.
-- Activity history.
+- ReadOnly can view only.
+- Admin can manage everything.
+- Manager/Reviewer/Worker have different operational boundaries.
 
 ### Trade-off
 
-Seeded data is not the same as live data. Production would require real records, data import, validation, and backups.
+Production should also review server-side policy enforcement and security testing.
 
----
-
-## CRUD Workflows
+## File Storage
 
 ### Decision
 
-Build full create/edit workflows for key modules rather than only static dashboards.
+Use `IFileStorageService` with a local provider now and SharePoint provider placeholder for Week 4.
 
 ### Reason
 
-This demonstrates that OperationsFlow is more than a visual mockup.
-
-Implemented create/edit workflows include:
-
-- Work Orders
-- Corrective Actions
-- Document Intake
+This allows the workflow to be built once and the provider swapped later.
 
 ### Trade-off
 
-Building actual workflows takes longer than a static UI, but it better proves practical application development capability.
+Local files are not production document management. Week 4 should connect SharePoint/Graph.
 
----
+## Attachment Metadata
+
+### Decision
+
+Store file metadata in `DocumentAttachment` records rather than relying only on physical files.
+
+### Reason
+
+The app needs module/record relationships, evidence flags, controlled document flags, uploaded by/date, notes, provider, and soft-delete state.
 
 ## Activity Logging
 
 ### Decision
 
-Add global Activity Log and per-record Activity History.
+Log workflow and evidence events into Activity Log.
 
 ### Reason
 
-Business workflow systems need traceability. Activity logging helps show:
-
-- What changed.
-- When it changed.
-- Which module/record changed.
-- Whether workflow progress is visible.
+Traceability is central to management review, testing evidence, and portfolio proof.
 
 ### Trade-off
 
-Current activity logging is prototype-level. Production audit logging would need authenticated users, field-level before/after values, immutable events, and retention rules.
-
----
+Production audit logging would need authenticated identities, immutability, retention rules, and possibly Microsoft 365 audit integration.
 
 ## CSV Export
 
 ### Decision
 
-Add CSV export endpoints.
+Provide local CSV exports for review/reporting packs.
 
 ### Reason
 
-Small businesses often use Excel, email, or management reports even when they have internal systems.
-
-CSV exports demonstrate:
-
-- Reporting usefulness.
-- External review capability.
-- Spreadsheet compatibility.
-- Power BI/Excel-ready direction.
+CSV is simple, reviewable, and useful for Excel/Power BI-style workflows.
 
 ### Trade-off
 
-CSV exports are not a full reporting platform. Production reporting would need approved KPI definitions, scheduled exports, permissions, and possibly Power BI integration.
-
----
-
-## Reviewer Pages Inside the App
-
-### Decision
-
-Add pages such as Portfolio Hub, Reviewer Checklist, Demo Guide, Business Value, Prototype Scope, Technical Overview, Deployment Overview, Testing Overview, and Integration Overview.
-
-### Reason
-
-The project needs to be understandable without a long spoken explanation.
-
-These pages help reviewers understand:
-
-- What the project is.
-- What it proves.
-- What to click.
-- What is prototype-only.
-- What production upgrades would be needed.
-- How it maps to business value and Microsoft 365 workflows.
-
-### Trade-off
-
-These pages are not normal end-user ERP screens, but they are valuable for portfolio review and handover.
-
----
+Production reporting may require Power BI, scheduled refresh, export permissions, and approved KPI definitions.
 
 ## Shared UI Component System
 
 ### Decision
 
-Refactor repeated page structures into shared Razor UI components.
+Refactor repeated layouts into shared components.
 
 ### Reason
 
-The app grew into many pages with repeated headers, panels, metric cards, filter bars, table cards, guidance notes, and empty states.
-
-Shared components reduce duplication and make the app easier to maintain.
-
-Key shared UI components include:
-
-- `PageHero`
-- `PurposeNote`
-- `MetricGrid`
-- `MetricCard`
-- `InfoPanel`
-- `ActionStrip`
-- `TableCard`
-- `FilterBar`
-- `GuidanceNote`
-- `ActivityHistoryPanel`
-- `EmptyState`
-
-### Trade-off
-
-Shared components require more care with parameters and named child content, but they make the UI much more consistent.
-
----
-
-## CSS Strategy
-
-### Decision
-
-Use one main CSS file during rapid build-out, then clean and consolidate it after the shared UI refactor.
-
-### Reason
-
-A single file allowed fast iteration during the first build. After Week 2, the stylesheet was cleaned and reduced so it better supports the shared UI component system.
-
-### Current State
-
-- `wwwroot/app.css` remains the main stylesheet.
-- Duplicate/old clutter was reduced.
-- Shared `of-*` classes are the preferred styling direction.
-- Workload dense card styling was polished into review lanes.
-
-### Trade-off
-
-The CSS is cleaner but still not fully modular. A future production version could split it into base/layout/component/page files if the app continues to grow.
-
----
+This made the app more maintainable and consistent before adding Week 3/Week 4 production features.
 
 ## Microsoft 365 Integration Planning
 
 ### Decision
 
-Document Microsoft 365 integration as a future path rather than implementing live integration immediately.
+Build the local provider-independent system first, then connect Microsoft 365 in Week 4.
 
 ### Reason
 
-The current project should prove workflow first. Live integration should come after:
-
-- Workflow rules are stable.
-- Ownership/status/due-date logic is confirmed.
-- Security requirements are defined.
-- Source of truth is agreed.
+This avoids rebuilding workflow pages after tenant setup and keeps the integration work focused on identity/storage providers.
 
 ### Future Direction
 
-Potential integration targets:
+Week 4 should add:
 
-- SharePoint document libraries.
-- Teams notifications.
-- Outlook reminders.
-- Microsoft Lists.
-- Excel/Power BI-ready exports.
-- Microsoft Entra ID authentication.
-
-Week 3 should build local production-shaped providers and schemas. Week 4 should connect the live Microsoft 365 implementation.
-
----
+- Entra app registration
+- OAuth2 sign-in
+- external login link mapping
+- SharePoint document library provider
+- Graph upload/open/delete operations
+- tenant configuration documentation
 
 ## Testing Strategy
 
 ### Decision
 
-Use manual testing for the current prototype and document the production testing path.
+Use manual role-based testing for Week 3 sign-off.
 
 ### Reason
 
-The project is still moving quickly and is currently portfolio-focused.
+The critical risk was visible action permissions for ReadOnly users. Manual testing confirmed Admin and ReadOnly behaviour across the app.
 
-Current testing:
+### Future Direction
 
-- Build test.
-- Run test.
-- Navigation click-through.
-- Create/edit workflow checks.
-- Report/data quality review.
-- Visual review.
-- CSV export checks.
-
-Future testing:
-
-- Unit tests.
-- Integration tests.
-- UI smoke tests.
-- Role/security tests.
-- Export tests.
-- Migration tests.
-- Deployment tests.
-
----
+Add automated tests later for services, permissions, components, and integration flows.
 
 ## Production Boundary
 
 ### Decision
 
-Clearly state that OperationsFlow is not production-ready yet.
+Keep the documentation honest: Week 3 is local production foundation; Week 4 is Microsoft 365 pilot configuration/implementation.
 
 ### Reason
 
-This keeps the project honest and credible.
-
-Current prototype proves:
-
-- Workflow model.
-- UI structure.
-- Data model.
-- Reporting concept.
-- Traceability concept.
-- Data quality concept.
-- Shared UI/component direction.
-- Production upgrade plan.
-
-Production still needs:
-
-- Authentication.
-- Roles.
-- Hosted database.
-- Backups.
-- Monitoring.
-- Automated tests.
-- Deployment pipeline.
-- Live integrations.
-- Production file/document storage.
-
----
+This is stronger and more credible than pretending a local prototype is fully production deployed.
 
 ## Technical Summary
 
-OperationsFlow was built with practical prototype decisions: Blazor for UI, EF Core for persistence, SQLite for local demo data, seeded records for realistic review, activity logging for traceability, CSV exports for management/reporting workflows, shared UI components for maintainability, cleaned CSS for consistency, and reviewer pages for clear portfolio communication.
-
-The technical direction is realistic for a future production internal business system.
+OperationsFlow was built with practical internal systems decisions: Blazor for UI, EF Core for persistence, SQL-backed local auth, role permissions for action visibility, provider-based file storage, document/evidence metadata, activity logging, CSV exports, reusable components, and Microsoft 365 integration readiness.

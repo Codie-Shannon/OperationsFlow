@@ -1,393 +1,155 @@
 # OperationsFlow Demo Walkthrough
 
-This walkthrough is designed for showing the current OperationsFlow prototype. It supports both live demos and no-speaking demos.
+## Demo Goal
 
-The app includes Portfolio Hub, Reviewer Checklist, Demo Guide, Business Value, Prototype Scope, Technical Overview, Deployment Overview, Testing Overview, and Integration Overview pages so a reviewer can understand the project without needing a long spoken explanation.
-
----
+Show that OperationsFlow is a practical internal workflow system, not just a static dashboard. The demo should prove workflow capture, evidence handling, reporting, data quality, activity traceability, and local role-permission enforcement.
 
 ## Short No-Speaking Demo Path
 
-Use this when sending the project for review without voice-over.
-
-1. Open **Portfolio Hub**.
-2. Open **Reviewer Checklist**.
-3. Open **Demo Guide**.
-4. Open **Business Value**.
-5. Open **Safety Meeting Pack**.
-6. Open **Workload**.
-7. Open **Corrective Actions** and edit one record.
-8. Open **Reports**.
-9. Open **Data Quality**.
-10. Open **Activity Log**.
-11. Open **Technical Overview**.
-12. Open **Deployment Overview**.
-13. Open **Integration Overview**.
-
-Main message:
-
-> OperationsFlow is more than a static dashboard. It is a connected business workflow prototype with editable records, owner accountability, due dates, reporting views, activity traceability, data quality checks, and a clear production upgrade path.
-
----
+1. Login page.
+2. Dashboard signed in as Admin.
+3. Work Orders list.
+4. Work Order details with attachments.
+5. Corrective Actions list.
+6. Document Intake details with attachments.
+7. Document Library.
+8. Data Quality missing evidence.
+9. Reports evidence coverage.
+10. User Roles permission matrix.
+11. ReadOnly view-only test screenshot.
+12. Integration Overview / Implementation Plan for Week 4.
 
 ## Short Live Demo Path
 
-Use this when only a few minutes are available.
+### 1. Login
 
-1. Open Portfolio Hub.
-2. Explain that the best review path is built into the app.
-3. Open Business Value.
-4. Open Safety Meeting Pack.
-5. Open Workload.
-6. Open Corrective Actions and show create/edit.
-7. Open Activity Log.
-8. Open Data Quality.
-9. Open Prototype Scope and Implementation Plan.
+Show local SQL-backed login and explain that Week 3 uses local users/roles while Week 4 will link Microsoft OAuth2 identities.
 
----
+### 2. Dashboard
 
-## Full Demo Path
+Show the signed-in state and local SQL-backed business workflow status.
 
-### 1. Portfolio Hub
+### 3. Work Orders
 
-Show:
+Show operational records, status, due date, file count, details link, and Admin create/edit actions.
 
-- Recommended review path.
-- One-minute summary.
-- Links to key reviewer pages.
-- Reviewer Page Map.
-- Portfolio Summary.
+### 4. ReadOnly Test
 
-Explain:
+Login as ReadOnly and show:
 
-OperationsFlow is a .NET/Blazor business workflow prototype focused on operational follow-up, safety/compliance review, admin/document workflow, reporting, and management visibility.
+- can view Work Orders
+- cannot see `+ New Work Order`
+- cannot see Edit links
+- cannot upload/delete evidence
+- cannot export CSV
 
-### 2. Reviewer Checklist
+### 5. Corrective Actions
 
-Show:
+Show owned actions and source-linked follow-up thinking.
 
-- Business review.
-- Workflow review.
-- Record review.
-- Management review.
-- System health.
-- Production thinking.
+### 6. Risk / Training / Documents
 
-Explain:
+Show Create Action links as source-linked workflow entry points for permitted users.
 
-This page tells a reviewer what to click, what to verify, and what the project proves.
+### 7. Document Intake
 
-### 3. Business Value
+Show incoming document processing records and detail page.
 
-Show:
+### 8. Record Attachments
 
-- Core business problem.
-- OperationsFlow response.
-- Before vs after.
-- Business Value Matrix.
+Show how Work Orders, Corrective Actions, and Document Intake can have linked evidence files.
 
-Explain:
+### 9. Document Library
 
-The value is reduced missed follow-up, clearer ownership, better reporting, and stronger visibility across safety, compliance, admin, and operations.
+Show cross-module file review, metadata, provider, and soft-delete boundary. Explain that local storage swaps to SharePoint in Week 4.
 
-### 4. Dashboard
+### 10. Data Quality
 
-Show:
+Show missing evidence rows and data quality checks.
 
-- KPI cards.
-- Summary panels.
-- Recent activity.
-- Links to major modules.
+### 11. Reports
 
-Explain:
+Show management action rows, evidence coverage, and missing evidence report. Export links should only appear for users with export permission.
 
-The dashboard gives a manager a quick overview of the workflow state.
+### 12. Activity Log
 
-### 5. Work Orders
+Show global traceability. Explain that production could map this to authenticated user identity and Microsoft 365 history/audit concepts.
 
-Show:
+### 13. User Roles
 
-- List/search/filter.
-- Create Work Order.
-- Edit Work Order.
-- Details page.
-- Activity history.
+Show local SQL roles/permissions and explain ReadOnly/Admin behaviour.
 
-Explain:
+### 14. Admin Settings
 
-Work Orders represent operational tasks or work requests that need ownership, due dates, and follow-up.
+Show local/Week 3 configuration boundary and Week 4 Microsoft 365 configuration path.
 
-### 6. Corrective Actions
+### 15. Integration Overview / Implementation Plan
 
-Show:
-
-- List/search/filter.
-- Create Corrective Action.
-- Details/review page.
-- Edit Corrective Action.
-- Status guidance.
-- Completed date behaviour.
-- Notes guidance.
-- Activity history.
-
-Explain:
-
-Corrective Actions can be created manually or generated from risk, document, and training modules.
-
-### 7. Safety Meeting Pack
-
-Show:
-
-- Attention items.
-- High/critical risks.
-- Training issues.
-- Document review issues.
-- Recent activity.
-- Recommended follow-up.
-
-Explain:
-
-This page turns multiple record types into a meeting-ready safety/compliance review.
-
-### 8. Document Intake
-
-Show:
-
-- Incoming document list.
-- Search/filter.
-- Source type.
-- Document type.
-- Assigned to.
-- Target system.
-- Priority.
-- Status.
-- Due date.
-- Edit action.
-
-Explain:
-
-Document Intake tracks incoming admin/document work such as emails, PDFs, scanned documents, supplier documents, customer requests, internal forms, and job paperwork.
-
-Clarify:
-
-The current prototype tracks target systems as workflow metadata. It does not currently connect live to SharePoint, Xero, Cin7, WorkflowMax, or email systems.
-
-### 9. Linked Corrective Action Generation
-
-Open one of these modules:
-
-- Risk Register
-- Documents
-- Training
-
-Show:
-
-- Create Action button.
-- Corrective Action form pre-filled from the source module.
-
-Explain:
-
-This demonstrates a workflow loop: identify an issue, generate an action, assign it, track it, and report on it.
-
-### 10. Activity Log
-
-Show:
-
-- Global event list.
-- Created/Updated/Reviewed events.
-- Module and record reference.
-- Created by/date.
-
-Explain:
-
-The Activity Log gives record-level traceability. Per-record Activity History shows the same concept scoped to a specific item.
-
-### 11. Reminder Centre
-
-Show:
-
-- Overdue Work Orders.
-- Overdue Corrective Actions.
-- Document Reviews.
-- Training Compliance.
-- Document Intake Follow-ups.
-
-Explain:
-
-Reminder Centre answers: “What needs attention today?”
-
-### 12. Workload
-
-Show:
-
-- Owner/person workload rows.
-- Total assigned.
-- Work Orders.
-- Corrective Actions.
-- Document Intake.
-- Overdue count.
-- High-priority count.
-- Pressure level.
-- Owner review lanes.
-
-Explain:
-
-Workload shows who has work assigned and where pressure is building.
-
-### 13. Reports
-
-Show:
-
-- Work Orders by Status.
-- Corrective Actions by Priority.
-- Risks by Level.
-- Training by Department.
-- Overdue Items by Owner.
-- Document Reviews.
-- Document Intake reports.
-- CSV export buttons.
-
-Explain:
-
-Reports turn operational data into management views and exportable data.
-
-### 14. Data Quality
-
-Show:
-
-- Total issues.
-- Critical/warning/info issues.
-- Missing owners.
-- Blank notes.
-- Overdue work.
-- Expired training.
-- Risk/document/intake issues.
-
-Explain:
-
-Data Quality shows where records need cleanup before management reporting.
-
-### 15. Technical Overview
-
-Show:
-
-- Stack.
-- Architecture style.
-- Module architecture map.
-- Technical proof points.
-- Production technical upgrade path.
-
-Explain:
-
-This is a Blazor/.NET prototype built around Razor pages, EF Core, SQLite, seeded data, reusable UI patterns, and workflow records.
-
-### 16. Deployment Overview
-
-Show:
-
-- Current hosting.
-- Production target.
-- Database target.
-- Release need.
-- Deployment readiness matrix.
-- Risk/control map.
-
-Explain:
-
-This page explains what would need to change before the app could be deployed for real users.
-
-### 17. Testing Overview
-
-Show:
-
-- Manual test matrix.
-- Workflow test checklist.
-- Production test upgrade path.
-- Regression risks.
-
-Explain:
-
-Testing is currently manual and suitable for portfolio review. Production would require automated unit tests, integration tests, security/role tests, deployment tests, and CI/CD checks.
-
-### 18. Integration Overview
-
-Show:
-
-- Microsoft 365 workflow map.
-- SharePoint document storage.
-- Teams/Outlook reminders.
-- Excel/Power BI-ready exports.
-- Identity/roles.
-- Phased integration plan.
-
-Explain:
-
-The project is not live-integrated yet, but it has a realistic Microsoft 365 upgrade path.
-
----
+Show that Week 4 has a real path: tenant, Entra app registration, Graph permissions, SharePoint document library, OAuth2 login, and provider swap.
 
 ## Vanessa / OSHE Demo Path
 
 Focus on:
 
-1. Portfolio Hub
-2. Business Value
-3. Safety Meeting Pack
-4. Risk Register
-5. Create Corrective Action from risk
-6. Corrective Actions
-7. Training Compliance
-8. Documents
-9. Reminder Centre
-10. Workload
-11. Reports
-12. Data Quality
-13. Prototype Scope
+1. Dashboard
+2. Corrective Actions
+3. Risk Register
+4. Training
+5. Documents
+6. Document Intake
+7. Data Quality
+8. Reports
+9. Activity Log
+10. Evidence attachments
 
-Main message:
-
-> OperationsFlow helps centralise safety/compliance follow-up work, identify overdue actions, monitor training/document/risk issues, support safety meetings, and improve management visibility.
-
----
+Message: workflow follow-up, compliance pressure, evidence, and management visibility.
 
 ## Lester / Peter Demo Path
 
 Focus on:
 
-1. Portfolio Hub
+1. Workflow capture
 2. Document Intake
-3. Create incoming document record
-4. Edit status and target system
-5. Per-record Activity History
-6. Reminder Centre
-7. Workload
-8. Reports
-9. CSV export
-10. Integration Overview
-11. Implementation Plan
+3. Human review/assignment points
+4. Evidence/document library
+5. Reports
+6. Integration Overview
+7. Implementation Plan
+8. AI/M365 path as a staged improvement, not a replacement for human judgement
 
-Main message:
+Message: understand the current process first, then identify where Microsoft 365, SharePoint, Power Automate, or AI-assisted steps may help.
 
-> OperationsFlow shows how document/admin processing can be tracked from receipt through review, entry, completion, reporting, export, and future Microsoft 365 integration.
-
----
-
-## Job Interview Demo Path
+## JV / Technical Demo Path
 
 Focus on:
 
-1. Tech stack.
-2. Technical Overview.
-3. Data Model.
-4. Work Orders CRUD.
-5. Corrective Actions CRUD.
-6. Document Intake CRUD.
-7. Activity Log and per-record history.
-8. Reports and CSV export.
-9. Data Quality.
-10. Deployment Overview.
-11. Integration Overview.
+1. Local SQL-backed login
+2. User Roles
+3. Permission enforcement
+4. EF Core data model
+5. Workflows and CRUD
+6. Attachment metadata
+7. Local provider abstraction
+8. Week 4 OAuth2 link path
 
-Main message:
+Message: local SQL system now, Microsoft identity integration later.
 
-> OperationsFlow demonstrates practical C#/Blazor business systems development, not just isolated UI screens.
+## Demo Notes
+
+Use honest wording:
+
+```text
+This is a local production-foundation prototype. Week 4 connects it to Microsoft 365 / SharePoint through tenant-specific configuration.
+```
+
+Avoid saying:
+
+```text
+Fully production deployed.
+```
+
+Use:
+
+```text
+Ready for manager review and production pilot configuration.
+```

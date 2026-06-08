@@ -1,249 +1,133 @@
 # OperationsFlow
 
-**OperationsFlow** is a Blazor/.NET 8 business workflow prototype for tracking operational work, corrective actions, document intake, safety/compliance review, risk, training, controlled documents, reminders, workload, reports, CSV exports, data quality, activity history, reviewer guidance, and production planning.
+> **Current status:** Week 3 Production Foundation is complete. OperationsFlow now has local SQL-backed authentication, login/logout, session-based local access, seeded users/roles/permissions, protected navigation, permission-controlled workflow actions, local evidence storage, document attachments, evidence-aware data quality checks, management reports, and a clear Microsoft 365 / SharePoint / Graph upgrade path for Week 4.
 
-It was built as a focused portfolio project to demonstrate practical business systems development: turning scattered admin, operations, safety/compliance, document, and follow-up work into one connected workflow system.
-
-> **Current status:** Week 2 UI cleanup and workflow polish is complete. OperationsFlow is still a local portfolio prototype using SQLite and seeded demo data, but it now has a consistent shared UI component system, cleaned stylesheet, tested workflow pages, reporting/evidence pages, reviewer pages, and a clear Week 3/Week 4 path toward production foundations and Microsoft 365 implementation.
-
-OperationsFlow is **not yet a production deployment**. It does not currently include real authentication, enforced role permissions, hosted infrastructure, live Microsoft 365 / SharePoint / Teams / Outlook integration, production file storage, automated tests, or production monitoring.
-
----
+OperationsFlow is **not yet a live production deployment**. It is a manager-review-ready local pilot/prototype with production-shaped architecture. The next stage is Week 4: connecting the finished local foundation to the Microsoft 365 tenant with Entra ID/OAuth2 and SharePoint/Graph storage.
 
 ## Project Purpose
 
-Many small businesses manage operational follow-up through emails, spreadsheets, PDFs, paper forms, shared folders, and manual reminders.
+OperationsFlow is a practical internal business workflow system built to prove that scattered operational work can be captured, reviewed, prioritised, evidenced, and reported from one place.
 
-That makes it hard to answer:
+It is designed around real workplace patterns:
 
-- What needs attention today?
-- What work is overdue?
-- Who owns each action?
-- Which safety/compliance items need review?
-- Which training records are expired or due soon?
-- Which documents need review?
-- Which incoming documents still need processing?
-- What changed recently?
-- What can be exported for management review?
-- What would need to change before this became a production business system?
-
-OperationsFlow shows how those workflows could be centralised into a simple internal business system.
-
----
+- work orders and operational requests
+- corrective actions and source-linked follow-up work
+- document intake and document processing
+- controlled document review
+- training compliance follow-up
+- risk register follow-up
+- document/evidence attachments
+- management reports
+- data quality checks
+- activity traceability
+- role-based workflow access
+- Microsoft 365 / SharePoint production readiness
 
 ## What This Project Demonstrates
 
-OperationsFlow demonstrates ability to:
-
-- Design practical business workflows around real operational problems.
-- Build CRUD modules using C#, Blazor, Entity Framework Core, and SQLite.
-- Create dashboard KPIs, reports, reminders, CSV exports, workload views, and data quality checks.
-- Track activity history globally and per record.
-- Model admin/document intake, compliance follow-up, risk, training, controlled documents, and corrective actions.
-- Generate source-linked corrective actions from risk, training, and document review records.
-- Build and reuse shared Razor UI components across a multi-page business application.
-- Consolidate a large stylesheet into a cleaner shared UI styling system.
-- Explain prototype scope, business value, production limitations, and Microsoft 365 upgrade direction clearly.
-
----
+- .NET 8 / Blazor application development.
+- Entity Framework Core persistence.
+- SQLite/local development support and SQL Server/LocalDB production-foundation support.
+- Local SQL-backed authentication and seeded demo accounts.
+- Local roles and permissions stored in SQL.
+- Enforced page/action permissions for workflow actions, evidence uploads/deletes, exports, settings, and user management.
+- Shared UI components and consolidated styling.
+- Workflow modules connected through reports, reminders, workload, activity history, and data quality.
+- Local file storage abstraction that can be swapped to SharePoint in Week 4.
+- Record-level attachments and document library evidence tracking.
+- Evidence-aware data quality and reporting.
+- Clear Microsoft 365 / SharePoint / Graph upgrade path.
 
 ## Current Project Metrics
 
-Current prototype includes:
+- Local SQL-backed authentication: implemented.
+- Session-based login/logout: implemented using browser session storage.
+- Local roles/permissions: implemented.
+- ReadOnly permission enforcement: implemented and tested.
+- Admin workflow actions: implemented and tested.
+- Local file/evidence storage: implemented.
+- Record attachment panels: implemented.
+- Document Library: implemented.
+- Data Quality missing-evidence checks: implemented.
+- Reports evidence coverage: implemented.
+- Microsoft 365 tenant access: available for Week 4 setup.
+- Microsoft 365 integration: not yet connected.
 
-- Blazor/.NET 8 app
-- SQLite persistence
-- EF Core data layer
-- Seeded demo data
-- Shared UI component system
-- Cleaned app stylesheet
-- Dashboard and management overview
-- Work Orders workflow
-- Corrective Actions workflow
-- Document Intake workflow
-- Safety Overview
-- Safety Meeting Pack
-- Compliance Calendar
-- Controlled Documents
-- Risk Register
-- Training Compliance
-- Reminder Centre
-- Workload review
-- Reports page
-- CSV export endpoints
-- Data Quality page
-- Global Activity Log
-- Per-record Activity History
-- Admin Settings starter
-- Portfolio Hub
-- Reviewer Checklist
-- Demo Guide
-- Business Value page
-- Prototype Scope page
-- Implementation Plan
-- Technical Overview
-- Data Model overview
-- User Roles overview
-- Audit Overview
-- Deployment Overview
-- Testing Overview
-- Microsoft 365 / Integration Overview
+## Screenshot Preview
 
----
+The screenshots below show the strongest Week 3 review path first: local login, SQL-backed dashboard, roles/permissions, ReadOnly enforcement, evidence storage, and management reporting.
 
-## Screenshots
+### 1. Login Page / Local SQL Authentication
 
-OperationsFlow includes a screenshot review pack covering the main workflow, safety/compliance pages, admin workflow, reviewer pages, technical pages, and production planning pages.
+![Login Page](Docs/Screenshots/01-login-page.png)
 
-See the full [Screenshot Checklist](Docs/ScreenshotChecklist.md) for the complete screenshot list and what each image proves.
+### 2. Dashboard / SQL Auth Overview
 
-### Portfolio Hub
+![Dashboard SQL Auth Overview](Docs/Screenshots/02-dashboard-sql-auth-overview.png)
 
-![Portfolio Hub](Docs/Screenshots/01-portfolio-hub.png)
+### 3. User Roles / Permission Model
 
-### Corrective Actions
+![User Roles Permission Model](Docs/Screenshots/03-user-roles-permission-model.png)
 
-![Corrective Actions List](Docs/Screenshots/10-corrective-actions-list.png)
+### 4. ReadOnly Work Orders / No Create or Edit Actions
 
-### Corrective Action Edit / Activity History
+![ReadOnly Work Orders No Actions](Docs/Screenshots/04-work-orders-readonly-no-actions.png)
 
-![Corrective Action Edit Activity History](Docs/Screenshots/12-corrective-action-edit-activity-history.png)
+### 5. Admin Document Library / Upload and Delete Actions
 
-### Safety Meeting Pack
+![Admin Document Library Upload Delete](Docs/Screenshots/05-document-library-admin-upload-delete.png)
 
-![Safety Meeting Pack](Docs/Screenshots/14-safety-meeting-pack.png)
+### 6. Reports / Evidence Coverage and Exports
 
-### Workload
+![Reports Admin Exports](Docs/Screenshots/06-reports-admin-exports.png)
 
-![Workload](Docs/Screenshots/23-workload.png)
-
-### Data Quality
-
-![Data Quality](Docs/Screenshots/25-data-quality.png)
-
----
-
-## Best Review Path
-
-For someone reviewing the project without a live spoken demo, start here:
-
-1. **Portfolio Hub** — starting point for reviewers.
-2. **Reviewer Checklist** — what to click, verify, and assess.
-3. **Demo Guide** — guided walkthrough paths.
-4. **Business Value** — why the workflow matters.
-5. **Corrective Actions** — editable workflow record example.
-6. **Safety Meeting Pack** — connected compliance review page.
-7. **Workload** — owner-based management visibility.
-8. **Reports** — management summaries and export concepts.
-9. **Data Quality** — weak record and system health checks.
-10. **Activity Log** — workflow traceability.
-11. **Technical Overview** — stack, architecture, and production direction.
-12. **Deployment Overview** — what would be needed before real rollout.
-13. **Integration Overview** — Microsoft 365 / SharePoint / Teams / Outlook direction.
-
----
+More screenshots are available in [`Docs/Screenshots`](Docs/Screenshots), ordered by review relevance.
 
 ## Core Features
 
 ### Dashboard
 
-- KPI cards.
-- Summary panels.
-- Recent activity feed.
-- Links into main workflow modules.
+Shows operational status, workflow counts, recent activity, and local SQL authentication status.
 
 ### Work Orders
 
-- List, search, and filter.
-- Create work order.
-- Edit work order.
-- View work order details.
-- Per-record activity history.
-- Overdue tracking.
-- Dashboard/report/reminder/workload integration.
-- CSV export.
+Tracks operational work by site, department, owner, priority, status, due date, file count, details page, activity history, and attachments.
 
 ### Corrective Actions
 
-- List, search, and filter.
-- Create corrective action.
-- Edit corrective action.
-- Details/review page.
-- Owner, source, action type, priority, status, due date, completed date, and notes.
-- Status guidance.
-- Completed date behaviour.
-- Activity logging.
-- Per-record activity history.
-- Corrective actions can be generated from risk, document, and training modules.
+Tracks corrective/improvement actions from incidents, audits, inspections, risks, training gaps, document reviews, and compliance follow-ups.
 
 ### Document Intake
 
-Tracks incoming admin/document work such as:
+Captures incoming document workflow items and links them to record-level attachments and Document Library evidence.
 
-- Emails
-- PDFs
-- Scanned documents
-- Supplier documents
-- Customer requests
-- Internal forms
-- Job paperwork
+### Document Library
 
-Fields include:
+Stores uploaded local evidence files with module, record reference, type, uploaded-by, notes, provider, and soft-delete metadata.
 
-- Document name
-- Received date
-- Received from
-- Source type
-- Document type
-- Assigned to
-- Target system
-- Priority
-- Status
-- Due date
-- Completed date
-- Notes
+### Record Attachments
 
-Target systems are tracked as workflow metadata only. The current app does not live-integrate with those systems yet.
+Reusable component for Work Orders, Corrective Actions, and Document Intake detail pages. Upload/delete actions are permission-controlled.
 
-### Compliance Modules
+### Risk Register / Training / Documents
 
-- Safety Overview
-- Safety Meeting Pack
-- Compliance Calendar
-- Controlled Documents
-- Risk Register
-- Training Compliance
+Compliance pages can create source-linked corrective actions when the signed-in user has workflow edit permission.
 
-Risk items, document reviews, and training issues can generate prefilled corrective actions.
+### Reports
 
-### Management Views
+Shows management pressure, workflow counts, evidence coverage, missing evidence, and cross-module review tables. CSV exports are hidden unless the user has export permission.
 
-- Reminder Centre
-- Workload
-- Reports
-- Data Quality
-- Activity Log
-- Admin Settings starter
+### Data Quality
 
-### Reviewer / Portfolio Pages
+Flags missing or weak data, including priority records that are missing supporting evidence.
 
-- Portfolio Hub
-- Reviewer Checklist
-- Demo Guide
-- Business Value
-- Prototype Scope
-- Implementation Plan
-- Technical Overview
-- Data Model
-- User Roles
-- Audit Overview
-- Deployment Overview
-- Testing Overview
-- Integration Overview
+### Activity Log
 
-These pages make the project reviewable without needing a spoken demo.
+Global traceability page for created, updated, uploaded, deleted, and reviewed events. CSV export is permission-controlled.
 
----
+### User Roles / Admin Settings
+
+Explains and demonstrates the local SQL role/permission model, admin configuration boundary, local/Week 3 setup, and Week 4 Microsoft 365 upgrade path.
 
 ## Tech Stack
 
@@ -251,140 +135,120 @@ These pages make the project reviewable without needing a spoken demo.
 - Blazor
 - C#
 - Entity Framework Core
-- SQLite
-- Razor Components
-- HTML/CSS
-- CSV export endpoints
-- Git/GitHub
+- SQLite for simple local development/demo scenarios
+- SQL Server / LocalDB for Week 3 local auth and production foundation
+- Local file storage provider
+- SharePoint file storage provider placeholder
+- Microsoft 365 / Entra ID / Graph planned for Week 4
+- Reusable Razor components
+- CSV exports
 
----
-
-## Architecture
-
-Current prototype structure:
+## Architecture Summary
 
 ```text
 Blazor UI
-    ↓
-Razor Components / Pages
-    ↓
-Application Services
-    ↓
-Entity Framework Core
-    ↓
-SQLite Database
+  -> Shared UI components
+  -> Workflow pages
+  -> Local auth/session services
+  -> Local current user service
+  -> EF Core services
+  -> SQLite or SQL Server/LocalDB
+  -> DocumentAttachment metadata
+  -> IFileStorageService
+       -> LocalFileStorageService now
+       -> SharePointFileStorageService next
 ```
 
-Key services currently include:
-
-- `DashboardService`
-- `ActivityLogService`
-- `CsvExportService`
-
-Week 3 will add production-foundation services such as file storage, roles/permissions, Microsoft 365 schema mapping, dry-run sync, and notification boundaries.
-
----
+Week 3 has deliberately built the local provider-independent version first. Week 4 should swap in Microsoft OAuth2 and SharePoint storage without redesigning the workflow pages.
 
 ## Current Limitations
 
-OperationsFlow is currently a strong local portfolio prototype, not a live production system.
+OperationsFlow is still a local pilot/prototype, not a live hosted production system.
 
-Current limitations:
+Current boundaries:
 
-- Local SQLite database.
-- Seeded demo data.
-- No real authentication.
-- No enforced role permissions.
-- No production hosted environment.
-- No production file storage or document library.
-- No live Microsoft 365 / SharePoint / Teams / Outlook integration.
-- No production backup/restore process.
-- No automated test suite.
-- No CI/CD deployment pipeline.
+- Microsoft Entra ID/OAuth2 sign-in is not connected yet.
+- SharePoint/Graph file storage is not connected yet.
+- The app is not deployed to a hosted production environment yet.
+- No production backup/monitoring/retention policy is configured yet.
+- No external production integrations to Xero, Cin7, WorkflowMax, Outlook, Teams, Planner, or Power BI are connected yet.
+- Automated test coverage is still future work.
 
-See [Known Limitations](Docs/KnownLimitations.md) for details.
+Important: local SQL-backed authentication and role/action permissions **are implemented and tested** for Week 3. The remaining security work is production identity, Graph/SharePoint permission consent, deployment hardening, and formal environment configuration.
 
----
+## Week 3 Completion
 
-## Week 2 Completion
+Week 3 Production Foundation completed:
 
-Week 2 completed:
+- production-style configuration/options
+- file storage abstraction
+- local file provider
+- SharePoint provider placeholder
+- DocumentAttachment metadata model/service
+- local Document Library
+- record-level attachments
+- file counts on workflow registers
+- evidence-aware Data Quality checks
+- evidence coverage Reports
+- local SQL Server / LocalDB support
+- local SQL-backed users, roles, and permissions
+- login page as landing page
+- logout and sidebar user status
+- sessionStorage login persistence
+- protected navigation
+- permission-controlled create/edit/upload/delete/export/admin actions
+- ReadOnly viewer and Admin permission testing
+- reviewer/business/technical documentation updates
 
-- Shared UI component system.
-- Workflow module refactors.
-- Management/evidence page refactors.
-- Static/support page refactors.
-- Activity history empty state fix.
-- Calendar section build fix.
-- App-wide stylesheet cleanup.
-- Workload review lane polish.
-- Final manual page testing.
+## Week 4 Direction
 
-See [Release Notes](Docs/ReleaseNotes.md) and [Release Package](Docs/ReleasePackage.md).
+Week 4 is the Microsoft 365 production implementation stage.
 
----
+Planned Week 4 work:
 
-## Week 3 / Week 4 Direction
-
-### Week 3 — Production Foundation
-
-Week 3 will build local working versions of production foundations:
-
-- Production configuration/options structure.
-- File storage interface and local file storage provider.
-- Document attachment model.
-- Local Document Library page.
-- Role/permission foundation.
-- Microsoft Lists schema registry.
-- Microsoft 365 readiness/dry-run checks.
-- Notification rules and local notification preview/log.
-
-### Week 4 — Production Microsoft 365 Implementation
-
-Week 4 will connect the production implementation:
-
-- Real Microsoft 365 environment.
-- Real SharePoint site and document library.
-- Real Microsoft Lists.
-- Real file uploads to SharePoint.
-- Real sync flows.
-- Real Teams/Outlook/Power Automate notification path.
-- Production configuration and deployment documentation.
-
----
+- configure the Microsoft 365 tenant
+- create test users/groups
+- create SharePoint site and document library
+- configure Entra app registration
+- set redirect URLs
+- request Graph permissions
+- connect Microsoft OAuth2 sign-in
+- link Microsoft accounts to local OperationsFlow users
+- keep local SQL roles/permissions as the app authorisation source
+- connect SharePoint/Graph file storage provider
+- store SharePoint file metadata in existing DocumentAttachment records
+- update Admin Settings to show configured/not-configured states
+- test all roles against Microsoft sign-in and SharePoint file handling
+- update screenshots, release notes, and setup guide
 
 ## Run Locally
 
+From the project folder:
+
 ```bash
-dotnet restore
 dotnet build
 dotnet run
 ```
 
-Then open the local URL shown in the terminal.
+Use Visual Studio for app running/debugging if command-line runs appear stale. Use Git Bash mainly for Git operations.
 
----
+## Documentation Links
 
-## Documentation
-
-Key documentation:
-
-- [Case Study](Docs/CaseStudy.md)
 - [Architecture](Docs/Architecture.md)
 - [Build Plan](Docs/BuildPlan.md)
+- [Case Study](Docs/CaseStudy.md)
 - [Demo Walkthrough](Docs/DemoWalkthrough.md)
+- [Enterprise Upgrade Plan](Docs/EnterpriseUpgradePlan.md)
 - [Feature Checklist](Docs/FeatureChecklist.md)
 - [Known Limitations](Docs/KnownLimitations.md)
-- [Release Package](Docs/ReleasePackage.md)
 - [Release Notes](Docs/ReleaseNotes.md)
+- [Release Package](Docs/ReleasePackage.md)
 - [Screenshot Checklist](Docs/ScreenshotChecklist.md)
+- [Screenshot Rename Map](Docs/ScreenshotRenameMap.md)
 - [Styling System](Docs/StylingSystem.md)
 - [Targeted Pitches](Docs/TargetedPitches.md)
 - [Technical Decisions](Docs/TechnicalDecisions.md)
 
----
-
 ## Summary
 
-OperationsFlow is a portfolio-ready Blazor/.NET business workflow prototype showing operational follow-up, safety/compliance review, document/admin workflow, reporting, data quality, activity traceability, and a realistic production path toward Microsoft 365.
-
+OperationsFlow now proves more than a CRUD prototype. It demonstrates a local SQL-backed internal workflow system with evidence, reports, traceability, roles, permissions, and a clear Microsoft 365 production path. Week 4 should connect the existing architecture to the real tenant rather than rebuild the app.

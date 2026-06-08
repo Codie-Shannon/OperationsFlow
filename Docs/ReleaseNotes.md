@@ -1,145 +1,95 @@
 # OperationsFlow Release Notes
 
-## Week 2 UI Cleanup and Workflow Polish
+## Week 3 Production Foundation and Permission Enforcement
 
 ### Summary
 
-Week 2 completed a major UI, workflow, documentation, and stylesheet cleanup pass for OperationsFlow.
+Week 3 moves OperationsFlow from a polished local workflow prototype into a local production-foundation pilot. The system now includes local SQL-backed authentication, users, roles, permissions, document/evidence handling, storage abstraction, record attachments, evidence-aware reporting, and ReadOnly/Admin permission testing.
 
-The project moved from a broad working prototype into a more polished, consistent, reviewable business workflow system.
+### Completed
 
----
+#### Production Configuration
 
-## Completed
+- Added production-style options/configuration.
+- Added storage/Microsoft 365/notification boundaries.
+- Added local vs future-provider separation.
 
-### Core Workflow Pages
+#### Storage and Evidence
 
-Refactored and tested:
+- Added file storage abstraction.
+- Added local file storage provider.
+- Added SharePoint provider placeholder.
+- Added `DocumentAttachment` metadata model/service.
+- Added local Document Library.
+- Added record-level attachments.
+- Added file counts on workflow registers.
+- Added upload/delete activity logging.
 
-- Work Orders list/create/details/edit.
-- Corrective Actions list/create/details/edit.
-- Document Intake list/create/edit.
-- Risk Register review/action page.
-- Training Compliance review/action page.
-- Document Control review/action page.
+#### Data Quality and Reports
 
-### Management / Evidence Pages
+- Added missing evidence checks.
+- Added evidence coverage report.
+- Added missing evidence report.
+- Updated Data Quality and Reports for Week 3 evidence workflows.
 
-Refactored and tested:
+#### Local SQL Authentication
 
-- Reminder Centre.
-- Workload.
-- Reports.
-- Data Quality.
-- Activity Log.
+- Added SQL Server / LocalDB support.
+- Added local users, roles, and permissions.
+- Added local login page.
+- Added logout/session controls.
+- Added sessionStorage persistence.
+- Added protected navigation.
+- Added sidebar user/role display.
 
-### Support / Reviewer Pages
+#### Permission Enforcement
 
-Updated to the shared UI system:
+- Fixed ReadOnly viewer access issue.
+- Wrapped create/edit workflow actions with `CanEditWorkflow`.
+- Wrapped upload evidence actions with `CanUploadEvidence`.
+- Wrapped delete/soft-delete evidence actions with `CanDeleteEvidence`.
+- Wrapped CSV/export links with `CanExportData`.
+- Wrapped settings/user management boundaries with admin permissions.
+- Tested Admin and ReadOnly roles.
 
-- Portfolio Hub.
-- Reviewer Checklist.
-- Demo Guide.
-- Business Value.
-- Technical Overview.
-- Data Model.
-- User Roles.
-- Audit Overview.
-- Deployment Overview.
-- Testing Overview.
-- Integration Overview.
-- Prototype Scope.
-- Implementation Plan.
-- Admin Settings.
-- Safety Overview.
-- Safety Meeting Pack.
-- Compliance Calendar.
+### Manual Testing
 
-### Shared UI Components
+Tested as Admin:
 
-Used across the app:
+- workflow create/edit actions visible
+- evidence upload/delete actions visible where allowed
+- export actions visible where allowed
+- admin/user pages available
 
-- PageHero
-- PurposeNote
-- MetricGrid
-- MetricCard
-- InfoPanel
-- ActionStrip
-- TableCard
-- FilterBar
-- GuidanceNote
-- ActivityHistoryPanel
-- EmptyState
+Tested as ReadOnly:
 
-### Fixes
+- can view dashboard/register/detail/report/review pages
+- cannot see new/create links
+- cannot see edit links/buttons
+- cannot upload evidence
+- cannot delete evidence
+- cannot export CSV
+- cannot manage settings/users
 
-Fixed:
+### Current Status
 
-- Activity history empty-state rendering.
-- Duplicate/old activity history component confusion.
-- Calendar section build errors.
-- Corrective Action source-linked query prefill.
-- Corrective Action return URL behaviour.
-- Workload card layout density.
-- Large duplicated stylesheet patterns.
+Week 3 Production Foundation is complete and ready for final screenshot/documentation pass.
 
-### CSS Cleanup
+### Known Warning
 
-Completed:
+Build may show an existing nullable warning in `DocumentAttachmentService.cs`; the build still succeeds. This can be cleaned up separately if desired.
 
-- Cleaned and reduced the large `app.css` file.
-- Preserved shared `of-*` UI component classes.
-- Removed obvious duplicated/old clutter.
-- Polished dense workload card layout into review lanes.
-- Improved table/card/badge/form/filter consistency.
+### Next Stage
 
----
+Week 4: Microsoft 365 production implementation.
 
-## Manual Testing
+Planned:
 
-Manual tests completed:
-
-- Build check.
-- App run check.
-- Main route click-through.
-- Create/edit flows.
-- Activity history checks.
-- Source-linked corrective actions.
-- CSV export links.
-- Reports/Data Quality/Activity Log.
-- Workload/Reminders.
-- Static/support pages.
-
----
-
-## Current Status
-
-```text
-Week 2 UI cleanup: Complete
-Manual testing: Complete
-Build: Passing
-Core workflows: Working
-CSS cleanup: Complete enough for Week 2
-Documentation: Updated
-Screenshots: Refresh after final UI merge
-```
-
----
-
-## Next Stage
-
-Week 3: Production Foundation.
-
-Planned work:
-
-- Production configuration/options.
-- File storage interface.
-- Local file storage provider.
-- Document attachment model.
-- Local Document Library.
-- Role/permission foundation.
-- Microsoft Lists schema registry.
-- M365 readiness/dry-run sync.
-- Notification rules and preview/log.
-
-Week 4: Full production Microsoft 365 implementation.
+- tenant setup confirmation
+- Entra app registration
+- OAuth2 sign-in
+- external login linking
+- SharePoint site/document library
+- Graph file upload/open/delete
+- production setup guide
+- Week 4 screenshots and release notes
