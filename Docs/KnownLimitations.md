@@ -1,97 +1,33 @@
-# OperationsFlow Known Limitations
+# Known Limitations
 
-## Prototype Status
+OperationsFlow is a working portfolio/pilot implementation, not a fully hardened enterprise SaaS system.
 
-OperationsFlow is a local production-foundation prototype. It is suitable for portfolio review, manager review, and Week 4 Microsoft 365 pilot configuration planning. It is not yet a hosted/live production deployment.
+## Current limitations
 
-## Current Technical Limitations
+- The app is not deployed to a hosted production environment yet.
+- Development secrets must not be committed and should be moved to user-secrets, environment variables, or a managed secret store.
+- Any exposed development client secret should be rotated before final publishing or further sharing.
+- Graph permissions should be reviewed and narrowed where practical before real production rollout.
+- There is no formal production backup/restore policy yet.
+- There is no formal retention or legal hold policy yet.
+- Monitoring, alerting, and centralized error logging are not yet implemented.
+- Automated test coverage is not yet implemented.
+- Microsoft account linking is pilot-level and should be expanded with admin UI for linking/unlinking accounts.
+- The current pilot is single-tenant and not a multi-tenant SaaS product.
+- External integrations such as Outlook shared mailbox intake, Teams, Planner, Power BI, Xero, Cin7, or WorkflowMax are not connected yet.
 
-### Not Hosted Yet
+## What is implemented
 
-The app currently runs locally. A production version would need hosting, deployment process, environment configuration, monitoring, backups, and support procedures.
+- Local SQL auth and roles.
+- Microsoft OAuth2 sign-in.
+- Microsoft account to local user mapping.
+- SharePoint evidence upload.
+- SharePoint metadata writeback.
+- SharePoint delete lifecycle.
+- Current-user activity logging.
+- ReadOnly permission enforcement.
+- Reports and data quality pages.
 
-### Microsoft 365 Not Connected Yet
+## Honest positioning
 
-A Microsoft 365 tenant is available for Week 4 setup, but the application is not yet connected to:
-
-- Microsoft Entra OAuth2 login
-- Microsoft Graph
-- SharePoint document libraries
-- Teams
-- Planner
-- Outlook mailbox intake
-- Power Automate
-- Power BI service
-
-### Local Authentication Is Not Production Identity
-
-Week 3 local SQL-backed authentication is implemented and tested, including local roles and action permissions.
-
-Remaining production identity work:
-
-- Entra ID / OAuth2 sign-in
-- external login mapping
-- token handling
-- tenant/app registration config
-- secure secret/certificate handling
-- production sign-in/logout testing
-
-### Role Permissions Are Local App Permissions
-
-Week 3 app permissions are enforced in the UI/actions and are suitable for local pilot demonstration. Production would also need:
-
-- server-side/policy-level enforcement review
-- authenticated identity claims
-- security testing
-- audit rules
-- tenant group mapping if used
-
-### File Storage Is Local
-
-Week 3 stores files locally through the file storage abstraction. It stores file metadata in `DocumentAttachment` records.
-
-Remaining production file work:
-
-- SharePoint document library setup
-- Graph upload/open/delete
-- file permission model
-- retention rules
-- folder/metadata conventions
-
-### No Live Xero / Cin7 / WorkflowMax Integration Yet
-
-OperationsFlow currently models workflow pressure and integration direction. It does not yet connect to Xero, Cin7, WorkflowMax, or other external business systems.
-
-### No Production Reporting Platform Yet
-
-Reports and CSV exports are implemented locally. Production reporting could later use Power BI, scheduled exports, or approved management dashboards.
-
-### No Automated Test Suite Yet
-
-Manual testing has been done, including Admin and ReadOnly permission behaviour. Automated unit/integration/UI tests are still future work.
-
-### Seeded / Demo Data
-
-The app uses demo records for portfolio and testing purposes. Production would require approved data migration/import rules.
-
-### Some Options Are Still Hardcoded
-
-Some dropdowns/status lists/options are currently code-defined. Production would likely move more configuration into admin tables/settings.
-
-### Admin Settings Is a Configuration Boundary
-
-Admin Settings explains and previews production configuration. It is not yet a full production admin console for tenant secrets, Graph permissions, or deployment settings.
-
-## Business Scope Limitations
-
-### Not a Full ERP System
-
-OperationsFlow is focused on workflow follow-up, evidence, reporting, and management visibility. It is not a full ERP, accounting, CRM, or manufacturing system.
-
-### Not a Certified Compliance System
-
-It can support compliance workflows, but a production safety/compliance system would need business validation, legal/process sign-off, security review, and approved retention/audit policies.
-
-## Limitation Summary
-
-OperationsFlow now proves the workflow, evidence, reporting, role-permission, and production architecture shape. The remaining limitations are mostly production integration, hosting, identity, SharePoint/Graph storage, automated testing, and formal security/governance work.
+Production pilot-ready for a single-tenant Microsoft 365 environment.

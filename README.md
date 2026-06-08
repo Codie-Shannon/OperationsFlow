@@ -1,8 +1,8 @@
 # OperationsFlow
 
-> **Current status:** Week 3 Production Foundation is complete. OperationsFlow now has local SQL-backed authentication, login/logout, session-based local access, seeded users/roles/permissions, protected navigation, permission-controlled workflow actions, local evidence storage, document attachments, evidence-aware data quality checks, management reports, and a clear Microsoft 365 / SharePoint / Graph upgrade path for Week 4.
+> **Current status:** Week 4 Microsoft 365 pilot implementation is complete. OperationsFlow now has local SQL-backed authentication, Microsoft OAuth2 sign-in, local-vs-Microsoft sign-in status, local SQL roles/permissions, SharePoint-backed evidence storage through Microsoft Graph, SharePoint metadata writeback, document upload/delete lifecycle, current-user activity logging, reporting, data quality checks, and reviewer-ready documentation.
 
-OperationsFlow is **not yet a live production deployment**. It is a manager-review-ready local pilot/prototype with production-shaped architecture. The next stage is Week 4: connecting the finished local foundation to the Microsoft 365 tenant with Entra ID/OAuth2 and SharePoint/Graph storage.
+OperationsFlow is **production pilot-ready for a single-tenant Microsoft 365 environment**. It is not being presented as a fully hardened enterprise SaaS platform; it is a working portfolio/pilot system that proves the core business workflow, identity, storage, evidence, reporting, and permission model.
 
 ## Project Purpose
 
@@ -21,7 +21,7 @@ It is designed around real workplace patterns:
 - data quality checks
 - activity traceability
 - role-based workflow access
-- Microsoft 365 / SharePoint production readiness
+- Microsoft 365 / SharePoint evidence storage
 
 ## What This Project Demonstrates
 
@@ -29,65 +29,76 @@ It is designed around real workplace patterns:
 - Entity Framework Core persistence.
 - SQLite/local development support and SQL Server/LocalDB production-foundation support.
 - Local SQL-backed authentication and seeded demo accounts.
-- Local roles and permissions stored in SQL.
+- Microsoft OAuth2 sign-in for tenant accounts.
+- Microsoft account to local OperationsFlow user mapping through `ExternalLoginLinks`.
+- Local SQL roles and permissions as the application authorization source.
 - Enforced page/action permissions for workflow actions, evidence uploads/deletes, exports, settings, and user management.
 - Shared UI components and consolidated styling.
 - Workflow modules connected through reports, reminders, workload, activity history, and data quality.
-- Local file storage abstraction that can be swapped to SharePoint in Week 4.
-- Record-level attachments and document library evidence tracking.
+- File storage abstraction with local and SharePoint providers.
+- SharePoint evidence upload through Microsoft Graph.
+- SharePoint metadata writeback for module, record, evidence flag, uploader, and notes.
+- Delete lifecycle where OperationsFlow delete removes the SharePoint file and updates local metadata.
+- Record-level attachments and central Document Library evidence tracking.
 - Evidence-aware data quality and reporting.
-- Clear Microsoft 365 / SharePoint / Graph upgrade path.
 
 ## Current Project Metrics
 
 - Local SQL-backed authentication: implemented.
-- Session-based login/logout: implemented using browser session storage.
+- Microsoft OAuth2 sign-in: implemented.
+- Local vs Microsoft-linked status display: implemented.
 - Local roles/permissions: implemented.
 - ReadOnly permission enforcement: implemented and tested.
 - Admin workflow actions: implemented and tested.
-- Local file/evidence storage: implemented.
+- SharePoint file/evidence storage: implemented.
+- SharePoint metadata writeback: implemented.
+- SharePoint delete lifecycle: implemented.
 - Record attachment panels: implemented.
 - Document Library: implemented.
 - Data Quality missing-evidence checks: implemented.
 - Reports evidence coverage: implemented.
-- Microsoft 365 tenant access: available for Week 4 setup.
-- Microsoft 365 integration: not yet connected.
+- Activity Log current-user upload/delete audit: implemented.
+- Microsoft 365 tenant/app/library connection check: implemented.
 
 ## Screenshot Preview
 
-The screenshots below show the strongest Week 3 review path first: local login, SQL-backed dashboard, roles/permissions, ReadOnly enforcement, evidence storage, and management reporting.
+The screenshots below show the strongest Week 4 review path: sign-in, Microsoft 365 connection, role mapping, SharePoint metadata, Document Library provider, and ReadOnly permission enforcement.
 
-### 1. Login Page / Local SQL Authentication
+### 1. Login / Local + Microsoft sign-in
 
-![Login Page](Docs/Screenshots/01-login-page.png)
+![Login / Local + Microsoft sign-in](Docs/Screenshots/01-login-local-and-microsoft.png)
 
-### 2. Dashboard / SQL Auth Overview
+### 2. Admin Settings / Microsoft 365 connected
 
-![Dashboard SQL Auth Overview](Docs/Screenshots/02-dashboard-sql-auth-overview.png)
+![Admin Settings / Microsoft 365 connected](Docs/Screenshots/04-admin-settings-m365-connected.png)
 
-### 3. User Roles / Permission Model
+### 3. User Roles / Microsoft links
 
-![User Roles Permission Model](Docs/Screenshots/03-user-roles-permission-model.png)
+![User Roles / Microsoft links](Docs/Screenshots/05-user-roles-microsoft-links.png)
 
-### 4. ReadOnly Work Orders / No Create or Edit Actions
+### 4. SharePoint / Metadata writeback
 
-![ReadOnly Work Orders No Actions](Docs/Screenshots/04-work-orders-readonly-no-actions.png)
+![SharePoint / Metadata writeback](Docs/Screenshots/08-sharepoint-metadata-writeback.png)
 
-### 5. Admin Document Library / Upload and Delete Actions
+### 5. Document Library / SharePoint provider
 
-![Admin Document Library Upload Delete](Docs/Screenshots/05-document-library-admin-upload-delete.png)
+![Document Library / SharePoint provider](Docs/Screenshots/09-document-library-sharepoint-provider.png)
 
-### 6. Reports / Evidence Coverage and Exports
+### 6. ReadOnly permissions
 
-![Reports Admin Exports](Docs/Screenshots/06-reports-admin-exports.png)
+![ReadOnly permissions](Docs/Screenshots/11-readonly-no-upload-delete-export.png)
 
 More screenshots are available in [`Docs/Screenshots`](Docs/Screenshots), ordered by review relevance.
 
 ## Core Features
 
+### Authentication
+
+OperationsFlow supports local SQL login and Microsoft OAuth2 login. Microsoft sign-in proves tenant identity; OperationsFlow then maps the Microsoft identity to a local user and loads local roles/permissions.
+
 ### Dashboard
 
-Shows operational status, workflow counts, recent activity, and local SQL authentication status.
+Shows operational status, workflow counts, recent activity, and sign-in/authentication status.
 
 ### Work Orders
 
@@ -103,7 +114,7 @@ Captures incoming document workflow items and links them to record-level attachm
 
 ### Document Library
 
-Stores uploaded local evidence files with module, record reference, type, uploaded-by, notes, provider, and soft-delete metadata.
+Stores uploaded evidence files with module, record reference, type, uploaded-by, notes, provider, SharePoint URL, and delete lifecycle metadata.
 
 ### Record Attachments
 
@@ -123,11 +134,11 @@ Flags missing or weak data, including priority records that are missing supporti
 
 ### Activity Log
 
-Global traceability page for created, updated, uploaded, deleted, and reviewed events. CSV export is permission-controlled.
+Global traceability page for created, updated, uploaded, deleted, and reviewed events. Upload/delete activity records the current signed-in user.
 
 ### User Roles / Admin Settings
 
-Explains and demonstrates the local SQL role/permission model, admin configuration boundary, local/Week 3 setup, and Week 4 Microsoft 365 upgrade path.
+Demonstrates the local SQL role/permission model, Microsoft OAuth2 external links, admin configuration boundary, Microsoft 365 connection status, and SharePoint provider configuration.
 
 ## Tech Stack
 
@@ -136,10 +147,11 @@ Explains and demonstrates the local SQL role/permission model, admin configurati
 - C#
 - Entity Framework Core
 - SQLite for simple local development/demo scenarios
-- SQL Server / LocalDB for Week 3 local auth and production foundation
+- SQL Server / LocalDB for local auth and production foundation
+- Microsoft OAuth2 / Entra app registration
+- Microsoft Graph
+- SharePoint document library storage
 - Local file storage provider
-- SharePoint file storage provider placeholder
-- Microsoft 365 / Entra ID / Graph planned for Week 4
 - Reusable Razor components
 - CSV exports
 
@@ -150,40 +162,40 @@ Blazor UI
   -> Shared UI components
   -> Workflow pages
   -> Local auth/session services
+  -> Microsoft OAuth2 sign-in flow
   -> Local current user service
   -> EF Core services
   -> SQLite or SQL Server/LocalDB
+  -> LocalUsers / LocalRoles / LocalPermissions
+  -> ExternalLoginLinks
   -> DocumentAttachment metadata
   -> IFileStorageService
-       -> LocalFileStorageService now
-       -> SharePointFileStorageService next
+       -> LocalFileStorageService
+       -> SharePointFileStorageService
+            -> Microsoft Graph
+            -> SharePoint Evidence Library
 ```
-
-Week 3 has deliberately built the local provider-independent version first. Week 4 should swap in Microsoft OAuth2 and SharePoint storage without redesigning the workflow pages.
 
 ## Current Limitations
 
-OperationsFlow is still a local pilot/prototype, not a live hosted production system.
+OperationsFlow is a working local/pilot implementation, not a fully hosted enterprise SaaS platform.
 
 Current boundaries:
 
-- Microsoft Entra ID/OAuth2 sign-in is not connected yet.
-- SharePoint/Graph file storage is not connected yet.
+- Secrets are local development configuration and should be moved to user-secrets, environment variables, or a managed secret store before real deployment.
+- Graph permissions should be reviewed and reduced where practical before production rollout.
 - The app is not deployed to a hosted production environment yet.
-- No production backup/monitoring/retention policy is configured yet.
+- No formal production backup/monitoring/retention policy is configured yet.
 - No external production integrations to Xero, Cin7, WorkflowMax, Outlook, Teams, Planner, or Power BI are connected yet.
 - Automated test coverage is still future work.
 
-Important: local SQL-backed authentication and role/action permissions **are implemented and tested** for Week 3. The remaining security work is production identity, Graph/SharePoint permission consent, deployment hardening, and formal environment configuration.
-
 ## Week 3 Completion
 
-Week 3 Production Foundation completed:
+Week 3 built the local/free production foundation:
 
 - production-style configuration/options
 - file storage abstraction
 - local file provider
-- SharePoint provider placeholder
 - DocumentAttachment metadata model/service
 - local Document Library
 - record-level attachments
@@ -198,57 +210,47 @@ Week 3 Production Foundation completed:
 - protected navigation
 - permission-controlled create/edit/upload/delete/export/admin actions
 - ReadOnly viewer and Admin permission testing
-- reviewer/business/technical documentation updates
 
-## Week 4 Direction
+## Week 4 Completion
 
-Week 4 is the Microsoft 365 production implementation stage.
+Week 4 implemented the Microsoft 365 pilot path:
 
-Planned Week 4 work:
+- Microsoft 365 tenant/test user setup
+- SharePoint site and OperationsFlow Evidence document library setup
+- Entra app registration and Graph permissions
+- Microsoft Graph connection test
+- Microsoft OAuth2 sign-in
+- Microsoft account to local user mapping
+- local SQL roles/permissions retained as authorization source
+- SharePoint evidence upload provider
+- SharePoint folder mapping by module/record reference
+- SharePoint metadata writeback
+- SharePoint delete lifecycle from OperationsFlow
+- Document Library direct upload parity
+- current user audit logging for upload/delete events
+- Microsoft-linked vs Local login sidebar status
 
-- configure the Microsoft 365 tenant
-- create test users/groups
-- create SharePoint site and document library
-- configure Entra app registration
-- set redirect URLs
-- request Graph permissions
-- connect Microsoft OAuth2 sign-in
-- link Microsoft accounts to local OperationsFlow users
-- keep local SQL roles/permissions as the app authorisation source
-- connect SharePoint/Graph file storage provider
-- store SharePoint file metadata in existing DocumentAttachment records
-- update Admin Settings to show configured/not-configured states
-- test all roles against Microsoft sign-in and SharePoint file handling
-- update screenshots, release notes, and setup guide
+## Final Positioning
 
-## Run Locally
+Best honest label:
 
-From the project folder:
+> **Production pilot-ready single-tenant Microsoft 365 workflow system.**
 
-```bash
-dotnet build
-dotnet run
-```
+This means the core pilot works end-to-end, while full customer production rollout would still need hosting, secret management, backup/restore, formal monitoring, retention policy, and least-privilege security review.
 
-Use Visual Studio for app running/debugging if command-line runs appear stale. Use Git Bash mainly for Git operations.
+## Documentation
 
-## Documentation Links
-
-- [Architecture](Docs/Architecture.md)
-- [Build Plan](Docs/BuildPlan.md)
-- [Case Study](Docs/CaseStudy.md)
-- [Demo Walkthrough](Docs/DemoWalkthrough.md)
-- [Enterprise Upgrade Plan](Docs/EnterpriseUpgradePlan.md)
-- [Feature Checklist](Docs/FeatureChecklist.md)
-- [Known Limitations](Docs/KnownLimitations.md)
-- [Release Notes](Docs/ReleaseNotes.md)
-- [Release Package](Docs/ReleasePackage.md)
-- [Screenshot Checklist](Docs/ScreenshotChecklist.md)
-- [Screenshot Rename Map](Docs/ScreenshotRenameMap.md)
-- [Styling System](Docs/StylingSystem.md)
-- [Targeted Pitches](Docs/TargetedPitches.md)
-- [Technical Decisions](Docs/TechnicalDecisions.md)
-
-## Summary
-
-OperationsFlow now proves more than a CRUD prototype. It demonstrates a local SQL-backed internal workflow system with evidence, reports, traceability, roles, permissions, and a clear Microsoft 365 production path. Week 4 should connect the existing architecture to the real tenant rather than rebuild the app.
+- [`Docs/Architecture.md`](Docs/Architecture.md)
+- [`Docs/BuildPlan.md`](Docs/BuildPlan.md)
+- [`Docs/CaseStudy.md`](Docs/CaseStudy.md)
+- [`Docs/DemoWalkthrough.md`](Docs/DemoWalkthrough.md)
+- [`Docs/EnterpriseUpgradePlan.md`](Docs/EnterpriseUpgradePlan.md)
+- [`Docs/FeatureChecklist.md`](Docs/FeatureChecklist.md)
+- [`Docs/KnownLimitations.md`](Docs/KnownLimitations.md)
+- [`Docs/ReleaseNotes.md`](Docs/ReleaseNotes.md)
+- [`Docs/ReleasePackage.md`](Docs/ReleasePackage.md)
+- [`Docs/ScreenshotChecklist.md`](Docs/ScreenshotChecklist.md)
+- [`Docs/ScreenshotRenameMap.md`](Docs/ScreenshotRenameMap.md)
+- [`Docs/StylingSystem.md`](Docs/StylingSystem.md)
+- [`Docs/TargetedPitches.md`](Docs/TargetedPitches.md)
+- [`Docs/TechnicalDecisions.md`](Docs/TechnicalDecisions.md)
