@@ -360,7 +360,11 @@
                 FileSizeBytes = selectedFile.Size,
                 ModuleName = ModuleName,
                 RecordId = RecordId,
-                UploadedBy = uploadedBy
+                RecordReference = RecordReference,
+                UploadedBy = uploadedBy,
+                Notes = notes,
+                IsEvidence = isEvidence,
+                IsControlledDocument = isControlledDocument
             });
 
             if (!storageResult.Success)
