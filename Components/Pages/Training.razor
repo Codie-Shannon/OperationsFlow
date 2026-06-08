@@ -2,13 +2,18 @@
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+@using OperationsFlow.Services
 @inject OperationsFlowDbContext Db
 
+@inject LocalCurrentUserService CurrentUserService
 <PageTitle>Training Compliance - OperationsFlow</PageTitle>
 
 <PageHero Eyebrow="Compliance" Title="Training Compliance" Subtitle="Track staff training records, required training, expiry dates, expired training, upcoming renewals, and corrective action follow-up." BadgeText="@($"{ComplianceRate:0.0}% compliant")" BadgeClass="@ComplianceBadgeClass">
     <Actions>
-        <a class="of-btn of-btn-primary" href="/corrective-actions/create">+ New Corrective Action</a>
+        @if (CurrentUserService.CanEditWorkflow)
+        {
+            <a class="of-btn of-btn-primary" href="/corrective-actions/create">+ New Corrective Action</a>
+        }
         <a class="of-btn of-btn-secondary" href="/corrective-actions">Corrective Actions</a>
         <a class="of-btn of-btn-secondary" href="/reminders">Reminders</a>
         <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
@@ -36,38 +41,121 @@
 <FilterBar Title="Filter Training Records">
     <ChildContent>
         <input class="of-input" placeholder="Search training..." @bind="searchText" @bind:event="oninput" />
-        <select class="of-select" @bind="statusFilter"><option value="">All Statuses</option>@foreach (var s in StatusOptions){<option value="@s">@s</option>}</select>
-        <select class="of-select" @bind="departmentFilter"><option value="">All Departments</option>@foreach (var d in DepartmentOptions){<option value="@d">@d</option>}</select>
-        <select class="of-select" @bind="requirementFilter"><option value="">All Records</option><option value="Required">Required Only</option><option value="Optional">Optional Only</option></select>
-    </ChildContent>
-    <Actions><a class="of-btn of-btn-secondary" href="/data-quality">Data Quality</a><a class="of-btn of-btn-secondary" href="/activity-log">Activity Log</a></Actions>
+        <select class="of-select" @bind="statusFilter"><option value="">All Statuses</option>@foreach (var s in StatusOptions){
+            <option value="@s">@s</option>
+        }
+    </select>
+    <select class="of-select" @bind="departmentFilter"><option value="">All Departments</option>@foreach (var d in DepartmentOptions){
+        <option value="@d">@d</option>
+    }
+</select>
+<select class="of-select" @bind="requirementFilter"><option value="">All Records</option><option value="Required">Required Only</option><option value="Optional">Optional Only</option></select>
+</ChildContent>
+<Actions><a class="of-btn of-btn-secondary" href="/data-quality">Data Quality</a><a class="of-btn of-btn-secondary" href="/activity-log">Activity Log</a></Actions>
 </FilterBar>
 
 <TableCard Title="Training Records" Subtitle="@($"Showing {FilteredTrainingRecords.Count()} of {TotalCount} training record(s).")" IsEmpty="@(!FilteredTrainingRecords.Any())" EmptyTitle="No training records match the filters" EmptyMessage="Clear the search or filters to show more training compliance records.">
-    <ChildContent><table><thead><tr><th>Staff</th><th>Training</th><th>Site</th><th>Department</th><th>Status</th><th>Completed</th><th>Expiry</th><th>Required</th><th>Flag</th><th>Follow-Up</th></tr></thead><tbody>@foreach (var item in FilteredTrainingRecords){<tr><td><strong>@item.StaffName</strong></td><td>@item.TrainingName</td><td>@item.Site</td><td>@item.Department</td><td><span class="@GetStatusClass(item.Status)">@item.Status</span></td><td>@item.CompletedDate.ToString("dd MMM yyyy")</td><td>@item.ExpiryDate.ToString("dd MMM yyyy")</td><td>@(item.IsRequired ? "Required" : "Optional")</td><td>@if(item.IsExpired){<span class="badge badge-danger">Expired</span>}else if(item.IsExpiringSoon){<span class="badge badge-warning">Expiring Soon</span>}else{<span class="badge badge-success">Current</span>}</td><td><a class="of-card-link" href="@BuildCorrectiveActionUrlFromTraining(item)">Create Action</a></td></tr>}</tbody></table></ChildContent>
+    <ChildContent>
+        <table>
+            <thead><tr><th>Staff</th><th>Training</th><th>Site</th><th>Department</th><th>Status</th><th>Completed</th><th>Expiry</th><th>Required</th><th>Flag</th><th>Follow-Up</th></tr></thead>
+            <tbody>
+                @foreach (var item in FilteredTrainingRecords)
+                {
+                    <tr>
+                        <td><strong>@item.StaffName</strong></td>
+                        <td>@item.TrainingName</td>
+                        <td>@item.Site</td>
+                        <td>@item.Department</td>
+                        <td><span class="@GetStatusClass(item.Status)">@item.Status</span></td>
+                        <td>@item.CompletedDate.ToString("dd MMM yyyy")</td>
+                        <td>@item.ExpiryDate.ToString("dd MMM yyyy")</td>
+                        <td>@(item.IsRequired ? "Required" : "Optional")</td>
+                        <td>@if(item.IsExpired){
+                            <span class="badge badge-danger">Expired</span>
+                        }else if (item.IsExpiringSoon)
+                        {
+
+                            <span class="badge badge-warning">Expiring Soon</span>
+                        }
+                        else
+                        {
+
+                            <span class="badge badge-success">Current</span>
+                        }
+                    </td>
+                    <td>
+                        @if (CurrentUserService.CanEditWorkflow)
+                        {
+                            @if (CurrentUserService.CanEditWorkflow)
+                            {
+                                <a class="of-card-link" href="@BuildCorrectiveActionUrlFromTraining(item)">Create Action</a>
+                            }
+                        }
+                        else
+                        {
+                            <span class="of-muted-text">View only</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</ChildContent>
 </TableCard>
 
 <InfoPanel Title="Priority Training Follow-Ups" Subtitle="Expired or expiring training records that should be checked first.">
     <Actions><span class="of-badge of-badge-warning">@PriorityTrainingRecords.Count items</span></Actions>
-    <ChildContent>@if(!PriorityTrainingRecords.Any()){<EmptyState Title="No priority training follow-ups" Message="There are currently no expired or expiring-soon training flags." Icon="✅" />}else{<div class="of-review-proof-grid">@foreach(var item in PriorityTrainingRecords.Take(6)){<div class="of-review-proof-card"><strong>@item.StaffName — @item.TrainingName</strong><span>@item.Department • @item.Site</span><span>Status @item.Status • Expires @item.ExpiryDate.ToString("dd MMM yyyy")</span><div class="of-link-row">@if(item.IsExpired){<span class="badge badge-danger">Expired</span>}else{<span class="badge badge-warning">Expiring Soon</span>}<a class="of-card-link" href="@BuildCorrectiveActionUrlFromTraining(item)">Create Action</a></div></div>}</div>}</ChildContent>
+    <ChildContent>
+        @if (!PriorityTrainingRecords.Any())
+        {
+            <EmptyState Title="No priority training follow-ups" Message="There are currently no expired or expiring-soon training flags." Icon="✅" />
+        }
+        else
+        {
+
+            <div class="of-review-proof-grid">
+                @foreach (var item in PriorityTrainingRecords.Take(6))
+                {
+                    <div class="of-review-proof-card">
+                        <strong>@item.StaffName — @item.TrainingName</strong><span>@item.Department • @item.Site</span><span>Status @item.Status • Expires @item.ExpiryDate.ToString("dd MMM yyyy")</span><div class="of-link-row">
+                        @if (item.IsExpired)
+                        {
+                            <span class="badge badge-danger">Expired</span>
+                        }
+                        else
+                        {
+
+                            <span class="badge badge-warning">Expiring Soon</span>
+                        }
+                        @if (CurrentUserService.CanEditWorkflow)
+                        {
+                            <a class="of-card-link" href="@BuildCorrectiveActionUrlFromTraining(item)">Create Action</a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</ChildContent>
 </InfoPanel>
 
 <GuidanceNote Title="Review Notes" Icon="💡" Tone="info"><ul><li>Required expired records should be actioned before optional training.</li><li>Corrective actions assign the staff member by default for follow-up visibility.</li><li>Expired and expiring records appear in Reminders and Data Quality.</li><li>A production version could store certificates, provider details, and renewal bookings.</li></ul></GuidanceNote>
 
 @code {
     private List<TrainingRecord>? trainingRecords;
-    private string searchText=""; private string statusFilter=""; private string departmentFilter=""; private string requirementFilter="";
-    private IEnumerable<TrainingRecord> FilteredTrainingRecords { get { if(trainingRecords==null) return Enumerable.Empty<TrainingRecord>(); var q=trainingRecords.AsEnumerable(); if(!string.IsNullOrWhiteSpace(searchText)) q=q.Where(x=>Contains(x.StaffName,searchText)||Contains(x.TrainingName,searchText)||Contains(x.Site,searchText)||Contains(x.Department,searchText)||Contains(x.Status,searchText)||Contains(x.Notes,searchText)); if(!string.IsNullOrWhiteSpace(statusFilter)) q=q.Where(x=>string.Equals(x.Status,statusFilter,StringComparison.OrdinalIgnoreCase)); if(!string.IsNullOrWhiteSpace(departmentFilter)) q=q.Where(x=>string.Equals(x.Department,departmentFilter,StringComparison.OrdinalIgnoreCase)); if(requirementFilter=="Required") q=q.Where(x=>x.IsRequired); else if(requirementFilter=="Optional") q=q.Where(x=>!x.IsRequired); return q.OrderByDescending(x=>x.IsExpired).ThenByDescending(x=>x.IsExpiringSoon).ThenBy(x=>x.ExpiryDate).ThenBy(x=>x.StaffName).ToList(); }}
-    private int TotalCount=>trainingRecords?.Count??0; private int ExpiredCount=>trainingRecords?.Count(x=>x.IsExpired)??0; private int ExpiringSoonCount=>trainingRecords?.Count(x=>x.IsExpiringSoon)??0; private int RequiredCurrentCount=>trainingRecords?.Count(x=>x.IsRequired&&!x.IsExpired)??0; private int ActionableTrainingCount=>trainingRecords?.Count(IsActionableTraining)??0;
-    private decimal ComplianceRate { get { var required=trainingRecords?.Where(x=>x.IsRequired).ToList()??new(); return required.Any() ? (decimal)required.Count(x=>!x.IsExpired)/required.Count*100 : 0; }}
-    private string ComplianceBadgeClass=>ComplianceRate>=90?"of-badge-success":ComplianceRate>=70?"of-badge-warning":"of-badge-danger";
-    private List<TrainingRecord> PriorityTrainingRecords=>trainingRecords?.Where(IsActionableTraining).OrderByDescending(x=>x.IsExpired).ThenByDescending(x=>x.IsRequired).ThenBy(x=>x.ExpiryDate).ToList()??new();
-    private List<string> StatusOptions=>trainingRecords?.Select(x=>x.Status).Where(x=>!string.IsNullOrWhiteSpace(x)).Distinct().OrderBy(x=>x).ToList()??new();
-    private List<string> DepartmentOptions=>trainingRecords?.Select(x=>x.Department).Where(x=>!string.IsNullOrWhiteSpace(x)).Distinct().OrderBy(x=>x).ToList()??new();
-    protected override async Task OnInitializedAsync(){ trainingRecords=await Db.TrainingRecords.AsNoTracking().ToListAsync(); }
-    private static string BuildCorrectiveActionUrlFromTraining(TrainingRecord item){ var priority=item.IsExpired?"High":item.IsExpiringSoon?"Medium":"Low"; var title=$"Resolve training issue: {item.StaffName} - {item.TrainingName}"; var notes=$"Created from Training Compliance issue.\nConfirm retraining requirement, assign follow-up owner, and update compliance status.\n\nStaff: {item.StaffName}\nTraining: {item.TrainingName}\nSite: {item.Site}\nDepartment: {item.Department}\nStatus: {item.Status}\nCompleted Date: {item.CompletedDate:dd MMM yyyy}\nExpiry Date: {item.ExpiryDate:dd MMM yyyy}\nRequired: {(item.IsRequired?"Yes":"No")}\nNotes: {DisplayText(item.Notes)}"; return "/corrective-actions/create"+$"?source={Uri.EscapeDataString("Training Compliance")}"+$"&title={Uri.EscapeDataString(title)}"+$"&site={Uri.EscapeDataString(item.Site)}"+$"&department={Uri.EscapeDataString(item.Department)}"+$"&owner={Uri.EscapeDataString(item.StaffName)}"+$"&priority={Uri.EscapeDataString(priority)}"+$"&actionType={Uri.EscapeDataString("Training")}"+$"&notes={Uri.EscapeDataString(notes)}"+$"&returnUrl={Uri.EscapeDataString("/training")}"; }
-    private static bool IsActionableTraining(TrainingRecord item)=>item.IsExpired||item.IsExpiringSoon;
-    private static bool Contains(string? source,string search)=>!string.IsNullOrWhiteSpace(source)&&source.Contains(search,StringComparison.OrdinalIgnoreCase);
-    private static string DisplayText(string? value)=>string.IsNullOrWhiteSpace(value)?"Not recorded":value;
-    private static string GetStatusClass(string? status)=>status?.ToLowerInvariant() switch {"completed"=>"badge badge-success","current"=>"badge badge-success","valid"=>"badge badge-success","expired"=>"badge badge-danger","not started"=>"badge badge-warning","in progress"=>"badge badge-info",_=>"badge badge-muted"};
+    private string searchText = ""; private string statusFilter = ""; private string departmentFilter = ""; private string requirementFilter = "";
+    private IEnumerable<TrainingRecord> FilteredTrainingRecords { get { if (trainingRecords == null) return Enumerable.Empty<TrainingRecord>(); var q = trainingRecords.AsEnumerable(); if (!string.IsNullOrWhiteSpace(searchText)) q = q.Where(x => Contains(x.StaffName, searchText) || Contains(x.TrainingName, searchText) || Contains(x.Site, searchText) || Contains(x.Department, searchText) || Contains(x.Status, searchText) || Contains(x.Notes, searchText)); if (!string.IsNullOrWhiteSpace(statusFilter)) q = q.Where(x => string.Equals(x.Status, statusFilter, StringComparison.OrdinalIgnoreCase)); if (!string.IsNullOrWhiteSpace(departmentFilter)) q = q.Where(x => string.Equals(x.Department, departmentFilter, StringComparison.OrdinalIgnoreCase)); if (requirementFilter == "Required") q = q.Where(x => x.IsRequired); else if (requirementFilter == "Optional") q = q.Where(x => !x.IsRequired); return q.OrderByDescending(x => x.IsExpired).ThenByDescending(x => x.IsExpiringSoon).ThenBy(x => x.ExpiryDate).ThenBy(x => x.StaffName).ToList(); } }
+    private int TotalCount => trainingRecords?.Count ?? 0; private int ExpiredCount => trainingRecords?.Count(x => x.IsExpired) ?? 0; private int ExpiringSoonCount => trainingRecords?.Count(x => x.IsExpiringSoon) ?? 0; private int RequiredCurrentCount => trainingRecords?.Count(x => x.IsRequired && !x.IsExpired) ?? 0; private int ActionableTrainingCount => trainingRecords?.Count(IsActionableTraining) ?? 0;
+    private decimal ComplianceRate { get { var required = trainingRecords?.Where(x => x.IsRequired).ToList() ?? new(); return required.Any() ? (decimal)required.Count(x => !x.IsExpired) / required.Count * 100 : 0; } }
+    private string ComplianceBadgeClass => ComplianceRate >= 90 ? "of-badge-success" : ComplianceRate >= 70 ? "of-badge-warning" : "of-badge-danger";
+    private List<TrainingRecord> PriorityTrainingRecords => trainingRecords?.Where(IsActionableTraining).OrderByDescending(x => x.IsExpired).ThenByDescending(x => x.IsRequired).ThenBy(x => x.ExpiryDate).ToList() ?? new();
+    private List<string> StatusOptions => trainingRecords?.Select(x => x.Status).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().OrderBy(x => x).ToList() ?? new();
+    private List<string> DepartmentOptions => trainingRecords?.Select(x => x.Department).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().OrderBy(x => x).ToList() ?? new();
+    protected override async Task OnInitializedAsync() { trainingRecords = await Db.TrainingRecords.AsNoTracking().ToListAsync(); }
+    private static string BuildCorrectiveActionUrlFromTraining(TrainingRecord item) { var priority = item.IsExpired ? "High" : item.IsExpiringSoon ? "Medium" : "Low"; var title = $"Resolve training issue: {item.StaffName} - {item.TrainingName}"; var notes = $"Created from Training Compliance issue.\nConfirm retraining requirement, assign follow-up owner, and update compliance status.\n\nStaff: {item.StaffName}\nTraining: {item.TrainingName}\nSite: {item.Site}\nDepartment: {item.Department}\nStatus: {item.Status}\nCompleted Date: {item.CompletedDate:dd MMM yyyy}\nExpiry Date: {item.ExpiryDate:dd MMM yyyy}\nRequired: {(item.IsRequired ? "Yes" : "No")}\nNotes: {DisplayText(item.Notes)}"; return "/corrective-actions/create" + $"?source={Uri.EscapeDataString("Training Compliance")}" + $"&title={Uri.EscapeDataString(title)}" + $"&site={Uri.EscapeDataString(item.Site)}" + $"&department={Uri.EscapeDataString(item.Department)}" + $"&owner={Uri.EscapeDataString(item.StaffName)}" + $"&priority={Uri.EscapeDataString(priority)}" + $"&actionType={Uri.EscapeDataString("Training")}" + $"&notes={Uri.EscapeDataString(notes)}" + $"&returnUrl={Uri.EscapeDataString("/training")}"; }
+    private static bool IsActionableTraining(TrainingRecord item) => item.IsExpired || item.IsExpiringSoon;
+    private static bool Contains(string? source, string search) => !string.IsNullOrWhiteSpace(source) && source.Contains(search, StringComparison.OrdinalIgnoreCase);
+    private static string DisplayText(string? value) => string.IsNullOrWhiteSpace(value) ? "Not recorded" : value;
+    private static string GetStatusClass(string? status) => status?.ToLowerInvariant() switch { "completed" => "badge badge-success", "current" => "badge badge-success", "valid" => "badge badge-success", "expired" => "badge badge-danger", "not started" => "badge badge-warning", "in progress" => "badge badge-info", _ => "badge badge-muted" };
 }
+

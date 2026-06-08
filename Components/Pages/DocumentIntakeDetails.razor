@@ -5,9 +5,11 @@
 @using OperationsFlow.Data
 @using OperationsFlow.Models
 @using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
+@using OperationsFlow.Services
 
 @inject OperationsFlowDbContext Db
 @inject NavigationManager Navigation
+@inject LocalCurrentUserService CurrentUserService
 
 <PageTitle>Document Intake Details - OperationsFlow</PageTitle>
 
@@ -158,7 +160,9 @@ else
                        RecordReference="@($"DI-{documentIntake.Id}")"
                        Title="Document Intake Attachments"
                        Subtitle="Upload source documents, PDFs, scans, emails, forms, or processing evidence linked to this intake record."
-                       DefaultUploadedBy="@DisplayText(documentIntake.AssignedTo)" />
+                       DefaultUploadedBy="@DisplayText(documentIntake.AssignedTo)"
+                       AllowUpload="@CurrentUserService.CanUploadEvidence"
+                       AllowDelete="@CurrentUserService.CanDeleteEvidence" />
 
     <TableCard Title="Activity History"
                Subtitle="Record-level traceability for this document intake item."

@@ -5,6 +5,7 @@
 @using OperationsFlow.Services
 @inject OperationsFlowDbContext Db
 @inject DocumentAttachmentService AttachmentService
+@inject LocalCurrentUserService CurrentUserService
 
 <PageTitle>Corrective Actions - OperationsFlow</PageTitle>
 
@@ -14,7 +15,10 @@
           BadgeText="@($"{OpenCount} open")"
           BadgeClass="of-badge-warning">
     <Actions>
-        <a class="of-btn of-btn-primary" href="/corrective-actions/create">+ New Corrective Action</a>
+        @if (CurrentUserService.CanEditWorkflow)
+        {
+            <a class="of-btn of-btn-primary" href="/corrective-actions/create">+ New Corrective Action</a>
+        }
         <a class="of-btn of-btn-secondary" href="/risk-register">Risk Register</a>
         <a class="of-btn of-btn-secondary" href="/training">Training</a>
         <a class="of-btn of-btn-secondary" href="/documents">Documents</a>
@@ -183,7 +187,10 @@ else
                         <td>
                             <div class="of-row-actions">
                                 <a class="of-card-link" href="@($"/corrective-actions/details/{item.Id}")">View</a>
-                                <a class="of-card-link" href="@($"/corrective-actions/edit/{item.Id}?returnUrl={Uri.EscapeDataString("/corrective-actions")}")">Edit</a>
+                                @if (CurrentUserService.CanEditWorkflow)
+                                {
+                                    <a class="of-card-link" href="@($"/corrective-actions/edit/{item.Id}?returnUrl={Uri.EscapeDataString("/corrective-actions")}")">Edit</a>
+                                }
                             </div>
                         </td>
                     </tr>

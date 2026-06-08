@@ -34,6 +34,7 @@
 
         LocalAuthService.Logout();
         await LocalSessionStorageService.ClearSignedInUserIdAsync();
+        await LocalSessionStorageService.ClearLegacyLocalStorageAsync();
 
         Navigation.NavigateTo("/login", replace: true);
     }

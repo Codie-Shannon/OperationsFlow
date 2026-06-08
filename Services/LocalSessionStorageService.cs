@@ -15,7 +15,7 @@ public class LocalSessionStorageService
     public async Task SaveSignedInUserIdAsync(int localUserId)
     {
         await jsRuntime.InvokeVoidAsync(
-            "localStorage.setItem",
+            "sessionStorage.setItem",
             LocalUserIdKey,
             localUserId.ToString());
     }
@@ -25,7 +25,7 @@ public class LocalSessionStorageService
         try
         {
             var value = await jsRuntime.InvokeAsync<string?>(
-                "localStorage.getItem",
+                "sessionStorage.getItem",
                 LocalUserIdKey);
 
             if (int.TryParse(value, out var localUserId))
@@ -44,7 +44,21 @@ public class LocalSessionStorageService
     public async Task ClearSignedInUserIdAsync()
     {
         await jsRuntime.InvokeVoidAsync(
-            "localStorage.removeItem",
+            "sessionStorage.removeItem",
             LocalUserIdKey);
+    }
+
+    public async Task ClearLegacyLocalStorageAsync()
+    {
+        try
+        {
+            await jsRuntime.InvokeVoidAsync(
+                "localStorage.removeItem",
+                LocalUserIdKey);
+        }
+        catch
+        {
+            // Ignore JS/storage errors during prerender or browser edge cases.
+        }
     }
 }

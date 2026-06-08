@@ -190,6 +190,16 @@
 
     private bool IsBusy { get; set; }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        await LocalSessionStorageService.ClearLegacyLocalStorageAsync();
+    }
+
     private async Task LoginAsync()
     {
         IsBusy = true;

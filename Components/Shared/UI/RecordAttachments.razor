@@ -211,11 +211,14 @@
                                                     </a>
                                                 }
 
-                                                <button class="link-action danger-link"
-                                                        type="button"
-                                                        @onclick="() => SoftDeleteAsync(attachment.Id)">
-                                                    Delete
-                                                </button>
+                                                @if (AllowDelete)
+                                                {
+                                                    <button class="link-action danger-link"
+                                                            type="button"
+                                                            @onclick="() => SoftDeleteAsync(attachment.Id)">
+                                                        Delete
+                                                    </button>
+                                                }
                                             </div>
                                         </td>
                                     </tr>
@@ -243,6 +246,8 @@
     [Parameter] public string DefaultUploadedBy { get; set; } = "Demo User";
 
     [Parameter] public bool AllowUpload { get; set; } = true;
+
+    [Parameter] public bool AllowDelete { get; set; } = true;
 
     private readonly List<DocumentAttachment> attachments = new();
 
@@ -315,6 +320,13 @@
 
     private async Task UploadAsync()
     {
+        if (!AllowUpload)
+        {
+            statusMessage = "Your current role cannot upload evidence files.";
+            statusMessageClass = "alert alert-warning";
+            return;
+        }
+
         statusMessage = "";
         statusMessageClass = "alert alert-info";
 
@@ -394,6 +406,13 @@
 
     private async Task SoftDeleteAsync(int id)
     {
+        if (!AllowDelete)
+        {
+            statusMessage = "Your current role cannot delete evidence files.";
+            statusMessageClass = "alert alert-warning";
+            return;
+        }
+
         var deleted = await AttachmentService.SoftDeleteAsync(id, uploadedBy);
 
         if (deleted)

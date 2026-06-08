@@ -10,6 +10,7 @@
 @inject OperationsFlowDbContext Db
 @inject IFileStorageService FileStorageService
 @inject DocumentAttachmentService AttachmentService
+@inject LocalCurrentUserService CurrentUserService
 @inject IOptions<FileStorageOptions> FileStorageSettings
 
 <PageTitle>Document Library - OperationsFlow</PageTitle>
@@ -66,106 +67,117 @@
         </div>
     }
 
-    <InfoPanel Title="Upload Document"
-               Subtitle="Save a local file and create a traceable attachment record.">
-        <ChildContent>
-            <div class="of-form-grid">
-                <div class="form-group">
-                    <label>File</label>
-                    <InputFile OnChange="HandleFileSelected" />
-                    @if (selectedFile is not null)
-                    {
-                        <div class="helper-text">
-                            Selected: @selectedFile.Name (@FormatBytes(selectedFile.Size))
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="helper-text">
-                            Allowed: @AllowedExtensionsDisplay
-                        </div>
-                    }
-                </div>
-
-                <div class="form-group">
-                    <label>Module</label>
-                    <select class="form-control" @bind="uploadModel.ModuleName">
-                        @foreach (var module in ModuleOptions)
+    @if (CurrentUserService.CanUploadEvidence)
+    {
+        <InfoPanel Title="Upload Document"
+                   Subtitle="Save a local file and create a traceable attachment record.">
+            <ChildContent>
+                <div class="of-form-grid">
+                    <div class="form-group">
+                        <label>File</label>
+                        <InputFile OnChange="HandleFileSelected" />
+                        @if (selectedFile is not null)
                         {
-                            <option value="@module">@module</option>
+                            <div class="helper-text">
+                                Selected: @selectedFile.Name (@FormatBytes(selectedFile.Size))
+                            </div>
                         }
-                    </select>
-                </div>
+                        else
+                        {
+                            <div class="helper-text">
+                                Allowed: @AllowedExtensionsDisplay
+                            </div>
+                        }
+                    </div>
 
-                <div class="form-group">
-                    <label>Record ID</label>
-                    <input class="form-control"
-                           type="number"
-                           min="1"
-                           @bind="uploadModel.RecordId" />
-                </div>
+                    <div class="form-group">
+                        <label>Module</label>
+                        <select class="form-control" @bind="uploadModel.ModuleName">
+                            @foreach (var module in ModuleOptions)
+                            {
+                                <option value="@module">@module</option>
+                            }
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label>Record Reference</label>
-                    <input class="form-control"
-                           placeholder="Example: WO-1001, CA-5, DI-1"
-                           @bind="uploadModel.RecordReference" />
-                </div>
+                    <div class="form-group">
+                        <label>Record ID</label>
+                        <input class="form-control"
+                               type="number"
+                               min="1"
+                               @bind="uploadModel.RecordId" />
+                    </div>
 
-                <div class="form-group">
-                    <label>Uploaded By</label>
-                    <input class="form-control"
-                           @bind="uploadModel.UploadedBy" />
-                </div>
+                    <div class="form-group">
+                        <label>Record Reference</label>
+                        <input class="form-control"
+                               placeholder="Example: WO-1001, CA-5, DI-1"
+                               @bind="uploadModel.RecordReference" />
+                    </div>
 
-                <div class="form-group">
-                    <label>Attachment Type</label>
-                    <div class="checkbox-stack">
-                        <label class="checkbox-line">
-                            <input type="checkbox" @bind="uploadModel.IsEvidence" />
-                            Evidence file
-                        </label>
+                    <div class="form-group">
+                        <label>Uploaded By</label>
+                        <input class="form-control"
+                               @bind="uploadModel.UploadedBy" />
+                    </div>
 
-                        <label class="checkbox-line">
-                            <input type="checkbox" @bind="uploadModel.IsControlledDocument" />
-                            Controlled document
-                        </label>
+                    <div class="form-group">
+                        <label>Attachment Type</label>
+                        <div class="checkbox-stack">
+                            <label class="checkbox-line">
+                                <input type="checkbox" @bind="uploadModel.IsEvidence" />
+                                Evidence file
+                            </label>
+
+                            <label class="checkbox-line">
+                                <input type="checkbox" @bind="uploadModel.IsControlledDocument" />
+                                Controlled document
+                            </label>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label>Notes</label>
-                <textarea class="form-control"
-                          rows="4"
-                          placeholder="Describe what this file proves, where it came from, or how it should be reviewed."
-                          @bind="uploadModel.Notes"></textarea>
-            </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea class="form-control"
+                              rows="4"
+                              placeholder="Describe what this file proves, where it came from, or how it should be reviewed."
+                              @bind="uploadModel.Notes"></textarea>
+                </div>
 
-            <div class="form-actions">
-                <button class="btn btn-primary"
-                        disabled="@isUploading"
-                        @onclick="UploadFileAsync">
-                    @if (isUploading)
-                    {
-                        <span>Uploading...</span>
-                    }
-                    else
-                    {
-                        <span>Upload Document</span>
-                    }
-                </button>
+                <div class="form-actions">
+                    <button class="btn btn-primary"
+                            disabled="@isUploading"
+                            @onclick="UploadFileAsync">
+                        @if (isUploading)
+                        {
+                            <span>Uploading...</span>
+                        }
+                        else
+                        {
+                            <span>Upload Document</span>
+                        }
+                    </button>
 
-                <button class="btn btn-secondary"
-                        type="button"
-                        disabled="@isUploading"
-                        @onclick="ResetUploadForm">
-                    Reset
-                </button>
-            </div>
-        </ChildContent>
-    </InfoPanel>
-
+                    <button class="btn btn-secondary"
+                            type="button"
+                            disabled="@isUploading"
+                            @onclick="ResetUploadForm">
+                        Reset
+                    </button>
+                </div>
+            </ChildContent>
+        </InfoPanel>
+    }
+    else
+    {
+        <InfoPanel Title="Upload Disabled"
+                   Subtitle="Your current role can review documents, but cannot upload new evidence files.">
+            <ChildContent>
+                <p class="of-muted-text">Ask an Admin, Manager, or assigned Worker to upload evidence if this record needs supporting files.</p>
+            </ChildContent>
+        </InfoPanel>
+    }
     <FilterBar>
         <ChildContent>
             <input class="form-control"
@@ -279,11 +291,14 @@
                                                 </a>
                                             }
 
-                                            <button class="link-action danger-link"
-                                                    type="button"
-                                                    @onclick="() => SoftDeleteAsync(attachment.Id)">
-                                                Delete
-                                            </button>
+                                            @if (CurrentUserService.CanDeleteEvidence)
+                                            {
+                                                <button class="link-action danger-link"
+                                                        type="button"
+                                                        @onclick="() => SoftDeleteAsync(attachment.Id)">
+                                                    Delete
+                                                </button>
+                                            }
                                         </div>
                                     </td>
                                 </tr>
@@ -460,6 +475,13 @@
 
     private async Task UploadFileAsync()
     {
+        if (!CurrentUserService.CanUploadEvidence)
+        {
+            statusMessage = "Your current role cannot upload evidence files.";
+            statusMessageClass = "alert alert-warning";
+            return;
+        }
+
         statusMessage = "";
         statusMessageClass = "alert alert-info";
 
@@ -539,6 +561,13 @@
 
     private async Task SoftDeleteAsync(int id)
     {
+        if (!CurrentUserService.CanDeleteEvidence)
+        {
+            statusMessage = "Your current role cannot delete evidence files.";
+            statusMessageClass = "alert alert-warning";
+            return;
+        }
+
         var deleted = await AttachmentService.SoftDeleteAsync(id, "Demo User");
 
         if (deleted)

@@ -4,8 +4,10 @@
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+@using OperationsFlow.Services
 @inject OperationsFlowDbContext Db
 
+@inject LocalCurrentUserService CurrentUserService
 <PageTitle>Risk Register - OperationsFlow</PageTitle>
 
 <PageHero Eyebrow="Compliance"
@@ -14,7 +16,10 @@
           BadgeText="@($"{HighCriticalCount} high / critical")"
           BadgeClass="of-badge-warning">
     <Actions>
-        <a class="of-btn of-btn-primary" href="/corrective-actions/create">+ New Corrective Action</a>
+        @if (CurrentUserService.CanEditWorkflow)
+        {
+            <a class="of-btn of-btn-primary" href="/corrective-actions/create">+ New Corrective Action</a>
+        }
         <a class="of-btn of-btn-secondary" href="/corrective-actions">Corrective Actions</a>
         <a class="of-btn of-btn-secondary" href="/reminders">Reminders</a>
         <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
@@ -209,7 +214,17 @@ else
                             }
                         </td>
                         <td>
-                            <a class="of-card-link" href="@BuildCorrectiveActionUrlFromRisk(item)">Create Action</a>
+                            @if (CurrentUserService.CanEditWorkflow)
+                            {
+                                @if (CurrentUserService.CanEditWorkflow)
+                                {
+                                    <a class="of-card-link" href="@BuildCorrectiveActionUrlFromRisk(item)">Create Action</a>
+                                }
+                            }
+                            else
+                            {
+                                <span class="of-muted-text">View only</span>
+                            }
                         </td>
                     </tr>
                 }
@@ -252,7 +267,10 @@ else
                                 <span class="of-badge of-badge-warning">Needs Controls</span>
                             }
 
-                            <a class="of-card-link" href="@BuildCorrectiveActionUrlFromRisk(item)">Create Action</a>
+                            @if (CurrentUserService.CanEditWorkflow)
+                            {
+                                <a class="of-card-link" href="@BuildCorrectiveActionUrlFromRisk(item)">Create Action</a>
+                            }
                         </div>
                     </div>
                 }
@@ -282,7 +300,10 @@ else
 
                         <div class="of-link-row">
                             <span class="of-badge of-badge-warning">Needs Controls</span>
-                            <a class="of-card-link" href="@BuildCorrectiveActionUrlFromRisk(item)">Create Action</a>
+                            @if (CurrentUserService.CanEditWorkflow)
+                            {
+                                <a class="of-card-link" href="@BuildCorrectiveActionUrlFromRisk(item)">Create Action</a>
+                            }
                         </div>
                     </div>
                 }

@@ -6,17 +6,20 @@
 @using OperationsFlow.Services
 @inject OperationsFlowDbContext Db
 @inject DocumentAttachmentService AttachmentService
+@inject LocalCurrentUserService CurrentUserService
 
 <PageTitle>Work Orders - OperationsFlow</PageTitle>
 
-<PageHero
-    Eyebrow="Operations"
-    Title="Work Orders"
-    Subtitle="Track operational requests by site, department, owner, priority, status, and due date."
-    BadgeText="@($"{OpenCount} open")"
-    BadgeClass="of-badge-info">
+<PageHero Eyebrow="Operations"
+          Title="Work Orders"
+          Subtitle="Track operational requests by site, department, owner, priority, status, and due date."
+          BadgeText="@($"{OpenCount} open")"
+          BadgeClass="of-badge-info">
     <Actions>
-        <a class="of-btn of-btn-primary" href="/work-orders/create">+ New Work Order</a>
+        @if (CurrentUserService.CanEditWorkflow)
+        {
+            <a class="of-btn of-btn-primary" href="/work-orders/create">+ New Work Order</a>
+        }
         <a class="of-btn of-btn-secondary" href="/workload">Workload</a>
         <a class="of-btn of-btn-secondary" href="/reminders">Reminders</a>
     </Actions>
@@ -31,32 +34,28 @@
 </PurposeNote>
 
 <MetricGrid>
-    <MetricCard
-        Title="Total Work Orders"
-        Value="@TotalCount.ToString()"
-        Detail="All seeded and created operational work requests"
-        Icon="📋" />
+    <MetricCard Title="Total Work Orders"
+                Value="@TotalCount.ToString()"
+                Detail="All seeded and created operational work requests"
+                Icon="📋" />
 
-    <MetricCard
-        Title="Open"
-        Value="@OpenCount.ToString()"
-        Detail="Currently active or in progress"
-        Icon="🟡"
-        Tone="warning" />
+    <MetricCard Title="Open"
+                Value="@OpenCount.ToString()"
+                Detail="Currently active or in progress"
+                Icon="🟡"
+                Tone="warning" />
 
-    <MetricCard
-        Title="Overdue"
-        Value="@OverdueCount.ToString()"
-        Detail="Past due and not closed"
-        Icon="🚨"
-        Tone="danger" />
+    <MetricCard Title="Overdue"
+                Value="@OverdueCount.ToString()"
+                Detail="Past due and not closed"
+                Icon="🚨"
+                Tone="danger" />
 
-    <MetricCard
-        Title="Completed"
-        Value="@CompletedCount.ToString()"
-        Detail="Completed or closed work orders"
-        Icon="✅"
-        Tone="success" />
+    <MetricCard Title="Completed"
+                Value="@CompletedCount.ToString()"
+                Detail="Completed or closed work orders"
+                Icon="✅"
+                Tone="success" />
 </MetricGrid>
 
 <FilterBar Title="Filter Work Orders">
@@ -97,12 +96,11 @@
 }
 else
 {
-    <TableCard
-        Title="Work Order Register"
-        Subtitle="Search, filter, open, and edit operational work requests."
-        IsEmpty="@(!FilteredWorkOrders.Any())"
-        EmptyTitle="No work orders found"
-        EmptyMessage="No work orders match the current search or filter selection.">
+    <TableCard Title="Work Order Register"
+               Subtitle="Search, filter, open, and edit operational work requests."
+               IsEmpty="@(!FilteredWorkOrders.Any())"
+               EmptyTitle="No work orders found"
+               EmptyMessage="No work orders match the current search or filter selection.">
         <table>
             <thead>
                 <tr>
@@ -159,7 +157,10 @@ else
                         <td>
                             <div class="of-row-actions">
                                 <a class="of-card-link" href="@($"/work-orders/details/{item.Id}")">View</a>
-                                <a class="of-card-link" href="@($"/work-orders/edit/{item.Id}?returnUrl={Uri.EscapeDataString("/work-orders")}")">Edit</a>
+                                @if (CurrentUserService.CanEditWorkflow)
+                                {
+                                    <a class="of-card-link" href="@($"/work-orders/edit/{item.Id}?returnUrl={Uri.EscapeDataString("/work-orders")}")">Edit</a>
+                                }
                             </div>
                         </td>
                     </tr>

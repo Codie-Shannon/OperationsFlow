@@ -3,8 +3,10 @@
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+@using OperationsFlow.Services
 @inject OperationsFlowDbContext Db
 
+@inject LocalCurrentUserService CurrentUserService
 <PageTitle>Document Control - OperationsFlow</PageTitle>
 
 <PageHero Eyebrow="Compliance"
@@ -13,7 +15,10 @@
           BadgeText="@($"{DueSoonCount} due soon")"
           BadgeClass="of-badge-warning">
     <Actions>
-        <a class="of-btn of-btn-primary" href="/corrective-actions/create">+ New Corrective Action</a>
+        @if (CurrentUserService.CanEditWorkflow)
+        {
+            <a class="of-btn of-btn-primary" href="/corrective-actions/create">+ New Corrective Action</a>
+        }
         <a class="of-btn of-btn-secondary" href="/corrective-actions">Corrective Actions</a>
         <a class="of-btn of-btn-secondary" href="/reminders">Reminders</a>
         <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
@@ -196,7 +201,17 @@ else
                             }
                         </td>
                         <td>
-                            <a class="of-card-link" href="@BuildCorrectiveActionUrlFromDocument(item)">Create Action</a>
+                            @if (CurrentUserService.CanEditWorkflow)
+                            {
+                                @if (CurrentUserService.CanEditWorkflow)
+                                {
+                                    <a class="of-card-link" href="@BuildCorrectiveActionUrlFromDocument(item)">Create Action</a>
+                                }
+                            }
+                            else
+                            {
+                                <span class="of-muted-text">View only</span>
+                            }
                         </td>
                     </tr>
                 }
@@ -234,7 +249,10 @@ else
                                 <span class="of-badge of-badge-warning">Due Soon</span>
                             }
 
-                            <a class="of-card-link" href="@BuildCorrectiveActionUrlFromDocument(item)">Create Action</a>
+                            @if (CurrentUserService.CanEditWorkflow)
+                            {
+                                <a class="of-card-link" href="@BuildCorrectiveActionUrlFromDocument(item)">Create Action</a>
+                            }
                         </div>
                     </div>
                 }

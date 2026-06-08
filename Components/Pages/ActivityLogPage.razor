@@ -2,8 +2,10 @@
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+@using OperationsFlow.Services
 @inject OperationsFlowDbContext Db
 
+@inject LocalCurrentUserService CurrentUserService
 <PageTitle>Activity Log - OperationsFlow</PageTitle>
 
 <PageHero Eyebrow="System Evidence"
@@ -155,7 +157,10 @@
     </ChildContent>
 
     <Actions>
-        <a class="of-btn of-btn-secondary" href="/exports/activity-log.csv">Export CSV</a>
+        @if (CurrentUserService.CanExportData)
+        {
+            <a class="of-btn of-btn-secondary" href="/exports/activity-log.csv">Export CSV</a>
+        }
         <a class="of-btn of-btn-secondary" href="/reports">Reports</a>
         <a class="of-btn of-btn-secondary" href="/data-quality">Data Quality</a>
     </Actions>

@@ -4,19 +4,20 @@
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+@using OperationsFlow.Services
 @inject OperationsFlowDbContext Db
 @inject NavigationManager Navigation
+@inject LocalCurrentUserService CurrentUserService
 
 <PageTitle>Work Order Details - OperationsFlow</PageTitle>
 
 @if (isLoading)
 {
-    <PageHero
-        Eyebrow="Operations"
-        Title="Loading Work Order"
-        Subtitle="Loading the selected work order record."
-        BadgeText="Loading"
-        BadgeClass="of-badge-info" />
+    <PageHero Eyebrow="Operations"
+              Title="Loading Work Order"
+              Subtitle="Loading the selected work order record."
+              BadgeText="Loading"
+              BadgeClass="of-badge-info" />
 
     <InfoPanel Title="Loading" Subtitle="Retrieving work order details from the local SQLite database.">
         <p class="of-muted-text">Loading work order...</p>
@@ -24,65 +25,61 @@
 }
 else if (workOrder == null)
 {
-    <PageHero
-        Eyebrow="Operations"
-        Title="Work Order Not Found"
-        Subtitle="The requested work order could not be found."
-        BadgeText="Missing"
-        BadgeClass="of-badge-danger">
+    <PageHero Eyebrow="Operations"
+              Title="Work Order Not Found"
+              Subtitle="The requested work order could not be found."
+              BadgeText="Missing"
+              BadgeClass="of-badge-danger">
         <Actions>
             <a class="of-btn of-btn-primary" href="/work-orders">Back to Work Orders</a>
         </Actions>
     </PageHero>
 
-    <EmptyState
-        Title="Work order could not be found"
-        Message="The record may have been removed, or the link may be using an invalid ID."
-        Icon="⚠️"
-        ActionText="Back to Work Orders"
-        ActionHref="/work-orders" />
+    <EmptyState Title="Work order could not be found"
+                Message="The record may have been removed, or the link may be using an invalid ID."
+                Icon="⚠️"
+                ActionText="Back to Work Orders"
+                ActionHref="/work-orders" />
 }
 else
 {
-    <PageHero
-        Eyebrow="Operations"
-        Title="@workOrder.WorkOrderNumber"
-        Subtitle="@workOrder.Title"
-        BadgeText="@workOrder.Status"
-        BadgeClass="@GetStatusBadgeClass(workOrder.Status)">
+    <PageHero Eyebrow="Operations"
+              Title="@workOrder.WorkOrderNumber"
+              Subtitle="@workOrder.Title"
+              BadgeText="@workOrder.Status"
+              BadgeClass="@GetStatusBadgeClass(workOrder.Status)">
         <Actions>
             <a class="of-btn of-btn-secondary" href="/work-orders">Back to Work Orders</a>
-            <a class="of-btn of-btn-primary" href="@BuildEditUrl()">Edit Work Order</a>
+            @if (CurrentUserService.CanEditWorkflow)
+            {
+                <a class="of-btn of-btn-primary" href="@BuildEditUrl()">Edit Work Order</a>
+            }
         </Actions>
     </PageHero>
 
     <MetricGrid>
-        <MetricCard
-            Title="Priority"
-            Value="@workOrder.Priority"
-            Detail="@workOrder.Type"
-            Icon="⚡"
-            Tone="@GetPriorityTone(workOrder.Priority)" />
+        <MetricCard Title="Priority"
+                    Value="@workOrder.Priority"
+                    Detail="@workOrder.Type"
+                    Icon="⚡"
+                    Tone="@GetPriorityTone(workOrder.Priority)" />
 
-        <MetricCard
-            Title="Due Date"
-            Value="@workOrder.DueDate.ToString("dd MMM")"
-            Detail="@workOrder.DueDate.ToString("yyyy")"
-            Icon="📅"
-            Tone="info" />
+        <MetricCard Title="Due Date"
+                    Value="@workOrder.DueDate.ToString("dd MMM")"
+                    Detail="@workOrder.DueDate.ToString("yyyy")"
+                    Icon="📅"
+                    Tone="info" />
 
-        <MetricCard
-            Title="Flag"
-            Value="@(workOrder.IsOverdue ? "Overdue" : "On Track")"
-            Detail="@(workOrder.IsOverdue ? "Past due and not closed" : "No overdue flag")"
-            Icon="@(workOrder.IsOverdue ? "🚨" : "✅")"
-            Tone="@(workOrder.IsOverdue ? "danger" : "success")" />
+        <MetricCard Title="Flag"
+                    Value="@(workOrder.IsOverdue ? "Overdue" : "On Track")"
+                    Detail="@(workOrder.IsOverdue ? "Past due and not closed" : "No overdue flag")"
+                    Icon="@(workOrder.IsOverdue ? "🚨" : "✅")"
+                    Tone="@(workOrder.IsOverdue ? "danger" : "success")" />
 
-        <MetricCard
-            Title="Owner"
-            Value="@DisplayText(workOrder.Owner)"
-            Detail="@workOrder.Department"
-            Icon="👤" />
+        <MetricCard Title="Owner"
+                    Value="@DisplayText(workOrder.Owner)"
+                    Detail="@workOrder.Department"
+                    Icon="👤" />
     </MetricGrid>
 
     <InfoPanel Title="Work Order Details" Subtitle="Core record information used by workload, reminders, reports, and activity history.">
@@ -160,7 +157,9 @@ else
                        RecordReference="@workOrder.WorkOrderNumber"
                        Title="Work Order Attachments"
                        Subtitle="Upload photos, forms, evidence, or supporting files linked to this work order."
-                       DefaultUploadedBy="@DisplayText(workOrder.Owner)" />
+                       DefaultUploadedBy="@DisplayText(workOrder.Owner)"
+                       AllowUpload="@CurrentUserService.CanUploadEvidence"
+                       AllowDelete="@CurrentUserService.CanDeleteEvidence" />
 
     <ActivityHistoryPanel Title="Activity History"
                           Subtitle="Record-level traceability for this work order."
@@ -199,11 +198,13 @@ else
         </ChildContent>
     </ActivityHistoryPanel>
 
-    <ActionStrip
-        Title="Next Actions"
-        Description="Return to the register or update this work order.">
+    <ActionStrip Title="Next Actions"
+                 Description="Return to the register or update this work order.">
         <button type="button" class="of-btn of-btn-secondary" @onclick="BackToWorkOrders">Back to Work Orders</button>
-        <button type="button" class="of-btn of-btn-primary" @onclick="GoToEdit">Edit Work Order</button>
+        @if (CurrentUserService.CanEditWorkflow)
+        {
+            <button type="button" class="of-btn of-btn-primary" @onclick="GoToEdit">Edit Work Order</button>
+        }
     </ActionStrip>
 }
 

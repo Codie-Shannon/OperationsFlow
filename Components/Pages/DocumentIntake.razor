@@ -8,6 +8,7 @@
 
 @inject OperationsFlowDbContext Db
 @inject DocumentAttachmentService AttachmentService
+@inject LocalCurrentUserService CurrentUserService
 
 <PageTitle>Document Intake - OperationsFlow</PageTitle>
 
@@ -17,7 +18,10 @@
           BadgeText="@($"{ActionableCount} needs attention")"
           BadgeClass="badge badge-warning">
     <Actions>
-        <a class="btn btn-primary" href="/document-intake/create">+ New Intake</a>
+        @if (CurrentUserService.CanEditWorkflow)
+        {
+            <a class="btn btn-primary" href="/document-intake/create">+ New Intake</a>
+        }
         <a class="btn btn-secondary" href="/document-library">Document Library</a>
         <a class="btn btn-secondary" href="/workload">Workload</a>
         <a class="btn btn-secondary" href="/reminders">Reminders</a>

@@ -3,19 +3,20 @@
 @using Microsoft.EntityFrameworkCore
 @using OperationsFlow.Data
 @using OperationsFlow.Models
+@using OperationsFlow.Services
 @inject OperationsFlowDbContext Db
 @inject NavigationManager Navigation
+@inject LocalCurrentUserService CurrentUserService
 
 <PageTitle>Corrective Action Details - OperationsFlow</PageTitle>
 
 @if (isLoading)
 {
-    <PageHero
-        Eyebrow="Operations"
-        Title="Loading Corrective Action"
-        Subtitle="Loading the selected corrective action record."
-        BadgeText="Loading"
-        BadgeClass="of-badge-info" />
+    <PageHero Eyebrow="Operations"
+              Title="Loading Corrective Action"
+              Subtitle="Loading the selected corrective action record."
+              BadgeText="Loading"
+              BadgeClass="of-badge-info" />
 
     <InfoPanel Title="Loading" Subtitle="Retrieving corrective action details from the local SQLite database.">
         <p class="of-muted-text">Loading corrective action...</p>
@@ -23,65 +24,61 @@
 }
 else if (correctiveAction == null)
 {
-    <PageHero
-        Eyebrow="Operations"
-        Title="Corrective Action Not Found"
-        Subtitle="The requested corrective action could not be found."
-        BadgeText="Missing"
-        BadgeClass="of-badge-danger">
+    <PageHero Eyebrow="Operations"
+              Title="Corrective Action Not Found"
+              Subtitle="The requested corrective action could not be found."
+              BadgeText="Missing"
+              BadgeClass="of-badge-danger">
         <Actions>
             <a class="of-btn of-btn-primary" href="/corrective-actions">Back to Actions</a>
         </Actions>
     </PageHero>
 
-    <EmptyState
-        Title="Corrective action could not be found"
-        Message="The record may have been removed, or the link may be using an invalid ID."
-        Icon="⚠️"
-        ActionText="Back to Actions"
-        ActionHref="/corrective-actions" />
+    <EmptyState Title="Corrective action could not be found"
+                Message="The record may have been removed, or the link may be using an invalid ID."
+                Icon="⚠️"
+                ActionText="Back to Actions"
+                ActionHref="/corrective-actions" />
 }
 else
 {
-    <PageHero
-        Eyebrow="Operations"
-        Title="@correctiveAction.Title"
-        Subtitle="@($"Source: {DisplayText(correctiveAction.Source)}")"
-        BadgeText="@DisplayText(correctiveAction.Status)"
-        BadgeClass="@GetStatusBadgeClass(correctiveAction.Status)">
+    <PageHero Eyebrow="Operations"
+              Title="@correctiveAction.Title"
+              Subtitle="@($"Source: {DisplayText(correctiveAction.Source)}")"
+              BadgeText="@DisplayText(correctiveAction.Status)"
+              BadgeClass="@GetStatusBadgeClass(correctiveAction.Status)">
         <Actions>
             <a class="of-btn of-btn-secondary" href="/corrective-actions">Back to Actions</a>
-            <a class="of-btn of-btn-primary" href="@BuildEditUrl()">Edit Action</a>
+            @if (CurrentUserService.CanEditWorkflow)
+            {
+                <a class="of-btn of-btn-primary" href="@BuildEditUrl()">Edit Action</a>
+            }
         </Actions>
     </PageHero>
 
     <MetricGrid>
-        <MetricCard
-            Title="Priority"
-            Value="@DisplayText(correctiveAction.Priority)"
-            Detail="@DisplayText(correctiveAction.ActionType)"
-            Icon="⚡"
-            Tone="@GetPriorityTone(correctiveAction.Priority)" />
+        <MetricCard Title="Priority"
+                    Value="@DisplayText(correctiveAction.Priority)"
+                    Detail="@DisplayText(correctiveAction.ActionType)"
+                    Icon="⚡"
+                    Tone="@GetPriorityTone(correctiveAction.Priority)" />
 
-        <MetricCard
-            Title="Due Date"
-            Value="@correctiveAction.DueDate.ToString("dd MMM")"
-            Detail="@correctiveAction.DueDate.ToString("yyyy")"
-            Icon="📅"
-            Tone="info" />
+        <MetricCard Title="Due Date"
+                    Value="@correctiveAction.DueDate.ToString("dd MMM")"
+                    Detail="@correctiveAction.DueDate.ToString("yyyy")"
+                    Icon="📅"
+                    Tone="info" />
 
-        <MetricCard
-            Title="Flag"
-            Value="@GetFlagText()"
-            Detail="@GetFlagDetail()"
-            Icon="@GetFlagIcon()"
-            Tone="@GetFlagTone()" />
+        <MetricCard Title="Flag"
+                    Value="@GetFlagText()"
+                    Detail="@GetFlagDetail()"
+                    Icon="@GetFlagIcon()"
+                    Tone="@GetFlagTone()" />
 
-        <MetricCard
-            Title="Owner"
-            Value="@DisplayText(correctiveAction.Owner)"
-            Detail="@DisplayText(correctiveAction.Department)"
-            Icon="👤" />
+        <MetricCard Title="Owner"
+                    Value="@DisplayText(correctiveAction.Owner)"
+                    Detail="@DisplayText(correctiveAction.Department)"
+                    Icon="👤" />
     </MetricGrid>
 
     <InfoPanel Title="Corrective Action Details" Subtitle="Core record information used by workload, reminders, reports, and activity history.">
@@ -163,7 +160,9 @@ else
                        RecordReference="@($"CA-{correctiveAction.Id}")"
                        Title="Corrective Action Attachments"
                        Subtitle="Upload close-out evidence, photos, documents, or review notes linked to this corrective action."
-                       DefaultUploadedBy="@DisplayText(correctiveAction.Owner)" />
+                       DefaultUploadedBy="@DisplayText(correctiveAction.Owner)"
+                       AllowUpload="@CurrentUserService.CanUploadEvidence"
+                       AllowDelete="@CurrentUserService.CanDeleteEvidence" />
 
     <ActivityHistoryPanel Title="Activity History"
                           Subtitle="Record-level traceability for this corrective action."
@@ -202,11 +201,13 @@ else
         </ChildContent>
     </ActivityHistoryPanel>
 
-    <ActionStrip
-        Title="Next Actions"
-        Description="Return to the action register or update this corrective action.">
+    <ActionStrip Title="Next Actions"
+                 Description="Return to the action register or update this corrective action.">
         <button type="button" class="of-btn of-btn-secondary" @onclick="BackToActions">Back to Actions</button>
-        <button type="button" class="of-btn of-btn-primary" @onclick="GoToEdit">Edit Action</button>
+        @if (CurrentUserService.CanEditWorkflow)
+        {
+            <button type="button" class="of-btn of-btn-primary" @onclick="GoToEdit">Edit Action</button>
+        }
     </ActionStrip>
 }
 

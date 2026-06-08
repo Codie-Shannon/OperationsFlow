@@ -7,6 +7,7 @@
 @using DocumentIntakeModel = OperationsFlow.Models.DocumentIntake
 
 @inject OperationsFlowDbContext Db
+@inject LocalCurrentUserService CurrentUserService
 @inject DocumentAttachmentService AttachmentService
 
 <PageTitle>Reports - OperationsFlow</PageTitle>
@@ -129,42 +130,51 @@
     </Actions>
 
     <ChildContent>
-        <div class="of-review-proof-grid">
-            <a class="of-review-proof-card" href="/exports/work-orders.csv">
-                <strong>Work Orders CSV</strong>
-                <span>Operational requests, owners, priorities, statuses, and due dates.</span>
-            </a>
+        @if (CurrentUserService.CanExportData)
+        {
+            <div class="of-review-proof-grid">
+                <a class="of-review-proof-card" href="/exports/work-orders.csv">
+                    <strong>Work Orders CSV</strong>
+                    <span>Operational requests, owners, priorities, statuses, and due dates.</span>
+                </a>
 
-            <a class="of-review-proof-card" href="/exports/corrective-actions.csv">
-                <strong>Corrective Actions CSV</strong>
-                <span>Open, overdue, priority, owner, source, and follow-up notes.</span>
-            </a>
+                <a class="of-review-proof-card" href="/exports/corrective-actions.csv">
+                    <strong>Corrective Actions CSV</strong>
+                    <span>Open, overdue, priority, owner, source, and follow-up notes.</span>
+                </a>
 
-            <a class="of-review-proof-card" href="/exports/risk-register.csv">
-                <strong>Risk Register CSV</strong>
-                <span>Risk ratings, controls, owners, review dates, and overdue reviews.</span>
-            </a>
+                <a class="of-review-proof-card" href="/exports/risk-register.csv">
+                    <strong>Risk Register CSV</strong>
+                    <span>Risk ratings, controls, owners, review dates, and overdue reviews.</span>
+                </a>
 
-            <a class="of-review-proof-card" href="/exports/training.csv">
-                <strong>Training CSV</strong>
-                <span>Training status, expiry dates, required records, and compliance flags.</span>
-            </a>
+                <a class="of-review-proof-card" href="/exports/training.csv">
+                    <strong>Training CSV</strong>
+                    <span>Training status, expiry dates, required records, and compliance flags.</span>
+                </a>
 
-            <a class="of-review-proof-card" href="/exports/document-reviews.csv">
-                <strong>Document Reviews CSV</strong>
-                <span>Controlled document owners, review dates, statuses, and due flags.</span>
-            </a>
+                <a class="of-review-proof-card" href="/exports/document-reviews.csv">
+                    <strong>Document Reviews CSV</strong>
+                    <span>Controlled document owners, review dates, statuses, and due flags.</span>
+                </a>
 
-            <a class="of-review-proof-card" href="/exports/document-intake.csv">
-                <strong>Document Intake CSV</strong>
-                <span>Incoming document workflow items, target systems, owners, and due dates.</span>
-            </a>
+                <a class="of-review-proof-card" href="/exports/document-intake.csv">
+                    <strong>Document Intake CSV</strong>
+                    <span>Incoming document workflow items, target systems, owners, and due dates.</span>
+                </a>
 
-            <a class="of-review-proof-card" href="/exports/activity-log.csv">
-                <strong>Activity Log CSV</strong>
-                <span>Record-level traceability for created, updated, uploaded, and reviewed items.</span>
-            </a>
-        </div>
+                <a class="of-review-proof-card" href="/exports/activity-log.csv">
+                    <strong>Activity Log CSV</strong>
+                    <span>Record-level traceability for created, updated, uploaded, and reviewed items.</span>
+                </a>
+            </div>
+        }
+        else
+        {
+            <EmptyState Title="Exports hidden for this role"
+                        Message="CSV export links are available to roles with export permission."
+                        Icon="🔒" />
+        }
     </ChildContent>
 </InfoPanel>
 
