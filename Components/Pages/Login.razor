@@ -11,179 +11,206 @@
 
 <PageTitle>Login - OperationsFlow</PageTitle>
 
-<PageHero Eyebrow="OPERATIONSFLOW / LOCAL LOGIN"
-          Title="Local Login"
-          Subtitle="Week 3 local/free mode uses SQL-backed users, hashed password login, local roles, local permissions, persistent local login, and logout controls. Week 4 will add Microsoft OAuth2 linking to these local accounts."
-          BadgeText="Local Auth"
-          BadgeClass="of-badge of-badge-info" />
+<div class="of-page">
+    <PageHero Eyebrow="OPERATIONSFLOW / SIGN IN"
+              Title="OperationsFlow Login"
+              Subtitle="Sign in with a local SQL account, or use Microsoft sign-in to map a tenant account to a local OperationsFlow role."
+              BadgeText="Local + Microsoft Auth"
+              BadgeClass="of-badge of-badge-success">
+        <Actions>
+            <a class="of-btn of-btn-secondary" href="/demo-guide">Demo Guide</a>
+            <a class="of-btn of-btn-secondary" href="/user-roles">User Roles</a>
+            <a class="of-btn of-btn-secondary" href="/admin-settings">Admin Settings</a>
+        </Actions>
+    </PageHero>
 
-<PurposeNote Title="Purpose" Icon="🔐">
-    <p>
-        Sign in with a local SQL-backed OperationsFlow account. This proves the free/local version of the authentication model
-        before Week 4 adds Microsoft OAuth2 account linking, Microsoft 365 configuration, and SharePoint/Graph storage.
-    </p>
-</PurposeNote>
+    <PurposeNote Title="Purpose" Icon="🔐">
+        <p>
+            OperationsFlow supports local SQL-backed login for the free/local version and Microsoft OAuth2 sign-in for the Week 4 Microsoft 365 pilot.
+            Microsoft proves the user's identity; OperationsFlow then loads the linked local SQL user, roles, and permissions.
+        </p>
+    </PurposeNote>
 
-<div class="of-two-column-grid">
-    <InfoPanel Title="Sign in"
-               Subtitle="Use a seeded local demo account or a SQL-backed account added later."
-               Tone="default">
+    <div class="of-two-column-grid">
+        <InfoPanel Title="Sign in"
+                   Subtitle="Use local credentials or Microsoft sign-in. Both paths load local OperationsFlow roles and permissions."
+                   Tone="default">
 
-        @if (CurrentUserService.IsSignedIn && CurrentUserService.CurrentUser is not null)
-        {
-            <div class="of-review-proof-card">
-                <span class="of-badge of-badge-success">Signed in</span>
-                <h3>@CurrentUserService.CurrentUser.DisplayName</h3>
-                <p class="of-muted-text">@CurrentUserService.CurrentUser.Email</p>
+            <ChildContent>
+                @if (CurrentUserService.IsSignedIn && CurrentUserService.CurrentUser is not null)
+                {
+                    <div class="of-review-proof-card">
+                        <span class="of-badge of-badge-success">Signed in</span>
+                        <h3>@CurrentUserService.CurrentUser.DisplayName</h3>
+                        <p class="of-muted-text">@CurrentUserService.CurrentUser.Email</p>
 
-                <div class="of-link-row">
-                    @foreach (var role in CurrentUserService.CurrentUser.Roles)
+                        <div class="of-link-row">
+                            <span class="of-badge @(CurrentUserService.CurrentUser.IsMicrosoftLinked ? "of-badge-info" : "of-badge-muted")">
+                                @CurrentUserService.CurrentUser.SignInProviderDisplay
+                            </span>
+
+                            @foreach (var role in CurrentUserService.CurrentUser.Roles)
+                            {
+                                <span class="of-badge of-badge-info">@role</span>
+                            }
+                        </div>
+
+                        <div class="of-link-row">
+                            <a class="of-btn of-btn-primary" href="/dashboard">Go to dashboard</a>
+                            <button class="of-btn of-btn-secondary" @onclick="LogoutAsync">Log out</button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Username or email</label>
+                        <input class="of-input" @bind="UserNameOrEmail" autocomplete="username" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input class="of-input" type="password" @bind="Password" autocomplete="current-password" />
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(StatusMessage))
                     {
-                        <span class="of-badge of-badge-info">@role</span>
+                        <div class="@StatusCssClass">
+                            @StatusMessage
+                        </div>
                     }
+
+                    <div class="of-link-row">
+                        <button class="of-btn of-btn-primary" @onclick="LoginAsync" disabled="@IsBusy">
+                            @(IsBusy ? "Signing in..." : "Sign in")
+                        </button>
+
+                        <a class="of-btn of-btn-secondary"
+                           href="@MicrosoftSignInUrl">
+                            Sign in with Microsoft
+                        </a>
+                    </div>
+                }
+            </ChildContent>
+        </InfoPanel>
+
+        <InfoPanel Title="Demo accounts"
+                   Subtitle="Local SQL credentials for testing roles without Microsoft sign-in."
+                   Tone="info">
+            <ChildContent>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Role</th>
+                            <th>Username</th>
+                            <th>Password</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="of-badge of-badge-danger">Admin</span></td>
+                            <td>admin</td>
+                            <td>Admin123!</td>
+                        </tr>
+                        <tr>
+                            <td><span class="of-badge of-badge-warning">Manager</span></td>
+                            <td>manager</td>
+                            <td>Manager123!</td>
+                        </tr>
+                        <tr>
+                            <td><span class="of-badge of-badge-info">Reviewer</span></td>
+                            <td>reviewer</td>
+                            <td>Reviewer123!</td>
+                        </tr>
+                        <tr>
+                            <td><span class="of-badge of-badge-success">Worker</span></td>
+                            <td>worker</td>
+                            <td>Worker123!</td>
+                        </tr>
+                        <tr>
+                            <td><span class="of-badge of-badge-muted">ReadOnly</span></td>
+                            <td>viewer</td>
+                            <td>Viewer123!</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </ChildContent>
+        </InfoPanel>
+    </div>
+
+    <InfoPanel Title="Week 3 / Week 4 auth split"
+               Subtitle="The local app authorization model stays consistent across both sign-in paths."
+               Tone="success">
+        <ChildContent>
+            <div class="of-two-column-grid">
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-success">Week 3</span>
+                    <h3>Local/free version</h3>
+                    <p>
+                        SQL-backed users, hashed passwords, persistent local login, local roles, local permissions,
+                        local file storage option, evidence workflow, reports, and activity traceability.
+                    </p>
                 </div>
 
-                <div class="of-link-row">
-                    <a class="of-btn of-btn-primary" href="/dashboard">Go to dashboard</a>
-                    <button class="of-btn of-btn-secondary" @onclick="LogoutAsync">Log out</button>
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-info">Week 4</span>
+                    <h3>Microsoft 365 pilot</h3>
+                    <p>
+                        Microsoft OAuth2 sign-in, Microsoft account linking, SharePoint/Graph evidence storage,
+                        metadata writeback, and Microsoft 365 configuration checks.
+                    </p>
                 </div>
             </div>
-        }
-        else
-        {
-            <div class="mb-3">
-                <label class="form-label">Username or email</label>
-                <input class="of-input" @bind="UserNameOrEmail" autocomplete="username" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input class="of-input" type="password" @bind="Password" autocomplete="current-password" />
-            </div>
-
-            @if (!string.IsNullOrWhiteSpace(StatusMessage))
-            {
-                <div class="@StatusCssClass">
-                    @StatusMessage
-                </div>
-            }
-
-            <div class="of-link-row">
-                <button class="of-btn of-btn-primary" @onclick="LoginAsync" disabled="@IsBusy">
-                    @(IsBusy ? "Signing in..." : "Sign in")
-                </button>
-
-                <a class="of-btn of-btn-secondary"
-                   href="/auth/microsoft/start">
-                    Sign in with Microsoft
-                </a>
-            </div>
-        }
+        </ChildContent>
     </InfoPanel>
 
-    <InfoPanel Title="Demo accounts"
-               Subtitle="Local portfolio credentials only. Do not use these in real production."
-               Tone="info">
+    <TableCard Title="Authentication model"
+               Subtitle="Microsoft identifies the user; OperationsFlow authorizes the user.">
+        <ChildContent>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Responsibility</th>
+                        <th>Implementation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="of-badge of-badge-muted">Local login</span></td>
+                        <td>Username/password authentication for local/free operation.</td>
+                        <td>LocalUsers with hashed passwords.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="of-badge of-badge-info">Microsoft OAuth2</span></td>
+                        <td>Tenant account identity proof.</td>
+                        <td>Microsoft sign-in returns user identity, email, and provider id.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="of-badge of-badge-warning">ExternalLoginLinks</span></td>
+                        <td>Maps Microsoft account to an OperationsFlow local user.</td>
+                        <td>Microsoft user is linked to the matching LocalUser record.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="of-badge of-badge-success">Authorization</span></td>
+                        <td>Controls what the signed-in user can do.</td>
+                        <td>Local SQL roles and permissions remain the app permission source.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </ChildContent>
+    </TableCard>
 
-        <ul class="of-mini-list">
-            <li class="of-mini-list-item">
-                <strong>Admin:</strong>
-                <span>admin / Admin123!</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Manager:</strong>
-                <span>manager / Manager123!</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Reviewer:</strong>
-                <span>reviewer / Reviewer123!</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Worker:</strong>
-                <span>worker / Worker123!</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Viewer:</strong>
-                <span>viewer / Viewer123!</span>
-            </li>
-        </ul>
-    </InfoPanel>
+    <GuidanceNote Title="Security note" Icon="⚠️" Tone="warning">
+        <p>
+            Demo credentials are for local portfolio testing only. Microsoft tenant secrets belong in local configuration,
+            user-secrets, or environment variables and must not be committed to GitHub.
+        </p>
+    </GuidanceNote>
 </div>
 
-<InfoPanel Title="Week 3 / Week 4 auth split"
-           Subtitle="This keeps the local free version and the Microsoft 365 production version cleanly separated."
-           Tone="success">
-
-    <div class="of-review-proof-grid">
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-success">Week 3</span>
-            <h3>Local/free version</h3>
-            <p>
-                SQL-backed users, hashed passwords, persistent local login, local roles, local permissions, local file storage,
-                local evidence workflow, reports, and activity traceability.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-warning">Week 4</span>
-            <h3>Licensed/live version</h3>
-            <p>
-                Microsoft OAuth2 login, Microsoft account linking, SharePoint/Graph storage, production permissions,
-                Microsoft 365 configuration, and production deployment hardening.
-            </p>
-        </div>
-    </div>
-</InfoPanel>
-
-<InfoPanel Title="Local session behaviour"
-           Subtitle="The local/free version now behaves like a usable internal app demo."
-           Tone="info">
-
-    <div class="of-review-proof-grid">
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-success">Login</span>
-            <h3>SQL account check</h3>
-            <p>
-                Username/email and password are checked against LocalUsers. Passwords are verified against hashed values.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-info">Refresh</span>
-            <h3>Persistent local session</h3>
-            <p>
-                The browser stores only the local user id. The app reloads user, roles, and permissions from SQL after refresh.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-warning">Logout</span>
-            <h3>Session cleared</h3>
-            <p>
-                Logout clears the current user and removes the saved local user id from browser storage.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-muted">Week 4</span>
-            <h3>OAuth2 linking</h3>
-            <p>
-                Microsoft OAuth2 will identify the user, then ExternalLoginLinks will map that identity to LocalUser.
-            </p>
-        </div>
-    </div>
-</InfoPanel>
-
-<GuidanceNote Title="Security boundary" Icon="⚠️" Tone="warning">
-    <p>
-        Passwords are hashed, not stored as plain text. The browser stores only the local user id so the app can reload the
-        account from SQL after refresh. These seeded demo credentials are only for local portfolio testing.
-    </p>
-</GuidanceNote>
-
 @code {
-    [SupplyParameterFromQuery]
-    private string? ReturnUrl { get; set; }
+    [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
 
     private string UserNameOrEmail { get; set; } = "admin";
 
@@ -194,6 +221,11 @@
     private string StatusCssClass { get; set; } = "alert alert-info";
 
     private bool IsBusy { get; set; }
+
+    private string MicrosoftSignInUrl =>
+        string.IsNullOrWhiteSpace(ReturnUrl)
+            ? "/auth/microsoft/start?returnUrl=/dashboard"
+            : $"/auth/microsoft/start?returnUrl={Uri.EscapeDataString(ReturnUrl)}";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

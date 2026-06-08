@@ -2,246 +2,212 @@
 
 <PageTitle>Demo Guide - OperationsFlow</PageTitle>
 
-<PageHero Eyebrow="OPERATIONSFLOW / REVIEW WALKTHROUGH"
-          Title="Demo Guide"
-          Subtitle="Use this guide to walk a reviewer through the Week 3 local/free OperationsFlow system: login, roles, workflow records, evidence uploads, document library, data quality, reports, and the Week 4 Microsoft 365 production path."
-          BadgeText="Reviewer Path"
-          BadgeClass="of-badge of-badge-info">
-    <Actions>
-        <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
-        <a class="of-btn of-btn-secondary" href="/business-value">Business Value</a>
-        <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
-        <a class="of-btn of-btn-primary" href="/dashboard">Dashboard</a>
-    </Actions>
-</PageHero>
+<div class="of-page">
+    <PageHero Eyebrow="OPERATIONSFLOW / DEMO"
+              Title="Demo Guide"
+              Subtitle="A clean walkthrough for showing OperationsFlow as a workflow, evidence, reporting, Microsoft 365, and role-based access pilot."
+              BadgeText="Manager Review Ready"
+              BadgeClass="of-badge of-badge-success">
+        <Actions>
+            <a class="of-btn of-btn-secondary" href="/reviewer-checklist">Reviewer Checklist</a>
+            <a class="of-btn of-btn-secondary" href="/business-value">Business Value</a>
+            <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
+            <a class="of-btn of-btn-primary" href="/dashboard">Dashboard</a>
+        </Actions>
+    </PageHero>
 
-<PurposeNote Title="Purpose" Icon="🎬">
-    <p>
-        This page gives a clean walkthrough for showing OperationsFlow to an employer, reviewer, or stakeholder.
-        The demo should show that this is not just a dashboard: it has login, roles, workflow capture, supporting evidence, quality checks, reports, and production direction.
-    </p>
-</PurposeNote>
+    <PurposeNote Title="Purpose" Icon="🎬">
+        <p>
+            This page gives a clean walkthrough for showing OperationsFlow to an employer, reviewer, or stakeholder.
+            The demo should show that this is not just a dashboard: it has login, roles, workflow capture, supporting evidence,
+            SharePoint storage, metadata writeback, quality checks, reports, and activity traceability.
+        </p>
+    </PurposeNote>
 
-<MetricGrid>
-    <MetricCard Title="Demo Start"
-                Value="Login"
-                Detail="Begin at the local SQL-backed login page."
-                Icon="🔐"
-                Tone="success" />
+    <TableCard Title="Demo accounts"
+               Subtitle="Use local SQL accounts for quick role testing. Microsoft sign-in can be used to prove tenant identity linking.">
+        <ChildContent>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th>What to show</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="of-badge of-badge-danger">Admin</span></td>
+                        <td>admin</td>
+                        <td>Admin123!</td>
+                        <td>Full access, user roles, settings, evidence, reports, Microsoft/SharePoint config, and logout.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="of-badge of-badge-warning">Manager</span></td>
+                        <td>manager</td>
+                        <td>Manager123!</td>
+                        <td>Operational oversight, workflow records, reports, exports, and data quality.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="of-badge of-badge-info">Reviewer</span></td>
+                        <td>reviewer</td>
+                        <td>Reviewer123!</td>
+                        <td>Evidence, document library, reports, activity, and audit-style review.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="of-badge of-badge-success">Worker</span></td>
+                        <td>worker</td>
+                        <td>Worker123!</td>
+                        <td>Assigned work and evidence upload path.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="of-badge of-badge-muted">ReadOnly</span></td>
+                        <td>viewer</td>
+                        <td>Viewer123!</td>
+                        <td>View-only stakeholder path with no upload/delete/export actions.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </ChildContent>
+    </TableCard>
 
-    <MetricCard Title="Main Proof"
-                Value="Evidence"
-                Detail="Show record attachments and document library."
-                Icon="📎"
-                Tone="info" />
+    <InfoPanel Title="Recommended demo flow"
+               Subtitle="Use this order to show the project clearly.">
+        <ChildContent>
+            <div class="of-review-proof-grid">
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-info">Step 1</span>
+                    <h3>Start at login</h3>
+                    <p>
+                        Open the app at /login. Show both local login and Microsoft sign-in.
+                        Explain that Microsoft sign-in maps a tenant account to a local OperationsFlow role.
+                    </p>
+                </div>
 
-    <MetricCard Title="Review Proof"
-                Value="Quality"
-                Detail="Show missing evidence checks and reports."
-                Icon="📊"
-                Tone="warning" />
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-info">Step 2</span>
+                    <h3>Show local vs Microsoft status</h3>
+                    <p>
+                        Sign in locally and show the Local login badge. Then sign in with Microsoft and show the Microsoft-linked badge.
+                    </p>
+                </div>
 
-    <MetricCard Title="Future Path"
-                Value="Week 4"
-                Detail="Explain OAuth2 and SharePoint/Graph upgrade."
-                Icon="☁️"
-                Tone="default" />
-</MetricGrid>
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-info">Step 3</span>
+                    <h3>Dashboard overview</h3>
+                    <p>
+                        Show operational volume: work orders, corrective actions, document reviews, risks, training, and document intake.
+                    </p>
+                </div>
 
-<TableCard Title="Demo accounts"
-           Subtitle="Use these seeded local accounts for the Week 3 local/free demonstration.">
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-info">Step 4</span>
+                    <h3>User roles</h3>
+                    <p>
+                        Open User Roles and show local SQL users, role matrix, permissions, and Microsoft external login links.
+                    </p>
+                </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Role</th>
-                <th>Username</th>
-                <th>Password</th>
-                <th>What to show</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><span class="of-badge of-badge-danger">Admin</span></td>
-                <td>admin</td>
-                <td>Admin123!</td>
-                <td>Full access, user roles, settings, evidence, reports, and logout.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-warning">Manager</span></td>
-                <td>manager</td>
-                <td>Manager123!</td>
-                <td>Operational oversight, workflow records, reports, exports, and data quality.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-info">Reviewer</span></td>
-                <td>reviewer</td>
-                <td>Reviewer123!</td>
-                <td>Evidence, document library, reports, activity, and audit-style review.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-success">Worker</span></td>
-                <td>worker</td>
-                <td>Worker123!</td>
-                <td>Assigned work and evidence upload path.</td>
-            </tr>
-            <tr>
-                <td><span class="of-badge of-badge-muted">ReadOnly</span></td>
-                <td>viewer</td>
-                <td>Viewer123!</td>
-                <td>View-only stakeholder path.</td>
-            </tr>
-        </tbody>
-    </table>
-</TableCard>
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-info">Step 5</span>
+                    <h3>Admin Settings</h3>
+                    <p>
+                        Run the Microsoft 365 connection test and show Graph, SharePoint site, and document library resolution.
+                    </p>
+                </div>
 
-<InfoPanel Title="Recommended walkthrough"
-           Subtitle="This sequence shows the strongest business-system story without getting lost in every page."
-           Tone="default">
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-info">Step 6</span>
+                    <h3>Record details + evidence</h3>
+                    <p>
+                        Open a Work Order detail page and upload evidence. Show the file landing in SharePoint under the record folder.
+                    </p>
+                </div>
 
-    <div class="of-review-proof-grid">
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-success">Step 1</span>
-            <h3>Start at login</h3>
-            <p>
-                Open the app at <strong>/</strong>. Explain that Week 3 is the local/free version with SQL-backed users and password login.
-            </p>
-        </div>
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-info">Step 7</span>
+                    <h3>SharePoint metadata</h3>
+                    <p>
+                        Open the SharePoint file and show OperationsFlowModule, RecordId, RecordRef, evidence flag, uploader, and notes.
+                    </p>
+                </div>
 
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-success">Step 2</span>
-            <h3>Login as admin</h3>
-            <p>
-                Use <strong>admin / Admin123!</strong>. Show the sidebar signed-in card, role badge, and visible logout control.
-            </p>
-        </div>
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-info">Step 8</span>
+                    <h3>Document Library</h3>
+                    <p>
+                        Show central SharePoint-backed evidence records with provider, module, type, open link, and delete lifecycle.
+                    </p>
+                </div>
 
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-info">Step 3</span>
-            <h3>Refresh test</h3>
-            <p>
-                Refresh the browser to show persistent local login. Explain that the browser stores only the local user id and reloads roles from SQL.
-            </p>
-        </div>
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-info">Step 9</span>
+                    <h3>Activity Log</h3>
+                    <p>
+                        Show upload/delete events and confirm the current user is recorded instead of a generic demo user.
+                    </p>
+                </div>
 
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-info">Step 4</span>
-            <h3>Dashboard overview</h3>
-            <p>
-                Show operational volume: work orders, corrective actions, document reviews, risks, training, and document intake.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-warning">Step 5</span>
-            <h3>Record details + evidence</h3>
-            <p>
-                Open a Work Order, Corrective Action, or Document Intake detail page and show the reusable RecordAttachments panel.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-warning">Step 6</span>
-            <h3>Document Library</h3>
-            <p>
-                Show that files from multiple modules appear in one central evidence library with provider, module, type, and record information.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-danger">Step 7</span>
-            <h3>Data Quality</h3>
-            <p>
-                Show missing evidence checks. Explain that the system identifies weak records instead of only displaying dashboards.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-info">Step 8</span>
-            <h3>Reports</h3>
-            <p>
-                Show evidence coverage reporting and missing evidence rows linking back to record detail pages.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-muted">Step 9</span>
-            <h3>Activity Log</h3>
-            <p>
-                Show workflow and evidence activity to prove traceability and reviewer visibility.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-success">Step 10</span>
-            <h3>Week 4 direction</h3>
-            <p>
-                Open Technical Overview or Integration Overview and explain Microsoft OAuth2, account linking, and SharePoint/Graph storage.
-            </p>
-        </div>
-    </div>
-</InfoPanel>
-
-<div class="of-two-column-grid">
-    <InfoPanel Title="Local/free version talking points"
-               Subtitle="Use these when explaining the Week 3 implementation."
-               Tone="success">
-
-        <ul class="of-mini-list">
-            <li class="of-mini-list-item">
-                <strong>Login:</strong>
-                <span>SQL-backed local accounts with hashed passwords.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Session:</strong>
-                <span>Refresh keeps login; logout clears the saved local user id.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Roles:</strong>
-                <span>Admin, Manager, Reviewer, Worker, and ReadOnly.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Evidence:</strong>
-                <span>Files attach to records and appear in the central Document Library.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Review:</strong>
-                <span>Data Quality and Reports highlight missing evidence and coverage.</span>
-            </li>
-        </ul>
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-info">Step 10</span>
+                    <h3>ReadOnly check</h3>
+                    <p>
+                        Sign in as ReadOnly and show that upload, delete, edit, and export actions are hidden/blocked.
+                    </p>
+                </div>
+            </div>
+        </ChildContent>
     </InfoPanel>
 
-    <InfoPanel Title="Week 4 production talking points"
-               Subtitle="Use these when explaining the upgrade path."
-               Tone="warning">
+    <TableCard Title="What the demo proves"
+               Subtitle="Use these points when explaining the project.">
+        <ChildContent>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Area</th>
+                        <th>Proof</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Authentication</td>
+                        <td>Local SQL login and Microsoft OAuth2 sign-in both work.</td>
+                    </tr>
+                    <tr>
+                        <td>Authorization</td>
+                        <td>Local SQL roles and permissions control app behaviour.</td>
+                    </tr>
+                    <tr>
+                        <td>Microsoft linking</td>
+                        <td>Microsoft tenant accounts map to LocalUser through ExternalLoginLinks.</td>
+                    </tr>
+                    <tr>
+                        <td>Storage</td>
+                        <td>Evidence files upload to SharePoint through Microsoft Graph.</td>
+                    </tr>
+                    <tr>
+                        <td>Metadata</td>
+                        <td>OperationsFlow writes module, record, evidence, uploader, and notes metadata to SharePoint columns.</td>
+                    </tr>
+                    <tr>
+                        <td>Traceability</td>
+                        <td>Activity Log records workflow and file lifecycle events.</td>
+                    </tr>
+                    <tr>
+                        <td>Reviewability</td>
+                        <td>Reports and Data Quality pages make missing evidence and review gaps visible.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </ChildContent>
+    </TableCard>
 
-        <ul class="of-mini-list">
-            <li class="of-mini-list-item">
-                <strong>OAuth2:</strong>
-                <span>Microsoft login will prove identity.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Linking:</strong>
-                <span>Microsoft account maps to LocalUser through ExternalLoginLinks.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Authorization:</strong>
-                <span>Local SQL roles remain the permission source.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Storage:</strong>
-                <span>SharePoint/Graph replaces local file storage behind the same evidence workflow.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Deployment:</strong>
-                <span>Production hosting, secrets, backup, retention, and tenant setup are Week 4 work.</span>
-            </li>
-        </ul>
-    </InfoPanel>
+    <GuidanceNote Title="How to present it" Icon="✅" Tone="success">
+        <p>
+            Present OperationsFlow as a production pilot-ready Microsoft 365 workflow system, not a finished enterprise SaaS platform.
+            The honest positioning is: local production foundation plus working single-tenant Microsoft 365 pilot integration.
+        </p>
+    </GuidanceNote>
 </div>
-
-<GuidanceNote Title="Demo rule" Icon="✅" Tone="info">
-    <p>
-        Do not present Week 3 as a live Microsoft 365 deployment. Present it as the local/free version with a clear path to the Week 4 licensed production version.
-    </p>
-</GuidanceNote>

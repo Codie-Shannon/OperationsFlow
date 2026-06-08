@@ -2,274 +2,192 @@
 
 <PageTitle>Implementation Plan - OperationsFlow</PageTitle>
 
-<PageHero Eyebrow="OPERATIONSFLOW / ROADMAP"
-          Title="Implementation Plan"
-          Subtitle="The implementation plan separates the Week 3 local/free system from the Week 4 live production system. Week 3 now proves SQL-backed login, local roles, local evidence workflow, reporting, and traceability. Week 4 upgrades the same workflow with Microsoft OAuth2, SharePoint/Graph, and production deployment hardening."
-          BadgeText="Week 3 Final Pass"
-          BadgeClass="of-badge of-badge-success">
-    <Actions>
-        <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
-        <a class="of-btn of-btn-secondary" href="/integration-overview">Integration Overview</a>
-        <a class="of-btn of-btn-secondary" href="/prototype-scope">Prototype Scope</a>
-        <a class="of-btn of-btn-primary" href="/user-roles">User Roles</a>
-    </Actions>
-</PageHero>
+<div class="of-page">
+    <PageHero Eyebrow="OPERATIONSFLOW / IMPLEMENTATION"
+              Title="Implementation Plan"
+              Subtitle="Where OperationsFlow is now, what Weeks 1–4 completed, and what remains before a real workplace deployment."
+              BadgeText="Week 4 Pilot Implemented"
+              BadgeClass="of-badge of-badge-success">
+        <Actions>
+            <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
+            <a class="of-btn of-btn-secondary" href="/integration-overview">Integration Overview</a>
+            <a class="of-btn of-btn-secondary" href="/prototype-scope">Prototype Scope</a>
+            <a class="of-btn of-btn-primary" href="/user-roles">User Roles</a>
+        </Actions>
+    </PageHero>
 
-<PurposeNote Title="Purpose" Icon="🗺️">
-    <p>
-        This page explains where OperationsFlow is now, what Week 3 completed, and how Week 4 should be implemented without throwing away the local workflow foundation.
-        Week 3 is the local/free version. Week 4 is the licensed/live production version.
-    </p>
-</PurposeNote>
+    <PurposeNote Title="Purpose" Icon="🧭">
+        <p>
+            This page explains how OperationsFlow moved from workflow MVP to SQL-backed local foundation and then to a working
+            Microsoft 365 pilot implementation with OAuth2, Graph, SharePoint evidence storage, metadata writeback, and role mapping.
+        </p>
+    </PurposeNote>
 
-<MetricGrid>
-    <MetricCard Title="Week 1"
-                Value="Complete"
-                Detail="MVP workflow shape, dashboard, seeded data, and core module layout."
-                Icon="1️⃣"
-                Tone="success" />
+    <TableCard Title="Implementation stages"
+               Subtitle="Week 4 is now implemented as a single-tenant Microsoft 365 pilot, not just a future plan.">
+        <ChildContent>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Stage</th>
+                        <th>Status</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Week 1</td>
+                        <td><span class="of-badge of-badge-success">Complete</span></td>
+                        <td>MVP workflow shape, dashboard, seeded data, and core module layout.</td>
+                    </tr>
+                    <tr>
+                        <td>Week 2</td>
+                        <td><span class="of-badge of-badge-success">Complete</span></td>
+                        <td>Reusable UI system, workflow pages, reports, data quality, activity, and portfolio review layer.</td>
+                    </tr>
+                    <tr>
+                        <td>Week 3</td>
+                        <td><span class="of-badge of-badge-success">Locked</span></td>
+                        <td>Local/free production foundation with SQL-backed auth, roles, permissions, evidence workflow, reports, and storage abstraction.</td>
+                    </tr>
+                    <tr>
+                        <td>Week 4</td>
+                        <td><span class="of-badge of-badge-success">Pilot implemented</span></td>
+                        <td>Microsoft OAuth2, account linking, Graph connection, SharePoint storage, metadata writeback, delete lifecycle, and configuration checks.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </ChildContent>
+    </TableCard>
 
-    <MetricCard Title="Week 2"
-                Value="Complete"
-                Detail="UI polish, reusable layout system, reports, quality, and portfolio pages."
-                Icon="2️⃣"
-                Tone="success" />
-
-    <MetricCard Title="Week 3"
-                Value="Final Pass"
-                Detail="Local SQL auth, evidence layer, reports, quality checks, and storage readiness."
-                Icon="3️⃣"
-                Tone="info" />
-
-    <MetricCard Title="Week 4"
-                Value="Next"
-                Detail="OAuth2, Microsoft 365, SharePoint, permissions, and deployment readiness."
-                Icon="4️⃣"
-                Tone="warning" />
-</MetricGrid>
-
-<TableCard Title="Current implementation status"
-           Subtitle="Week 3 is nearly complete. Week 4 is the production hardening and Microsoft 365 integration layer.">
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Stage</th>
-                <th>Status</th>
-                <th>Result</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Week 1</td>
-                <td><span class="of-badge of-badge-success">Complete</span></td>
-                <td>MVP workflow shape, dashboard, seeded data, and core module layout.</td>
-            </tr>
-            <tr>
-                <td>Week 2</td>
-                <td><span class="of-badge of-badge-success">Complete</span></td>
-                <td>Reusable UI system, workflow pages, reports, data quality, activity, and portfolio review layer.</td>
-            </tr>
-            <tr>
-                <td>Week 3</td>
-                <td><span class="of-badge of-badge-info">Final pass</span></td>
-                <td>Local/free version with SQL-backed auth, password login, local roles, evidence workflow, reports, quality checks, and storage readiness.</td>
-            </tr>
-            <tr>
-                <td>Week 4</td>
-                <td><span class="of-badge of-badge-warning">Next</span></td>
-                <td>Microsoft OAuth2, account linking, SharePoint/Graph provider, production permissions, deployment readiness, and production documentation.</td>
-            </tr>
-        </tbody>
-    </table>
-</TableCard>
-
-<div class="of-two-column-grid">
-    <InfoPanel Title="Week 3 completed foundation"
-               Subtitle="The local/free system now proves the business workflow end-to-end."
+    <InfoPanel Title="Week 4 implementation blocks"
+               Subtitle="The Microsoft 365 pilot was built in controlled blocks to avoid breaking the Week 3 foundation."
                Tone="success">
+        <ChildContent>
+            <div class="of-review-proof-grid">
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-success">Block 1</span>
+                    <h3>Configuration foundation</h3>
+                    <p>Safe Microsoft 365 configuration structure with no committed secrets.</p>
+                </div>
 
-        <ul class="of-mini-list">
-            <li class="of-mini-list-item">
-                <strong>Persistence:</strong>
-                <span>SQL Server Express / LocalDB provider support with existing local database fallback.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Local login:</strong>
-                <span>Username/email and password login through SQL-backed LocalUsers.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Password storage:</strong>
-                <span>Hashed passwords, not plain text.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Session:</strong>
-                <span>Persistent local login stores the local user id and reloads roles from SQL.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Roles:</strong>
-                <span>Admin, Manager, Reviewer, Worker, and ReadOnly role model.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Permissions:</strong>
-                <span>SQL-backed permission matrix for workflow, evidence, reports, exports, settings, and user management.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Evidence:</strong>
-                <span>Reusable RecordAttachments component across Work Orders, Corrective Actions, and Document Intake.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Library:</strong>
-                <span>Document Library shows active attachments across modules.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Quality:</strong>
-                <span>Data Quality flags important records missing supporting evidence.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Reports:</strong>
-                <span>Evidence coverage and missing evidence reporting added.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Portfolio docs:</strong>
-                <span>Reviewer, demo, business value, technical, integration, scope, and plan pages updated.</span>
-            </li>
-        </ul>
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-success">Block 2</span>
+                    <h3>Graph connection test</h3>
+                    <p>Resolved Microsoft Graph, SharePoint site, and evidence document library.</p>
+                </div>
+
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-success">Block 3</span>
+                    <h3>SharePoint upload provider</h3>
+                    <p>Uploaded evidence from OperationsFlow into SharePoint using the storage abstraction.</p>
+                </div>
+
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-success">Block 4</span>
+                    <h3>Metadata writeback</h3>
+                    <p>Wrote OperationsFlow module, record, evidence, uploader, and notes metadata to SharePoint columns.</p>
+                </div>
+
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-success">Block 5</span>
+                    <h3>Document lifecycle</h3>
+                    <p>Added direct Document Library parity, SharePoint delete lifecycle, current user activity, and UI polish.</p>
+                </div>
+
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-success">Block 6</span>
+                    <h3>Microsoft OAuth2 mapping</h3>
+                    <p>Added Microsoft sign-in, local user mapping, and local-vs-Microsoft sign-in status display.</p>
+                </div>
+            </div>
+        </ChildContent>
     </InfoPanel>
 
-    <InfoPanel Title="Week 4 production target"
-               Subtitle="The next sprint should add real production integration and permission boundaries."
+    <TableCard Title="Current architecture"
+               Subtitle="The Week 4 pilot keeps clear separation between identity, authorization, storage, and workflow.">
+        <ChildContent>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Current implementation</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Identity</td>
+                        <td>Local SQL login and Microsoft OAuth2 sign-in.</td>
+                        <td>Supports offline/local demo and tenant-backed sign-in.</td>
+                    </tr>
+                    <tr>
+                        <td>Account linking</td>
+                        <td>ExternalLoginLinks maps Microsoft identity to LocalUser.</td>
+                        <td>Keeps local application permissions stable even when identity provider changes.</td>
+                    </tr>
+                    <tr>
+                        <td>Authorization</td>
+                        <td>Local SQL roles and permission matrix.</td>
+                        <td>OperationsFlow owns business permissions such as upload, delete, export, and manage users.</td>
+                    </tr>
+                    <tr>
+                        <td>Storage</td>
+                        <td>File storage abstraction with Local and SharePoint providers.</td>
+                        <td>Same workflow pages can run in local mode or Microsoft 365 pilot mode.</td>
+                    </tr>
+                    <tr>
+                        <td>Evidence</td>
+                        <td>SharePoint files plus local DocumentAttachment records.</td>
+                        <td>SharePoint stores the file; SQL stores workflow metadata and reporting links.</td>
+                    </tr>
+                    <tr>
+                        <td>Audit</td>
+                        <td>Activity Log records upload/delete/workflow events.</td>
+                        <td>Reviewers can trace what changed, when, and by whom.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </ChildContent>
+    </TableCard>
+
+    <InfoPanel Title="Remaining production hardening"
+               Subtitle="These items are outside the Week 4 portfolio pilot and would be needed before real customer production rollout."
                Tone="warning">
-
-        <ul class="of-mini-list">
-            <li class="of-mini-list-item">
-                <strong>OAuth2:</strong>
-                <span>Microsoft OAuth2 / Entra ID sign-in.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Account linking:</strong>
-                <span>ExternalLoginLinks maps Microsoft account identity to LocalUser.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Authorization:</strong>
-                <span>Existing local SQL roles remain the application permission source.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Storage:</strong>
-                <span>SharePoint file storage provider through Microsoft Graph.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Configuration:</strong>
-                <span>Tenant id, client id, site id, drive/library id, and provider settings.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Testing:</strong>
-                <span>Provider swap testing across Work Orders, Corrective Actions, Document Intake, Document Library, Reports, and Activity Log.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Deployment:</strong>
-                <span>Local/test/production environment notes, secrets handling, backup/restore, and retention guidance.</span>
-            </li>
-        </ul>
+        <ChildContent>
+            <ul class="of-mini-list">
+                <li class="of-mini-list-item">
+                    <strong>Secret management:</strong>
+                    <span>Move secrets to user-secrets, environment variables, or a managed secret store. Rotate exposed/local test secrets.</span>
+                </li>
+                <li class="of-mini-list-item">
+                    <strong>Least privilege:</strong>
+                    <span>Review Graph permissions and reduce broad permissions where practical.</span>
+                </li>
+                <li class="of-mini-list-item">
+                    <strong>Deployment:</strong>
+                    <span>Host with HTTPS, production database, backup/restore, logging, and environment-specific config.</span>
+                </li>
+                <li class="of-mini-list-item">
+                    <strong>Account management:</strong>
+                    <span>Add admin UI for creating users, linking/unlinking Microsoft accounts, and resetting local passwords.</span>
+                </li>
+                <li class="of-mini-list-item">
+                    <strong>Compliance:</strong>
+                    <span>Define retention, backup, document deletion, audit review, and customer data policies.</span>
+                </li>
+                <li class="of-mini-list-item">
+                    <strong>Monitoring:</strong>
+                    <span>Add error logging, retry logic, sync health checks, and admin-visible integration failures.</span>
+                </li>
+            </ul>
+        </ChildContent>
     </InfoPanel>
+
+    <GuidanceNote Title="Positioning" Icon="✅" Tone="success">
+        <p>
+            The strongest honest label is: <strong>production pilot-ready single-tenant Microsoft 365 workflow system</strong>.
+            It has a working local production foundation and a real Microsoft 365 pilot path, but it is not yet a fully hardened enterprise SaaS platform.
+        </p>
+    </GuidanceNote>
 </div>
-
-<InfoPanel Title="Week 4 implementation order"
-           Subtitle="This order keeps Week 4 focused on production hardening instead of random new pages."
-           Tone="default">
-
-    <div class="of-review-proof-grid">
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-info">Step 1</span>
-            <h3>Configuration foundation</h3>
-            <p>
-                Add appsettings/user-secrets/environment variable structure for OAuth2, Graph, SharePoint, storage provider, and environment boundaries.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-warning">Step 2</span>
-            <h3>Microsoft OAuth2</h3>
-            <p>
-                Add Microsoft login and callback flow without breaking the local/free login fallback.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-success">Step 3</span>
-            <h3>Account linking</h3>
-            <p>
-                Map Microsoft identity claims to ExternalLoginLinks, then resolve the matching LocalUser.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-info">Step 4</span>
-            <h3>Role policy enforcement</h3>
-            <p>
-                Use the LocalUser roles and LocalRolePermissions as the app authorization source after OAuth2 sign-in.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-warning">Step 5</span>
-            <h3>SharePoint storage provider</h3>
-            <p>
-                Implement the provider behind IFileStorageService using Microsoft Graph without rebuilding workflow pages.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-muted">Step 6</span>
-            <h3>Production readiness docs</h3>
-            <p>
-                Document tenant setup, app registration, permission scopes, site/library setup, folder convention, and deployment boundaries.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-success">Step 7</span>
-            <h3>Final release packaging</h3>
-            <p>
-                Update README, screenshots, release notes, known limitations, and the reviewer walkthrough path.
-            </p>
-        </div>
-    </div>
-</InfoPanel>
-
-<InfoPanel Title="Critical implementation rule"
-           Subtitle="Week 4 should keep the Week 3 business workflow and replace the infrastructure underneath it."
-           Tone="info">
-
-    <div class="of-link-row">
-        <span class="of-badge of-badge-info">Login</span>
-        <span>→</span>
-        <span class="of-badge of-badge-success">LocalUser</span>
-        <span>→</span>
-        <span class="of-badge of-badge-warning">Role permissions</span>
-        <span>→</span>
-        <span class="of-badge of-badge-info">Record details</span>
-        <span>→</span>
-        <span class="of-badge of-badge-success">Upload evidence</span>
-        <span>→</span>
-        <span class="of-badge of-badge-warning">Document Library</span>
-        <span>→</span>
-        <span class="of-badge of-badge-danger">Data Quality</span>
-        <span>→</span>
-        <span class="of-badge of-badge-info">Reports</span>
-        <span>→</span>
-        <span class="of-badge of-badge-muted">Activity Log</span>
-    </div>
-
-    <p class="of-muted-text">
-        Work Orders, Corrective Actions, Document Intake, Document Library, Data Quality, Reports, and Activity Log should not be rebuilt for SharePoint.
-        The production implementation should replace the provider/authentication layer underneath the existing workflow.
-    </p>
-</InfoPanel>
-
-<GuidanceNote Title="Current sprint decision" Icon="🏁" Tone="success">
-    <p>
-        Finish Week 3 with local SQL authentication, persistent login, role documentation, storage readiness, release notes, screenshots,
-        and a clean Git status before starting Week 4.
-    </p>
-</GuidanceNote>

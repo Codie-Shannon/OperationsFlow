@@ -8,343 +8,290 @@
 
 <PageTitle>User Roles - OperationsFlow</PageTitle>
 
-<PageHero Eyebrow="OPERATIONSFLOW / LOCAL SQL AUTHENTICATION"
-          Title="User Roles"
-          Subtitle="Week 3 now includes a local SQL-backed authentication and role foundation: password login, local users, local roles, local permissions, persistent local login, and a Week 4 path for Microsoft OAuth2 account linking."
-          BadgeText="Local Auth Live"
-          BadgeClass="of-badge of-badge-success">
-    <Actions>
-        <a class="of-btn of-btn-secondary" href="/admin-settings">Admin Settings</a>
-        <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
-        <a class="of-btn of-btn-secondary" href="/implementation-plan">Implementation Plan</a>
-        <a class="of-btn of-btn-primary" href="/login">Login</a>
-    </Actions>
-</PageHero>
+<div class="of-page">
+    <PageHero Eyebrow="OPERATIONSFLOW / ACCESS CONTROL"
+              Title="User Roles"
+              Subtitle="SQL-backed local users, roles, permissions, and Microsoft OAuth2 account links. Microsoft proves identity; OperationsFlow local SQL remains the authorization source."
+              BadgeText="Local SQL + Microsoft Links"
+              BadgeClass="of-badge of-badge-success">
+        <Actions>
+            <a class="of-btn of-btn-secondary" href="/admin-settings">Admin Settings</a>
+            <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
+            <a class="of-btn of-btn-secondary" href="/implementation-plan">Implementation Plan</a>
+            <a class="of-btn of-btn-primary" href="/login">Login</a>
+        </Actions>
+    </PageHero>
 
-<PurposeNote Title="Purpose" Icon="🔐">
-    <p>
-        This page documents and displays the Week 3 local/free access-control model. OperationsFlow now has SQL-backed users,
-        password login, local roles, local permissions, and a persistent local session. Week 4 will add Microsoft OAuth2
-        login and link Microsoft identities back to these local SQL users.
-    </p>
-</PurposeNote>
+    <PurposeNote Title="Purpose" Icon="👥">
+        <p>
+            This page shows how OperationsFlow controls access. Local SQL users own application roles and permissions.
+            Microsoft OAuth2 accounts can be linked to those local users through ExternalLoginLinks.
+        </p>
+    </PurposeNote>
 
-<MetricGrid>
-    <MetricCard Title="Current Login"
-                Value="Local SQL"
-                Detail="Username/password login backed by the app database."
-                Icon="🔑"
-                Tone="success" />
+    <div class="of-metric-grid">
+        <MetricCard Title="Users"
+                    Value="@Users.Count.ToString()"
+                    Subtitle="Local SQL user records"
+                    Icon="👤" />
 
-    <MetricCard Title="Password Storage"
-                Value="Hashed"
-                Detail="Passwords are hashed, not stored as plain text."
-                Icon="🛡️"
-                Tone="success" />
+        <MetricCard Title="Roles"
+                    Value="@RoleCountText"
+                    Subtitle="Admin, Manager, Reviewer, Worker, ReadOnly"
+                    Icon="🛡️" />
 
-    <MetricCard Title="Defined Roles"
-                Value="@RoleCountText"
-                Detail="Admin, Manager, Reviewer, Worker, and ReadOnly."
-                Icon="👥"
-                Tone="info" />
+        <MetricCard Title="External Links"
+                    Value="@ExternalLinks.Count.ToString()"
+                    Subtitle="Microsoft OAuth2 links"
+                    Icon="🔗" />
 
-    <MetricCard Title="Week 4 Path"
-                Value="OAuth2"
-                Detail="Microsoft sign-in will link to LocalUser records."
-                Icon="☁️"
-                Tone="warning" />
-</MetricGrid>
-
-<InfoPanel Title="Current Week 3 authentication model"
-           Subtitle="OperationsFlow now has a working local/free authentication layer."
-           Tone="success">
-
-    <div class="of-review-proof-grid">
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-success">Implemented</span>
-            <h3>Local SQL users</h3>
-            <p>
-                Users are stored in the application database with username, display name, email, status, password hash, and login metadata.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-success">Implemented</span>
-            <h3>Password login</h3>
-            <p>
-                The login page verifies a local username/email and password against the SQL-backed user record.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-success">Implemented</span>
-            <h3>Persistent local session</h3>
-            <p>
-                The browser stores only the local user id. Roles and permissions are reloaded from SQL after refresh.
-            </p>
-        </div>
-
-        <div class="of-review-proof-card">
-            <span class="of-badge of-badge-warning">Week 4</span>
-            <h3>Microsoft OAuth2 linking</h3>
-            <p>
-                Microsoft login will identify the user, then map the Microsoft account to the existing local SQL user.
-            </p>
-        </div>
+        <MetricCard Title="Authorization"
+                    Value="Local SQL"
+                    Subtitle="Roles and permissions remain local"
+                    Icon="✅" />
     </div>
-</InfoPanel>
 
-<TableCard Title="Seeded local users"
-           Subtitle="These users are seeded for the Week 3 local/free demo. Real deployments should replace seeded credentials.">
+    <InfoPanel Title="Authentication and authorization split"
+               Subtitle="This is the core Week 4 identity model."
+               Tone="info">
+        <ChildContent>
+            <div class="of-two-column-grid">
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-info">Identity</span>
+                    <h3>Microsoft OAuth2</h3>
+                    <p>
+                        Microsoft sign-in proves the person is a tenant user. The returned Microsoft identity is linked
+                        to a local OperationsFlow user through ExternalLoginLinks.
+                    </p>
+                </div>
 
-    @if (IsLoading)
-    {
-        <p class="of-muted-text">Loading local users...</p>
-    }
-    else if (Users.Count == 0)
-    {
-        <EmptyState Title="No local users found"
-                    Message="No SQL-backed local users are currently available." />
-    }
-    else
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Email</th>
-                    <th>Department</th>
-                    <th>Job Title</th>
-                    <th>Roles</th>
-                    <th>Password</th>
-                    <th>Status</th>
-                    <th>External Links</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in Users)
-                {
-                    <tr>
-                        <td>
-                            <strong>@user.DisplayName</strong>
-                            <div class="of-muted-text">@user.UserName</div>
-                        </td>
-                        <td>@user.Email</td>
-                        <td>@user.Department</td>
-                        <td>@user.JobTitle</td>
-                        <td>
-                            <div class="of-link-row">
-                                @foreach (var role in user.Roles)
-                                {
-                                    <span class="@LocalIdentityService.GetRoleBadgeClass(role)">@role</span>
-                                }
-                            </div>
-                        </td>
-                        <td>
-                            @if (user.HasPassword)
-                            {
-                                <span class="of-badge of-badge-success">Hashed</span>
-                            }
-                            else
-                            {
-                                <span class="of-badge of-badge-danger">Missing</span>
-                            }
-                        </td>
-                        <td>
-                            @if (user.IsActive)
-                            {
-                                <span class="of-badge of-badge-success">Active</span>
-                            }
-                            else
-                            {
-                                <span class="of-badge of-badge-danger">Inactive</span>
-                            }
-                        </td>
-                        <td>
-                            @if (user.LinkedProviders.Any())
-                            {
-                                <div class="of-link-row">
-                                    @foreach (var provider in user.LinkedProviders)
-                                    {
-                                        <span class="of-badge of-badge-info">@provider</span>
-                                    }
-                                </div>
-                            }
-                            else
-                            {
-                                <span class="of-badge of-badge-muted">None</span>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-</TableCard>
-
-<TableCard Title="Role permission matrix"
-           Subtitle="Permissions are stored in SQL and loaded through the local role model.">
-
-    @if (IsLoading)
-    {
-        <p class="of-muted-text">Loading permissions...</p>
-    }
-    else if (PermissionMatrix.Count == 0)
-    {
-        <EmptyState Title="No permissions found"
-                    Message="No local role permissions are currently available." />
-    }
-    else
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Permission</th>
-                    <th>Category</th>
-                    <th>Admin</th>
-                    <th>Manager</th>
-                    <th>Reviewer</th>
-                    <th>Worker</th>
-                    <th>ReadOnly</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var permission in PermissionMatrix)
-                {
-                    <tr>
-                        <td>
-                            <strong>@permission.PermissionName</strong>
-                            <div class="of-muted-text">@permission.PermissionKey</div>
-                        </td>
-                        <td><span class="of-badge of-badge-info">@permission.Category</span></td>
-                        <td>@AccessBadge(permission, "Admin")</td>
-                        <td>@AccessBadge(permission, "Manager")</td>
-                        <td>@AccessBadge(permission, "Reviewer")</td>
-                        <td>@AccessBadge(permission, "Worker")</td>
-                        <td>@AccessBadge(permission, "ReadOnly")</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-</TableCard>
-
-<div class="of-two-column-grid">
-    <InfoPanel Title="Week 3 local/free auth"
-               Subtitle="The local version works without Microsoft licensing."
-               Tone="success">
-
-        <ul class="of-mini-list">
-            <li class="of-mini-list-item">
-                <strong>Database:</strong>
-                <span>SQL Server Express / LocalDB, with SQLite fallback where configured.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Login:</strong>
-                <span>Username/email and password.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Passwords:</strong>
-                <span>Hashed through ASP.NET Core password hashing.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Session:</strong>
-                <span>Persistent local user id stored in browser; permissions reload from SQL.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Logout:</strong>
-                <span>Clears in-memory user and saved local user id.</span>
-            </li>
-        </ul>
+                <div class="of-review-proof-card">
+                    <span class="of-badge of-badge-success">Authorization</span>
+                    <h3>Local SQL roles</h3>
+                    <p>
+                        After sign-in, OperationsFlow loads the linked local user and applies local roles/permissions
+                        such as Admin, Manager, Reviewer, Worker, and ReadOnly.
+                    </p>
+                </div>
+            </div>
+        </ChildContent>
     </InfoPanel>
 
-    <InfoPanel Title="Week 4 OAuth2 path"
-               Subtitle="Microsoft login will extend the local account model instead of replacing it."
-               Tone="warning">
+    <TableCard Title="Local users"
+               Subtitle="Local application users. Microsoft-linked users still load these local roles and permissions.">
+        <ChildContent>
+            @if (IsLoading)
+            {
+                <EmptyState Icon="⏳"
+                            Title="Loading local users..."
+                            Message="User and role data is loading." />
+            }
+            else if (Users.Count == 0)
+            {
+                <EmptyState Icon="👤"
+                            Title="No users found"
+                            Message="No local users are currently available." />
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="of-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Job Title</th>
+                                <th>Roles</th>
+                                <th>Password</th>
+                                <th>Status</th>
+                                <th>External Links</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Users)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@user.DisplayName</strong>
+                                        <div class="helper-text">@user.UserName</div>
+                                    </td>
+                                    <td>@user.Email</td>
+                                    <td>@user.Department</td>
+                                    <td>@user.JobTitle</td>
+                                    <td>
+                                        <div class="of-link-row">
+                                            @foreach (var role in user.Roles)
+                                            {
+                                                <span class="@LocalIdentityService.GetRoleBadgeClass(role)">@role</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (user.HasPassword)
+                                        {
+                                            <span class="of-badge of-badge-success">Hashed</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="of-badge of-badge-danger">Missing</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (user.IsActive)
+                                        {
+                                            <span class="of-badge of-badge-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="of-badge of-badge-danger">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (user.LinkedProviders.Any())
+                                        {
+                                            <div class="of-link-row">
+                                                @foreach (var provider in user.LinkedProviders)
+                                                {
+                                                    <span class="of-badge of-badge-info">@provider-linked</span>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="of-badge of-badge-muted">None</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </ChildContent>
+    </TableCard>
 
-        <ul class="of-mini-list">
-            <li class="of-mini-list-item">
-                <strong>Provider:</strong>
-                <span>Microsoft OAuth2 / Entra ID.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Mapping:</strong>
-                <span>ExternalLoginLinks maps Microsoft identity to LocalUser.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Authorization:</strong>
-                <span>Local SQL roles remain the source of app permissions.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Storage:</strong>
-                <span>SharePoint/Graph provider can replace local file storage.</span>
-            </li>
-            <li class="of-mini-list-item">
-                <strong>Business fit:</strong>
-                <span>Matches traditional internal business apps that link OAuth2 to local accounts.</span>
-            </li>
-        </ul>
-    </InfoPanel>
+    <TableCard Title="Role permission matrix"
+               Subtitle="These SQL-backed permissions control what each role can see or do.">
+        <ChildContent>
+            @if (IsLoading)
+            {
+                <EmptyState Icon="⏳"
+                            Title="Loading permissions..."
+                            Message="Permission matrix is loading." />
+            }
+            else if (PermissionMatrix.Count == 0)
+            {
+                <EmptyState Icon="🛡️"
+                            Title="No permissions found"
+                            Message="No permission matrix records are available." />
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="of-table">
+                        <thead>
+                            <tr>
+                                <th>Permission</th>
+                                <th>Category</th>
+                                <th>Admin</th>
+                                <th>Manager</th>
+                                <th>Reviewer</th>
+                                <th>Worker</th>
+                                <th>ReadOnly</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var permission in PermissionMatrix)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@permission.PermissionName</strong>
+                                        <div class="helper-text">@permission.PermissionKey</div>
+                                    </td>
+                                    <td>@permission.Category</td>
+                                    <td>@AccessBadge(permission, "Admin")</td>
+                                    <td>@AccessBadge(permission, "Manager")</td>
+                                    <td>@AccessBadge(permission, "Reviewer")</td>
+                                    <td>@AccessBadge(permission, "Worker")</td>
+                                    <td>@AccessBadge(permission, "ReadOnly")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </ChildContent>
+    </TableCard>
+
+    <TableCard Title="External login links"
+               Subtitle="Runtime Microsoft OAuth2 links. These are read from the database, not hardcoded into the page.">
+        <ChildContent>
+            @if (IsLoading)
+            {
+                <EmptyState Icon="⏳"
+                            Title="Loading external login links..."
+                            Message="External login links are loading." />
+            }
+            else if (ExternalLinks.Count == 0)
+            {
+                <EmptyState Icon="🔗"
+                            Title="No external links yet"
+                            Message="Sign in with Microsoft to auto-link a tenant account to a local OperationsFlow user." />
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="of-table">
+                        <thead>
+                            <tr>
+                                <th>Local User</th>
+                                <th>Provider</th>
+                                <th>Provider Email</th>
+                                <th>Provider User Id</th>
+                                <th>Status</th>
+                                <th>Last Login</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var link in ExternalLinks)
+                            {
+                                <tr>
+                                    <td>@link.LocalUserDisplayName</td>
+                                    <td><span class="of-badge of-badge-info">@link.Provider</span></td>
+                                    <td>@link.ProviderEmail</td>
+                                    <td>
+                                        <span class="helper-text">@ShortProviderId(link.ProviderUserId)</span>
+                                    </td>
+                                    <td>
+                                        @if (link.IsLinked)
+                                        {
+                                            <span class="of-badge of-badge-success">Linked</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="of-badge of-badge-muted">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>@(link.LastLoginAt?.ToString("dd MMM yyyy HH:mm") ?? "Not recorded")</td>
+                                    <td>@link.Notes</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </ChildContent>
+    </TableCard>
+
+    <GuidanceNote Title="Week 4 result" Icon="✅" Tone="success">
+        <p>
+            OperationsFlow now proves local SQL authorization and Microsoft OAuth2 identity linking in the same pilot.
+            The app can show both Local login and Microsoft-linked sign-in status while using the same role/permission matrix.
+        </p>
+    </GuidanceNote>
 </div>
-
-<TableCard Title="External login links"
-           Subtitle="Week 3 stores the table shape. Week 4 will replace placeholder links with real Microsoft provider identifiers.">
-
-    @if (IsLoading)
-    {
-        <p class="of-muted-text">Loading external login links...</p>
-    }
-    else if (ExternalLinks.Count == 0)
-    {
-        <EmptyState Title="No external login links"
-                    Message="No Microsoft/OAuth2 links have been created yet." />
-    }
-    else
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Local User</th>
-                    <th>Provider</th>
-                    <th>Provider Email</th>
-                    <th>Provider User Id</th>
-                    <th>Status</th>
-                    <th>Notes</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var link in ExternalLinks)
-                {
-                    <tr>
-                        <td>@link.LocalUserDisplayName</td>
-                        <td><span class="of-badge of-badge-info">@link.Provider</span></td>
-                        <td>@link.ProviderEmail</td>
-                        <td>@link.ProviderUserId</td>
-                        <td>
-                            @if (link.IsLinked)
-                            {
-                                <span class="of-badge of-badge-success">Linked</span>
-                            }
-                            else
-                            {
-                                <span class="of-badge of-badge-muted">Inactive</span>
-                            }
-                        </td>
-                        <td>@link.Notes</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-</TableCard>
-
-<GuidanceNote Title="Security boundary" Icon="⚠️" Tone="warning">
-    <p>
-        Week 3 is a local/free portfolio implementation. It proves local password login and SQL-backed roles, but a real deployment
-        still needs production hosting, HTTPS, password-reset workflow, account management, audit retention, backup policy,
-        and environment-specific security review.
-    </p>
-</GuidanceNote>
 
 @code {
     private bool IsLoading { get; set; } = true;
@@ -365,7 +312,6 @@
         Roles = await LocalIdentityService.GetRolesAsync();
         PermissionMatrix = await LocalIdentityService.GetRolePermissionSummariesAsync();
         ExternalLinks = await LocalIdentityService.GetExternalLoginLinksAsync();
-
         IsLoading = false;
     }
 
@@ -384,5 +330,17 @@
             builder.AddContent(2, accessLevel);
             builder.CloseElement();
         };
+    }
+
+    private static string ShortProviderId(string providerUserId)
+    {
+        if (string.IsNullOrWhiteSpace(providerUserId))
+        {
+            return "Not available";
+        }
+
+        return providerUserId.Length <= 12
+            ? providerUserId
+            : $"{providerUserId[..12]}...";
     }
 }
