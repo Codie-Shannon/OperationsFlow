@@ -120,6 +120,20 @@ public class DocumentAttachmentService
             return false;
         }
 
+        var storageDeleted = await fileStorageService.DeleteAsync(attachment.StoredRelativePath);
+
+        if (!storageDeleted)
+        {
+            await activityLogService.LogAsync(
+                moduleName: "Document Library",
+                recordId: attachment.Id,
+                recordReference: attachment.OriginalFileName,
+                actionType: "Delete Failed",
+                description: $"Could not delete physical document attachment '{attachment.OriginalFileName}' from {attachment.StorageProvider} storage.");
+
+            return false;
+        }
+
         attachment.IsDeleted = true;
         attachment.DeletedDate = DateTime.Now;
         attachment.DeletedBy = string.IsNullOrWhiteSpace(deletedBy) ? "Demo User" : deletedBy;
@@ -131,8 +145,8 @@ public class DocumentAttachmentService
             moduleName: "Document Library",
             recordId: attachment.Id,
             recordReference: attachment.OriginalFileName,
-            actionType: "Updated",
-            description: $"Soft-deleted document attachment '{attachment.OriginalFileName}'.");
+            actionType: "Deleted",
+            description: $"Deleted document attachment '{attachment.OriginalFileName}' from {attachment.ModuleName} / {attachment.DisplayRecordReference} and removed the physical file from {attachment.StorageProvider} storage.");
 
         return true;
     }

@@ -29,8 +29,8 @@
     </PageHero>
 
     <PurposeNote Icon="📎">
-        Document Library stores local file evidence through the Week 3 file storage abstraction.
-        The same page shape can later swap from local storage to SharePoint storage without changing the workflow pages.
+        Document Library stores OperationsFlow evidence through the configured file storage provider.
+        Week 3 used local storage; Week 4 now supports SharePoint-backed evidence storage through Microsoft Graph.
     </PurposeNote>
 
     <div class="of-metric-grid">
@@ -326,7 +326,7 @@
 
                 <div class="info-card">
                     <h4>SharePoint Swap</h4>
-                    <p>Week 4 replaces the provider with SharePoint storage while keeping the same attachment records.</p>
+                    <p>Week 4 supports SharePoint-backed evidence storage while keeping the same local attachment records, activity log, reports, and data quality checks.</p>
                 </div>
 
                 <div class="info-card">
@@ -341,7 +341,7 @@
         <ul>
             <li>Upload files here first before attaching them directly to workflow records in Block 5.</li>
             <li>Use module and record reference fields so evidence is traceable.</li>
-            <li>Local storage is for Week 3 proof; SharePoint storage is the Week 4 production provider.</li>
+            <li>Local storage remains available for offline/demo mode; SharePoint storage is the Week 4 Microsoft 365 pilot provider.</li>
             <li>Deleted files are soft-deleted in metadata so the record can remain auditable.</li>
         </ul>
     </GuidanceNote>
@@ -366,9 +366,9 @@
     private FileStorageOptions StorageOptions => FileStorageSettings.Value;
 
     private string StorageSubtitle =>
-        FileStorageService.ProviderName.Equals("Local", StringComparison.OrdinalIgnoreCase)
-            ? StorageOptions.LocalRootPath
-            : "Production provider";
+       FileStorageService.ProviderName.Equals("Local", StringComparison.OrdinalIgnoreCase)
+           ? StorageOptions.LocalRootPath
+           : "Microsoft 365 / SharePoint provider";
 
     private string AllowedExtensionsDisplay =>
         string.Join(", ", StorageOptions.AllowedExtensions);
@@ -515,7 +515,11 @@
                 FileSizeBytes = selectedFile.Size,
                 ModuleName = uploadModel.ModuleName,
                 RecordId = uploadModel.RecordId,
-                UploadedBy = uploadModel.UploadedBy
+                RecordReference = uploadModel.RecordReference,
+                UploadedBy = uploadModel.UploadedBy,
+                Notes = uploadModel.Notes,
+                IsEvidence = uploadModel.IsEvidence,
+                IsControlledDocument = uploadModel.IsControlledDocument
             });
 
             if (!storageResult.Success)

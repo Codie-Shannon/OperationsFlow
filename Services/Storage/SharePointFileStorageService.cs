@@ -127,13 +127,55 @@ public class SharePointFileStorageService : IFileStorageService
         return Task.FromResult<Stream?>(null);
     }
 
-    public Task<bool> DeleteAsync(
+    public async Task<bool> DeleteAsync(
         string storedRelativePath,
         CancellationToken cancellationToken = default)
     {
-        // OperationsFlow currently soft-deletes attachment metadata.
-        // Physical SharePoint delete can be added later as an admin/hard-delete action.
-        return Task.FromResult(false);
+        if (string.IsNullOrWhiteSpace(storedRelativePath))
+        {
+            return false;
+        }
+
+        if (!microsoft365Options.Enabled ||
+            !microsoft365Options.HasBasicGraphConfig ||
+            !microsoft365Options.HasSharePointTarget ||
+            !microsoft365Options.HasDocumentLibraryTarget)
+        {
+            return false;
+        }
+
+        try
+        {
+            var graphClient = CreateGraphClient();
+
+            var site = await ResolveSiteAsync(graphClient, cancellationToken);
+
+            if (site == null || string.IsNullOrWhiteSpace(site.Id))
+            {
+                return false;
+            }
+
+            var drive = await ResolveDriveAsync(graphClient, site.Id, cancellationToken);
+
+            if (drive == null || string.IsNullOrWhiteSpace(drive.Id))
+            {
+                return false;
+            }
+
+            var cleanPath = NormalizeStoredRelativePath(storedRelativePath);
+
+            await graphClient
+                .Drives[drive.Id]
+                .Root
+                .ItemWithPath(cleanPath)
+                .DeleteAsync(cancellationToken: cancellationToken);
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public string GetPublicUrl(string storedRelativePath)
@@ -436,5 +478,18 @@ public class SharePointFileStorageService : IFileStorageService
             Provider = ProviderName,
             ErrorMessage = errorMessage
         };
+    }
+
+    private static string NormalizeStoredRelativePath(string storedRelativePath)
+    {
+        if (string.IsNullOrWhiteSpace(storedRelativePath))
+        {
+            return "";
+        }
+
+        return storedRelativePath
+            .Replace("\\", "/", StringComparison.Ordinal)
+            .Trim()
+            .Trim('/');
     }
 }
