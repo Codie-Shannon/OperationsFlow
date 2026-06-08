@@ -25,6 +25,7 @@ wwwroot/uploads/
 # Logs
 *.log
 logs/
+appsettings.Development.json
 
 # OS files
 .DS_Store
