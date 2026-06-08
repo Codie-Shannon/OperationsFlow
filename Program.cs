@@ -7,6 +7,7 @@ using OperationsFlow.SeedData;
 using OperationsFlow.Services;
 using OperationsFlow.Services.Storage;
 using System.Text;
+using OperationsFlow.Services.Microsoft365;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +62,8 @@ builder.Services.AddScoped<LocalIdentityService>();
 builder.Services.AddScoped<LocalCurrentUserService>();
 builder.Services.AddScoped<LocalAuthService>();
 builder.Services.AddScoped<LocalSessionStorageService>();
+
+builder.Services.AddScoped<Microsoft365GraphService>();
 
 builder.Services.AddScoped<IFileStorageService>(serviceProvider =>
 {

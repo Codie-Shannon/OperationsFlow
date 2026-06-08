@@ -4,6 +4,9 @@
 @using OperationsFlow.Options
 @inject IOptions<Microsoft365Options> Microsoft365Settings
 
+@using OperationsFlow.Services.Microsoft365
+@inject Microsoft365GraphService Microsoft365GraphService
+
 <PageTitle>Admin Settings - OperationsFlow</PageTitle>
 
 <PageHero Eyebrow="OPERATIONSFLOW / ADMINISTRATION"
@@ -121,6 +124,109 @@
         </tbody>
     </table>
 </TableCard>
+
+<InfoPanel Title="Microsoft 365 connection test"
+           Subtitle="Tests the configured Entra app registration, Graph access, SharePoint site, and OperationsFlow Evidence document library.">
+    <Actions>
+        <span class="@Microsoft365ConnectionBadgeClass">@Microsoft365ConnectionBadgeText</span>
+    </Actions>
+
+    <ChildContent>
+        <p>
+            This test uses the configured Tenant ID, Client ID, private client secret, SharePoint site URL,
+            and document library name. It does not upload files yet.
+        </p>
+
+        <button type="button"
+                class="of-btn of-btn-primary"
+                disabled="@isTestingMicrosoft365Connection"
+                @onclick="TestMicrosoft365ConnectionAsync">
+            @if (isTestingMicrosoft365Connection)
+            {
+                <span>Testing Microsoft 365 connection...</span>
+            }
+            else
+            {
+                <span>Test Microsoft 365 Connection</span>
+            }
+        </button>
+
+        @if (microsoft365ConnectionStatus is not null)
+        {
+            <div class="of-section-card" style="margin-top: 1rem;">
+                <div class="of-section-card__header">
+                    <div>
+                        <h3>@microsoft365ConnectionStatus.Message</h3>
+                        <p>Graph / SharePoint connection proof for Week 4.</p>
+                    </div>
+                </div>
+
+                <div class="of-section-card__body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Check</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Configuration</td>
+                                <td>@(microsoft365ConnectionStatus.ConfigurationReady ? "Ready" : "Incomplete")</td>
+                            </tr>
+                            <tr>
+                                <td>Graph connection</td>
+                                <td>@(microsoft365ConnectionStatus.GraphConnected ? "Connected" : "Not connected")</td>
+                            </tr>
+                            <tr>
+                                <td>SharePoint site</td>
+                                <td>@(microsoft365ConnectionStatus.SiteResolved ? "Resolved" : "Not resolved")</td>
+                            </tr>
+                            <tr>
+                                <td>Document library</td>
+                                <td>@(microsoft365ConnectionStatus.DocumentLibraryResolved ? "Resolved" : "Not resolved")</td>
+                            </tr>
+                            <tr>
+                                <td>Site ID</td>
+                                <td>@(microsoft365ConnectionStatus.SiteId ?? "Not available")</td>
+                            </tr>
+                            <tr>
+                                <td>Drive / Library ID</td>
+                                <td>@(microsoft365ConnectionStatus.DriveId ?? "Not available")</td>
+                            </tr>
+                            <tr>
+                                <td>Web URL</td>
+                                <td>@(microsoft365ConnectionStatus.WebUrl ?? "Not available")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    @if (microsoft365ConnectionStatus.Checks.Any())
+                    {
+                        <h4>Checks</h4>
+                        <ul>
+                            @foreach (var check in microsoft365ConnectionStatus.Checks)
+                            {
+                                <li>@check</li>
+                            }
+                        </ul>
+                    }
+
+                    @if (microsoft365ConnectionStatus.Errors.Any())
+                    {
+                        <h4>Errors</h4>
+                        <ul>
+                            @foreach (var error in microsoft365ConnectionStatus.Errors)
+                            {
+                                <li>@error</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        }
+    </ChildContent>
+</InfoPanel>
 
 <GuidanceNote Title="Current boundary" Icon="⚠️" Tone="warning">
     <p>
@@ -375,4 +481,37 @@
 
     private string SecretStatusBadge =>
         Microsoft365.HasClientSecret ? "of-badge of-badge-success" : "of-badge of-badge-warning";
+
+
+    private Microsoft365ConnectionStatus? microsoft365ConnectionStatus;
+    private bool isTestingMicrosoft365Connection;
+
+    private async Task TestMicrosoft365ConnectionAsync()
+    {
+        isTestingMicrosoft365Connection = true;
+        microsoft365ConnectionStatus = null;
+
+        try
+        {
+            microsoft365ConnectionStatus = await Microsoft365GraphService.TestConnectionAsync();
+        }
+        finally
+        {
+            isTestingMicrosoft365Connection = false;
+        }
+    }
+
+    private string Microsoft365ConnectionBadgeClass =>
+        microsoft365ConnectionStatus?.Success == true
+            ? "of-badge of-badge-success"
+            : microsoft365ConnectionStatus is null
+                ? "of-badge of-badge-muted"
+                : "of-badge of-badge-danger";
+
+    private string Microsoft365ConnectionBadgeText =>
+        microsoft365ConnectionStatus?.Success == true
+            ? "Connected"
+            : microsoft365ConnectionStatus is null
+                ? "Not tested"
+                : "Failed";
 }
