@@ -1,12 +1,16 @@
 @page "/admin-settings"
 
+@using Microsoft.Extensions.Options
+@using OperationsFlow.Options
+@inject IOptions<Microsoft365Options> Microsoft365Settings
+
 <PageTitle>Admin Settings - OperationsFlow</PageTitle>
 
 <PageHero Eyebrow="OPERATIONSFLOW / ADMINISTRATION"
           Title="Admin Settings"
           Subtitle="Admin Settings documents the Week 3 local/free configuration surface and the Week 4 production upgrade path for OAuth2, Microsoft 365, SharePoint storage, notifications, reporting, and deployment hardening."
-          BadgeText="Local Auth Enabled"
-          BadgeClass="of-badge of-badge-success">
+          BadgeText="@Microsoft365BadgeText"
+          BadgeClass="@Microsoft365BadgeClass">
     <Actions>
         <a class="of-btn of-btn-secondary" href="/user-roles">User Roles</a>
         <a class="of-btn of-btn-secondary" href="/technical-overview">Technical Overview</a>
@@ -47,6 +51,76 @@
                 Icon="☁️"
                 Tone="warning" />
 </MetricGrid>
+
+<TableCard Title="Week 4 Microsoft 365 configuration status"
+           Subtitle="These values are read from configuration. Secrets should be stored locally or in environment/user-secrets, not committed to GitHub.">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Setting</th>
+                <th>Status</th>
+                <th>Configured Value</th>
+                <th>Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Microsoft 365 integration</td>
+                <td><span class="@StatusBadge(Microsoft365.Enabled)">@StatusText(Microsoft365.Enabled)</span></td>
+                <td>@(Microsoft365.Enabled ? "Enabled" : "Disabled")</td>
+                <td>Controls whether Week 4 Microsoft 365 integration is active.</td>
+            </tr>
+            <tr>
+                <td>Tenant ID</td>
+                <td><span class="@StatusBadge(Microsoft365.HasTenantId)">@StatusText(Microsoft365.HasTenantId)</span></td>
+                <td>@(Microsoft365.HasTenantId ? "Configured" : "Not configured")</td>
+                <td>Identifies the Codie Systems Microsoft 365 tenant.</td>
+            </tr>
+            <tr>
+                <td>Client ID</td>
+                <td><span class="@StatusBadge(Microsoft365.HasClientId)">@StatusText(Microsoft365.HasClientId)</span></td>
+                <td>@(Microsoft365.HasClientId ? "Configured" : "Not configured")</td>
+                <td>Identifies the OperationsFlow Week 4 Entra app registration.</td>
+            </tr>
+            <tr>
+                <td>Client secret</td>
+                <td><span class="@SecretStatusBadge">@SecretStatusText</span></td>
+                <td>@SecretStatusText</td>
+                <td>Used privately for Graph/SharePoint access. Never commit the value.</td>
+            </tr>
+            <tr>
+                <td>Redirect URI</td>
+                <td><span class="@StatusBadge(Microsoft365.HasRedirectUri)">@StatusText(Microsoft365.HasRedirectUri)</span></td>
+                <td>@Microsoft365.RedirectUri</td>
+                <td>Microsoft sign-in callback URL for local development.</td>
+            </tr>
+            <tr>
+                <td>SharePoint site</td>
+                <td><span class="@StatusBadge(Microsoft365.HasSharePointTarget)">@StatusText(Microsoft365.HasSharePointTarget)</span></td>
+                <td>@Microsoft365.SafeSharePointTargetDisplay</td>
+                <td>Target SharePoint site for Week 4 evidence storage.</td>
+            </tr>
+            <tr>
+                <td>Document library</td>
+                <td><span class="@StatusBadge(Microsoft365.HasDocumentLibraryTarget)">@StatusText(Microsoft365.HasDocumentLibraryTarget)</span></td>
+                <td>@Microsoft365.SafeLibraryTargetDisplay</td>
+                <td>Target document library for uploaded OperationsFlow evidence.</td>
+            </tr>
+            <tr>
+                <td>Microsoft login</td>
+                <td><span class="@StatusBadge(Microsoft365.IsMicrosoftLoginReady)">@StatusText(Microsoft365.IsMicrosoftLoginReady)</span></td>
+                <td>@(Microsoft365.UseMicrosoftLogin ? "Enabled" : "Disabled")</td>
+                <td>Later Week 4 block: Microsoft identity links to local OperationsFlow users/roles.</td>
+            </tr>
+            <tr>
+                <td>SharePoint storage</td>
+                <td><span class="@StatusBadge(Microsoft365.IsSharePointStorageReady)">@StatusText(Microsoft365.IsSharePointStorageReady)</span></td>
+                <td>@(Microsoft365.UseSharePointStorage ? "Enabled" : "Disabled")</td>
+                <td>Later Week 4 block: uploaded evidence files are stored in SharePoint.</td>
+            </tr>
+        </tbody>
+    </table>
+</TableCard>
 
 <GuidanceNote Title="Current boundary" Icon="⚠️" Tone="warning">
     <p>
@@ -273,3 +347,32 @@
         Admin Settings now reflects the upgraded Week 3 local/free authentication system and the Week 4 OAuth2/Microsoft 365 production direction.
     </p>
 </GuidanceNote>
+
+
+@code {
+    private Microsoft365Options Microsoft365 => Microsoft365Settings.Value;
+
+    private string Microsoft365BadgeText =>
+        Microsoft365.Enabled ? "M365 Config Present" : "M365 Disabled";
+
+    private string Microsoft365BadgeClass =>
+        Microsoft365.Enabled ? "of-badge of-badge-success" : "of-badge of-badge-warning";
+
+    private string StatusBadge(bool isReady)
+    {
+        return isReady
+            ? "of-badge of-badge-success"
+            : "of-badge of-badge-warning";
+    }
+
+    private string StatusText(bool isReady)
+    {
+        return isReady ? "Configured" : "Not configured";
+    }
+
+    private string SecretStatusText =>
+        Microsoft365.HasClientSecret ? "Configured privately" : "Not configured";
+
+    private string SecretStatusBadge =>
+        Microsoft365.HasClientSecret ? "of-badge of-badge-success" : "of-badge of-badge-warning";
+}
