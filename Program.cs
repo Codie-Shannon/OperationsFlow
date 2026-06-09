@@ -68,11 +68,21 @@ builder.Services.AddHttpClient<MicrosoftOAuthService>();
 
 builder.Services.AddScoped<IFileStorageService>(serviceProvider =>
 {
-    var options = serviceProvider
+    var fileStorageOptions = serviceProvider
         .GetRequiredService<IOptions<FileStorageOptions>>()
         .Value;
 
-    if (options.IsSharePointProvider)
+    var microsoft365Options = serviceProvider
+        .GetRequiredService<IOptions<Microsoft365Options>>()
+        .Value;
+
+    var useSharePointStorage =
+        microsoft365Options.Enabled &&
+        microsoft365Options.UseSharePointStorage &&
+        microsoft365Options.EnableRealSync &&
+        !microsoft365Options.EnableDryRunOnly;
+
+    if (useSharePointStorage || fileStorageOptions.IsSharePointProvider)
     {
         return serviceProvider.GetRequiredService<SharePointFileStorageService>();
     }

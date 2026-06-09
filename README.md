@@ -60,6 +60,14 @@ It is designed around real workplace patterns:
 - Activity Log current-user upload/delete audit: implemented.
 - Microsoft 365 tenant/app/library connection check: implemented.
 
+## Walkthrough Video
+
+A 5-minute silent walkthrough video is available here:
+
+[OperationsFlow — Microsoft 365 Pilot Walkthrough](https://youtu.be/uhaA455rg7c)
+
+The video demonstrates the main Week 4 review path: local and Microsoft sign-in, Microsoft-linked Admin status, Microsoft 365 connection testing, SharePoint evidence upload, metadata writeback, document lifecycle handling, activity logging, and ReadOnly permission enforcement.
+
 ## Screenshot Preview
 
 The screenshots below show the strongest Week 4 review path: sign-in, Microsoft 365 connection, role mapping, SharePoint metadata, Document Library provider, and ReadOnly permission enforcement.
